@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Coqtl
+Bundle-SymbolicName: fr.inria.atlanmod.coqtl.generators
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: fr.inria.atlanmod.coqtl.Activator
+Bundle-Vendor: atlanmod
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.xtend.lib;bundle-version="2.10.0",
+ com.google.inject;bundle-version="3.0.0",
+ org.eclipse.emf.ecore;bundle-version="2.12.0",
+ org.eclipse.emf.ecore.xmi;bundle-version="2.12.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
