@@ -4,15 +4,13 @@ In model-driven engineering, model transformation (MT) verification is essential
 
 We propose an alternative solution by designing and implementing an internal domain specific language, namely CoqTL, for the specification of declarative MTs directly in the Coq interactive theorem prover.  Expressions in CoqTL are written in Gallina (the specification language of Coq), increasing the possibilities of reuse of native Coq libraries in the transformation definition and proof. In this repository, it contains the example and proofs of CoqTL.
 
-Repository structure
+Usage
 ------
-* The main example and proofs of CoqTL is contained by **fr.inria.atlanmod.coqtl.coq**.
-* The code generator from EMF metamodel/model to CoqTL is contained by **fr.inria.atlanmod.coqtl.generators**.
-
-Requirements
-------
-* CoqTL is developed under **Coq v.8.6**.
-* The code generator from EMF metamodel/model to CoqTL is developed on top of Eclipse Modelling Project (Neon), and mainly requires **EMF v.2.12** and **XTEND v.2.10** to build, please refer its manefest.MF for detail.
+* Compile all **.v** files. Please run/refer **compile.bat** for compilation order of these files.
+* To check sample model transformation specification, check **Class2Relational.v**.
+* To run sample model transformation, check **PersonTest.v**.
+* To check proofs done by CoqTL, check **.v** files with the prefix **thm_**.
+* To understand the architecture of CoqTL, we recommend to start with **CoqTL.v**.
 
 Contacts
 ------
