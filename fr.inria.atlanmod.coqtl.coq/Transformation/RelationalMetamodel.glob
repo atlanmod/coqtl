@@ -1,0 +1,594 @@
+DIGEST fe86adfacb66ad97b4e1570ecc19b00a
+FTransformation.RelationalMetamodel
+R15:20 Coq.Strings.String <> <> lib
+R38:41 Coq.Lists.List <> <> lib
+R79:86 Coq.Sets.Multiset <> <> lib
+R115:121 Coq.Lists.ListSet <> <> lib
+R151:155 Coq.omega.Omega <> <> lib
+R174:188 Utils.Utils_Top <> <> lib
+R206:216 Utils.CoqTL <> <> lib
+R235:253 Coq.Logic.Eqdep_dec <> <> lib
+ind 287:291 <> Table
+constr 304:313 <> BuildTable
+R324:331 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R338:341 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R342:346 Transformation.RelationalMetamodel <> Table ind
+R332:337 Coq.Strings.String <> string ind
+R321:323 Coq.Init.Datatypes <> nat ind
+ind 362:367 <> Column
+constr 380:390 <> BuildColumn
+R401:408 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R415:418 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R419:424 Transformation.RelationalMetamodel <> Column ind
+R409:414 Coq.Strings.String <> string ind
+R398:400 Coq.Init.Datatypes <> nat ind
+ind 442:453 <> TableColumns
+constr 466:482 <> BuildTableColumns
+R492:495 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R507:510 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R511:522 Transformation.RelationalMetamodel <> TableColumns ind
+R496:499 Coq.Init.Datatypes <> list ind
+R501:506 Transformation.RelationalMetamodel <> Column ind
+R487:491 Transformation.RelationalMetamodel <> Table ind
+ind 540:554 <> ColumnReference
+constr 567:586 <> BuildColumnReference
+R596:599 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R605:608 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R609:623 Transformation.RelationalMetamodel <> ColumnReference ind
+R600:604 Transformation.RelationalMetamodel <> Table ind
+R590:595 Transformation.RelationalMetamodel <> Column ind
+def 655:664 <> getTableId
+R671:675 Transformation.RelationalMetamodel <> Table ind
+R680:682 Coq.Init.Datatypes <> nat ind
+R695:695 Transformation.RelationalMetamodel <> t var
+R702:711 Transformation.RelationalMetamodel <> BuildTable constr
+def 741:752 <> getTableName
+R759:763 Transformation.RelationalMetamodel <> Table ind
+R768:773 Coq.Strings.String <> string ind
+R786:786 Transformation.RelationalMetamodel <> t var
+R793:802 Transformation.RelationalMetamodel <> BuildTable constr
+def 830:840 <> getColumnId
+R847:852 Transformation.RelationalMetamodel <> Column ind
+R857:859 Coq.Init.Datatypes <> nat ind
+R872:872 Transformation.RelationalMetamodel <> c var
+R879:889 Transformation.RelationalMetamodel <> BuildColumn constr
+def 919:931 <> getColumnName
+R938:943 Transformation.RelationalMetamodel <> Column ind
+R948:953 Coq.Strings.String <> string ind
+R966:966 Transformation.RelationalMetamodel <> c var
+R973:983 Transformation.RelationalMetamodel <> BuildColumn constr
+def 1013:1021 <> beq_Table
+R1029:1033 Transformation.RelationalMetamodel <> Table ind
+R1041:1045 Transformation.RelationalMetamodel <> Table ind
+R1050:1053 Coq.Init.Datatypes <> bool ind
+R1099:1102 Coq.Init.Datatypes <> :bool_scope:x_'&&'_x not
+R1060:1066 Coq.Arith.EqNat <> beq_nat syndef
+R1085:1094 Transformation.RelationalMetamodel <> getTableId def
+R1096:1097 Transformation.RelationalMetamodel <> t2 var
+R1069:1078 Transformation.RelationalMetamodel <> getTableId def
+R1080:1081 Transformation.RelationalMetamodel <> t1 var
+R1103:1112 Utils.Utils_String <> beq_string def
+R1133:1144 Transformation.RelationalMetamodel <> getTableName def
+R1146:1147 Transformation.RelationalMetamodel <> t2 var
+R1115:1126 Transformation.RelationalMetamodel <> getTableName def
+R1128:1129 Transformation.RelationalMetamodel <> t1 var
+def 1163:1172 <> beq_Column
+R1180:1185 Transformation.RelationalMetamodel <> Column ind
+R1194:1199 Transformation.RelationalMetamodel <> Column ind
+R1204:1207 Coq.Init.Datatypes <> bool ind
+R1255:1258 Coq.Init.Datatypes <> :bool_scope:x_'&&'_x not
+R1214:1220 Coq.Arith.EqNat <> beq_nat syndef
+R1240:1250 Transformation.RelationalMetamodel <> getColumnId def
+R1252:1253 Transformation.RelationalMetamodel <> c2 var
+R1223:1233 Transformation.RelationalMetamodel <> getColumnId def
+R1235:1236 Transformation.RelationalMetamodel <> c1 var
+R1259:1268 Utils.Utils_String <> beq_string def
+R1290:1302 Transformation.RelationalMetamodel <> getColumnName def
+R1304:1305 Transformation.RelationalMetamodel <> c2 var
+R1271:1283 Transformation.RelationalMetamodel <> getColumnName def
+R1285:1286 Transformation.RelationalMetamodel <> c1 var
+prf 1316:1331 <> lem_beq_Table_id
+R1350:1354 Transformation.RelationalMetamodel <> Table ind
+R1383:1386 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R1389:1391 Coq.Init.Logic <> :type_scope:x_'='_x not
+R1387:1388 Transformation.RelationalMetamodel <> a1 var
+R1392:1393 Transformation.RelationalMetamodel <> a2 var
+R1376:1378 Coq.Init.Logic <> :type_scope:x_'='_x not
+R1361:1369 Transformation.RelationalMetamodel <> beq_Table def
+R1374:1375 Transformation.RelationalMetamodel <> a2 var
+R1371:1372 Transformation.RelationalMetamodel <> a1 var
+R1379:1382 Coq.Init.Datatypes <> true constr
+R1418:1426 Transformation.RelationalMetamodel <> beq_Table def
+R1441:1444 Coq.Init.Datatypes <> andb def
+R1475:1478 Coq.Arith.PeanoNat <> :nat_scope:x_'=?'_x not
+R1462:1471 Transformation.RelationalMetamodel <> getTableId def
+R1479:1488 Transformation.RelationalMetamodel <> getTableId def
+R1475:1478 Coq.Arith.PeanoNat <> :nat_scope:x_'=?'_x not
+R1462:1471 Transformation.RelationalMetamodel <> getTableId def
+R1479:1488 Transformation.RelationalMetamodel <> getTableId def
+R1513:1530 Utils.Utils_String <> lem_beq_string_eq2 thm
+R1513:1530 Utils.Utils_String <> lem_beq_string_eq2 thm
+R1548:1559 Coq.Arith.EqNat <> beq_nat_true thm
+R1548:1559 Coq.Arith.EqNat <> beq_nat_true thm
+prf 1658:1675 <> lem_beq_Table_refl
+R1690:1694 Transformation.RelationalMetamodel <> Table ind
+R1714:1716 Coq.Init.Logic <> :type_scope:x_'='_x not
+R1701:1709 Transformation.RelationalMetamodel <> beq_Table def
+R1713:1713 Transformation.RelationalMetamodel <> a var
+R1711:1711 Transformation.RelationalMetamodel <> a var
+R1717:1720 Coq.Init.Datatypes <> true constr
+R1757:1765 Transformation.RelationalMetamodel <> beq_Table def
+R1787:1789 Coq.Init.Logic <> :type_scope:x_'='_x not
+R1783:1786 Coq.Init.Datatypes <> true constr
+R1790:1805 Coq.Arith.PeanoNat Nat eqb def
+R1787:1789 Coq.Init.Logic <> :type_scope:x_'='_x not
+R1783:1786 Coq.Init.Datatypes <> true constr
+R1790:1805 Coq.Arith.PeanoNat Nat eqb def
+R1821:1832 Coq.Arith.EqNat <> beq_nat_refl thm
+R1821:1832 Coq.Arith.EqNat <> beq_nat_refl thm
+R1873:1875 Coq.Init.Logic <> :type_scope:x_'='_x not
+R1859:1868 Utils.Utils_String <> beq_string def
+R1876:1879 Coq.Init.Datatypes <> true constr
+R1873:1875 Coq.Init.Logic <> :type_scope:x_'='_x not
+R1859:1868 Utils.Utils_String <> beq_string def
+R1876:1879 Coq.Init.Datatypes <> true constr
+R1891:1907 Utils.Utils_String <> lem_beq_string_id thm
+R1891:1907 Utils.Utils_String <> lem_beq_string_id thm
+prf 1949:1967 <> lem_beq_Column_refl
+R1984:1989 Transformation.RelationalMetamodel <> Column ind
+R2010:2012 Coq.Init.Logic <> :type_scope:x_'='_x not
+R1996:2005 Transformation.RelationalMetamodel <> beq_Column def
+R2009:2009 Transformation.RelationalMetamodel <> c var
+R2007:2007 Transformation.RelationalMetamodel <> c var
+R2013:2016 Coq.Init.Datatypes <> true constr
+R2053:2062 Transformation.RelationalMetamodel <> beq_Column def
+R2091:2093 Coq.Init.Logic <> :type_scope:x_'='_x not
+R2080:2086 Coq.Arith.EqNat <> beq_nat syndef
+R2094:2097 Coq.Init.Datatypes <> true constr
+R2091:2093 Coq.Init.Logic <> :type_scope:x_'='_x not
+R2080:2086 Coq.Arith.EqNat <> beq_nat syndef
+R2094:2097 Coq.Init.Datatypes <> true constr
+R2118:2129 Coq.Arith.EqNat <> beq_nat_refl thm
+R2118:2129 Coq.Arith.EqNat <> beq_nat_refl thm
+R2156:2158 Coq.Init.Logic <> :type_scope:x_'='_x not
+R2142:2151 Utils.Utils_String <> beq_string def
+R2159:2162 Coq.Init.Datatypes <> true constr
+R2156:2158 Coq.Init.Logic <> :type_scope:x_'='_x not
+R2142:2151 Utils.Utils_String <> beq_string def
+R2159:2162 Coq.Init.Datatypes <> true constr
+R2173:2189 Utils.Utils_String <> lem_beq_string_id thm
+R2173:2189 Utils.Utils_String <> lem_beq_string_id thm
+prf 2234:2250 <> lem_beq_Column_id
+R2269:2274 Transformation.RelationalMetamodel <> Column ind
+R2304:2307 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R2310:2312 Coq.Init.Logic <> :type_scope:x_'='_x not
+R2308:2309 Transformation.RelationalMetamodel <> a1 var
+R2313:2314 Transformation.RelationalMetamodel <> a2 var
+R2297:2299 Coq.Init.Logic <> :type_scope:x_'='_x not
+R2281:2290 Transformation.RelationalMetamodel <> beq_Column def
+R2295:2296 Transformation.RelationalMetamodel <> a2 var
+R2292:2293 Transformation.RelationalMetamodel <> a1 var
+R2300:2303 Coq.Init.Datatypes <> true constr
+R2339:2348 Transformation.RelationalMetamodel <> beq_Column def
+R2363:2366 Coq.Init.Datatypes <> andb def
+R2398:2401 Coq.Arith.PeanoNat <> :nat_scope:x_'=?'_x not
+R2384:2394 Transformation.RelationalMetamodel <> getColumnId def
+R2402:2412 Transformation.RelationalMetamodel <> getColumnId def
+R2398:2401 Coq.Arith.PeanoNat <> :nat_scope:x_'=?'_x not
+R2384:2394 Transformation.RelationalMetamodel <> getColumnId def
+R2402:2412 Transformation.RelationalMetamodel <> getColumnId def
+R2437:2454 Utils.Utils_String <> lem_beq_string_eq2 thm
+R2437:2454 Utils.Utils_String <> lem_beq_string_eq2 thm
+R2472:2483 Coq.Arith.EqNat <> beq_nat_true thm
+R2472:2483 Coq.Arith.EqNat <> beq_nat_true thm
+ind 2604:2629 <> RelationalMetamodel_EClass
+constr 2642:2651 <> TableClass
+constr 2655:2665 <> ColumnClass
+R2652:2652 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R2666:2666 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+def 2680:2714 <> RelationalMetamodel_getTypeByEClass
+R2724:2749 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R2769:2772 Transformation.RelationalMetamodel <> type var
+R2783:2792 Transformation.RelationalMetamodel <> TableClass constr
+R2797:2801 Transformation.RelationalMetamodel <> Table ind
+R2807:2817 Transformation.RelationalMetamodel <> ColumnClass constr
+R2822:2827 Transformation.RelationalMetamodel <> Column ind
+ind 2847:2876 <> RelationalMetamodel_EReference
+constr 2889:2909 <> TableColumnsReference
+constr 2913:2936 <> ColumnReferenceReference
+R2910:2910 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+R2937:2937 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+def 2951:2989 <> RelationalMetamodel_getTypeByEReference
+R2999:3028 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+R3048:3051 Transformation.RelationalMetamodel <> type var
+R3062:3082 Transformation.RelationalMetamodel <> TableColumnsReference constr
+R3087:3098 Transformation.RelationalMetamodel <> TableColumns ind
+R3104:3127 Transformation.RelationalMetamodel <> ColumnReferenceReference constr
+R3132:3146 Transformation.RelationalMetamodel <> ColumnReference ind
+ind 3187:3213 <> RelationalMetamodel_EObject
+constr 3226:3257 <> RelationalMetamodel_BuildEObject
+R3271:3296 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R3300:3300 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3338:3342 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3343:3369 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R3301:3335 Transformation.RelationalMetamodel <> RelationalMetamodel_getTypeByEClass def
+R3337:3337 Transformation.RelationalMetamodel <> c var
+ind 3383:3407 <> RelationalMetamodel_ELink
+constr 3420:3449 <> RelationalMetamodel_BuildELink
+R3463:3492 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+R3496:3496 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3538:3542 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R3543:3567 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R3497:3535 Transformation.RelationalMetamodel <> RelationalMetamodel_getTypeByEReference def
+R3537:3537 Transformation.RelationalMetamodel <> c var
+prf 3607:3638 <> RelationalMetamodel_eqEClass_dec
+R3653:3678 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R3685:3710 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R3714:3715 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R3723:3729 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R3738:3739 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R3718:3720 Coq.Init.Logic <> :type_scope:x_'='_x not
+R3716:3717 Transformation.RelationalMetamodel <> c1 var
+R3721:3722 Transformation.RelationalMetamodel <> c2 var
+R3732:3735 Coq.Init.Logic <> :type_scope:x_'<>'_x not
+R3730:3731 Transformation.RelationalMetamodel <> c1 var
+R3736:3737 Transformation.RelationalMetamodel <> c2 var
+prf 3789:3824 <> RelationalMetamodel_eqEReference_dec
+R3839:3868 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+R3875:3904 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+R3908:3909 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R3917:3923 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R3932:3933 Coq.Init.Specif <> :type_scope:'{'_x_'}'_'+'_'{'_x_'}' not
+R3912:3914 Coq.Init.Logic <> :type_scope:x_'='_x not
+R3910:3911 Transformation.RelationalMetamodel <> c1 var
+R3915:3916 Transformation.RelationalMetamodel <> c2 var
+R3926:3929 Coq.Init.Logic <> :type_scope:x_'<>'_x not
+R3924:3925 Transformation.RelationalMetamodel <> c1 var
+R3930:3931 Transformation.RelationalMetamodel <> c2 var
+def 3988:4016 <> RelationalMetamodel_getEClass
+R4023:4049 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R4054:4079 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R4092:4092 Transformation.RelationalMetamodel <> c var
+R4104:4135 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+def 4166:4198 <> RelationalMetamodel_getEReference
+R4205:4229 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R4234:4263 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+R4276:4276 Transformation.RelationalMetamodel <> c var
+R4288:4317 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildELink constr
+def 4348:4383 <> RelationalMetamodel_instanceOfEClass
+R4391:4416 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R4424:4450 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R4454:4457 Coq.Init.Datatypes <> bool ind
+R4467:4498 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEClass_dec thm
+R4534:4536 Transformation.RelationalMetamodel <> cmc var
+R4501:4529 Transformation.RelationalMetamodel <> RelationalMetamodel_getEClass def
+R4531:4531 Transformation.RelationalMetamodel <> c var
+R4553:4557 Coq.Init.Datatypes <> false constr
+R4543:4546 Coq.Init.Datatypes <> true constr
+def 4572:4611 <> RelationalMetamodel_instanceOfEReference
+R4619:4648 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+R4656:4680 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R4684:4687 Coq.Init.Datatypes <> bool ind
+R4697:4732 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEReference_dec thm
+R4772:4774 Transformation.RelationalMetamodel <> cmr var
+R4735:4767 Transformation.RelationalMetamodel <> RelationalMetamodel_getEReference def
+R4769:4769 Transformation.RelationalMetamodel <> c var
+R4791:4795 Coq.Init.Datatypes <> false constr
+R4781:4784 Coq.Init.Datatypes <> true constr
+def 4810:4849 <> RelationalMetamodel_EClassAttributeTypes
+R4855:4880 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R4899:4899 Transformation.RelationalMetamodel <> c var
+R4910:4919 Transformation.RelationalMetamodel <> TableClass constr
+R4928:4930 Coq.Init.Datatypes <> :type_scope:x_'*'_x not
+R4925:4927 Coq.Init.Datatypes <> nat ind
+R4931:4936 Coq.Strings.String <> string ind
+R4943:4953 Transformation.RelationalMetamodel <> ColumnClass constr
+R4962:4964 Coq.Init.Datatypes <> :type_scope:x_'*'_x not
+R4959:4961 Coq.Init.Datatypes <> nat ind
+R4965:4970 Coq.Strings.String <> string ind
+def 4992:5029 <> BuildRelationalMetamodel_EClassElement
+R5036:5061 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R5066:5066 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5109:5113 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5114:5140 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R5067:5106 Transformation.RelationalMetamodel <> RelationalMetamodel_EClassAttributeTypes def
+R5108:5108 Transformation.RelationalMetamodel <> t var
+R5153:5153 Transformation.RelationalMetamodel <> t var
+R5164:5173 Transformation.RelationalMetamodel <> TableClass constr
+R5190:5192 Coq.Init.Datatypes <> :type_scope:x_'*'_x not
+R5187:5189 Coq.Init.Datatypes <> nat ind
+R5193:5198 Coq.Strings.String <> string ind
+R5205:5236 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+R5250:5259 Transformation.RelationalMetamodel <> BuildTable constr
+R5270:5272 Coq.Init.Datatypes <> snd def
+R5274:5274 Transformation.RelationalMetamodel <> p var
+R5262:5264 Coq.Init.Datatypes <> fst def
+R5266:5266 Transformation.RelationalMetamodel <> p var
+R5238:5247 Transformation.RelationalMetamodel <> TableClass constr
+R5284:5294 Transformation.RelationalMetamodel <> ColumnClass constr
+R5311:5313 Coq.Init.Datatypes <> :type_scope:x_'*'_x not
+R5308:5310 Coq.Init.Datatypes <> nat ind
+R5314:5319 Coq.Strings.String <> string ind
+R5326:5357 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+R5372:5382 Transformation.RelationalMetamodel <> BuildColumn constr
+R5393:5395 Coq.Init.Datatypes <> snd def
+R5397:5397 Transformation.RelationalMetamodel <> p var
+R5385:5387 Coq.Init.Datatypes <> fst def
+R5389:5389 Transformation.RelationalMetamodel <> p var
+R5359:5369 Transformation.RelationalMetamodel <> ColumnClass constr
+def 5422:5460 <> RelationalMetamodel_EReferenceRoleTypes
+R5466:5495 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+R5514:5514 Transformation.RelationalMetamodel <> c var
+R5525:5545 Transformation.RelationalMetamodel <> TableColumnsReference constr
+R5556:5558 Coq.Init.Datatypes <> :type_scope:x_'*'_x not
+R5551:5555 Transformation.RelationalMetamodel <> Table ind
+R5559:5562 Coq.Init.Datatypes <> list ind
+R5564:5569 Transformation.RelationalMetamodel <> Column ind
+R5576:5599 Transformation.RelationalMetamodel <> ColumnReferenceReference constr
+R5611:5613 Coq.Init.Datatypes <> :type_scope:x_'*'_x not
+R5605:5610 Transformation.RelationalMetamodel <> Column ind
+R5614:5618 Transformation.RelationalMetamodel <> Table ind
+def 5640:5678 <> BuildRelationalMetamodel_EReferenceLink
+R5685:5714 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+R5719:5719 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5761:5765 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R5766:5790 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R5720:5758 Transformation.RelationalMetamodel <> RelationalMetamodel_EReferenceRoleTypes def
+R5760:5760 Transformation.RelationalMetamodel <> t var
+R5803:5803 Transformation.RelationalMetamodel <> t var
+R5814:5834 Transformation.RelationalMetamodel <> TableColumnsReference constr
+R5853:5855 Coq.Init.Datatypes <> :type_scope:x_'*'_x not
+R5848:5852 Transformation.RelationalMetamodel <> Table ind
+R5856:5859 Coq.Init.Datatypes <> list ind
+R5861:5866 Transformation.RelationalMetamodel <> Column ind
+R5873:5902 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildELink constr
+R5927:5943 Transformation.RelationalMetamodel <> BuildTableColumns constr
+R5954:5956 Coq.Init.Datatypes <> snd def
+R5958:5958 Transformation.RelationalMetamodel <> p var
+R5946:5948 Coq.Init.Datatypes <> fst def
+R5950:5950 Transformation.RelationalMetamodel <> p var
+R5904:5924 Transformation.RelationalMetamodel <> TableColumnsReference constr
+R5968:5991 Transformation.RelationalMetamodel <> ColumnReferenceReference constr
+R6011:6013 Coq.Init.Datatypes <> :type_scope:x_'*'_x not
+R6005:6010 Transformation.RelationalMetamodel <> Column ind
+R6014:6018 Transformation.RelationalMetamodel <> Table ind
+R6025:6054 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildELink constr
+R6082:6101 Transformation.RelationalMetamodel <> BuildColumnReference constr
+R6112:6114 Coq.Init.Datatypes <> snd def
+R6116:6116 Transformation.RelationalMetamodel <> p var
+R6104:6106 Coq.Init.Datatypes <> fst def
+R6108:6108 Transformation.RelationalMetamodel <> p var
+R6056:6079 Transformation.RelationalMetamodel <> ColumnReferenceReference constr
+def 6141:6168 <> toRelationalMetamodel_EClass
+R6175:6200 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R6208:6234 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R6239:6244 Coq.Init.Datatypes <> option ind
+R6247:6281 Transformation.RelationalMetamodel <> RelationalMetamodel_getTypeByEClass def
+R6283:6283 Transformation.RelationalMetamodel <> t var
+R6297:6297 Transformation.RelationalMetamodel <> c var
+R6306:6337 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+R6360:6391 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEClass_dec thm
+R6396:6396 Transformation.RelationalMetamodel <> t var
+R6411:6411 Transformation.RelationalMetamodel <> s var
+R6424:6427 Coq.Init.Specif <> left constr
+R6468:6474 Coq.Init.Logic <> eq_refl constr
+R6479:6482 Coq.Init.Datatypes <> Some constr
+R6511:6515 Coq.Init.Specif <> right constr
+R6522:6525 Coq.Init.Datatypes <> None constr
+prf 6696:6727 <> toRelationalMetamodel_EClass_inv
+R6745:6770 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R6778:6804 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R6812:6846 Transformation.RelationalMetamodel <> RelationalMetamodel_getTypeByEClass def
+R6848:6848 Transformation.RelationalMetamodel <> t var
+R6898:6905 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R6907:6910 Coq.Init.Logic <> :type_scope:x_'='_x not
+R6948:6948 Coq.Init.Logic <> :type_scope:x_'='_x not
+R6906:6906 Transformation.RelationalMetamodel <> c var
+R6911:6942 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+R6946:6947 Transformation.RelationalMetamodel <> c' var
+R6944:6944 Transformation.RelationalMetamodel <> t var
+R6888:6890 Coq.Init.Logic <> :type_scope:x_'='_x not
+R6856:6883 Transformation.RelationalMetamodel <> toRelationalMetamodel_EClass def
+R6887:6887 Transformation.RelationalMetamodel <> c var
+R6885:6885 Transformation.RelationalMetamodel <> t var
+R6891:6894 Coq.Init.Datatypes <> Some constr
+R6896:6897 Transformation.RelationalMetamodel <> c' var
+R7008:7039 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEClass_dec thm
+R7008:7039 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEClass_dec thm
+def 7123:7154 <> toRelationalMetamodel_EReference
+R7161:7190 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+R7198:7222 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R7227:7232 Coq.Init.Datatypes <> option ind
+R7235:7273 Transformation.RelationalMetamodel <> RelationalMetamodel_getTypeByEReference def
+R7275:7275 Transformation.RelationalMetamodel <> t var
+R7312:7347 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEReference_dec thm
+R7312:7347 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEReference_dec thm
+R7389:7392 Coq.Init.Datatypes <> Some constr
+R7389:7392 Coq.Init.Datatypes <> Some constr
+R7408:7411 Coq.Init.Datatypes <> None constr
+R7408:7411 Coq.Init.Datatypes <> None constr
+def 7460:7497 <> RelationalMetamodel_toEObjectFromTable
+R7503:7507 Transformation.RelationalMetamodel <> Table ind
+R7512:7538 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R7546:7577 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+R7590:7590 Transformation.RelationalMetamodel <> t var
+R7579:7588 Transformation.RelationalMetamodel <> TableClass constr
+R7603:7640 Transformation.RelationalMetamodel <> RelationalMetamodel_toEObjectFromTable def
+def 7694:7722 <> RelationalMetamodel_toEObject
+R7729:7755 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R7760:7786 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R7791:7791 Transformation.RelationalMetamodel <> c var
+def 7806:7844 <> RelationalMetamodel_toEObjectFromColumn
+R7850:7855 Transformation.RelationalMetamodel <> Column ind
+R7860:7886 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R7894:7925 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+R7939:7939 Transformation.RelationalMetamodel <> c var
+R7927:7937 Transformation.RelationalMetamodel <> ColumnClass constr
+R7952:7990 Transformation.RelationalMetamodel <> RelationalMetamodel_toEObjectFromColumn def
+def 8045:8071 <> RelationalMetamodel_toELink
+R8078:8102 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R8107:8131 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R8136:8136 Transformation.RelationalMetamodel <> c var
+def 8151:8187 <> RelationalMetamodel_toEObjectOfEClass
+R8193:8218 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R8225:8259 Transformation.RelationalMetamodel <> RelationalMetamodel_getTypeByEClass def
+R8261:8261 Transformation.RelationalMetamodel <> t var
+R8266:8292 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R8299:8330 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+R8334:8334 Transformation.RelationalMetamodel <> e var
+R8332:8332 Transformation.RelationalMetamodel <> t var
+def 8352:8376 <> RelationalMetamodel_getId
+R8383:8409 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R8414:8416 Coq.Init.Datatypes <> nat ind
+R8429:8429 Transformation.RelationalMetamodel <> r var
+R8441:8472 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+R8474:8483 Transformation.RelationalMetamodel <> TableClass constr
+R8491:8500 Transformation.RelationalMetamodel <> getTableId def
+R8509:8540 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+R8542:8552 Transformation.RelationalMetamodel <> ColumnClass constr
+R8560:8570 Transformation.RelationalMetamodel <> getColumnId def
+def 8950:8971 <> getTableColumnsOnLinks
+R8978:8982 Transformation.RelationalMetamodel <> Table ind
+R8990:8993 Coq.Init.Datatypes <> list ind
+R8995:9019 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R9024:9029 Coq.Init.Datatypes <> option ind
+R9032:9035 Coq.Init.Datatypes <> list ind
+R9037:9042 Transformation.RelationalMetamodel <> Column ind
+R9056:9056 Transformation.RelationalMetamodel <> l var
+R9067:9067 Coq.Init.Datatypes <> :list_scope:x_'::'_x not
+R9146:9150 Coq.Init.Datatypes <> :list_scope:x_'::'_x not
+R9068:9097 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildELink constr
+R9099:9119 Transformation.RelationalMetamodel <> TableColumnsReference constr
+R9122:9138 Transformation.RelationalMetamodel <> BuildTableColumns constr
+R9160:9168 Transformation.RelationalMetamodel <> beq_Table def
+R9174:9174 Transformation.RelationalMetamodel <> t var
+R9193:9214 Transformation.RelationalMetamodel <> getTableColumnsOnLinks def
+R9216:9216 Transformation.RelationalMetamodel <> t var
+R9181:9184 Coq.Init.Datatypes <> Some constr
+R9226:9229 Coq.Init.Datatypes <> :list_scope:x_'::'_x not
+R9236:9257 Transformation.RelationalMetamodel <> getTableColumnsOnLinks def
+R9259:9259 Transformation.RelationalMetamodel <> t var
+R9268:9270 Coq.Init.Datatypes <> nil constr
+R9275:9278 Coq.Init.Datatypes <> None constr
+def 9299:9313 <> getTableColumns
+R9320:9324 Transformation.RelationalMetamodel <> Table ind
+R9332:9336 Utils.CoqTL <> Model ind
+R9366:9390 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R9338:9364 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R9395:9400 Coq.Init.Datatypes <> option ind
+R9403:9406 Coq.Init.Datatypes <> list ind
+R9408:9413 Transformation.RelationalMetamodel <> Column ind
+R9427:9427 Transformation.RelationalMetamodel <> m var
+R9439:9448 Utils.CoqTL <> BuildModel constr
+R9460:9481 Transformation.RelationalMetamodel <> getTableColumnsOnLinks def
+R9483:9483 Transformation.RelationalMetamodel <> t var
+def 9505:9529 <> getColumnReferenceOnLinks
+R9536:9541 Transformation.RelationalMetamodel <> Column ind
+R9549:9552 Coq.Init.Datatypes <> list ind
+R9554:9578 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R9583:9588 Coq.Init.Datatypes <> option ind
+R9590:9594 Transformation.RelationalMetamodel <> Table ind
+R9607:9607 Transformation.RelationalMetamodel <> l var
+R9618:9618 Coq.Init.Datatypes <> :list_scope:x_'::'_x not
+R9703:9707 Coq.Init.Datatypes <> :list_scope:x_'::'_x not
+R9619:9648 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildELink constr
+R9650:9673 Transformation.RelationalMetamodel <> ColumnReferenceReference constr
+R9676:9695 Transformation.RelationalMetamodel <> BuildColumnReference constr
+R9717:9726 Transformation.RelationalMetamodel <> beq_Column def
+R9732:9732 Transformation.RelationalMetamodel <> c var
+R9751:9775 Transformation.RelationalMetamodel <> getColumnReferenceOnLinks def
+R9777:9777 Transformation.RelationalMetamodel <> c var
+R9739:9742 Coq.Init.Datatypes <> Some constr
+R9787:9790 Coq.Init.Datatypes <> :list_scope:x_'::'_x not
+R9797:9821 Transformation.RelationalMetamodel <> getColumnReferenceOnLinks def
+R9823:9823 Transformation.RelationalMetamodel <> c var
+R9832:9834 Coq.Init.Datatypes <> nil constr
+R9839:9842 Coq.Init.Datatypes <> None constr
+def 9863:9880 <> getColumnReference
+R9887:9892 Transformation.RelationalMetamodel <> Column ind
+R9900:9904 Utils.CoqTL <> Model ind
+R9934:9958 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R9906:9932 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R9963:9968 Coq.Init.Datatypes <> option ind
+R9970:9974 Transformation.RelationalMetamodel <> Table ind
+R9987:9987 Transformation.RelationalMetamodel <> m var
+R9999:10008 Utils.CoqTL <> BuildModel constr
+R10020:10044 Transformation.RelationalMetamodel <> getColumnReferenceOnLinks def
+R10046:10046 Transformation.RelationalMetamodel <> c var
+def 10070:10101 <> bottomRelationalMetamodel_EClass
+R10107:10132 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R10138:10172 Transformation.RelationalMetamodel <> RelationalMetamodel_getTypeByEClass def
+R10174:10174 Transformation.RelationalMetamodel <> c var
+R10188:10188 Transformation.RelationalMetamodel <> c var
+R10199:10208 Transformation.RelationalMetamodel <> TableClass constr
+R10214:10223 Transformation.RelationalMetamodel <> BuildTable constr
+R10235:10245 Transformation.RelationalMetamodel <> ColumnClass constr
+R10251:10261 Transformation.RelationalMetamodel <> BuildColumn constr
+prf 10283:10292 <> rel_invert
+R10310:10335 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R10346:10380 Transformation.RelationalMetamodel <> RelationalMetamodel_getTypeByEClass def
+R10382:10382 Transformation.RelationalMetamodel <> t var
+R10463:10466 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R10469:10471 Coq.Init.Logic <> :type_scope:x_'='_x not
+R10467:10468 Transformation.RelationalMetamodel <> t1 var
+R10472:10473 Transformation.RelationalMetamodel <> t2 var
+R10423:10425 Coq.Init.Logic <> :type_scope:x_'='_x not
+R10386:10417 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+R10421:10422 Transformation.RelationalMetamodel <> t1 var
+R10419:10419 Transformation.RelationalMetamodel <> t var
+R10426:10457 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+R10461:10462 Transformation.RelationalMetamodel <> t2 var
+R10459:10459 Transformation.RelationalMetamodel <> t var
+R10510:10525 Coq.Logic.Eqdep_dec <> inj_pair2_eq_dec thm
+R10510:10525 Coq.Logic.Eqdep_dec <> inj_pair2_eq_dec thm
+R10550:10581 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEClass_dec thm
+R10550:10581 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEClass_dec thm
+prf 10596:10611 <> rel_elink_invert
+R10629:10658 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+R10669:10707 Transformation.RelationalMetamodel <> RelationalMetamodel_getTypeByEReference def
+R10709:10709 Transformation.RelationalMetamodel <> t var
+R10786:10789 Coq.Init.Logic <> :type_scope:x_'->'_x not
+R10792:10794 Coq.Init.Logic <> :type_scope:x_'='_x not
+R10790:10791 Transformation.RelationalMetamodel <> t1 var
+R10795:10796 Transformation.RelationalMetamodel <> t2 var
+R10748:10750 Coq.Init.Logic <> :type_scope:x_'='_x not
+R10713:10742 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildELink constr
+R10746:10747 Transformation.RelationalMetamodel <> t1 var
+R10744:10744 Transformation.RelationalMetamodel <> t var
+R10751:10780 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildELink constr
+R10784:10785 Transformation.RelationalMetamodel <> t2 var
+R10782:10782 Transformation.RelationalMetamodel <> t var
+R10833:10848 Coq.Logic.Eqdep_dec <> inj_pair2_eq_dec thm
+R10833:10848 Coq.Logic.Eqdep_dec <> inj_pair2_eq_dec thm
+R10873:10908 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEReference_dec thm
+R10873:10908 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEReference_dec thm
+inst 10926:10944 <> RelationalMetamodel
+R10948:10956 Utils.CoqTL <> Metamodel class
+R11039:11068 Transformation.RelationalMetamodel <> RelationalMetamodel_EReference ind
+R11012:11037 Transformation.RelationalMetamodel <> RelationalMetamodel_EClass ind
+R10986:11010 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R10958:10984 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind
+R11665:11678 Utils.CoqTL <> BuildModelLink meth
+R11606:11622 Utils.CoqTL <> BuildModelElement meth
+R11516:11535 Utils.CoqTL <> eqModelReference_dec meth
+R11458:11473 Utils.CoqTL <> eqModelClass_dec meth
+R11319:11332 Utils.CoqTL <> toModelElement meth
+R11380:11395 Utils.CoqTL <> bottomModelClass meth
+R11261:11276 Utils.CoqTL <> toModelReference meth
+R11211:11222 Utils.CoqTL <> toModelClass meth
+R11142:11161 Utils.CoqTL <> denoteModelReference meth
+R11081:11096 Utils.CoqTL <> denoteModelClass meth
+R11101:11135 Transformation.RelationalMetamodel <> RelationalMetamodel_getTypeByEClass def
+R11166:11204 Transformation.RelationalMetamodel <> RelationalMetamodel_getTypeByEReference def
+R11227:11254 Transformation.RelationalMetamodel <> toRelationalMetamodel_EClass def
+R11281:11312 Transformation.RelationalMetamodel <> toRelationalMetamodel_EReference def
+R11400:11431 Transformation.RelationalMetamodel <> bottomRelationalMetamodel_EClass def
+R11337:11373 Transformation.RelationalMetamodel <> RelationalMetamodel_toEObjectOfEClass def
+R11478:11509 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEClass_dec thm
+R11540:11575 Transformation.RelationalMetamodel <> RelationalMetamodel_eqEReference_dec thm
+R11627:11658 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildEObject constr
+R11683:11712 Transformation.RelationalMetamodel <> RelationalMetamodel_BuildELink constr
+def 11740:11754 <> RelationalModel
+R11759:11763 Utils.CoqTL <> Model ind
+R11793:11817 Transformation.RelationalMetamodel <> RelationalMetamodel_ELink ind
+R11765:11791 Transformation.RelationalMetamodel <> RelationalMetamodel_EObject ind

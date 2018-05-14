@@ -1,0 +1,2 @@
+Transformation/Class2Relational.vo Transformation/Class2Relational.glob Transformation/Class2Relational.v.beautified: Transformation/Class2Relational.v Utils/Utils_Top.vo Utils/CoqTL.vo Transformation/ClassMetamodel.vo Transformation/RelationalMetamodel.vo
+Transformation/Class2Relational.vio: Transformation/Class2Relational.v Utils/Utils_Top.vio Utils/CoqTL.vio Transformation/ClassMetamodel.vio Transformation/RelationalMetamodel.vio
