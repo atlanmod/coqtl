@@ -3,8 +3,8 @@ Require Import Coq.Arith.EqNat.
 Require Import List.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype.  
 
-Require Import Utils.Utils_Top.
-Require Import Utils.CoqTL.
+Require Import core.Utils_Top.
+Require Import core.CoqTL.
 
 Require Import Class2Relational.
 Require Import ClassMetamodel.
