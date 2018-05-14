@@ -4,11 +4,11 @@ Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
 
-Require Import Utils.Utils_Top.
-Require Import Utils.CoqTL.
+Require Import core.Utils_Top.
+Require Import core.CoqTL.
 
-Require Import Transformation.ClassMetamodel.
-Require Import Transformation.RelationalMetamodel.
+Require Import ClassMetamodel.
+Require Import RelationalMetamodel.
 
 
 

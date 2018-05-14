@@ -6,8 +6,8 @@ Require Import ListSet.   (* set *)
 Require Import Omega.
 
 
-Require Import Utils.Utils_Top.
-Require Import Utils.CoqTL.
+Require Import core.Utils_Top.
+Require Import core.CoqTL.
 
 (* Base types *)
 
