@@ -1,15 +1,15 @@
--R Utils Utils
-Utils/Utils_List.v
-Utils/Utils_Concat.v
-Utils/Utils_Tuple.v
-Utils/Utils_String.v
-Utils/Utils_Print.v
-Utils/Utils_Notation.v
-Utils/Utils_Top.v
-Utils/CoqTL.v
+-R core core
+core/Utils_List.v
+core/Utils_Concat.v
+core/Utils_Tuple.v
+core/Utils_String.v
+core/Utils_Print.v
+core/Utils_Notation.v
+core/Utils_Top.v
+core/CoqTL.v
 
--R Transformation Transformation
-Transformation/ClassMetamodel.v
-Transformation/RelationalMetamodel.v
-Transformation/Class2Relational.v
+-R "example/Class2Relational" example
+example/Class2Relational/ClassMetamodel.v
+example/Class2Relational/RelationalMetamodel.v
+example/Class2Relational/Class2Relational.v
 
