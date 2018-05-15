@@ -8,7 +8,7 @@ core/Utils_Notation.v
 core/Utils_Top.v
 core/CoqTL.v
 
--R "example/Class2Relational" example
+-R "example/Class2Relational" "example"
 example/Class2Relational/ClassMetamodel.v
 example/Class2Relational/RelationalMetamodel.v
 example/Class2Relational/Class2Relational.v
