@@ -6,9 +6,9 @@ From mathcomp Require Import ssreflect ssrfun ssrbool eqtype.
 Require Import core.Utils_Top.
 Require Import core.CoqTL.
 
-Require Import Class2Relational.
-Require Import ClassMetamodel.
-Require Import RelationalMetamodel.
+Require Import example.Class2Relational.
+Require Import example.ClassMetamodel.
+Require Import example.RelationalMetamodel.
 
 
 (* try cast x to type t, if succ and results x1, do e1, else do e2 *)

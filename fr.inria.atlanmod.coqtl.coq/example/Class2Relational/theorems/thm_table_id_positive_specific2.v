@@ -6,9 +6,9 @@ From mathcomp Require Import ssreflect ssrfun ssrbool eqtype.
 Require Import core.Utils_Top.
 Require Import core.CoqTL.
 
-Require Import Class2Relational.
-Require Import ClassMetamodel.
-Require Import RelationalMetamodel.
+Require Import example.Class2Relational.
+Require Import example.ClassMetamodel.
+Require Import example.RelationalMetamodel.
 
 Lemma matchPattern_in_getRules :
     forall (sm: ClassModel) (r: Rule ClassMetamodel RelationalMetamodel) (sp: list ClassMetamodel_EObject),
