@@ -1,10 +1,8 @@
 Require Import List Omega.
 
 
-Definition singletons {A : Type} (l : list A) : list (list A) :=
+Definition listToListList {A : Type} (l : list A) : list (list A) :=
   map (fun e:A => e::nil) l.
-
-
 
 Definition hasLength {A : Type} (l : list A) (n: nat): bool :=
   beq_nat (Datatypes.length l) n.

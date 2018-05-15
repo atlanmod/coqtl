@@ -254,8 +254,16 @@ Section CoqTL.
     end.
 
     Definition resolve (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (inelems: list SourceModelElement): option (denoteModelClass type) :=
-    resolveFix (tr sm) name type inelems.
+      resolveFix (tr sm) name type inelems.
+
+    Definition SourceMetamodel_toEObject (c : SourceModelElement) : SourceModelElement := c.
   
+    Definition singletons (l : list SourceModelElement) : list (list SourceModelElement) :=
+        listToListList l.
+    
+    Definition resolveAll (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (inelems: list (list SourceModelElement)) : option (list (denoteModelClass type)) :=
+    Some (optionList2List (map (resolve tr sm name type) inelems)).
+    
   Definition resolveList (tr: list Rule) (name: string) (type: TargetModelClass) (inelems: list (list SourceModelElement)): list (denoteModelClass type) :=
     optionList2List (map (resolveFix tr name type) inelems).
 

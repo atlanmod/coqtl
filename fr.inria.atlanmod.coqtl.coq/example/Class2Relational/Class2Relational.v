@@ -27,12 +27,9 @@ Definition Class2Relational :=
                [
                  reference TableColumnsReference from RelationalMetamodel :=
                    attrs <- getClassAttributes c m;
-                   let y''  := map (A:=Attribute) ClassMetamodel_toEObject attrs in
-                   let y''' := singletons y'' in  
-                   let y    := optionList2List
-                              (map (resolve Class2Relational m
-                                            "col" ColumnClass) y''')  in
-                   return BuildTableColumns t y
+                   cols <- resolveAll Class2Relational m "col" ColumnClass
+                      (singletons (map ClassMetamodel_toEObject (A:=Attribute) attrs));
+                   return BuildTableColumns t cols
                ]
           ];
 
