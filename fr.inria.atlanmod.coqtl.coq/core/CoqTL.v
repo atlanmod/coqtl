@@ -121,10 +121,9 @@ Section CoqTL.
 
   Definition Phase : Type := SourceModel -> (list Rule).
 
-  Definition Transformation : Type := (SourceModel -> (list Rule)) -> SourceModel -> (list Rule).
-
-
-  (* Engine *)  
+  Definition Transformation : Type := (SourceModel -> (list Rule)) -> SourceModel -> (list Rule).  
+  
+  (* Engine *)
 
   Definition getOutputPatternElementName (o :  OutputPatternElement) : string :=
     match o with
@@ -379,6 +378,15 @@ Lemma matchPattern_in_getRules :
       -- left. inversion H. reflexivity.
       -- right. apply IHl in H. apply H.
   Qed.
+
+Class TransformationTypeClass (TransformationDef: Type) (SourceModel: Type) (TargetModel: Type) (RuleDef: Type) :=
+  {
+    executeFun: TransformationDef -> SourceModel -> TargetModel;
+    (*allModelElements: Model ModelElement ModelLink -> list ModelElement;*)
+    getRulesFun: TransformationDef -> list RuleDef;
+    instantiateRuleOnPatternFun: RuleDef -> list SourceModelElement -> list TargetModelElement; (* TODO: to fix *)
+    matchPatternFun: list RuleDef -> list SourceModelElement -> option RuleDef; (* TODO: to fix *)
+  }. 
         
 Theorem tr_surj : 
   forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),

@@ -55,5 +55,5 @@ Definition Class2Relational :=
 
 Unset Printing Notations.
 
-(* Print Class2Relational. *)
+Print Class2Relational. 
 (* Check Class2Relational. *)
