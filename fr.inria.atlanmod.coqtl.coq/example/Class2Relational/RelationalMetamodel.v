@@ -4,8 +4,8 @@ Require Import Multiset.  (* bag *)
 Require Import ListSet.   (* set *)
 Require Import Omega.
 
-Require Import utils.Utils_Top.
-Require Import CoqTL.
+Require Import core.utils.Utils_Top.
+Require Import core.CoqTL.
 
 Require Import Coq.Logic.Eqdep_dec.
 

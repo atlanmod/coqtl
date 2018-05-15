@@ -4,7 +4,7 @@ Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
 
-Require Import utils.Utils_Top.
+Require Import core.utils.Utils_Top.
 
 Set Implicit Arguments.
 

@@ -4,11 +4,11 @@ Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
 
-Require Import utils.Utils_Top.
-Require Import CoqTL.
+Require Import core.utils.Utils_Top.
+Require Import core.CoqTL.
 
-Require Import ClassMetamodel.
-Require Import RelationalMetamodel.
+Require Import example.ClassMetamodel.
+Require Import example.RelationalMetamodel.
 
 Definition Class2Relational :=
   transformation Class2Relational from ClassMetamodel to RelationalMetamodel
@@ -55,5 +55,5 @@ Definition Class2Relational :=
 
 Unset Printing Notations.
 
-Print Class2Relational. 
+(* Print Class2Relational. *)
 (* Check Class2Relational. *)
