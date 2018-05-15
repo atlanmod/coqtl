@@ -1,7 +1,7 @@
 Require Import List Omega.
 
 
-Definition listToListList {A : Type} (l : list A) : list (list A) :=
+Definition singletons {A : Type} (l : list A) : list (list A) :=
   map (fun e:A => e::nil) l.
 
 
