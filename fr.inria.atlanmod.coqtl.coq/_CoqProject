@@ -1,4 +1,4 @@
--R core utils
+-R "core/utils" "core.utils"
 core/utils/Utils_List.v
 core/utils/Utils_Concat.v
 core/utils/Utils_Tuple.v
@@ -7,11 +7,12 @@ core/utils/Utils_Print.v
 core/utils/Utils_Notation.v
 core/utils/Utils_Top.v
 
--R "core/utils" core
+-R core core
 core/CoqTL.v
 
 -R "example/Class2Relational" example
 example/Class2Relational/ClassMetamodel.v
 example/Class2Relational/RelationalMetamodel.v
 example/Class2Relational/Class2Relational.v
+
 

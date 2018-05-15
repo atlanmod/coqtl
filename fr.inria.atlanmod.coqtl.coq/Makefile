@@ -55,12 +55,15 @@ vo_to_obj = $(addsuffix .o,\
 ##########################
 
 COQLIBS?=\
+  -R "core/utils" core.utils\
   -R "core" core\
   -R "example/Class2Relational" example
 COQCHKLIBS?=\
+  -R "core/utils" core.utils\
   -R "core" core\
   -R "example/Class2Relational" example
 COQDOCLIBS?=\
+  -R "core/utils" core.utils\
   -R "core" core\
   -R "example/Class2Relational" example
 
@@ -104,13 +107,13 @@ endif
 #                    #
 ######################
 
-VFILES:=core/Utils_List.v\
-  core/Utils_Concat.v\
-  core/Utils_Tuple.v\
-  core/Utils_String.v\
-  core/Utils_Print.v\
-  core/Utils_Notation.v\
-  core/Utils_Top.v\
+VFILES:=core/utils/Utils_List.v\
+  core/utils/Utils_Concat.v\
+  core/utils/Utils_Tuple.v\
+  core/utils/Utils_String.v\
+  core/utils/Utils_Print.v\
+  core/utils/Utils_Notation.v\
+  core/utils/Utils_Top.v\
   core/CoqTL.v\
   example/Class2Relational/ClassMetamodel.v\
   example/Class2Relational/RelationalMetamodel.v\
@@ -128,8 +131,9 @@ endif
 
 VO=vo
 VOFILES:=$(VFILES:.v=.$(VO))
-VOFILES0=$(patsubst core/%,%,$(filter core/%,$(VOFILES)))
-VOFILES1=$(patsubst example/Class2Relational/%,%,$(filter example/Class2Relational/%,$(VOFILES)))
+VOFILES0=$(patsubst core/utils/%,%,$(filter core/utils/%,$(VOFILES)))
+VOFILES1=$(patsubst core/%,%,$(filter core/%,$(VOFILES)))
+VOFILES2=$(patsubst example/Class2Relational/%,%,$(filter example/Class2Relational/%,$(VOFILES)))
 GLOBFILES:=$(VFILES:.v=.glob)
 GFILES:=$(VFILES:.v=.g)
 HTMLFILES:=$(VFILES:.v=.html)
@@ -137,8 +141,9 @@ GHTMLFILES:=$(VFILES:.v=.g.html)
 OBJFILES=$(call vo_to_obj,$(VOFILES))
 ALLNATIVEFILES=$(OBJFILES:.o=.cmi) $(OBJFILES:.o=.cmo) $(OBJFILES:.o=.cmx) $(OBJFILES:.o=.cmxs)
 NATIVEFILES=$(foreach f, $(ALLNATIVEFILES), $(wildcard $f))
-NATIVEFILES0=$(patsubst core/%,%,$(filter core/%,$(NATIVEFILES)))
-NATIVEFILES1=$(patsubst example/Class2Relational/%,%,$(filter example/Class2Relational/%,$(NATIVEFILES)))
+NATIVEFILES0=$(patsubst core/utils/%,%,$(filter core/utils/%,$(NATIVEFILES)))
+NATIVEFILES1=$(patsubst core/%,%,$(filter core/%,$(NATIVEFILES)))
+NATIVEFILES2=$(patsubst example/Class2Relational/%,%,$(filter example/Class2Relational/%,$(NATIVEFILES)))
 ifeq '$(HASNATDYNLINK)' 'true'
 HASNATDYNLINK_OR_EMPTY := yes
 else
@@ -207,13 +212,17 @@ userinstall:
 	+$(MAKE) USERINSTALL=true install
 
 install:
-	cd "example/Class2Relational" && for i in $(NATIVEFILES1) $(GLOBFILES1) $(VFILES1) $(VOFILES1); do \
+	cd "example/Class2Relational" && for i in $(NATIVEFILES2) $(GLOBFILES2) $(VFILES2) $(VOFILES2); do \
 	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/example/$$i`"; \
 	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/example/$$i; \
 	done
-	cd "core" && for i in $(NATIVEFILES0) $(GLOBFILES0) $(VFILES0) $(VOFILES0); do \
+	cd "core" && for i in $(NATIVEFILES1) $(GLOBFILES1) $(VFILES1) $(VOFILES1); do \
 	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/core/$$i`"; \
 	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/core/$$i; \
+	done
+	cd "core/utils" && for i in $(NATIVEFILES0) $(GLOBFILES0) $(VFILES0) $(VOFILES0); do \
+	 install -d "`dirname "$(DSTROOT)"$(COQLIBINSTALL)/core/utils/$$i`"; \
+	 install -m 0644 $$i "$(DSTROOT)"$(COQLIBINSTALL)/core/utils/$$i; \
 	done
 
 install-doc:
@@ -224,8 +233,9 @@ install-doc:
 
 uninstall_me.sh: Makefile
 	echo '#!/bin/sh' > $@
-	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/example && rm -f $(NATIVEFILES1) $(GLOBFILES1) $(VFILES1) $(VOFILES1) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "example" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
-	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/core && rm -f $(NATIVEFILES0) $(GLOBFILES0) $(VFILES0) $(VOFILES0) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "core" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/example && rm -f $(NATIVEFILES2) $(GLOBFILES2) $(VFILES2) $(VOFILES2) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "example" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/core && rm -f $(NATIVEFILES1) $(GLOBFILES1) $(VFILES1) $(VOFILES1) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "core" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
+	printf 'cd "$${DSTROOT}"$(COQLIBINSTALL)/core/utils && rm -f $(NATIVEFILES0) $(GLOBFILES0) $(VFILES0) $(VOFILES0) && find . -type d -and -empty -delete\ncd "$${DSTROOT}"$(COQLIBINSTALL) && find "core/utils" -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
 	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL)/$(INSTALLDEFAULTROOT) \\\n' >> "$@"
 	printf '&& rm -f $(shell find "html" -maxdepth 1 -and -type f -print)\n' >> "$@"
 	printf 'cd "$${DSTROOT}"$(COQDOCINSTALL) && find $(INSTALLDEFAULTROOT)/html -maxdepth 0 -and -empty -exec rmdir -p \{\} \;\n' >> "$@"
