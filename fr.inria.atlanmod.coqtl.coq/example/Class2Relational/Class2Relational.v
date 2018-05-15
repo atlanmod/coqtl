@@ -10,10 +10,6 @@ Require Import core.CoqTL.
 Require Import ClassMetamodel.
 Require Import RelationalMetamodel.
 
-
-
-(* TODO: avoid all ClassMetamodel_xxx calls *)
-
 Definition Class2Relational :=
   transformation Class2Relational from ClassMetamodel to RelationalMetamodel
     with m as ClassModel := [
@@ -30,11 +26,11 @@ Definition Class2Relational :=
              links
                [
                  reference TableColumnsReference from RelationalMetamodel :=
-                   y' <- getClassAttributes c m;
-                   let y''  := map (A:=Attribute) ClassMetamodel_toEObject y' in
+                   attrs <- getClassAttributes c m;
+                   let y''  := map (A:=Attribute) ClassMetamodel_toEObject attrs in
                    let y''' := listToListList y'' in  
                    let y    := optionList2List
-                              (map (resolve (Class2Relational m)
+                              (map (resolve Class2Relational m
                                             "col" ColumnClass) y''')  in
                    return BuildTableColumns t y
                ]
@@ -53,7 +49,7 @@ Definition Class2Relational :=
               [
                 reference ColumnReferenceReference from RelationalMetamodel :=
                   cl <- getAttributeType a m;
-                  tb <- resolve (Class2Relational m) "tab" TableClass ((ClassMetamodel_toEObject cl)::nil);
+                  tb <- resolve Class2Relational m "tab" TableClass ([ClassMetamodel_toEObject cl]);
                   return BuildColumnReference c tb
               ] 
          ]
@@ -64,4 +60,3 @@ Unset Printing Notations.
 
 (* Print Class2Relational. *)
 (* Check Class2Relational. *)
-

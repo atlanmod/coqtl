@@ -8,8 +8,6 @@ Require Import core.Utils_Top.
 
 Set Implicit Arguments.
 
-
-
 (* Type Class of Model *)
 
 Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=
@@ -241,11 +239,11 @@ Section CoqTL.
          applyRuleOnPattern
             matchRuleOnPattern (recursive on source pattern)
    *)
-
-  Fixpoint resolve (tr: list Rule) (name: string) (type: TargetModelClass) (inelems: list SourceModelElement): option (denoteModelClass type) := 
+  
+  Fixpoint resolveFix (tr: list Rule) (name: string) (type: TargetModelClass) (inelems: list SourceModelElement): option (denoteModelClass type) := 
     match tr with
     | r:: rs => match matchRuleOnPattern r inelems with
-               | None => resolve rs name type inelems
+               | None => resolveFix rs name type inelems
                | Some l => match findOutputPatternElementByName l name with
                           | Some ope => 
                             (getOutputPatternElementElementByType ope type)
@@ -255,8 +253,11 @@ Section CoqTL.
     | nil => None
     end.
 
+    Definition resolve (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (inelems: list SourceModelElement): option (denoteModelClass type) :=
+    resolveFix (tr sm) name type inelems.
+  
   Definition resolveList (tr: list Rule) (name: string) (type: TargetModelClass) (inelems: list (list SourceModelElement)): list (denoteModelClass type) :=
-    optionList2List (map (resolve tr name type) inelems).
+    optionList2List (map (resolveFix tr name type) inelems).
 
   Fixpoint matchPattern (tr: list Rule) (inelems: list SourceModelElement) : option Rule :=
     match tr with
@@ -286,6 +287,9 @@ Section CoqTL.
     end.
 
   Definition matchPhase (f: Transformation) : Phase := (f (fun c:SourceModel => nil)).
+
+  Definition matched (p: Phase) (m: SourceModel) :=
+      p m.
 
   Definition applyPhase (f: Transformation) : Phase := (f (matchPhase f)).
 
@@ -327,11 +331,6 @@ Section CoqTL.
                    (allTuples sm)))
       (concat (map (applyPattern (applyPhase tr sm))
                    (allTuples sm))). *)
-
-
-  
-
-
 
 Theorem tr_link_surj : 
   forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (tl : TargetModelLink),
@@ -466,10 +465,6 @@ Notation "'output' elid 'element' elname 'class' eltype 'from' tinstance := elde
 
 (* OutputPatternElementReferenceDefinition *)
 Notation "'reference' reftype 'from' tinstance ':=' refends" := (BuildOutputPatternElementReference tinstance reftype refends) (right associativity, at level 60).
-
-
-
-
 
 (*  Lemma allTuples_in_allModelElements :
     forall (sm:SourceModel) (x: list SourceModelElement),

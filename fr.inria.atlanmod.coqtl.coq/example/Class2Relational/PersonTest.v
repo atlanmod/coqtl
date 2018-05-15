@@ -10,6 +10,3 @@ Require Import Utils_Print.
 (* Require Import Class2RelationalVerif. *)
 
 Compute (execute Class2Relational PersonModel).
-
-
-
