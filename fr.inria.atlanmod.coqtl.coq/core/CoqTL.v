@@ -447,7 +447,7 @@ Arguments matchPhase : default implicits.
 (* Notations *)
 
 (* Module *)
-Notation "'transformation' tname 'from' sinstance 'to' tinstance 'of' m 'instanceof' smodel ':=' transformationbody" := (fun (tname: Phase sinstance tinstance)  (m:smodel) => transformationbody ) (right associativity, at level 60).
+Notation "'transformation' tname 'from' sinstance 'to' tinstance 'with' m 'as' smodel ':=' transformationbody" := (fun (tname: Phase sinstance tinstance)  (m:smodel) => transformationbody ) (right associativity, at level 60).
 
 (* Rules *)
 Notation "'[' r1 ; .. ; r2 ']'" := (cons r1 .. (cons r2 nil) ..) (right associativity, at level 60).

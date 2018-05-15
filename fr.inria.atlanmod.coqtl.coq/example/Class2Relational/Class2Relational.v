@@ -16,42 +16,47 @@ Require Import RelationalMetamodel.
 
 Definition Class2Relational :=
   transformation Class2Relational from ClassMetamodel to RelationalMetamodel
-    of m instanceof ClassModel
-    := [
+    with m as ClassModel := [
+
        rule Class2Table
          from
            element c class ClassEClass from ClassMetamodel
              when true
-         to [
+         to
+          [
            output "tab"
              element t class TableClass from RelationalMetamodel :=
                BuildTable (getClassId c) (getClassName c)
              links
-               [ reference TableColumnsReference from RelationalMetamodel :=
-                  ( y' <- (getClassAttributes c m);
-                    let y''  := map (A:=Attribute) ClassMetamodel_toEObject y' in
-                    let y''' := listToListList y'' in  
-                    let y    := optionList2List
-                               (map (resolve (Class2Relational m)
-                                             "col"%string ColumnClass) y''')  in
-                    Some (BuildTableColumns t y)) ] ];
+               [
+                 reference TableColumnsReference from RelationalMetamodel :=
+                   y' <- getClassAttributes c m;
+                   let y''  := map (A:=Attribute) ClassMetamodel_toEObject y' in
+                   let y''' := listToListList y'' in  
+                   let y    := optionList2List
+                              (map (resolve (Class2Relational m)
+                                            "col" ColumnClass) y''')  in
+                   return BuildTableColumns t y
+               ]
+          ];
 
-        rule Attribute2Column
+      rule Attribute2Column
         from
           element a class AttributeEClass from ClassMetamodel 
-            when (negb (getAttributeDerived a) )
-        to [
-          output "col" (* TODO why is this useful *)
+            when (negb (getAttributeDerived a))
+        to
+         [
+          output "col"
             element c class ColumnClass from RelationalMetamodel := 
                BuildColumn (getAttributeId a) (getAttributeName a)
             links
-              [ reference ColumnReferenceReference from RelationalMetamodel :=
-                 ( cl <- getAttributeType a m;
-                   tb  <- (resolve (Class2Relational m) "tab"%string TableClass ((ClassMetamodel_toEObject cl)::nil));
-                   return BuildColumnReference c tb
-                 ) 
+              [
+                reference ColumnReferenceReference from RelationalMetamodel :=
+                  cl <- getAttributeType a m;
+                  tb <- resolve (Class2Relational m) "tab" TableClass ((ClassMetamodel_toEObject cl)::nil);
+                  return BuildColumnReference c tb
               ] 
-            ]
+         ]
 
   ].
 
