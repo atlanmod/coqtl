@@ -121,7 +121,7 @@ Section CoqTL.
 
   Definition Phase : Type := SourceModel -> (list Rule).
 
-  Definition Transformation : Type := (SourceModel -> (list Rule)) -> SourceModel -> (list Rule).  
+  Definition Transformation : Type := Phase -> Phase.  
   
   (* Engine *)
 
