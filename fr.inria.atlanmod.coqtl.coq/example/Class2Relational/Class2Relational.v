@@ -46,7 +46,7 @@ Definition Class2Relational :=
               [
                 reference ColumnReferenceReference from RelationalMetamodel :=
                   cl <- getAttributeType a m;
-                  tb <- resolve Class2Relational m "tab" TableClass ([ClassMetamodel_toEObject cl]);
+                  tb <- resolve Class2Relational m "tab" TableClass [ClassMetamodel_toEObject cl];
                   return BuildColumnReference c tb
               ] 
          ]
