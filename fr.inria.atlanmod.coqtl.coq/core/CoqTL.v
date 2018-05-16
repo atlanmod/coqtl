@@ -379,15 +379,26 @@ Lemma matchPattern_in_getRules :
       -- right. apply IHl in H. apply H.
   Qed.
 
-Class TransformationTypeClass (TransformationDef: Type) (SourceModel: Type) (TargetModel: Type) (RuleDef: Type) :=
+Class TransformationEngineTypeClass (TransformationDef: Type) (SourceModel: Type) (TargetModel: Type) (RuleDef: Type) :=
   {
-    executeFun: TransformationDef -> SourceModel -> TargetModel;
+    (*executeFun: TransformationDef -> SourceModel -> TargetModel; *)
     (*allModelElements: Model ModelElement ModelLink -> list ModelElement;*)
     getRulesFun: TransformationDef -> list RuleDef;
-    instantiateRuleOnPatternFun: RuleDef -> list SourceModelElement -> list TargetModelElement; (* TODO: to fix *)
-    matchPatternFun: list RuleDef -> list SourceModelElement -> option RuleDef; (* TODO: to fix *)
+    (*instantiateRuleOnPatternFun: RuleDef -> list SourceModelElement -> list TargetModelElement; TODO: to fix *)
+    (*matchPatternFun: list RuleDef -> list SourceModelElement -> option RuleDef;  TODO: to fix *)
   }. 
-        
+
+Theorem tr_surj : 
+  forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
+    tm = execute tr sm -> In t1 (allModelElements tm) -> 
+    (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
+        In r (getRules tr sm) /\
+        In t1 tp /\
+        instantiateRuleOnPattern r sp = tp /\
+        incl sp (allModelElements sm) /\
+        incl tp (allModelElements tm) /\
+        matchPattern (getRules tr sm) sp = Some r ).
+
 Theorem tr_surj : 
   forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
     tm = execute tr sm -> In t1 (allModelElements tm) -> 
