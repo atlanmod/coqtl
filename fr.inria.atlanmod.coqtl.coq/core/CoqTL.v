@@ -388,7 +388,7 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (SourceModel: Type
     (*matchPatternFun: list RuleDef -> list SourceModelElement -> option RuleDef;  TODO: to fix *)
   }. 
 
-Theorem tr_surj : 
+Theorem tr_surj' : 
   forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
     tm = execute tr sm -> In t1 (allModelElements tm) -> 
     (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
@@ -398,6 +398,7 @@ Theorem tr_surj :
         incl sp (allModelElements sm) /\
         incl tp (allModelElements tm) /\
         matchPattern (getRules tr sm) sp = Some r ).
+  Abort.
 
 Theorem tr_surj : 
   forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
