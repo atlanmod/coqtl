@@ -7,6 +7,7 @@ Require Import Omega.
 Require Import core.Engine.
 Require Import core.utils.tTop.
 
+
 Set Implicit Arguments.
 
 (* Type Class of Model *)
@@ -380,35 +381,6 @@ Lemma matchPattern_in_getRules :
       -- right. apply IHl in H. apply H.
   Qed.
 
-  Definition numberOfRules (tr: Transformation) : nat
-    := length ((getRules tr) (BuildModel nil nil)).
-
-Definition RuleDef : Type := nat * Transformation.
-
-Fixpoint matchPattern'' (tr: list Rule) (inelems: list SourceModelElement) : option nat :=
-    match tr with
-    | r :: rs => match matchRuleOnPattern r inelems with
-                | Some op => Some (length rs)
-                | None => matchPattern'' rs inelems
-                end
-    | nil => None
-    end.
-
-Definition matchPattern' (tr: Transformation) (sp: list SourceModelElement) (sm: SourceModel) : option Rule :=
-   matchPattern (getRules tr sm) sp.
-
-Fixpoint getRulesFun' {T : Type} (n : nat) (tr: T) :=
-   match n with
-        | S x => (cons (n, tr) (getRulesFun' x tr))
-        | _ => nil
-   end.
-
-Definition getRule (r : RuleDef) (sm : SourceModel) : option Rule :=
-  nth_error (getRules (snd r) sm) (fst r).
-
-(*Definition getRuleDef (r : Rule) (tr : Transformation) (sm: SourceModel) : option RuleDef :=
-  getRules tr sm. *)
-
 Theorem tr_surj : 
   forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
     tm = execute tr sm -> In t1 (allModelElements tm) -> 
@@ -450,6 +422,66 @@ Theorem tr_surj :
              *** unfold getRules. symmetry. assumption.
   Qed.
 
+
+  
+Definition numberOfRules (tr: Transformation) : nat
+    := length ((getRules tr) (BuildModel nil nil)).
+
+Definition RuleDef : Type := nat * Transformation.
+
+Fixpoint matchPattern'' (tr: list Rule) (inelems: list SourceModelElement) : option nat :=
+    match tr with
+    | r :: rs => match matchRuleOnPattern r inelems with
+                | Some op => Some (length rs)
+                | None => matchPattern'' rs inelems
+                end
+    | nil => None
+    end.
+
+(*
+Definition matchPattern' (tr: Transformation) (sp: list SourceModelElement) (sm: SourceModel) : option Rule :=
+   matchPattern (getRules tr sm) sp.
+*)
+
+Fixpoint getRulesFun' {T : Type} (n : nat) (tr: T) :=
+   match n with
+        | S x => (cons (n, tr) (getRulesFun' x tr))
+        | _ => nil
+   end.
+
+
+
+Definition getRule (r : RuleDef) (sm : SourceModel) : option Rule :=
+  nth_error (getRules (snd r) sm) (fst r).
+
+(*
+Definition getRule'''' (n : nat) (sm : SourceModel) : option RuleDef :=
+  nth_error (getRules (snd r) sm) (fst r).
+*)
+
+(*Definition getRuleDef (r : Rule) (tr : Transformation) (sm: SourceModel) : option RuleDef := None.*)
+
+
+
+(*
+
+Lemma matchPattern_in_getRules' :
+    forall (tr: Transformation) (sm: SourceModel) (r: RuleDef) (sp: list SourceModelElement),
+      (matchPattern'' (matchPhase tr sm) sp) = Some r -> In r (getRulesFun' (numberOfRules tr) tr).
+  Proof.
+    unfold getRules.
+    intros tr sm.
+    induction (matchPhase tr sm).
+    - intros. inversion H.
+    - intros.
+      simpl.
+      simpl in H.
+      destruct (matchRuleOnPattern a sp) in H.
+      -- left. inversion H. reflexivity.
+      -- right. apply IHl in H. apply H.
+  Qed.
+
+ *) 
 Instance CoqTLEngine : TransformationEngineTypeClass Transformation SourceModel TargetModel RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
     {
       executeFun := execute;
@@ -468,7 +500,7 @@ Instance CoqTLEngine : TransformationEngineTypeClass Transformation SourceModel 
       allTargetModelElements:= allModelElements;        
     }.
 Proof.
-(*  intros.
+  (*intros.
   apply tr_surj  with (t1:=t1) in H.
   destruct H as [sp].
   destruct H as [tp].
@@ -478,10 +510,11 @@ Proof.
   destruct H2.
   destruct H3.
   destruct H4.
-  exists sp, tp.*)
-
+  exists sp, tp.
+  + exsits 
+  + auto. *)
   
-  (*intros tr sm tm t1 H0.
+  intros tr sm tm t1 H0.
     rewrite H0. simpl.
     intros.
     apply concat_map_exists in H. destruct H. destruct H.
@@ -493,7 +526,7 @@ Proof.
     exists x, (instantiatePattern (matchPhase tr sm) x), r.
     
     split.
-    - apply matchPattern_in_getRules with (sp:=x).
+    - apply matchPattern_in_getRules' with (sp:=x).
       rewrite Heqr'. reflexivity.
     - split.
       + assumption.
@@ -510,7 +543,7 @@ Proof.
 
     
     Focus 2.
-    unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction. *)
+    unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction. 
 Abort.
   
 Theorem theorem1 :
