@@ -1,7 +1,6 @@
 Require Import Coq.Logic.Eqdep_dec.
 Require Import Coq.Arith.EqNat.
 Require Import List.
-From mathcomp Require Import ssreflect ssrfun ssrbool eqtype.  
 
 Require Import core.utils.tTop.
 Require Import core.CoqTL.

@@ -453,13 +453,13 @@ Theorem tr_surj :
 Instance CoqTLEngine : TransformationEngineTypeClass Transformation SourceModel TargetModel RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
     {
       executeFun := execute;
-      getRulesFun (tr: Transformation) := getRulesFun' (numberOfRules tr) tr;
-      instantiateRuleOnPatternFun (r: RuleDef) (sp : list SourceModelElement) (sm : SourceModel) :=
+      getRulesFun tr := getRulesFun' (numberOfRules tr) tr;
+      instantiateRuleOnPatternFun r sp sm :=
         match (getRule r sm) with
         | Some rule => instantiateRuleOnPattern rule sp
         | None => nil
         end;
-      matchPatternFun (tr: Transformation) (sp: list SourceModelElement) (sm: SourceModel) :=
+      matchPatternFun tr sp sm :=
         match matchPattern'' (getRules tr sm) sp  with
         | Some x => Some ( (numberOfRules tr) - x - 1 , tr )
         | None => None
