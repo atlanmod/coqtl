@@ -824,10 +824,11 @@ destruct Hcol_cos_attr; destruct Ht_cos_cl.
     clear Hcl_attrs.
     induction cl_attrs.
     - done.
-    - simpl in Hcol_inc_t_cols.
+    - unfold singletons in Hcol_inc_t_cols.
+      unfold resolve in Hcol_inc_t_cols.
+      simpl in Hcol_inc_t_cols.
       destruct (~~ getAttributeDerived a) eqn:a_guard_ca.
       - simpl.
-        simpl in Hcol_inc_t_cols.
         destruct Hcol_inc_t_cols.
         + left. inversion H1. destruct a, attr. simpl in H3, H4. 
           simpl in rl_attr_col_guard_ca, a_guard_ca. apply negbTE  in a_guard_ca. 
