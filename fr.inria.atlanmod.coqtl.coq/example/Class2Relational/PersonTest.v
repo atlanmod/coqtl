@@ -1,11 +1,15 @@
 Require Import String.
 Require Import List.
-Require Import CoqTL.
-Require Import ClassMetamodel.
-Require Import RelationalMetamodel.
-Require Import Class2Relational.
-Require Import PersonModel.
-Require Import Utils_Print.
+
+Require Import core.CoqTL.
+Require Import core.utils.tPrint.
+
+Require Import example.ClassMetamodel.
+Require Import example.RelationalMetamodel.
+Require Import example.Class2Relational.
+Require Import example.PersonModel.
+
+
 
 (* Require Import Class2RelationalVerif. *)
 

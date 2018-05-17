@@ -1,7 +1,8 @@
 Require Import List.
 
-Require Import CoqTL.
-Require Import ClassMetamodel.
+Require Import core.CoqTL.
+
+Require Import example.ClassMetamodel.
 
 Definition PersonModel : Model ClassMetamodel_EObject ClassMetamodel_ELink :=
   (BuildModel

@@ -107,17 +107,18 @@ endif
 #                    #
 ######################
 
-VFILES:=core/utils/Utils_List.v\
-  core/utils/Utils_Concat.v\
-  core/utils/Utils_Tuple.v\
-  core/utils/Utils_String.v\
-  core/utils/Utils_Print.v\
-  core/utils/Utils_Notation.v\
-  core/utils/Utils_Top.v\
+VFILES:=core/utils/tList.v\
+  core/utils/tConcat.v\
+  core/utils/tTuple.v\
+  core/utils/tString.v\
+  core/utils/tPrint.v\
+  core/utils/tNotation.v\
+  core/utils/tTop.v\
   core/CoqTL.v\
   example/Class2Relational/ClassMetamodel.v\
   example/Class2Relational/RelationalMetamodel.v\
-  example/Class2Relational/Class2Relational.v
+  example/Class2Relational/Class2Relational.v\
+  example/Class2Relational/PersonModel.v
 
 ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(VFILES))
