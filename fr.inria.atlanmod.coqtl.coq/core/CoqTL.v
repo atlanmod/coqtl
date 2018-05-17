@@ -119,7 +119,7 @@ Section CoqTL.
         ((denoteModelClass InElType) -> (bool * list OutputPatternElement))
         -> Rule.
 
-  Definition Phase : Type := SourceModel -> (list Rule).
+  Definition Phase : Type := SourceModel -> list Rule.
 
   Definition Transformation : Type := Phase -> Phase.  
   
@@ -379,26 +379,35 @@ Lemma matchPattern_in_getRules :
       -- right. apply IHl in H. apply H.
   Qed.
 
-Class TransformationEngineTypeClass (TransformationDef: Type) (SourceModel: Type) (TargetModel: Type) (RuleDef: Type) :=
+Class TransformationEngineTypeClass (TransformationDef: Type) (SourceModel: Type) (TargetModel: Type) (RuleDef: Type) (SourceModelElement: Type) (SourceModelLink: Type) (SourceModel: Type) (TargetModelElement: Type) (TargetModelLink: Type) (TargetModel: Type) :=
   {
-    (*executeFun: TransformationDef -> SourceModel -> TargetModel; *)
-    (*allModelElements: Model ModelElement ModelLink -> list ModelElement;*)
+    executeFun: TransformationDef -> SourceModel -> TargetModel;
     getRulesFun: TransformationDef -> list RuleDef;
-    (*instantiateRuleOnPatternFun: RuleDef -> list SourceModelElement -> list TargetModelElement; TODO: to fix *)
-    (*matchPatternFun: list RuleDef -> list SourceModelElement -> option RuleDef;  TODO: to fix *)
-  }. 
+    instantiateRuleOnPatternFun: RuleDef -> list SourceModelElement -> SourceModel -> list TargetModelElement; 
+    matchPatternFun: list RuleDef -> list SourceModelElement -> SourceModel -> option RuleDef;  
+    allSourceModelElements: SourceModel -> list SourceModelElement;
+    allTargetModelElements: TargetModel -> list TargetModelElement;
 
-Theorem tr_surj' : 
-  forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
-    tm = execute tr sm -> In t1 (allModelElements tm) -> 
-    (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
-        In r (getRules tr sm) /\
+    tr_surj' : 
+    forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
+      tm = executeFun tr sm -> (*In t1 (allModelElements tm) -> *)
+      (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleDef),
+        In r (getRulesFun tr) /\
         In t1 tp /\
-        instantiateRuleOnPattern r sp = tp /\
-        incl sp (allModelElements sm) /\
-        incl tp (allModelElements tm) /\
-        matchPattern (getRules tr sm) sp = Some r ).
-  Abort.
+        instantiateRuleOnPatternFun r sp sm = tp /\
+        incl sp (allSourceModelElements sm) /\
+        incl tp (allTargetModelElements tm) /\
+        matchPatternFun (getRulesFun tr) sp sm = Some r )
+  }.
+
+Definition RuleDef : Type := Rule.
+
+(*  Instance CoqTLEngine : TransformationEngineTypeClass Transformation SourceModel TargetModel RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
+    {
+      executeFun := execute;
+      getRuleFun := getRules;
+           
+    }. *)                                                                                  
 
 Theorem tr_surj : 
   forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
