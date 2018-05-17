@@ -8,6 +8,7 @@ core/utils/tNotation.v
 core/utils/tTop.v
 -R core core
 core/CoqTL.v
+core/Engine.v
 -R "example/Class2Relational" example
 example/Class2Relational/ClassMetamodel.v
 example/Class2Relational/RelationalMetamodel.v

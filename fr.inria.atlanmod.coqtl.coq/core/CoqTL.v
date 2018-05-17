@@ -4,6 +4,7 @@ Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
 
+Require Import core.Engine.
 Require Import core.utils.tTop.
 
 Set Implicit Arguments.
@@ -379,35 +380,34 @@ Lemma matchPattern_in_getRules :
       -- right. apply IHl in H. apply H.
   Qed.
 
-Class TransformationEngineTypeClass (TransformationDef: Type) (SourceModel: Type) (TargetModel: Type) (RuleDef: Type) (SourceModelElement: Type) (SourceModelLink: Type) (SourceModel: Type) (TargetModelElement: Type) (TargetModelLink: Type) (TargetModel: Type) :=
-  {
-    executeFun: TransformationDef -> SourceModel -> TargetModel;
-    getRulesFun: TransformationDef -> list RuleDef;
-    instantiateRuleOnPatternFun: RuleDef -> list SourceModelElement -> SourceModel -> list TargetModelElement; 
-    matchPatternFun: list RuleDef -> list SourceModelElement -> SourceModel -> option RuleDef;  
-    allSourceModelElements: SourceModel -> list SourceModelElement;
-    allTargetModelElements: TargetModel -> list TargetModelElement;
+  Definition numberOfRules (tr: Transformation) : nat
+    := length ((getRules tr) (BuildModel nil nil)).
 
-    tr_surj' : 
-    forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
-      tm = executeFun tr sm -> (*In t1 (allModelElements tm) -> *)
-      (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleDef),
-        In r (getRulesFun tr) /\
-        In t1 tp /\
-        instantiateRuleOnPatternFun r sp sm = tp /\
-        incl sp (allSourceModelElements sm) /\
-        incl tp (allTargetModelElements tm) /\
-        matchPatternFun (getRulesFun tr) sp sm = Some r )
-  }.
+Definition RuleDef : Type := nat * Transformation.
 
-Definition RuleDef : Type := Rule.
+Fixpoint matchPattern'' (tr: list Rule) (inelems: list SourceModelElement) : option nat :=
+    match tr with
+    | r :: rs => match matchRuleOnPattern r inelems with
+                | Some op => Some (length rs)
+                | None => matchPattern'' rs inelems
+                end
+    | nil => None
+    end.
 
-(*  Instance CoqTLEngine : TransformationEngineTypeClass Transformation SourceModel TargetModel RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
-    {
-      executeFun := execute;
-      getRuleFun := getRules;
-           
-    }. *)                                                                                  
+Definition matchPattern' (tr: Transformation) (sp: list SourceModelElement) (sm: SourceModel) : option Rule :=
+   matchPattern (getRules tr sm) sp.
+
+Fixpoint getRulesFun' {T : Type} (n : nat) (tr: T) :=
+   match n with
+        | S x => (cons (n, tr) (getRulesFun' x tr))
+        | _ => nil
+   end.
+
+Definition getRule (r : RuleDef) (sm : SourceModel) : option Rule :=
+  nth_error (getRules (snd r) sm) (fst r).
+
+(*Definition getRuleDef (r : Rule) (tr : Transformation) (sm: SourceModel) : option RuleDef :=
+  getRules tr sm. *)
 
 Theorem tr_surj : 
   forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
@@ -449,6 +449,69 @@ Theorem tr_surj :
              *** apply concat_map_incl. assumption.
              *** unfold getRules. symmetry. assumption.
   Qed.
+
+Instance CoqTLEngine : TransformationEngineTypeClass Transformation SourceModel TargetModel RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
+    {
+      executeFun := execute;
+      getRulesFun (tr: Transformation) := getRulesFun' (numberOfRules tr) tr;
+      instantiateRuleOnPatternFun (r: RuleDef) (sp : list SourceModelElement) (sm : SourceModel) :=
+        match (getRule r sm) with
+        | Some rule => instantiateRuleOnPattern rule sp
+        | None => nil
+        end;
+      matchPatternFun (tr: Transformation) (sp: list SourceModelElement) (sm: SourceModel) :=
+        match matchPattern'' (getRules tr sm) sp  with
+        | Some x => Some ( (numberOfRules tr) - x - 1 , tr )
+        | None => None
+        end;
+      allSourceModelElements:= allModelElements;
+      allTargetModelElements:= allModelElements;        
+    }.
+Proof.
+(*  intros.
+  apply tr_surj  with (t1:=t1) in H.
+  destruct H as [sp].
+  destruct H as [tp].
+  destruct H as [r].
+  destruct H.
+  destruct H1.
+  destruct H2.
+  destruct H3.
+  destruct H4.
+  exists sp, tp.*)
+
+  
+  (*intros tr sm tm t1 H0.
+    rewrite H0. simpl.
+    intros.
+    apply concat_map_exists in H. destruct H. destruct H.
+    remember (matchPattern'' (matchPhase tr sm) x) as r'.
+    destruct r'.
+    remember (n, tr) as r.
+    
+    Focus 1.
+    exists x, (instantiatePattern (matchPhase tr sm) x), r.
+    
+    split.
+    - apply matchPattern_in_getRules with (sp:=x).
+      rewrite Heqr'. reflexivity.
+    - split.
+      + assumption.
+      + split.
+        * unfold instantiatePattern.
+          rewrite <- Heqr'. reflexivity.
+        * split.
+          ** unfold allTuples in H.
+             apply tuples_up_to_n_incl with (n:=(maxArity (getRules tr sm))).
+             assumption.
+          ** split.
+             *** apply concat_map_incl. assumption.
+             *** unfold getRules. symmetry. assumption.
+
+    
+    Focus 2.
+    unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction. *)
+Abort.
   
 Theorem theorem1 :
     forall (tr: Transformation) (sourcemodel: SourceModel) (targetmodel: TargetModel) (inputel: SourceModelElement),
