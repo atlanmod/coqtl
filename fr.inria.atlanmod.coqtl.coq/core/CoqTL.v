@@ -9,7 +9,7 @@ Require Import core.utils.tTop.
 
 Set Implicit Arguments.
 
-(** Metamodel **)
+(** * Metamodel **)
 
 Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=
   {
@@ -36,7 +36,7 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
     BuildModelLink:  forall (r: ModelReference), (denoteModelReference r) -> ModelLink;
   }.
 
-(** Model **)
+(** * Model **)
 
 (* Each model is constructed by a list of 
    {@code ModelElement} and {@ModelLink}. *)
@@ -62,7 +62,7 @@ Section CoqTL.
 
   Definition SourceMetamodel_toEObject (c : SourceModelElement) : SourceModelElement := c.
   
-  (** Abstract Syntax **)
+  (** * Abstract Syntax **)
 
   (* Example: 
         rule Attribute2Column
@@ -121,9 +121,9 @@ Section CoqTL.
 
   Definition Transformation : Type := Phase -> Phase.  
   
-  (** Functions **)
+  (** * Functions **)
 
-  (* OutputPatternElementReference *)
+  (** ** OutputPatternElementReference **)
   
   Fixpoint getOutputPatternElementReferenceTargetModelLinks (l : list OutputPatternElementReference) : list TargetModelLink :=
     match l with
@@ -137,7 +137,7 @@ Section CoqTL.
                     end
     end.
 
-  (* OutputPatternElement *)
+  (** ** OutputPatternElement **)
   
   Definition getOutputPatternElementName (o :  OutputPatternElement) : string :=
     match o with
@@ -180,7 +180,7 @@ Section CoqTL.
     - exact None.
   Defined.
 
-  (* list OutputPatternElement *)
+  (** ** list OutputPatternElement **)
 
   Definition getAllOuputPatternElementElements (l : list OutputPatternElement) : list TargetModelElement :=
     map (getOutputPatternElementTargetModelElement) l.
@@ -191,7 +191,7 @@ Section CoqTL.
   Fixpoint findOutputPatternElementByName (l: list OutputPatternElement) (name: string) : option OutputPatternElement :=
     find (fun oel => beq_string (getOutputPatternElementName oel) name) l.
 
-  (* Rule application *)
+  (** ** Rule application **)
   
   Fixpoint matchRuleOnPattern (r: Rule) (el: list SourceModelElement) : option (list OutputPatternElement) :=
     match r, el with
@@ -225,20 +225,7 @@ Section CoqTL.
     | None => nil
   end.
 
-  (* Execution order:
-
-   - execute
-     - instantiatePattern 
-         matchPattern (recursive on rules)
-         instantiateRuleOnPattern
-            matchRuleOnPattern (recursive on source pattern)
-     - applyPattern
-         matchPattern (recursive on rules)
-         applyRuleOnPattern
-            matchRuleOnPattern (recursive on source pattern)
-   *)
-
-  (* Resolution *)
+  (** ** Resolution **)
   
   Fixpoint resolveFix (tr: list Rule) (name: string) (type: TargetModelClass) (inelems: list SourceModelElement): option (denoteModelClass type) := 
     match tr with
@@ -262,7 +249,7 @@ Section CoqTL.
   Definition resolveList (tr: list Rule) (name: string) (type: TargetModelClass) (inelems: list (list SourceModelElement)): list (denoteModelClass type) :=
     optionList2List (map (resolveFix tr name type) inelems).
 
-  (* Rule matching *)
+  (** ** Rule matching **)
   
   Fixpoint matchPattern (tr: list Rule) (inelems: list SourceModelElement) : option Rule :=
     match tr with
@@ -291,7 +278,19 @@ Section CoqTL.
     | None => None
     end.
 
-  (* Rule scheduling *)
+  (** ** Rule scheduling
+  Execution order:
+
+   - execute
+     - instantiatePattern 
+         matchPattern (recursive on rules)
+         instantiateRuleOnPattern
+            matchRuleOnPattern (recursive on source pattern)
+     - applyPattern
+         matchPattern (recursive on rules)
+         applyRuleOnPattern
+            matchRuleOnPattern (recursive on source pattern)
+   **)
 
   Definition matchPhase (f: Transformation) : Phase := (f (fun c:SourceModel => nil)).
 
@@ -328,7 +327,7 @@ Section CoqTL.
       (concat (map (applyPattern (applyPhase tr sm))
                    (allTuples tr sm))). 
 
-(*  Definition allTuples  (sm : SourceModel) :list (list SourceModelElement) :=
+  (*  Definition allTuples  (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (allModelElements sm) 10.
   
   Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
@@ -338,30 +337,32 @@ Section CoqTL.
       (concat (map (applyPattern (applyPhase tr sm))
                    (allTuples sm))). *)
 
-Theorem tr_link_surj : 
-  forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (tl : TargetModelLink),
-    tm = execute tr sm -> In tl (allModelLinks tm) -> 
-    (exists (sp : list SourceModelElement) (tls : list TargetModelLink) (r : Rule),
+  (** * Certification **)
+  
+  Theorem tr_link_surj : 
+    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (tl : TargetModelLink),
+      tm = execute tr sm -> In tl (allModelLinks tm) -> 
+      (exists (sp : list SourceModelElement) (tls : list TargetModelLink) (r : Rule),
         In r (getRules tr sm) /\
         In tl tls /\
         applyRuleOnPattern r sp = tls /\
         incl sp (allModelElements sm) /\
         incl tls (allModelLinks tm) ).
-Abort.
+  Abort.
 
-Theorem tr_object_surj : 
-  forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (te : TargetModelElement),
-    tm = execute tr sm -> In te (allModelElements tm) -> 
-    (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
+  Theorem tr_object_surj : 
+    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (te : TargetModelElement),
+      tm = execute tr sm -> In te (allModelElements tm) -> 
+      (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
         In r (getRules tr sm) /\
         In te tp /\
         instantiateRuleOnPattern r sp = tp /\
         incl sp (allModelElements sm) /\
         incl tp (allModelElements tm) /\
         matchPattern (getRules tr sm) sp = Some r ).
-Abort.
+  Abort.
 
-Lemma matchPattern_in_getRules :
+  Lemma matchPattern_in_getRules :
     forall (tr: Transformation) (sm: SourceModel) (r: Rule) (sp: list SourceModelElement),
       (matchPattern (matchPhase tr sm) sp) = Some r -> In r (getRules tr sm).
   Proof.
@@ -377,10 +378,10 @@ Lemma matchPattern_in_getRules :
       -- right. apply IHl in H. apply H.
   Qed.
 
-Theorem tr_surj : 
-  forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
-    tm = execute tr sm -> In t1 (allModelElements tm) -> 
-    (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
+  Theorem tr_surj : 
+    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
+      tm = execute tr sm -> In t1 (allModelElements tm) -> 
+      (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
         In r (getRules tr sm) /\
         In t1 tp /\
         instantiateRuleOnPattern r sp = tp /\
@@ -418,12 +419,12 @@ Theorem tr_surj :
              *** unfold getRules. symmetry. assumption.
   Qed.
   
-Definition numberOfRules (tr: Transformation) : nat
+  Definition numberOfRules (tr: Transformation) : nat
     := length ((getRules tr) (BuildModel nil nil)).
 
-Definition RuleDef : Type := nat * Transformation.
+  Definition RuleDef : Type := nat * Transformation.
 
-Fixpoint matchPattern'' (tr: list Rule) (inelems: list SourceModelElement) : option nat :=
+  Fixpoint matchPattern'' (tr: list Rule) (inelems: list SourceModelElement) : option nat :=
     match tr with
     | r :: rs => match matchRuleOnPattern r inelems with
                 | Some op => Some (length rs)
@@ -432,29 +433,29 @@ Fixpoint matchPattern'' (tr: list Rule) (inelems: list SourceModelElement) : opt
     | nil => None
     end.
 
-(*
-Definition matchPattern' (tr: Transformation) (sp: list SourceModelElement) (sm: SourceModel) : option Rule :=
-   matchPattern (getRules tr sm) sp.
-*)
+  (*
+  Definition matchPattern' (tr: Transformation) (sp: list SourceModelElement) (sm: SourceModel) : option Rule :=
+    matchPattern (getRules tr sm) sp.
+  *)
 
-Fixpoint getRulesFun' {T : Type} (n : nat) (tr: T) :=
-   match n with
+  Fixpoint getRulesFun' {T : Type} (n : nat) (tr: T) :=
+    match n with
         | S x => (cons (n, tr) (getRulesFun' x tr))
         | _ => nil
-   end.
+    end.
 
-Definition getRule (r : RuleDef) (sm : SourceModel) : option Rule :=
-  nth_error (getRules (snd r) sm) (fst r).
+  Definition getRule (r : RuleDef) (sm : SourceModel) : option Rule :=
+    nth_error (getRules (snd r) sm) (fst r).
 
-(*
-Definition getRule'''' (n : nat) (sm : SourceModel) : option RuleDef :=
-  nth_error (getRules (snd r) sm) (fst r).
-*)
+  (*
+  Definition getRule'''' (n : nat) (sm : SourceModel) : option RuleDef :=
+    nth_error (getRules (snd r) sm) (fst r).
+  *)
 
-(*Definition getRuleDef (r : Rule) (tr : Transformation) (sm: SourceModel) : option RuleDef := None.*)
+  (*Definition getRuleDef (r : Rule) (tr : Transformation) (sm: SourceModel) : option RuleDef := None.*)
 
-(*
-Lemma matchPattern_in_getRules' :
+  (*
+  Lemma matchPattern_in_getRules' :
     forall (tr: Transformation) (sm: SourceModel) (r: RuleDef) (sp: list SourceModelElement),
       (matchPattern'' (matchPhase tr sm) sp) = Some r -> In r (getRulesFun' (numberOfRules tr) tr).
   Proof.
@@ -469,9 +470,9 @@ Lemma matchPattern_in_getRules' :
       -- left. inversion H. reflexivity.
       -- right. apply IHl in H. apply H.
   Qed.
-*)
+  *)
 
-Instance CoqTLEngine : TransformationEngineTypeClass Transformation RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
+  Instance CoqTLEngine : TransformationEngineTypeClass Transformation RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
     {
       executeFun := execute;
       getRulesFun tr := getRulesFun' (numberOfRules tr) tr;
@@ -488,7 +489,7 @@ Instance CoqTLEngine : TransformationEngineTypeClass Transformation RuleDef Sour
       allSourceModelElements:= allModelElements;
       allTargetModelElements:= allModelElements;        
     }.
-Proof.
+  Proof.
   (*intros.
   apply tr_surj  with (t1:=t1) in H.
   destruct H as [sp].
@@ -533,9 +534,9 @@ Proof.
     
     Focus 2.
     unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction. *)
-Abort.
+  Abort.
   
-Theorem theorem1 :
+  Theorem theorem1 :
     forall (tr: Transformation) (sourcemodel: SourceModel) (targetmodel: TargetModel) (inputel: SourceModelElement),
       In inputel (allModelElements sourcemodel) ->
       targetmodel = execute tr sourcemodel ->
@@ -565,7 +566,7 @@ Arguments execute : default implicits.
 Arguments getOutputPatternElementTargetModelElement : default implicits.
 Arguments matchPhase : default implicits.
 
-(** Notations **)
+(** * Notations **)
 
 (* Module *)
 Notation "'transformation' tname 'from' sinstance 'to' tinstance 'with' m 'as' smodel ':=' transformationbody" := (fun (tname: Phase sinstance tinstance)  (m:smodel) => transformationbody ) (right associativity, at level 60).
