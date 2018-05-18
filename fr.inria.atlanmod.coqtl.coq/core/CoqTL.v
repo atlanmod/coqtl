@@ -168,9 +168,18 @@ Section CoqTL.
     | _, _ => None
     end.
 
+  Inductive ModelFragment (ModelElement: Type) (ModelLink: Type): Type :=
+    BuildModelFragment: list ModelElement -> list ModelLink -> ModelFragment ModelElement ModelLink.
+  
   Definition executeRuleOnPattern (r: Rule) (el: list SourceModelElement) : option (list TargetModelElement * list TargetModelLink) :=
     match matchRuleOnPattern r el with
     | Some opel => Some (getAllOuputPatternElementElements opel, getAllOuputPatternElementLinks opel)
+    | None => None
+    end.
+
+  Definition executeRuleOnPattern' (r: Rule) (el: list SourceModelElement) : option (ModelFragment TargetModelElement TargetModelLink):=
+    match matchRuleOnPattern r el with
+    | Some opel => Some (BuildModelFragment (getAllOuputPatternElementElements opel) (getAllOuputPatternElementLinks opel))
     | None => None
     end.
 
