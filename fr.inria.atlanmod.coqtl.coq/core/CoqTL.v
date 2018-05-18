@@ -477,6 +477,35 @@ Section CoqTL.
     apply concat_map_incl.
   Abort.*)
 
+  
+  (*  
+  Lemma allTuples_in_allModelElements :
+    forall (sm:SourceModel) (x: list SourceModelElement),
+      In x (allTuples sm) -> incl x (allModelElements sm).
+  Proof.
+  Abort. 
+  *)
+  
+  (*  
+  Theorem tr_distri:
+    forall (tr: Transformation)
+      (a : SourceModelElement)
+      (lse : list SourceModelElement)
+      (lsl : list SourceModelLink)
+    ,
+      (forall (sp: list SourceModelElement),
+       (incl sp lse /\ ~ (In a sp)) -> 
+       (matchPattern (getRules tr (BuildModel (a :: lse) lsl)) sp) = (matchPattern (getRules tr (BuildModel (lse) lsl)) sp))
+      ->    
+      (allModelElements (execute tr (BuildModel (a :: lse) lsl))) =
+      (execute' tr (BuildModel lse lsl) a)
+        ++
+        (allModelElements (execute tr (BuildModel lse lsl)))
+  .
+  Proof.
+  Qed. 
+  *)
+
   Instance CoqTLEngine : TransformationEngineTypeClass Transformation RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
     {
       executeFun := execute;
@@ -589,32 +618,5 @@ Notation "'output' elid 'element' elname 'class' eltype 'from' tinstance := elde
 (* OutputPatternElementReferenceDefinition *)
 Notation "'reference' reftype 'from' tinstance ':=' refends" := (BuildOutputPatternElementReference tinstance reftype refends) (right associativity, at level 60).
 
-(*  
-  Lemma allTuples_in_allModelElements :
-    forall (sm:SourceModel) (x: list SourceModelElement),
-      In x (allTuples sm) -> incl x (allModelElements sm).
-  Proof.
-  Abort. 
-*)
-  
-(*  
-  Theorem tr_distri:
-    forall (tr: Transformation)
-      (a : SourceModelElement)
-      (lse : list SourceModelElement)
-      (lsl : list SourceModelLink)
-    ,
-      (forall (sp: list SourceModelElement),
-       (incl sp lse /\ ~ (In a sp)) -> 
-       (matchPattern (getRules tr (BuildModel (a :: lse) lsl)) sp) = (matchPattern (getRules tr (BuildModel (lse) lsl)) sp))
-      ->    
-      (allModelElements (execute tr (BuildModel (a :: lse) lsl))) =
-      (execute' tr (BuildModel lse lsl) a)
-        ++
-        (allModelElements (execute tr (BuildModel lse lsl)))
-  .
-  Proof.
-  Qed. 
-*)
   
   
