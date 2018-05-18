@@ -7,15 +7,11 @@ Definition listToListList {A : Type} (l : list A) : list (list A) :=
 Definition hasLength {A : Type} (l : list A) (n: nat): bool :=
   beq_nat (Datatypes.length l) n.
 
-
-
 Definition optionToList {A:Type} (o: option A) : list A :=
   match o with
   | Some a => a :: nil
   | None => nil
   end.
-
-
 
 Definition optionList2List {A : Type} (l:list (option A)) : list A :=
   flat_map optionToList l.
@@ -44,3 +40,5 @@ Proof.
       assumption.
 Qed.
 
+Definition singletons {A: Type} (l : list A) : list (list A) :=
+  listToListList l.
