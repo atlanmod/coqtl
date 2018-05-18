@@ -7,10 +7,9 @@ Require Import Omega.
 Require Import core.Engine.
 Require Import core.utils.tTop.
 
-
 Set Implicit Arguments.
 
-(* Type Class of Model *)
+(** Metamodel **)
 
 Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=
   {
@@ -37,6 +36,7 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
     BuildModelLink:  forall (r: ModelReference), (denoteModelReference r) -> ModelLink;
   }.
 
+(** Model **)
 
 (* Each model is constructed by a list of 
    {@code ModelElement} and {@ModelLink}. *)
@@ -50,10 +50,6 @@ Definition allModelElements {ModelElement: Type} {ModelLink: Type} (m : Model Mo
 Definition allModelLinks {ModelElement: Type} {ModelLink: Type} (m : Model ModelElement ModelLink) : list ModelLink :=
   match m with BuildModel _ l => l end.
 
-
-(* Define CoqTL, a Transformation Interpreter *)
-
-(* TODO: Encode as a type class? *)
 Section CoqTL.
 
   Variables (SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type)
@@ -64,7 +60,7 @@ Section CoqTL.
   Definition SourceModel := Model SourceModelElement SourceModelLink.
   Definition TargetModel := Model TargetModelElement TargetModelLink.
   
-  (* Abstract Syntax *)
+  (** Abstract Syntax **)
 
   (* Example: 
         rule Attribute2Column
@@ -86,7 +82,6 @@ Section CoqTL.
          ]
    *)
 
-
   (* Build OutputPatternElementReference with :
       an ref_type
       an trg_instance
@@ -102,7 +97,6 @@ Section CoqTL.
       an elem_id
       an elem_def
       and a (elem_name->ref_def)
-          
    *)
   Inductive OutputPatternElement : Type :=
   | BuildOutputPatternElement : forall (OutElType: TargetModelClass),
@@ -125,8 +119,24 @@ Section CoqTL.
 
   Definition Transformation : Type := Phase -> Phase.  
   
-  (* Engine *)
+  (** Functions **)
 
+  (* OutputPatternElementReference *)
+  
+  Fixpoint getOutputPatternElementReferenceTargetModelLinks (l : list OutputPatternElementReference) : list TargetModelLink :=
+    match l with
+    | nil => nil
+    | ope :: opel => match ope with
+                    | BuildOutputPatternElementReference OutRefs x =>
+                      match x with
+                      | Some x => BuildModelLink OutRefs x :: getOutputPatternElementReferenceTargetModelLinks opel
+                      | None => getOutputPatternElementReferenceTargetModelLinks opel
+                      end
+                    end
+    end.
+
+  (* OutputPatternElement *)
+  
   Definition getOutputPatternElementName (o :  OutputPatternElement) : string :=
     match o with
       (BuildOutputPatternElement type name el refs) => name
@@ -152,33 +162,12 @@ Section CoqTL.
     | BuildOutputPatternElement OutElType x x0 x1 => toModelElement OutElType x0
     end.
 
-  Definition getAllOuputPatternElementElements (l : list OutputPatternElement) : list TargetModelElement :=
-    map (getOutputPatternElementTargetModelElement) l.
-
-  Fixpoint getOutputPatternElementReferenceTargetModelLinks (l : list OutputPatternElementReference) : list TargetModelLink :=
-    match l with
-    | nil => nil
-    | ope :: opel => match ope with
-                    | BuildOutputPatternElementReference OutRefs x =>
-                      match x with
-                      | Some x => BuildModelLink OutRefs x :: getOutputPatternElementReferenceTargetModelLinks opel
-                      | None => getOutputPatternElementReferenceTargetModelLinks opel
-                      end
-                    end
-    end.
-
   Definition getOutputPatternElementTargetModelLinks (o :  OutputPatternElement): list TargetModelLink :=
     match o with
       (BuildOutputPatternElement type name el refs) => getOutputPatternElementReferenceTargetModelLinks (refs el)
     end.
 
-  Definition getAllOuputPatternElementLinks (l : list OutputPatternElement) : list TargetModelLink :=
-    concat (map (getOutputPatternElementTargetModelLinks) l).
-
-  Fixpoint findOutputPatternElementByName (l: list OutputPatternElement) (name: string) : option OutputPatternElement :=
-    find (fun oel => beq_string (getOutputPatternElementName oel) name) l.
-
-  Definition getOutputPatternElementElementByType (o :  OutputPatternElement) (type:TargetModelClass) : option (denoteModelClass type).
+  Definition getOutputPatternElementElementByType (o :  OutputPatternElement) (type: TargetModelClass) : option (denoteModelClass type).
   Proof.
     remember o as ope.
     destruct o.
@@ -188,6 +177,17 @@ Section CoqTL.
       exact (Some d).
     - exact None.
   Defined.
+
+  (* list OutputPatternElement *)
+
+  Definition getAllOuputPatternElementElements (l : list OutputPatternElement) : list TargetModelElement :=
+    map (getOutputPatternElementTargetModelElement) l.
+
+  Definition getAllOuputPatternElementLinks (l : list OutputPatternElement) : list TargetModelLink :=
+    concat (map (getOutputPatternElementTargetModelLinks) l).
+
+  Fixpoint findOutputPatternElementByName (l: list OutputPatternElement) (name: string) : option OutputPatternElement :=
+    find (fun oel => beq_string (getOutputPatternElementName oel) name) l.
 
   (* 
    Return 
