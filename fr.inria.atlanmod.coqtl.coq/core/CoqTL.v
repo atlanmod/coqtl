@@ -314,6 +314,9 @@ Section CoqTL.
 
   Definition getRules' (tr: Transformation) (sm: SourceModel) : list Rule :=
     applyPhase tr sm.
+
+  Definition numberOfRules (tr: Transformation) : nat
+    := length ((getRules tr) (BuildModel nil nil)).
     
   Definition allTuples (f: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (allModelElements sm) (maxArity (getRules f sm)).
@@ -336,7 +339,40 @@ Section CoqTL.
                    (allTuples sm))). *)
 
   (** * Certification **)
+
+  Definition RuleDef : Type := nat * Transformation.
+
+  Fixpoint getRulesFun' (n : nat) (tr: Transformation) : list RuleDef :=
+    match n with
+        | S x => (cons (n, tr) (getRulesFun' x tr))
+        | _ => nil
+    end.
+
+  Definition getRule (r : RuleDef) (sm : SourceModel) : option Rule :=
+    nth_error (getRules (snd r) sm) (fst r).
+
+  (*
+  Definition getRule'''' (n : nat) (sm : SourceModel) : option RuleDef :=
+    nth_error (getRules (snd r) sm) (fst r).
+  *)
+
+  (* Definition getRuleDef (r : Rule) (tr : Transformation) (sm: SourceModel) : option RuleDef := None. *)
   
+  Fixpoint matchPattern'' (tr: list Rule) (inelems: list SourceModelElement) : option nat :=
+    match tr with
+    | r :: rs => match matchRuleOnPattern r inelems with
+                | Some op => Some (length rs)
+                | None => matchPattern'' rs inelems
+                end
+    | nil => None
+    end.
+
+  (*
+  Definition matchPattern' (tr: Transformation) (sp: list SourceModelElement) (sm: SourceModel) : option Rule :=
+    matchPattern (getRules tr sm) sp.
+  *)
+
+  (*
   Theorem tr_link_surj : 
     forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (tl : TargetModelLink),
       tm = execute tr sm -> In tl (allModelLinks tm) -> 
@@ -347,7 +383,9 @@ Section CoqTL.
         incl sp (allModelElements sm) /\
         incl tls (allModelLinks tm) ).
   Abort.
+  *)
 
+  (*
   Theorem tr_object_surj : 
     forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (te : TargetModelElement),
       tm = execute tr sm -> In te (allModelElements tm) -> 
@@ -359,6 +397,7 @@ Section CoqTL.
         incl tp (allModelElements tm) /\
         matchPattern (getRules tr sm) sp = Some r ).
   Abort.
+  *)
 
   Lemma matchPattern_in_getRules :
     forall (tr: Transformation) (sm: SourceModel) (r: Rule) (sp: list SourceModelElement),
@@ -416,41 +455,6 @@ Section CoqTL.
              *** apply concat_map_incl. assumption.
              *** unfold getRules. symmetry. assumption.
   Qed.
-  
-  Definition numberOfRules (tr: Transformation) : nat
-    := length ((getRules tr) (BuildModel nil nil)).
-
-  Definition RuleDef : Type := nat * Transformation.
-
-  Fixpoint matchPattern'' (tr: list Rule) (inelems: list SourceModelElement) : option nat :=
-    match tr with
-    | r :: rs => match matchRuleOnPattern r inelems with
-                | Some op => Some (length rs)
-                | None => matchPattern'' rs inelems
-                end
-    | nil => None
-    end.
-
-  (*
-  Definition matchPattern' (tr: Transformation) (sp: list SourceModelElement) (sm: SourceModel) : option Rule :=
-    matchPattern (getRules tr sm) sp.
-  *)
-
-  Fixpoint getRulesFun' {T : Type} (n : nat) (tr: T) :=
-    match n with
-        | S x => (cons (n, tr) (getRulesFun' x tr))
-        | _ => nil
-    end.
-
-  Definition getRule (r : RuleDef) (sm : SourceModel) : option Rule :=
-    nth_error (getRules (snd r) sm) (fst r).
-
-  (*
-  Definition getRule'''' (n : nat) (sm : SourceModel) : option RuleDef :=
-    nth_error (getRules (snd r) sm) (fst r).
-  *)
-
-  (*Definition getRuleDef (r : Rule) (tr : Transformation) (sm: SourceModel) : option RuleDef := None.*)
 
   (*
   Lemma matchPattern_in_getRules' :
@@ -470,6 +474,7 @@ Section CoqTL.
   Qed.
    *)
 
+  (*
   Theorem theorem1 :
     forall (tr: Transformation) (sourcemodel: SourceModel) (targetmodel: TargetModel) (inputel: SourceModelElement),
       In inputel (allModelElements sourcemodel) ->
@@ -483,8 +488,7 @@ Section CoqTL.
     simpl.
     unfold allTuples.
     apply concat_map_incl.
-   
-  Abort.
+  Abort.*)
 
   Instance CoqTLEngine : TransformationEngineTypeClass Transformation RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
     {
