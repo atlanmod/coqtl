@@ -482,7 +482,7 @@ Lemma matchPattern_in_getRules' :
   Qed.
 
  *) 
-Instance CoqTLEngine : TransformationEngineTypeClass Transformation SourceModel TargetModel RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
+Instance CoqTLEngine : TransformationEngineTypeClass Transformation RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
     {
       executeFun := execute;
       getRulesFun tr := getRulesFun' (numberOfRules tr) tr;
@@ -514,7 +514,7 @@ Proof.
   + exsits 
   + auto. *)
   
-  intros tr sm tm t1 H0.
+  (*intros tr sm tm t1 H0.
     rewrite H0. simpl.
     intros.
     apply concat_map_exists in H. destruct H. destruct H.
@@ -543,7 +543,7 @@ Proof.
 
     
     Focus 2.
-    unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction. 
+    unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction. *)
 Abort.
   
 Theorem theorem1 :

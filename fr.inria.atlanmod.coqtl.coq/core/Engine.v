@@ -8,7 +8,7 @@ Require Import core.utils.tTop.
 
 Set Implicit Arguments.
 
-Class TransformationEngineTypeClass (TransformationDef: Type) (SourceModel: Type) (TargetModel: Type) (RuleDef: Type) (SourceModelElement: Type) (SourceModelLink: Type) (SourceModel: Type) (TargetModelElement: Type) (TargetModelLink: Type) (TargetModel: Type) :=
+Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (SourceModelElement: Type) (SourceModelLink: Type) (SourceModel: Type) (TargetModelElement: Type) (TargetModelLink: Type) (TargetModel: Type) :=
   {
     executeFun: TransformationDef -> SourceModel -> TargetModel;
     getRulesFun: TransformationDef -> list RuleDef;
