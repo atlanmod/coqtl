@@ -36,5 +36,17 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (S
     thrm1 :
         forall (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleDef),
           matchPatternFun tr sp sm = Some r -> In r (getRulesFun tr);
+
+    (*     
+    tr_surj'' : 
+    forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
+      tm = executeFun tr sm -> In t1 (allTargetModelLinks tm) ->
+      (exists (sp : list SourceModelElement) (tpl : list TargetModelLink) (r : RuleDef),
+        In r (getRulesFun tr) /\
+        In t1 tpl /\
+        applyRuleOnPatternFun r sp sm = tpl /\
+        incl sp (allSourceModelElements sm) /\
+        incl tpl (allTargetModelLinks tm) /\
+        matchPatternFun tr sp sm = Some r ); *)
                                             
   }.
