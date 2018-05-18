@@ -26,5 +26,15 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (S
         instantiateRuleOnPatternFun r sp sm = tp /\
         incl sp (allSourceModelElements sm) /\
         incl tp (allTargetModelElements tm) /\
-        matchPatternFun tr sp sm = Some r )
+        matchPatternFun tr sp sm = Some r );
+
+    thrm :
+        forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef),
+          tm = executeFun tr sm -> In r (getRulesFun tr) -> incl sp (allSourceModelElements sm) ->
+          incl (instantiateRuleOnPatternFun r sp sm) (allTargetModelElements tm);
+
+    thrm1 :
+        forall (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleDef),
+          matchPatternFun tr sp sm = Some r -> In r (getRulesFun tr);
+                                            
   }.
