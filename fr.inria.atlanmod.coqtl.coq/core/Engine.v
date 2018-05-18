@@ -32,7 +32,7 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (S
         forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef),
           tm = executeFun tr sm -> In r (getRulesFun tr) -> incl sp (allSourceModelElements sm) ->
           incl (instantiateRuleOnPatternFun r sp sm) (allTargetModelElements tm);
-          (* /\  incl (applyRuleOnPatternFun r sp sm) (allTargetModeLinks tm))
+          (* /\  incl (applyRuleOnPatternFun r sp sm) (allTargetModeLinks tm)) *)
 
     thrm1 :
         forall (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleDef),
