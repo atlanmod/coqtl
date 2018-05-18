@@ -4,49 +4,12 @@ Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
 
+Require Import core.Metamodel.
+Require Import core.Model.
 Require Import core.Engine.
 Require Import core.utils.tTop.
 
 Set Implicit Arguments.
-
-(** * Metamodel **)
-
-Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=
-  {
-    (* Denotation *)
-    denoteModelClass: ModelClass -> Set;
-    denoteModelReference: ModelReference -> Set;
-
-    (* Downcasting *)
-    toModelClass: forall (t:ModelClass), ModelElement -> option (denoteModelClass t);
-    toModelReference: forall (t:ModelReference), ModelLink -> option (denoteModelReference t);
-
-    (* Default object of that class *)
-    bottomModelClass: forall (c:ModelClass), (denoteModelClass c);
-
-    (* Upcasting *)
-    toModelElement: forall (t: ModelClass), (denoteModelClass t) -> ModelElement;
-
-    (* Decidability of equality *)
-    eqModelClass_dec: forall (c1:ModelClass) (c2:ModelClass), { c1 = c2 } + { c1 <> c2 };
-    eqModelReference_dec: forall (c1:ModelReference) (c2:ModelReference), { c1 = c2 } + { c1 <> c2 };
-
-    (* Constructors *)
-    BuildModelElement: forall (r: ModelClass), (denoteModelClass r) -> ModelElement;
-    BuildModelLink:  forall (r: ModelReference), (denoteModelReference r) -> ModelLink;
-  }.
-
-(** * Model
-  Each model is constructed by a list of {@code ModelElement} and {@ModelLink}. **)
-
-Inductive Model (ModelElement: Type) (ModelLink: Type): Type :=
-  BuildModel: list ModelElement -> list ModelLink -> Model ModelElement ModelLink.
-
-Definition allModelElements {ModelElement: Type} {ModelLink: Type} (m : Model ModelElement ModelLink) : list ModelElement :=
-  match m with BuildModel l _ => l end.
-
-Definition allModelLinks {ModelElement: Type} {ModelLink: Type} (m : Model ModelElement ModelLink) : list ModelLink :=
-  match m with BuildModel _ l => l end.
 
 Section CoqTL.
 

@@ -5,7 +5,8 @@ Require Import ListSet.   (* set *)
 Require Import Omega.
 
 Require Import core.utils.tTop.
-Require Import core.CoqTL.
+Require Import core.Metamodel.
+Require Import core.Model.
 
 Require Import Coq.Logic.Eqdep_dec.
 

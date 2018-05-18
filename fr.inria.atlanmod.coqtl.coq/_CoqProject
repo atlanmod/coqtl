@@ -6,7 +6,10 @@ core/utils/tString.v
 core/utils/tPrint.v
 core/utils/tNotation.v
 core/utils/tTop.v
+
 -R core core
+core/Metamodel.v
+core/Model.v
 core/Engine.v
 core/CoqTL.v
 

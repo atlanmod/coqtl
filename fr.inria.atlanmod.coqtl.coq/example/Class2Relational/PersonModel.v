@@ -1,6 +1,6 @@
 Require Import List.
 
-Require Import core.CoqTL.
+Require Import core.Model.
 
 Require Import example.ClassMetamodel.
 

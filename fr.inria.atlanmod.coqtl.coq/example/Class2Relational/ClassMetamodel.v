@@ -7,7 +7,8 @@ Require Import Omega.
 
 
 Require Import core.utils.tTop.
-Require Import core.CoqTL.
+Require Import core.Metamodel.
+Require Import core.Model.
 
 (* Base types *)
 
