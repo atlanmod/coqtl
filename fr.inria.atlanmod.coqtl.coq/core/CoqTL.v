@@ -339,6 +339,21 @@ Section CoqTL.
     | nil => None
     end.
 
+  Lemma matchPatternLimit :
+    forall (tr: list Rule) (inelems: list SourceModelElement) (n: nat),
+      matchPattern'' tr inelems = Some n -> n < length tr.
+  Proof.
+    intros.
+    induction tr.
+    * simpl in H. inversion H.
+    * simpl in H.
+      destruct (matchRuleOnPattern a inelems) eqn:eq1.
+      ** inversion H. simpl. omega.
+      ** apply IHtr in H. simpl.
+         apply lt_trans with (n:=n) (m:=Datatypes.length tr) (p:=S (Datatypes.length tr)) in H.
+         exact H. omega.
+  Qed.
+
   (*
   Definition matchPattern' (tr: Transformation) (sp: list SourceModelElement) (sm: SourceModel) : option Rule :=
     matchPattern (getRules tr sm) sp.
@@ -480,6 +495,17 @@ Section CoqTL.
       allTargetModelElements:= allModelElements;        
     }.
   Proof.
+    Focus 3.
+    intros.
+    remember (matchPattern'' (getRules tr sm) sp) as m.
+    induction m.
+    inversion H.
+    Focus 1.
+    symmetry in Heqm.
+    apply matchPatternLimit in Heqm.
+    
+    
+    
   (*intros.
   apply tr_surj  with (t1:=t1) in H.
   destruct H as [sp].
