@@ -36,10 +36,8 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
     BuildModelLink:  forall (r: ModelReference), (denoteModelReference r) -> ModelLink;
   }.
 
-(** * Model **)
-
-(* Each model is constructed by a list of 
-   {@code ModelElement} and {@ModelLink}. *)
+(** * Model
+  Each model is constructed by a list of {@code ModelElement} and {@ModelLink}. **)
 
 Inductive Model (ModelElement: Type) (ModelLink: Type): Type :=
   BuildModel: list ModelElement -> list ModelLink -> Model ModelElement ModelLink.
@@ -62,9 +60,9 @@ Section CoqTL.
 
   Definition SourceMetamodel_toEObject (c : SourceModelElement) : SourceModelElement := c.
   
-  (** * Abstract Syntax **)
+  (** * Abstract Syntax
 
-  (* Example: 
+  Example: 
         rule Attribute2Column
         from                    -- InputPatternElement
           a : Attribute         -- Element Definition
@@ -82,7 +80,7 @@ Section CoqTL.
             y <- resolve(a.class);
             BuildRef c y
          ]
-   *)
+   **)
 
   (* Build OutputPatternElementReference with :
       an ref_type
@@ -470,7 +468,23 @@ Section CoqTL.
       -- left. inversion H. reflexivity.
       -- right. apply IHl in H. apply H.
   Qed.
-  *)
+   *)
+
+  Theorem theorem1 :
+    forall (tr: Transformation) (sourcemodel: SourceModel) (targetmodel: TargetModel) (inputel: SourceModelElement),
+      In inputel (allModelElements sourcemodel) ->
+      targetmodel = execute tr sourcemodel ->
+      (matchPattern (matchPhase tr sourcemodel) (inputel::nil)) <> None ->
+      incl (instantiatePattern (matchPhase tr sourcemodel) (inputel::nil)) (allModelElements targetmodel). 
+  Proof.
+    intros.
+    rewrite H0.
+    unfold execute.
+    simpl.
+    unfold allTuples.
+    apply concat_map_incl.
+   
+  Abort.
 
   Instance CoqTLEngine : TransformationEngineTypeClass Transformation RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
     {
@@ -534,22 +548,6 @@ Section CoqTL.
     
     Focus 2.
     unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction. *)
-  Abort.
-  
-  Theorem theorem1 :
-    forall (tr: Transformation) (sourcemodel: SourceModel) (targetmodel: TargetModel) (inputel: SourceModelElement),
-      In inputel (allModelElements sourcemodel) ->
-      targetmodel = execute tr sourcemodel ->
-      (matchPattern (matchPhase tr sourcemodel) (inputel::nil)) <> None ->
-      incl (instantiatePattern (matchPhase tr sourcemodel) (inputel::nil)) (allModelElements targetmodel). 
-  Proof.
-    intros.
-    rewrite H0.
-    unfold execute.
-    simpl.
-    unfold allTuples.
-    apply concat_map_incl.
-   
   Abort.
   
 End CoqTL.
