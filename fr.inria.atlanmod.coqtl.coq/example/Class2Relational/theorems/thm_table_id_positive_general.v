@@ -1,9 +1,13 @@
 Require Import Coq.Logic.Eqdep_dec.
 Require Import Coq.Arith.EqNat.
 Require Import List.
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype.  
 
 Require Import core.utils.tTop.
+Require Import core.Notations.
 Require Import core.CoqTL.
+Require Import core.Metamodel.
+Require Import core.Model.
 
 Require Import example.Class2Relational.
 Require Import example.ClassMetamodel.
