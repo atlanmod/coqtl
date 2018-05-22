@@ -114,8 +114,11 @@ VFILES:=core/utils/tList.v\
   core/utils/tPrint.v\
   core/utils/tNotation.v\
   core/utils/tTop.v\
+  core/Metamodel.v\
+  core/Model.v\
   core/Engine.v\
   core/CoqTL.v\
+  core/Notations.v\
   example/Class2Relational/ClassMetamodel.v\
   example/Class2Relational/RelationalMetamodel.v\
   example/Class2Relational/Class2Relational.v\
