@@ -10,12 +10,14 @@ Set Implicit Arguments.
 
 Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (SourceModelElement: Type) (SourceModelLink: Type) (SourceModel: Type) (TargetModelElement: Type) (TargetModelLink: Type) (TargetModel: Type) :=
   {
-    executeFun: TransformationDef -> SourceModel -> TargetModel;
-    getRulesFun: TransformationDef -> list RuleDef;
-    instantiateRuleOnPatternFun: RuleDef -> list SourceModelElement -> SourceModel -> list TargetModelElement; 
-    matchPatternFun: TransformationDef -> list SourceModelElement -> SourceModel -> option RuleDef;  
     allSourceModelElements: SourceModel -> list SourceModelElement;
     allTargetModelElements: TargetModel -> list TargetModelElement;
+    
+    getRulesFun: TransformationDef -> list RuleDef;
+
+    executeFun: TransformationDef -> SourceModel -> TargetModel;
+    instantiateRuleOnPatternFun: RuleDef -> list SourceModelElement -> SourceModel -> list TargetModelElement; 
+    matchPatternFun: TransformationDef -> list SourceModelElement -> SourceModel -> option RuleDef;  
 
     tr_surj' : 
     forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
@@ -28,16 +30,20 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (S
         incl tp (allTargetModelElements tm) /\
         matchPatternFun tr sp sm = Some r );
 
-    thrm :
+    outp_incl :
         forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef),
           tm = executeFun tr sm -> In r (getRulesFun tr) -> incl sp (allSourceModelElements sm) ->
           incl (instantiateRuleOnPatternFun r sp sm) (allTargetModelElements tm);
-          (* /\  incl (applyRuleOnPatternFun r sp sm) (allTargetModeLinks tm)) *)
+          (* /\  incl (applyRuleOnPatternFun r sp sm) (allTargetModeLinks tm)) *) 
 
-    thrm1 :
+    match_incl :
         forall (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleDef),
           matchPatternFun tr sp sm = Some r -> In r (getRulesFun tr);
 
+    match_fun :
+        forall (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r1: RuleDef) (r2: RuleDef),
+          matchPatternFun tr sp sm = Some r1 -> matchPatternFun tr sp sm = Some r2 -> r1 = r2;
+    
     (*     
     tr_surj'' : 
     forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
