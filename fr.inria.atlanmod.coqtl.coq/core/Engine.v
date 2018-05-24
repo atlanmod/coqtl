@@ -16,8 +16,8 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (S
     getRulesFun: TransformationDef -> list RuleDef;
 
     executeFun: TransformationDef -> SourceModel -> TargetModel;
-    instantiateRuleOnPatternFun: RuleDef -> list SourceModelElement -> SourceModel -> list TargetModelElement; 
     matchPatternFun: TransformationDef -> list SourceModelElement -> SourceModel -> option RuleDef;  
+    instantiateRuleOnPatternFun: RuleDef -> list SourceModelElement -> SourceModel -> list TargetModelElement; 
 
     tr_surj' : 
     forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
