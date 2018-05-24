@@ -87,39 +87,57 @@ Section CoqTL.
   Inductive OutputPatternElementReferenceA : Type :=
       BuildOutputPatternElementReferenceA :
         TargetModelReference ->
-        (* ReferenceBindingA -> *)
+        (SourceModel -> list SourceModelElement -> TargetModelElement -> list TargetModelLink) ->
         OutputPatternElementReferenceA.
   
   Inductive OutputPatternElementA : Type := 
     BuildOutputPatternElementA :
+      string ->
       TargetModelClass ->
-      (* AttributeBindingA -> *)
+      (SourceModel -> list SourceModelElement -> TargetModelElement) ->
       list OutputPatternElementReferenceA -> OutputPatternElementA.
   
   Inductive RuleA : Type := 
     BuildRuleA :
       list SourceModelClass ->
-      (* GuardA -> *)
+      (SourceModel -> list SourceModelElement -> bool) ->
       list OutputPatternElementA -> RuleA.
   
   Inductive TransformationA : Type := 
     BuildTransformationA :
       list RuleA -> TransformationA.
+  
+(*  Definition parseOutputPatternElementReference (tr: Transformation) (o: OutputPatternElementReference) : OutputPatternElementReferenceA :=   
+    match o with
+    | BuildOutputPatternElementReference t _ =>
+      BuildOutputPatternElementReferenceA t
+         (fun (sm: SourceModel) (smes: list SourceModelElement) (tme: TargetModelElement) ->
+           tr 
+    end.
 
+  Definition parseOutputPatternElement (tr: Transformation) (o: OutputPatternElement) : OutputPatternElementA :=   
+    match o with
+    | BuildOutputPatternElement t n _ f => (BuildOutputPatternElementA n t (map (parseOutputPatternElementReference tr) (f (bottomModelClass t))))
+    end.
+
+  Fixpoint parseRuleOutput (tr: Transformation) (r: Rule) : list OutputPatternElementA :=
+    match r with
+    | BuildMultiElementRule iet f => parseRuleOutput tr (f (bottomModelClass iet)) 
+    | BuildSingleElementRule iet f => map (parseOutputPatternElement tr) (snd (f (bottomModelClass iet))) 
+    end.    
+  
   Fixpoint parseRuleTypes (r: Rule) : list SourceModelClass :=
     match r with
-    | BuildMultiElementRule iet f : (cons iet (parseRuleTypes (f (bottomModelClass iet))))
-    | BuildSingleElementRule iet f : 
+    | BuildMultiElementRule iet f => (cons iet (parseRuleTypes (f (bottomModelClass iet))))
+    | BuildSingleElementRule iet f => iet::nil
     end.
   
-  Definition parseRule (r: Rule) (tr: Transformation) : RuleA :=
-    (BuildRuleA (parseRuleTypes r) (parseRuleOutput r tr)).
+  Definition parseRule (tr: Transformation) (r: Rule) : RuleA :=
+    (BuildRuleA (parseRuleTypes r) (parseRuleOutput tr r)).
 
   Definition parseTransformation (tr: Transformation) : TransformationA :=
     (BuildTransformationA 
-       map parseRule (tr (fun c:SourceModel => nil) (BuildModel nil nil))).
-
- 
+       (map (parseRule tr) (tr (fun c:SourceModel => nil) (BuildModel nil nil)))). *)    
   
   (** * Functions **)
 
@@ -191,6 +209,7 @@ Section CoqTL.
   Fixpoint findOutputPatternElementByName (l: list OutputPatternElement) (name: string) : option OutputPatternElement :=
     find (fun oel => beq_string (getOutputPatternElementName oel) name) l.
 
+  
   (** ** Rule application **)
   
   Fixpoint matchRuleOnPattern (r: Rule) (el: list SourceModelElement) : option (list OutputPatternElement) :=
