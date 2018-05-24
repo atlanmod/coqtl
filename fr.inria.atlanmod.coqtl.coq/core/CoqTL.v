@@ -23,7 +23,7 @@ Section CoqTL.
 
   Definition SourceMetamodel_toEObject (c : SourceModelElement) : SourceModelElement := c.
   
-  (** * Abstract Syntax
+  (** * Concrete Syntax
 
   Example: 
         rule Attribute2Column
@@ -80,7 +80,46 @@ Section CoqTL.
 
   Definition Phase : Type := SourceModel -> list Rule.
 
-  Definition Transformation : Type := Phase -> Phase.  
+  Definition Transformation : Type := Phase -> Phase.
+
+  (** * Abstract Syntax **)
+
+  Inductive OutputPatternElementReferenceA : Type :=
+      BuildOutputPatternElementReferenceA :
+        TargetModelReference ->
+        (* ReferenceBindingA -> *)
+        OutputPatternElementReferenceA.
+  
+  Inductive OutputPatternElementA : Type := 
+    BuildOutputPatternElementA :
+      TargetModelClass ->
+      (* AttributeBindingA -> *)
+      list OutputPatternElementReferenceA -> OutputPatternElementA.
+  
+  Inductive RuleA : Type := 
+    BuildRuleA :
+      list SourceModelClass ->
+      (* GuardA -> *)
+      list OutputPatternElementA -> RuleA.
+  
+  Inductive TransformationA : Type := 
+    BuildTransformationA :
+      list RuleA -> TransformationA.
+
+  Fixpoint parseRuleTypes (r: Rule) : list SourceModelClass :=
+    match r with
+    | BuildMultiElementRule iet f : (cons iet (parseRuleTypes (f (bottomModelClass iet))))
+    | BuildSingleElementRule iet f : 
+    end.
+  
+  Definition parseRule (r: Rule) (tr: Transformation) : RuleA :=
+    (BuildRuleA (parseRuleTypes r) (parseRuleOutput r tr)).
+
+  Definition parseTransformation (tr: Transformation) : TransformationA :=
+    (BuildTransformationA 
+       map parseRule (tr (fun c:SourceModel => nil) (BuildModel nil nil))).
+
+ 
   
   (** * Functions **)
 
