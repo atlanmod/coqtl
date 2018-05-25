@@ -8,6 +8,7 @@ Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Engine.
 Require Import core.utils.tTop.
+Require Import core.utils.tList.
 
 Set Implicit Arguments.
 
@@ -114,18 +115,30 @@ Section CoqTL.
     BuildGuardExpressionA :
       nat ->
       GuardExpressionA.
+
+   Definition GuardExpressionA_getRule (x : GuardExpressionA) : nat :=
+    match x with BuildGuardExpressionA y => y end.
   
   Inductive RuleA : Type := 
     BuildRuleA :
       list SourceModelClass ->
       GuardExpressionA ->
       list OutputPatternElementA -> RuleA.
+
+  Definition RuleA_getInTypes (x : RuleA) : list SourceModelClass :=
+    match x with BuildRuleA y _ _ => y end.
   
   Inductive TransformationA : Type := 
     BuildTransformationA :
       list RuleA ->
       Transformation ->
       TransformationA.
+
+  Definition TransformationA_getTransformation (x : TransformationA) : Transformation :=
+    match x with BuildTransformationA _ y => y end.
+
+  Definition TransformationA_getRules (x : TransformationA) : list RuleA :=
+    match x with BuildTransformationA y _ => y end.
 
   (** * Parser **)
   
@@ -162,11 +175,28 @@ Section CoqTL.
 
   (** * Expression Evaluation **)
   
-  Definition evalOutputBindingExpressionA (o : OutputBindingExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) : list TargetModelLink.
+  Definition evalOutputBindingExpressionA (o : OutputBindingExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) : option (list TargetModelLink).
+  Abort.
 
-  Definition evalOutputPatternElementExpressionA (o : OutputPatternElementExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement): TargetModelElement.
+  Definition evalOutputPatternElementExpressionA (o : OutputPatternElementExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement): option TargetModelElement.
+  Abort.
 
-  Definition evalGuardExpressionA (o : GuardExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : bool.
+  (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
+  Fixpoint evalGuardExpressionA' (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) : option bool :=
+    match r, intypes, el with
+    | BuildMultiElementRule s f, t::ts, e::els =>
+      e' <- toModelClass s e;
+        evalGuardExpressionA' (f e') ts sm els
+    | BuildSingleElementRule s f, t::nil, e::nil =>
+      e' <- toModelClass s e;
+      return (fst (f e'))
+    | _, _, _ => None
+    end.
+  
+  Definition evalGuardExpressionA (o : GuardExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
+    r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (GuardExpressionA_getRule o));
+      ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
+  evalGuardExpressionA' r (RuleA_getInTypes ra) sm sp. 
   
   (** * Functions **)
 
