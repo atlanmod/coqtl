@@ -54,7 +54,9 @@ Definition Class2Relational :=
 
   ].
 
-Unset Printing Notations.
+(*Unset Printing Notations.*)
+
+Compute parseTransformation Class2Relational.
 
 (* Print Class2Relational. *)
 (* Check Class2Relational. *)

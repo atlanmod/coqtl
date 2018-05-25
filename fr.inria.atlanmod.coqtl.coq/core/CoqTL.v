@@ -84,46 +84,72 @@ Section CoqTL.
 
   (** * Abstract Syntax **)
 
+  Inductive OutputBindingExpressionA : Type :=
+      BuildOutputBindingExpressionA :
+        nat ->
+        nat ->
+        nat ->
+        OutputBindingExpressionA.
+  
   Inductive OutputPatternElementReferenceA : Type :=
       BuildOutputPatternElementReferenceA :
         TargetModelReference ->
-        (SourceModel -> list SourceModelElement -> TargetModelElement -> list TargetModelLink) ->
+        (*(SourceModel -> list SourceModelElement -> TargetModelElement -> list TargetModelLink) -> *)
+        OutputBindingExpressionA -> 
         OutputPatternElementReferenceA.
+
+  Inductive OutputPatternElementExpressionA : Type :=
+    BuildOutputPatternElementExpressionA :
+      nat ->
+      nat ->
+      OutputPatternElementExpressionA.
   
   Inductive OutputPatternElementA : Type := 
     BuildOutputPatternElementA :
       string ->
       TargetModelClass ->
-      (SourceModel -> list SourceModelElement -> TargetModelElement) ->
+      (* (SourceModel -> list SourceModelElement -> TargetModelElement) -> *)
+      OutputPatternElementExpressionA ->
       list OutputPatternElementReferenceA -> OutputPatternElementA.
+
+  Inductive GuardExpressionA : Type :=
+    BuildGuardExpressionA :
+      nat ->
+      GuardExpressionA.
   
   Inductive RuleA : Type := 
     BuildRuleA :
       list SourceModelClass ->
-      (SourceModel -> list SourceModelElement -> bool) ->
+      (*(SourceModel -> list SourceModelElement -> bool) -> *)
+      GuardExpressionA ->
       list OutputPatternElementA -> RuleA.
   
   Inductive TransformationA : Type := 
     BuildTransformationA :
       list RuleA -> TransformationA.
   
-(*  Definition parseOutputPatternElementReference (tr: Transformation) (o: OutputPatternElementReference) : OutputPatternElementReferenceA :=   
+  Definition parseOutputPatternElementReference (tr: Transformation) (r ope oper: nat) (o: OutputPatternElementReference) : OutputPatternElementReferenceA :=   
     match o with
     | BuildOutputPatternElementReference t _ =>
-      BuildOutputPatternElementReferenceA t
-         (fun (sm: SourceModel) (smes: list SourceModelElement) (tme: TargetModelElement) ->
-           tr 
+      BuildOutputPatternElementReferenceA t (BuildOutputBindingExpressionA r ope oper)
     end.
 
-  Definition parseOutputPatternElement (tr: Transformation) (o: OutputPatternElement) : OutputPatternElementA :=   
+  Fixpoint mapWithIndex {A : Type} {B : Type} (f: nat -> A -> B) (n : nat) (l: list A) : list B :=
+    match l with
+      | nil => nil
+      | a :: t => (f n a) :: (mapWithIndex f (n + 1) t)
+    end.
+
+  Definition parseOutputPatternElement (tr: Transformation) (r ope: nat) (o: OutputPatternElement) : OutputPatternElementA :=   
     match o with
-    | BuildOutputPatternElement t n _ f => (BuildOutputPatternElementA n t (map (parseOutputPatternElementReference tr) (f (bottomModelClass t))))
+    | BuildOutputPatternElement t n _ f =>
+      BuildOutputPatternElementA n t (BuildOutputPatternElementExpressionA r ope) (mapWithIndex (parseOutputPatternElementReference tr r ope) 0 (f (bottomModelClass t)))
     end.
 
-  Fixpoint parseRuleOutput (tr: Transformation) (r: Rule) : list OutputPatternElementA :=
+  Fixpoint parseRuleOutput (tr: Transformation) (n: nat) (r: Rule) : list OutputPatternElementA :=
     match r with
-    | BuildMultiElementRule iet f => parseRuleOutput tr (f (bottomModelClass iet)) 
-    | BuildSingleElementRule iet f => map (parseOutputPatternElement tr) (snd (f (bottomModelClass iet))) 
+    | BuildMultiElementRule iet f => parseRuleOutput tr n (f (bottomModelClass iet)) 
+    | BuildSingleElementRule iet f => mapWithIndex (parseOutputPatternElement tr n) 0 (snd (f (bottomModelClass iet))) 
     end.    
   
   Fixpoint parseRuleTypes (r: Rule) : list SourceModelClass :=
@@ -132,12 +158,12 @@ Section CoqTL.
     | BuildSingleElementRule iet f => iet::nil
     end.
   
-  Definition parseRule (tr: Transformation) (r: Rule) : RuleA :=
-    (BuildRuleA (parseRuleTypes r) (parseRuleOutput tr r)).
+  Definition parseRule (tr: Transformation) (n: nat) (r: Rule) : RuleA :=
+    (BuildRuleA (parseRuleTypes r) (BuildGuardExpressionA n) (parseRuleOutput tr n r)).
 
-  Definition parseTransformation (tr: Transformation) : TransformationA :=
+ Definition parseTransformation (tr: Transformation) : TransformationA :=
     (BuildTransformationA 
-       (map (parseRule tr) (tr (fun c:SourceModel => nil) (BuildModel nil nil)))). *)    
+       (mapWithIndex (parseRule tr) 0 (tr (fun c:SourceModel => nil) (BuildModel nil nil) ))).
   
   (** * Functions **)
 
