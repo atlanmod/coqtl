@@ -126,7 +126,9 @@ Section CoqTL.
   
   Inductive TransformationA : Type := 
     BuildTransformationA :
-      list RuleA -> TransformationA.
+      list RuleA ->
+      Transformation ->
+      TransformationA.
   
   Definition parseOutputPatternElementReference (tr: Transformation) (r ope oper: nat) (o: OutputPatternElementReference) : OutputPatternElementReferenceA :=   
     match o with
@@ -162,8 +164,8 @@ Section CoqTL.
     (BuildRuleA (parseRuleTypes r) (BuildGuardExpressionA n) (parseRuleOutput tr n r)).
 
  Definition parseTransformation (tr: Transformation) : TransformationA :=
-    (BuildTransformationA 
-       (mapWithIndex (parseRule tr) 0 (tr (fun c:SourceModel => nil) (BuildModel nil nil) ))).
+    BuildTransformationA 
+       (mapWithIndex (parseRule tr) 0 (tr (fun c:SourceModel => nil) (BuildModel nil nil) )) tr.
   
   (** * Functions **)
 
