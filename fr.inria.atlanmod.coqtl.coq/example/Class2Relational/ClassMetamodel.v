@@ -221,6 +221,9 @@ Definition ClassMetamodel_toELink (c : ClassMetamodel_ELink) : ClassMetamodel_EL
 Definition ClassMetamodel_toEObjectOfEClass (t: ClassMetamodel_EClass) (e: ClassMetamodel_getTypeByEClass t) : ClassMetamodel_EObject :=
   (ClassMetamodel_BuildEObject t e).
 
+Definition ClassMetamodel_toELinkOfEReference (t: ClassMetamodel_EReference) (e: ClassMetamodel_getTypeByEReference t) : ClassMetamodel_ELink :=
+  (ClassMetamodel_BuildELink t e).
+
 Definition ClassMetamodel_getId (c : ClassMetamodel_EObject) : nat :=
   match c with
   | (ClassMetamodel_BuildEObject ClassEClass c) => getClassId c
@@ -294,6 +297,7 @@ Instance ClassMetamodel : Metamodel ClassMetamodel_EObject ClassMetamodel_ELink 
     toModelClass := ClassMetamodel_toEClass;
     toModelReference := ClassMetamodel_toEReference;
     toModelElement := ClassMetamodel_toEObjectOfEClass;
+    toModelLink := ClassMetamodel_toELinkOfEReference;
     bottomModelClass := ClassMetamodel_defaultInstanceOfEClass;
 
     (* Theorems *)

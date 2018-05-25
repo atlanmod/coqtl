@@ -253,7 +253,8 @@ Definition RelationalMetamodel_toELink (c : RelationalMetamodel_ELink) : Relatio
 Definition RelationalMetamodel_toEObjectOfEClass (t: RelationalMetamodel_EClass) (e: RelationalMetamodel_getTypeByEClass t) : RelationalMetamodel_EObject:=
   (RelationalMetamodel_BuildEObject t e).
 
-
+Definition RelationalMetamodel_toELinkOfEReference (t: RelationalMetamodel_EReference) (e: RelationalMetamodel_getTypeByEReference t) : RelationalMetamodel_ELink :=
+  (RelationalMetamodel_BuildELink t e).
 
 Definition RelationalMetamodel_getId (r : RelationalMetamodel_EObject) : nat :=
   match r with
@@ -326,6 +327,7 @@ Instance RelationalMetamodel : Metamodel RelationalMetamodel_EObject RelationalM
     toModelClass := toRelationalMetamodel_EClass;
     toModelReference := toRelationalMetamodel_EReference;
     toModelElement := RelationalMetamodel_toEObjectOfEClass;
+    toModelLink := RelationalMetamodel_toELinkOfEReference;
     bottomModelClass := bottomRelationalMetamodel_EClass;
 
     (* Theorems *)

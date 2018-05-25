@@ -46,6 +46,8 @@ Section CoqTL.
          ]
    **)
 
+  (** ** OutputPatternElementReference **)
+
   (* Build OutputPatternElementReference with :
       an ref_type
       an trg_instance
@@ -55,6 +57,32 @@ Section CoqTL.
   | BuildOutputPatternElementReference : forall (OutRefs: TargetModelReference),
       (option (denoteModelReference OutRefs))
       -> OutputPatternElementReference.
+
+  Definition OutputPatternElementReferenceType (o :  OutputPatternElementReference) : TargetModelReference :=
+    match o with
+      (BuildOutputPatternElementReference type link) => type
+    end.
+                                                                                       
+  Definition OutputPatternElementReferenceLink (o :  OutputPatternElementReference) : option TargetModelLink :=
+    match o with
+      (BuildOutputPatternElementReference type link) =>
+      ml <- link;
+      return toModelLink type ml
+    end.
+  
+  Fixpoint getOutputPatternElementReferenceTargetModelLinks (l : list OutputPatternElementReference) : list TargetModelLink :=
+    match l with
+    | nil => nil
+    | ope :: opel => match ope with
+                    | BuildOutputPatternElementReference OutRefs x =>
+                      match x with
+                      | Some x => BuildModelLink OutRefs x :: getOutputPatternElementReferenceTargetModelLinks opel
+                      | None => getOutputPatternElementReferenceTargetModelLinks opel
+                      end
+                    end
+    end.
+
+  (** ** OutputPatternElement **)
 
   (* Build OutputPatternElement with :
       an elem_type
@@ -68,6 +96,52 @@ Section CoqTL.
       -> (denoteModelClass OutElType)
       -> ((denoteModelClass OutElType) -> list OutputPatternElementReference)
       -> OutputPatternElement.
+  
+  Definition getOutputPatternElementName (o :  OutputPatternElement) : string :=
+    match o with
+      (BuildOutputPatternElement type name el refs) => name
+    end.
+
+  Definition getOutputPatternElementType (o :  OutputPatternElement) : TargetModelClass :=
+    match o with
+      (BuildOutputPatternElement type name el refs) => type
+    end.
+
+  Definition getOutputPatternElementBindings (o :  OutputPatternElement) : ((denoteModelClass (getOutputPatternElementType o)) -> list OutputPatternElementReference) :=
+    match o with
+      (BuildOutputPatternElement type name el refs) => refs
+    end.
+
+  Definition getOutputPatternElementElementType (o :  OutputPatternElement) : Set :=
+    match o with
+      (BuildOutputPatternElement type name el refs) => denoteModelClass type
+    end.
+
+  Definition getOutputPatternElementElement (o :  OutputPatternElement) : getOutputPatternElementElementType o :=
+    match o with
+      (BuildOutputPatternElement type name el refs) => el
+    end.
+  
+  Definition getOutputPatternElementTargetModelElement (o :  OutputPatternElement) : TargetModelElement :=
+    match o with
+    | BuildOutputPatternElement OutElType x x0 x1 => toModelElement OutElType x0
+    end.
+
+  Definition getOutputPatternElementTargetModelLinks (o :  OutputPatternElement): list TargetModelLink :=
+    match o with
+      (BuildOutputPatternElement type name el refs) => getOutputPatternElementReferenceTargetModelLinks (refs el)
+    end.
+
+  Definition getOutputPatternElementElementByType (o :  OutputPatternElement) (type: TargetModelClass) : option (denoteModelClass type).
+  Proof.
+    remember o as ope.
+    destruct o.
+    remember (eqModelClass_dec type OutElType) as equal.
+    destruct equal.
+    - rewrite e.
+      exact (Some d).
+    - exact None.
+  Defined.
 
   Inductive Rule: Type :=
   | BuildMultiElementRule :
@@ -91,6 +165,15 @@ Section CoqTL.
         nat ->
         nat ->
         OutputBindingExpressionA.
+
+  Definition OutputBindingExpressionA_getRule (x : OutputBindingExpressionA) : nat :=
+    match x with BuildOutputBindingExpressionA y _ _ => y end.
+  
+  Definition OutputBindingExpressionA_getOutputPatternElement (x : OutputBindingExpressionA) : nat :=
+    match x with BuildOutputBindingExpressionA _ y _ => y end.
+
+  Definition OutputBindingExpressionA_getOutputBinding (x : OutputBindingExpressionA) : nat :=
+    match x with BuildOutputBindingExpressionA _ _ y => y end.
   
   Inductive OutputPatternElementReferenceA : Type :=
       BuildOutputPatternElementReferenceA :
@@ -103,6 +186,12 @@ Section CoqTL.
       nat ->
       nat ->
       OutputPatternElementExpressionA.
+
+  Definition OutputPatternElementExpressionA_getRule (x : OutputPatternElementExpressionA) : nat :=
+    match x with BuildOutputPatternElementExpressionA y _ => y end.
+
+  Definition OutputPatternElementExpressionA_getOutputPatternElement (x : OutputPatternElementExpressionA) : nat :=
+    match x with BuildOutputPatternElementExpressionA _ y => y end.
   
   Inductive OutputPatternElementA : Type := 
     BuildOutputPatternElementA :
@@ -116,7 +205,7 @@ Section CoqTL.
       nat ->
       GuardExpressionA.
 
-   Definition GuardExpressionA_getRule (x : GuardExpressionA) : nat :=
+  Definition GuardExpressionA_getRule (x : GuardExpressionA) : nat :=
     match x with BuildGuardExpressionA y => y end.
   
   Inductive RuleA : Type := 
@@ -174,12 +263,44 @@ Section CoqTL.
       (mapWithIndex (parseRule tr) 0 (tr (fun c:SourceModel => nil) (BuildModel nil nil) )) tr.
 
   (** * Expression Evaluation **)
-  
-  Definition evalOutputBindingExpressionA (o : OutputBindingExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) : option (list TargetModelLink).
-  Abort.
 
-  Definition evalOutputPatternElementExpressionA (o : OutputPatternElementExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement): option TargetModelElement.
-  Abort.
+  (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
+  Fixpoint evalOutputBindingExpressionA' (o : OutputBindingExpressionA) (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) (te: TargetModelElement) : option TargetModelLink :=
+    match r, intypes, el with
+    | BuildMultiElementRule s f, t::ts, e::els =>
+      e' <- toModelClass s e;
+        evalOutputBindingExpressionA' o (f e') ts sm els te
+    | BuildSingleElementRule s f, t::nil, e::nil =>
+      e' <- toModelClass s e;
+        ope <- (nth_error (snd (f e')) (OutputBindingExpressionA_getOutputPatternElement o));
+        te' <- toModelClass (getOutputPatternElementType ope) te;
+        oper <- (nth_error ((getOutputPatternElementBindings ope) te') (OutputBindingExpressionA_getOutputBinding o));
+        (OutputPatternElementReferenceLink oper)
+    | _, _, _ => None
+    end.
+  
+  Definition evalOutputBindingExpressionA (o : OutputBindingExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) : option (TargetModelLink) :=
+  r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputBindingExpressionA_getRule o));
+    ra <- (nth_error (TransformationA_getRules tr) (OutputBindingExpressionA_getRule o));
+  evalOutputBindingExpressionA' o r (RuleA_getInTypes ra) sm sp te. 
+
+  (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
+  Fixpoint evalOutputPatternElementExpressionA' (o : OutputPatternElementExpressionA) (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) : option TargetModelElement :=
+    match r, intypes, el with
+    | BuildMultiElementRule s f, t::ts, e::els =>
+      e' <- toModelClass s e;
+        evalOutputPatternElementExpressionA' o (f e') ts sm els
+    | BuildSingleElementRule s f, t::nil, e::nil =>
+      e' <- toModelClass s e;
+        ope <- (nth_error (snd (f e')) (OutputPatternElementExpressionA_getOutputPatternElement o));
+        return (getOutputPatternElementTargetModelElement ope)
+    | _, _, _ => None
+    end.
+  
+  Definition evalOutputPatternElementExpressionA (o : OutputPatternElementExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement): option TargetModelElement :=
+  r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputPatternElementExpressionA_getRule o));
+    ra <- (nth_error (TransformationA_getRules tr) (OutputPatternElementExpressionA_getRule o));
+  evalOutputPatternElementExpressionA' o r (RuleA_getInTypes ra) sm sp. 
 
   (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
   Fixpoint evalGuardExpressionA' (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) : option bool :=
@@ -199,63 +320,6 @@ Section CoqTL.
   evalGuardExpressionA' r (RuleA_getInTypes ra) sm sp. 
   
   (** * Functions **)
-
-  (** ** OutputPatternElementReference **)
-  
-  Fixpoint getOutputPatternElementReferenceTargetModelLinks (l : list OutputPatternElementReference) : list TargetModelLink :=
-    match l with
-    | nil => nil
-    | ope :: opel => match ope with
-                    | BuildOutputPatternElementReference OutRefs x =>
-                      match x with
-                      | Some x => BuildModelLink OutRefs x :: getOutputPatternElementReferenceTargetModelLinks opel
-                      | None => getOutputPatternElementReferenceTargetModelLinks opel
-                      end
-                    end
-    end.
-
-  (** ** OutputPatternElement **)
-  
-  Definition getOutputPatternElementName (o :  OutputPatternElement) : string :=
-    match o with
-      (BuildOutputPatternElement type name el refs) => name
-    end.
-
-  Definition getOutputPatternElementType (o :  OutputPatternElement) : TargetModelClass :=
-    match o with
-      (BuildOutputPatternElement type name el refs) => type
-    end.
-
-  Definition getOutputPatternElementElementType (o :  OutputPatternElement) : Set :=
-    match o with
-      (BuildOutputPatternElement type name el refs) => denoteModelClass type
-    end.
-
-  Definition getOutputPatternElementElement (o :  OutputPatternElement) : getOutputPatternElementElementType o :=
-    match o with
-      (BuildOutputPatternElement type name el refs) => el
-    end.
-
-  Definition getOutputPatternElementTargetModelElement (o :  OutputPatternElement) : TargetModelElement :=
-    match o with
-    | BuildOutputPatternElement OutElType x x0 x1 => toModelElement OutElType x0
-    end.
-
-  Definition getOutputPatternElementTargetModelLinks (o :  OutputPatternElement): list TargetModelLink :=
-    match o with
-      (BuildOutputPatternElement type name el refs) => getOutputPatternElementReferenceTargetModelLinks (refs el)
-    end.
-
-  Definition getOutputPatternElementElementByType (o :  OutputPatternElement) (type: TargetModelClass) : option (denoteModelClass type).
-  Proof.
-    remember o as ope.
-    destruct o.
-    remember (eqModelClass_dec type OutElType) as equal.
-    destruct equal.
-    - rewrite e.
-      exact (Some d).
-    - exact None.
-  Defined.
 
   (** ** list OutputPatternElement **)
 

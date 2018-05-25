@@ -15,7 +15,8 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
 
     (* Upcasting *)
     toModelElement: forall (t: ModelClass), (denoteModelClass t) -> ModelElement;
-
+    toModelLink: forall (t: ModelReference), (denoteModelReference t) -> ModelLink;
+    
     (* Decidability of equality *)
     eqModelClass_dec: forall (c1:ModelClass) (c2:ModelClass), { c1 = c2 } + { c1 <> c2 };
     eqModelReference_dec: forall (c1:ModelReference) (c2:ModelReference), { c1 = c2 } + { c1 <> c2 };
