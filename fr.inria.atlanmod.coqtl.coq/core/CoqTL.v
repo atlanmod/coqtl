@@ -94,7 +94,6 @@ Section CoqTL.
   Inductive OutputPatternElementReferenceA : Type :=
       BuildOutputPatternElementReferenceA :
         TargetModelReference ->
-        (*(SourceModel -> list SourceModelElement -> TargetModelElement -> list TargetModelLink) -> *)
         OutputBindingExpressionA -> 
         OutputPatternElementReferenceA.
 
@@ -108,7 +107,6 @@ Section CoqTL.
     BuildOutputPatternElementA :
       string ->
       TargetModelClass ->
-      (* (SourceModel -> list SourceModelElement -> TargetModelElement) -> *)
       OutputPatternElementExpressionA ->
       list OutputPatternElementReferenceA -> OutputPatternElementA.
 
@@ -120,7 +118,6 @@ Section CoqTL.
   Inductive RuleA : Type := 
     BuildRuleA :
       list SourceModelClass ->
-      (*(SourceModel -> list SourceModelElement -> bool) -> *)
       GuardExpressionA ->
       list OutputPatternElementA -> RuleA.
   
@@ -129,6 +126,8 @@ Section CoqTL.
       list RuleA ->
       Transformation ->
       TransformationA.
+
+  (** * Parser **)
   
   Definition parseOutputPatternElementReference (tr: Transformation) (r ope oper: nat) (o: OutputPatternElementReference) : OutputPatternElementReferenceA :=   
     match o with
@@ -163,9 +162,17 @@ Section CoqTL.
   Definition parseRule (tr: Transformation) (n: nat) (r: Rule) : RuleA :=
     (BuildRuleA (parseRuleTypes r) (BuildGuardExpressionA n) (parseRuleOutput tr n r)).
 
- Definition parseTransformation (tr: Transformation) : TransformationA :=
+  Definition parseTransformation (tr: Transformation) : TransformationA :=
     BuildTransformationA 
-       (mapWithIndex (parseRule tr) 0 (tr (fun c:SourceModel => nil) (BuildModel nil nil) )) tr.
+      (mapWithIndex (parseRule tr) 0 (tr (fun c:SourceModel => nil) (BuildModel nil nil) )) tr.
+
+  (** * Expression Evaluation **)
+  
+  Definition evalOutputBindingExpressionA (o : OutputBindingExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) : list TargetModelLink.
+
+  Definition evalOutputPatternElementExpressionA (o : OutputPatternElementExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement): TargetModelElement.
+
+  Definition evalGuardExpressionA (o : GuardExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : bool.
   
   (** * Functions **)
 
