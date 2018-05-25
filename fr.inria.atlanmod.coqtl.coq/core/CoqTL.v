@@ -135,12 +135,6 @@ Section CoqTL.
       BuildOutputPatternElementReferenceA t (BuildOutputBindingExpressionA r ope oper)
     end.
 
-  Fixpoint mapWithIndex {A : Type} {B : Type} (f: nat -> A -> B) (n : nat) (l: list A) : list B :=
-    match l with
-      | nil => nil
-      | a :: t => (f n a) :: (mapWithIndex f (n + 1) t)
-    end.
-
   Definition parseOutputPatternElement (tr: Transformation) (r ope: nat) (o: OutputPatternElement) : OutputPatternElementA :=   
     match o with
     | BuildOutputPatternElement t n _ f =>

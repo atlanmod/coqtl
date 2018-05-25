@@ -42,3 +42,9 @@ Qed.
 
 Definition singletons {A: Type} (l : list A) : list (list A) :=
   listToListList l.
+
+Fixpoint mapWithIndex {A : Type} {B : Type} (f: nat -> A -> B) (n : nat) (l: list A) : list B :=
+    match l with
+      | nil => nil
+      | a :: t => (f n a) :: (mapWithIndex f (n + 1) t)
+    end.
