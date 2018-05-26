@@ -48,3 +48,10 @@ Fixpoint mapWithIndex {A : Type} {B : Type} (f: nat -> A -> B) (n : nat) (l: lis
       | nil => nil
       | a :: t => (f n a) :: (mapWithIndex f (n + 1) t)
     end.
+
+Fixpoint zipWith {A : Type} {B : Type} {C : Type} (f: A -> B -> C) (la: list A) (lb: list B) : list C :=
+  match la, lb with
+  | ea::eas, eb::ebs => (f ea eb) :: (zipWith f eas ebs)
+  | nil, _ => nil
+  | _, nil => nil
+  end.

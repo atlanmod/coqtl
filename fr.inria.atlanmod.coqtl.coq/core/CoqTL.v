@@ -181,6 +181,12 @@ Section CoqTL.
         OutputBindingExpressionA -> 
         OutputPatternElementReferenceA.
 
+  Definition OutputPatternElementReferenceA_getType (x : OutputPatternElementReferenceA) : TargetModelReference :=
+    match x with BuildOutputPatternElementReferenceA y _ => y end. 
+  
+  Definition OutputPatternElementReferenceA_getOutputBindingExpression (x : OutputPatternElementReferenceA) : OutputBindingExpressionA :=
+    match x with BuildOutputPatternElementReferenceA _ y => y end. 
+
   Inductive OutputPatternElementExpressionA : Type :=
     BuildOutputPatternElementExpressionA :
       nat ->
@@ -200,6 +206,18 @@ Section CoqTL.
       OutputPatternElementExpressionA ->
       list OutputPatternElementReferenceA -> OutputPatternElementA.
 
+  Definition OutputPatternElementA_getName (x : OutputPatternElementA) : string :=
+    match x with BuildOutputPatternElementA y _ _ _  => y end.
+
+  Definition OutputPatternElementA_getType (x : OutputPatternElementA) : TargetModelClass :=
+    match x with BuildOutputPatternElementA _ y _ _  => y end.
+
+  Definition OutputPatternElementA_getOutputPatternElementExpression (x : OutputPatternElementA) : OutputPatternElementExpressionA :=
+    match x with BuildOutputPatternElementA _ _ y _  => y end.
+
+  Definition OutputPatternElementA_getOutputPatternElementReferences (x : OutputPatternElementA) : list OutputPatternElementReferenceA :=
+    match x with BuildOutputPatternElementA _ _ _ y  => y end.
+
   Inductive GuardExpressionA : Type :=
     BuildGuardExpressionA :
       nat ->
@@ -216,6 +234,12 @@ Section CoqTL.
 
   Definition RuleA_getInTypes (x : RuleA) : list SourceModelClass :=
     match x with BuildRuleA y _ _ => y end.
+
+  Definition RuleA_getGuard (x : RuleA) : GuardExpressionA :=
+    match x with BuildRuleA _ y _ => y end.
+
+  Definition RuleA_getOutputPattern (x : RuleA) : list OutputPatternElementA :=
+    match x with BuildRuleA _ _ y => y end.  
   
   Inductive TransformationA : Type := 
     BuildTransformationA :
@@ -279,7 +303,7 @@ Section CoqTL.
     | _, _, _ => None
     end.
   
-  Definition evalOutputBindingExpressionA (o : OutputBindingExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) : option (TargetModelLink) :=
+  Definition evalOutputBindingExpressionA (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) (o : OutputBindingExpressionA) : option (TargetModelLink) :=
   r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputBindingExpressionA_getRule o));
     ra <- (nth_error (TransformationA_getRules tr) (OutputBindingExpressionA_getRule o));
   evalOutputBindingExpressionA' o r (RuleA_getInTypes ra) sm sp te. 
@@ -297,7 +321,7 @@ Section CoqTL.
     | _, _, _ => None
     end.
   
-  Definition evalOutputPatternElementExpressionA (o : OutputPatternElementExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement): option TargetModelElement :=
+  Definition evalOutputPatternElementExpressionA (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (o : OutputPatternElementExpressionA): option TargetModelElement :=
   r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputPatternElementExpressionA_getRule o));
     ra <- (nth_error (TransformationA_getRules tr) (OutputPatternElementExpressionA_getRule o));
   evalOutputPatternElementExpressionA' o r (RuleA_getInTypes ra) sm sp. 
@@ -318,7 +342,41 @@ Section CoqTL.
     r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (GuardExpressionA_getRule o));
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
   evalGuardExpressionA' r (RuleA_getInTypes ra) sm sp. 
+
+  (** * Engine **)
+
+  (** ** Rule application **)
+
+  Inductive ModelFragment (ModelElement: Type) (ModelLink: Type): Type :=
+    BuildModelFragment: list ModelElement -> list ModelLink -> ModelFragment ModelElement ModelLink.
   
+  Definition instantiateRuleOnPatternA (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
+    m <- evalGuardExpressionA (RuleA_getGuard r) tr sm sp;
+      if m then 
+        return optionList2List (map (evalOutputPatternElementExpressionA tr sm sp) (map OutputPatternElementA_getOutputPatternElementExpression (RuleA_getOutputPattern r)))
+      else
+        None.
+
+  Definition applyOutputPatternReferencesOnPatternA (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) : list TargetModelLink :=
+  optionList2List (map (evalOutputBindingExpressionA tr sm sp te) (map OutputPatternElementReferenceA_getOutputBindingExpression l)).
+
+  Definition applyRuleOnPatternA (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (ModelFragment TargetModelElement TargetModelLink) :=
+    tes <- instantiateRuleOnPatternA r tr sm sp;
+  return BuildModelFragment tes 
+          (concat (zipWith (applyOutputPatternReferencesOnPatternA tr sm sp) 
+                           (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) tes)).
+
+  
+
+
+
+
+
+
+
+
+
+         
   (** * Functions **)
 
   (** ** list OutputPatternElement **)
@@ -334,7 +392,7 @@ Section CoqTL.
 
   
   (** ** Rule application **)
-  
+
   Fixpoint matchRuleOnPattern (r: Rule) (el: list SourceModelElement) : option (list OutputPatternElement) :=
     match r, el with
     | BuildMultiElementRule t f, e::els =>
@@ -348,9 +406,6 @@ Section CoqTL.
         end
     | _, _ => None
     end.
-
-  Inductive ModelFragment (ModelElement: Type) (ModelLink: Type): Type :=
-    BuildModelFragment: list ModelElement -> list ModelLink -> ModelFragment ModelElement ModelLink.
   
   Definition executeRuleOnPattern (r: Rule) (el: list SourceModelElement) : option (list TargetModelElement * list TargetModelLink) :=
     match matchRuleOnPattern r el with
