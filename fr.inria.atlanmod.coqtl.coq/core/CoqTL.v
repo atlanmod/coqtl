@@ -419,7 +419,27 @@ Section CoqTL.
       (concat (optionList2List (map (instantiatePattern (TransformationA_getRules tr) tr sm) (allTuples tr sm))))
       (concat (optionList2List (map (applyPattern (TransformationA_getRules tr) tr sm) (allTuples tr sm)))). 
 
-(*  Lemma matchPatternLimit :
+  Theorem match_incl :
+        forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
+          matchPattern (TransformationA_getRules tr) tr sm sp = Some r -> In r (TransformationA_getRules tr).
+  Proof.
+    intro tr.
+    induction (TransformationA_getRules tr).
+    - intros. inversion H.
+    - simpl.
+      intros sm sp r.
+      destruct (evalGuardExpression (RuleA_getGuard a) tr sm sp).
+      * intros.
+        inversion H.
+        left.
+        reflexivity.
+      * intros.
+        apply IHl in H.
+        right.
+        assumption.
+  Qed.
+  
+(* Lemma matchPatternLimit :
     forall (tr: list Rule) (inelems: list SourceModelElement) (n: nat),
       matchPattern'' tr inelems = Some n -> n < length tr.
   Proof.
@@ -465,22 +485,6 @@ Section CoqTL.
         matchPattern (getRules tr sm) sp = Some r ).
   Abort.
   *)
-
-  (*Lemma matchPattern_in_getRules :
-    forall (tr: Transformation) (sm: SourceModel) (r: Rule) (sp: list SourceModelElement),
-      (matchPattern (matchPhase tr sm) sp) = Some r -> In r (getRules tr sm).
-  Proof.
-    unfold getRules.
-    intros tr sm.
-    induction (matchPhase tr sm).
-    - intros. inversion H.
-    - intros.
-      simpl.
-      simpl in H.
-      destruct (matchRuleOnPattern a sp) in H.
-      -- left. inversion H. reflexivity.
-      -- right. apply IHl in H. apply H.
-  Qed. *)
 
   (* Theorem tr_surj : 
     forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
