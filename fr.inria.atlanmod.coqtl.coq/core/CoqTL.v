@@ -366,7 +366,9 @@ Section CoqTL.
           (concat (zipWith (applyOutputPatternReferencesOnPatternA tr sm sp) 
                            (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) tes)).
 
-  
+  Definition maxArityA (tr: TransformationA) : nat :=
+    fold_left max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))) 0.
+                                                     
 
 
 

@@ -55,8 +55,7 @@ Definition Class2Relational :=
   ].
 
 (*Unset Printing Notations.*)
-
-Compute parseTransformation Class2Relational.
+Compute maxArityA (parseTransformation Class2Relational).
 
 (* Print Class2Relational. *)
 (* Check Class2Relational. *)
