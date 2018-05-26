@@ -438,6 +438,16 @@ Section CoqTL.
         right.
         assumption.
   Qed.
+
+  Theorem match_fun :
+        forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r1: RuleA) (r2: RuleA),
+          matchPattern (TransformationA_getRules tr) tr sm sp = Some r1 -> matchPattern (TransformationA_getRules tr) tr sm sp = Some r2 -> r1 = r2.
+  Proof.
+    intros.
+    rewrite H in H0.
+    inversion H0.
+    reflexivity.
+  Qed.
   
 (* Lemma matchPatternLimit :
     forall (tr: list Rule) (inelems: list SourceModelElement) (n: nat),
