@@ -360,25 +360,44 @@ Section CoqTL.
   Definition applyOutputPatternReferencesOnPatternA (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) : list TargetModelLink :=
   optionList2List (map (evalOutputBindingExpressionA tr sm sp te) (map OutputPatternElementReferenceA_getOutputBindingExpression l)).
 
-  Definition applyRuleOnPatternA (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (ModelFragment TargetModelElement TargetModelLink) :=
-    tes <- instantiateRuleOnPatternA r tr sm sp;
-  return BuildModelFragment tes 
-          (concat (zipWith (applyOutputPatternReferencesOnPatternA tr sm sp) 
+  Definition applyRuleOnPatternA (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (tes: list TargetModelElement): option (list TargetModelLink) :=
+  return (concat (zipWith (applyOutputPatternReferencesOnPatternA tr sm sp) 
                            (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) tes)).
 
   Definition maxArityA (tr: TransformationA) : nat :=
     fold_left max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))) 0.
                                                      
+  Definition allTuplesA (tr: TransformationA) (sm : SourceModel) :list (list SourceModelElement) :=
+    tuples_up_to_n (allModelElements sm) (maxArityA tr).
 
+  Fixpoint matchPatternA (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option RuleA :=
+    match l with
+    | r :: rs => match evalGuardExpressionA (RuleA_getGuard r) tr sm sp with
+                | Some op => Some r
+                | None => matchPatternA rs tr sm sp
+                end
+    | nil => None
+    end.
+  
+  Definition instantiatePatternA (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
+    r <- matchPatternA l tr sm sp;
+     instantiateRuleOnPatternA r tr sm sp.
 
+  Definition applyPatternA (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
+    r <- matchPatternA l tr sm sp;
+      tes <- instantiateRuleOnPatternA r tr sm sp;
+        applyRuleOnPatternA r tr sm sp tes.
 
+  Definition transformPatternA (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (ModelFragment TargetModelElement TargetModelLink) :=
+      tes <- instantiatePatternA l tr sm sp;
+        tls <- applyPatternA l tr sm sp;
+  return BuildModelFragment tes tls.
 
+  Definition executeA (tr: TransformationA) (sm : SourceModel) : TargetModel :=
+    BuildModel
+      (concat (optionList2List (map (instantiatePatternA (TransformationA_getRules tr) tr sm) (allTuplesA tr sm))))
+      (concat (optionList2List (map (applyPatternA (TransformationA_getRules tr) tr sm) (allTuplesA tr sm)))). 
 
-
-
-
-
-         
   (** * Functions **)
 
   (** ** list OutputPatternElement **)

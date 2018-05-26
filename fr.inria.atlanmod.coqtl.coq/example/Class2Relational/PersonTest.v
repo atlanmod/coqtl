@@ -13,4 +13,4 @@ Require Import example.PersonModel.
 
 (* Require Import Class2RelationalVerif. *)
 
-Compute (execute Class2Relational PersonModel).
+Compute (execute Class2Relational PersonModel)::(executeA (parseTransformation Class2Relational) PersonModel)::nil.
