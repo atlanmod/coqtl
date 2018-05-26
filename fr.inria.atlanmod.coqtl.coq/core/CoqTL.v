@@ -281,10 +281,13 @@ Section CoqTL.
   
   Definition parseRule (tr: Transformation) (n: nat) (r: Rule) : RuleA :=
     (BuildRuleA (parseRuleTypes r) (BuildGuardExpressionA n) (parseRuleOutput tr n r)).
-
+  
   Definition parseTransformation (tr: Transformation) : TransformationA :=
     BuildTransformationA 
       (mapWithIndex (parseRule tr) 0 (tr (fun c:SourceModel => nil) (BuildModel nil nil) )) tr.
+
+  Definition parsePhase (tr: Phase) : TransformationA :=
+    parseTransformation (fun t: Phase => tr).
 
   (** * Expression Evaluation **)
 
@@ -304,7 +307,7 @@ Section CoqTL.
     end.
   
   Definition evalOutputBindingExpressionA (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) (o : OutputBindingExpressionA) : option (TargetModelLink) :=
-  r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputBindingExpressionA_getRule o));
+  r <- (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (OutputBindingExpressionA_getRule o));
     ra <- (nth_error (TransformationA_getRules tr) (OutputBindingExpressionA_getRule o));
   evalOutputBindingExpressionA' o r (RuleA_getInTypes ra) sm sp te. 
 
@@ -397,10 +400,10 @@ Section CoqTL.
       te <- evalOutputPatternElementExpressionA tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope);
       toModelClass type te.
 
-  Definition resolveA (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement): option (denoteModelClass type) :=
-    resolveFixA (TransformationA_getRules tr) tr sm name type sp.
+  Definition resolveA (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement): option (denoteModelClass type) :=
+    resolveFixA (TransformationA_getRules (parsePhase tr)) (parsePhase tr) sm name type sp.
     
-  Definition resolveAllA (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) : option (list (denoteModelClass type)) :=
+  Definition resolveAllA (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) : option (list (denoteModelClass type)) :=
     Some (optionList2List (map (resolveA tr sm name type) sps)).
 
   (** ** Rule scheduling **)
