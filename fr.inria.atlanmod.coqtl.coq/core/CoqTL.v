@@ -292,11 +292,11 @@ Section CoqTL.
   (** * Expression Evaluation **)
 
   (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
-  Fixpoint evalOutputBindingExpressionA' (o : OutputBindingExpressionA) (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) (te: TargetModelElement) : option TargetModelLink :=
+  Fixpoint evalOutputBindingExpressionFix (o : OutputBindingExpressionA) (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) (te: TargetModelElement) : option TargetModelLink :=
     match r, intypes, el with
     | BuildMultiElementRule s f, t::ts, e::els =>
       e' <- toModelClass s e;
-        evalOutputBindingExpressionA' o (f e') ts sm els te
+        evalOutputBindingExpressionFix o (f e') ts sm els te
     | BuildSingleElementRule s f, t::nil, e::nil =>
       e' <- toModelClass s e;
         ope <- (nth_error (snd (f e')) (OutputBindingExpressionA_getOutputPatternElement o));
@@ -306,17 +306,17 @@ Section CoqTL.
     | _, _, _ => None
     end.
   
-  Definition evalOutputBindingExpressionA (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) (o : OutputBindingExpressionA) : option (TargetModelLink) :=
+  Definition evalOutputBindingExpression (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) (o : OutputBindingExpressionA) : option (TargetModelLink) :=
   r <- (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (OutputBindingExpressionA_getRule o));
     ra <- (nth_error (TransformationA_getRules tr) (OutputBindingExpressionA_getRule o));
-  evalOutputBindingExpressionA' o r (RuleA_getInTypes ra) sm sp te. 
+  evalOutputBindingExpressionFix o r (RuleA_getInTypes ra) sm sp te. 
 
   (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
-  Fixpoint evalOutputPatternElementExpressionA' (o : OutputPatternElementExpressionA) (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) : option TargetModelElement :=
+  Fixpoint evalOutputPatternElementExpressionFix (o : OutputPatternElementExpressionA) (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) : option TargetModelElement :=
     match r, intypes, el with
     | BuildMultiElementRule s f, t::ts, e::els =>
       e' <- toModelClass s e;
-        evalOutputPatternElementExpressionA' o (f e') ts sm els
+        evalOutputPatternElementExpressionFix o (f e') ts sm els
     | BuildSingleElementRule s f, t::nil, e::nil =>
       e' <- toModelClass s e;
         ope <- (nth_error (snd (f e')) (OutputPatternElementExpressionA_getOutputPatternElement o));
@@ -324,27 +324,27 @@ Section CoqTL.
     | _, _, _ => None
     end.
   
-  Definition evalOutputPatternElementExpressionA (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (o : OutputPatternElementExpressionA): option TargetModelElement :=
+  Definition evalOutputPatternElementExpression (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (o : OutputPatternElementExpressionA): option TargetModelElement :=
   r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputPatternElementExpressionA_getRule o));
     ra <- (nth_error (TransformationA_getRules tr) (OutputPatternElementExpressionA_getRule o));
-  evalOutputPatternElementExpressionA' o r (RuleA_getInTypes ra) sm sp. 
+  evalOutputPatternElementExpressionFix o r (RuleA_getInTypes ra) sm sp. 
 
   (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
-  Fixpoint evalGuardExpressionA' (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) : option bool :=
+  Fixpoint evalGuardExpressionFix (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) : option bool :=
     match r, intypes, el with
     | BuildMultiElementRule s f, t::ts, e::els =>
       e' <- toModelClass s e;
-        evalGuardExpressionA' (f e') ts sm els
+        evalGuardExpressionFix (f e') ts sm els
     | BuildSingleElementRule s f, t::nil, e::nil =>
       e' <- toModelClass s e;
       return (fst (f e'))
     | _, _, _ => None
     end.
   
-  Definition evalGuardExpressionA (o : GuardExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
+  Definition evalGuardExpression (o : GuardExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
     r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (GuardExpressionA_getRule o));
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
-  evalGuardExpressionA' r (RuleA_getInTypes ra) sm sp. 
+  evalGuardExpressionFix r (RuleA_getInTypes ra) sm sp. 
 
   (** * Engine **)
 
@@ -353,271 +353,73 @@ Section CoqTL.
   Inductive ModelFragment (ModelElement: Type) (ModelLink: Type): Type :=
     BuildModelFragment: list ModelElement -> list ModelLink -> ModelFragment ModelElement ModelLink.
   
-  Definition instantiateRuleOnPatternA (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
-    m <- evalGuardExpressionA (RuleA_getGuard r) tr sm sp;
+  Definition instantiateRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
+    m <- evalGuardExpression (RuleA_getGuard r) tr sm sp;
       if m then 
-        return optionList2List (map (evalOutputPatternElementExpressionA tr sm sp) (map OutputPatternElementA_getOutputPatternElementExpression (RuleA_getOutputPattern r)))
+        return optionList2List (map (evalOutputPatternElementExpression tr sm sp) (map OutputPatternElementA_getOutputPatternElementExpression (RuleA_getOutputPattern r)))
       else
         None.
 
-  Definition applyOutputPatternReferencesOnPatternA (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) : list TargetModelLink :=
-  optionList2List (map (evalOutputBindingExpressionA tr sm sp te) (map OutputPatternElementReferenceA_getOutputBindingExpression l)).
+  Definition applyOutputPatternReferencesOnPattern (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) : list TargetModelLink :=
+  optionList2List (map (evalOutputBindingExpression tr sm sp te) (map OutputPatternElementReferenceA_getOutputBindingExpression l)).
 
-  Definition applyRuleOnPatternA (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (tes: list TargetModelElement): option (list TargetModelLink) :=
-  return (concat (zipWith (applyOutputPatternReferencesOnPatternA tr sm sp) 
+  Definition applyRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (tes: list TargetModelElement): option (list TargetModelLink) :=
+  return (concat (zipWith (applyOutputPatternReferencesOnPattern tr sm sp) 
                           (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) tes)).
 
   (** ** Rule matching **)
 
-  Fixpoint matchPatternA (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option RuleA :=
+  Fixpoint matchPattern (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option RuleA :=
     match l with
-    | r :: rs => match evalGuardExpressionA (RuleA_getGuard r) tr sm sp with
+    | r :: rs => match evalGuardExpression (RuleA_getGuard r) tr sm sp with
                 | Some op => Some r
-                | None => matchPatternA rs tr sm sp
+                | None => matchPattern rs tr sm sp
                 end
     | nil => None
     end.
   
-  Definition instantiatePatternA (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
-    r <- matchPatternA l tr sm sp;
-     instantiateRuleOnPatternA r tr sm sp.
+  Definition instantiatePattern (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
+    r <- matchPattern l tr sm sp;
+     instantiateRuleOnPattern r tr sm sp.
 
-  Definition applyPatternA (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
-    r <- matchPatternA l tr sm sp;
-      tes <- instantiateRuleOnPatternA r tr sm sp;
-        applyRuleOnPatternA r tr sm sp tes.
+  Definition applyPattern (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
+    r <- matchPattern l tr sm sp;
+      tes <- instantiateRuleOnPattern r tr sm sp;
+        applyRuleOnPattern r tr sm sp tes.
 
-  Definition transformPatternA (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (ModelFragment TargetModelElement TargetModelLink) :=
-      tes <- instantiatePatternA l tr sm sp;
-        tls <- applyPatternA l tr sm sp;
+  Definition transformPattern (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (ModelFragment TargetModelElement TargetModelLink) :=
+      tes <- instantiatePattern l tr sm sp;
+        tls <- applyPattern l tr sm sp;
   return BuildModelFragment tes tls.
 
   (** ** Resolution **)
 
-  Definition resolveFixA (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
-    r <- matchPatternA l tr sm sp;
+  Definition resolveFix (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
+    r <- matchPattern l tr sm sp;
       ope <- find (fun oel => beq_string (OutputPatternElementA_getName oel) name) (RuleA_getOutputPattern r);
-      te <- evalOutputPatternElementExpressionA tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope);
+      te <- evalOutputPatternElementExpression tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope);
       toModelClass type te.
 
-  Definition resolveA (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement): option (denoteModelClass type) :=
-    resolveFixA (TransformationA_getRules (parsePhase tr)) (parsePhase tr) sm name type sp.
+  Definition resolve (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement): option (denoteModelClass type) :=
+    resolveFix (TransformationA_getRules (parsePhase tr)) (parsePhase tr) sm name type sp.
     
-  Definition resolveAllA (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) : option (list (denoteModelClass type)) :=
-    Some (optionList2List (map (resolveA tr sm name type) sps)).
+  Definition resolveAll (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) : option (list (denoteModelClass type)) :=
+    Some (optionList2List (map (resolve tr sm name type) sps)).
 
   (** ** Rule scheduling **)
   
-  Definition maxArityA (tr: TransformationA) : nat :=
+  Definition maxArity (tr: TransformationA) : nat :=
     fold_left max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))) 0.
                                                      
-  Definition allTuplesA (tr: TransformationA) (sm : SourceModel) :list (list SourceModelElement) :=
-    tuples_up_to_n (allModelElements sm) (maxArityA tr).
+  Definition allTuples (tr: TransformationA) (sm : SourceModel) :list (list SourceModelElement) :=
+    tuples_up_to_n (allModelElements sm) (maxArity tr).
 
-  Definition executeA (tr: TransformationA) (sm : SourceModel) : TargetModel :=
+  Definition execute (tr: TransformationA) (sm : SourceModel) : TargetModel :=
     BuildModel
-      (concat (optionList2List (map (instantiatePatternA (TransformationA_getRules tr) tr sm) (allTuplesA tr sm))))
-      (concat (optionList2List (map (applyPatternA (TransformationA_getRules tr) tr sm) (allTuplesA tr sm)))). 
-  
-  (** * Functions **)
+      (concat (optionList2List (map (instantiatePattern (TransformationA_getRules tr) tr sm) (allTuples tr sm))))
+      (concat (optionList2List (map (applyPattern (TransformationA_getRules tr) tr sm) (allTuples tr sm)))). 
 
-  (** ** list OutputPatternElement **)
-
-  Definition getAllOuputPatternElementElements (l : list OutputPatternElement) : list TargetModelElement :=
-    map (getOutputPatternElementTargetModelElement) l.
-
-  Definition getAllOuputPatternElementLinks (l : list OutputPatternElement) : list TargetModelLink :=
-    concat (map (getOutputPatternElementTargetModelLinks) l).
-
-  Fixpoint findOutputPatternElementByName (l: list OutputPatternElement) (name: string) : option OutputPatternElement :=
-    find (fun oel => beq_string (getOutputPatternElementName oel) name) l.
-
-  
-  (** ** Rule application **)
-
-  Fixpoint matchRuleOnPattern (r: Rule) (el: list SourceModelElement) : option (list OutputPatternElement) :=
-    match r, el with
-    | BuildMultiElementRule t f, e::els =>
-      e' <- toModelClass t e;
-        matchRuleOnPattern (f e') els
-    | BuildSingleElementRule t f, e::nil =>
-      e' <- toModelClass t e;
-        match (f e') with
-        | (true, l) => return l
-        | (false, _) => None
-        end
-    | _, _ => None
-    end.
-  
-  Definition executeRuleOnPattern (r: Rule) (el: list SourceModelElement) : option (list TargetModelElement * list TargetModelLink) :=
-    match matchRuleOnPattern r el with
-    | Some opel => Some (getAllOuputPatternElementElements opel, getAllOuputPatternElementLinks opel)
-    | None => None
-    end.
-
-  Definition executeRuleOnPattern' (r: Rule) (el: list SourceModelElement) : option (ModelFragment TargetModelElement TargetModelLink):=
-    match matchRuleOnPattern r el with
-    | Some opel => Some (BuildModelFragment (getAllOuputPatternElementElements opel) (getAllOuputPatternElementLinks opel))
-    | None => None
-    end.
-
-  Definition instantiateRuleOnPattern (r: Rule) (inelems: list SourceModelElement) : list TargetModelElement :=
-    match executeRuleOnPattern r inelems with
-    | Some op => fst op
-    | None => nil
-    end.
-
-  Definition applyRuleOnPattern (r: Rule) (inelems: list SourceModelElement) : list TargetModelLink :=
-    match executeRuleOnPattern r inelems with
-    | Some op => snd op
-    | None => nil
-  end.
-
-  (** ** Resolution **)
-  
-  Fixpoint resolveFix (tr: list Rule) (name: string) (type: TargetModelClass) (inelems: list SourceModelElement): option (denoteModelClass type) := 
-    match tr with
-    | r:: rs => match matchRuleOnPattern r inelems with
-               | None => resolveFix rs name type inelems
-               | Some l => match findOutputPatternElementByName l name with
-                          | Some ope => 
-                            (getOutputPatternElementElementByType ope type)
-                          | None => None
-                          end
-               end
-    | nil => None
-    end.
-
-  Definition resolve (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (inelems: list SourceModelElement): option (denoteModelClass type) :=
-      resolveFix (tr sm) name type inelems.
-    
-  Definition resolveAll (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (inelems: list (list SourceModelElement)) : option (list (denoteModelClass type)) :=
-    Some (optionList2List (map (resolve tr sm name type) inelems)).
-    
-  Definition resolveList (tr: list Rule) (name: string) (type: TargetModelClass) (inelems: list (list SourceModelElement)): list (denoteModelClass type) :=
-    optionList2List (map (resolveFix tr name type) inelems).
-
-  (** ** Rule matching **)
-  
-  Fixpoint matchPattern (tr: list Rule) (inelems: list SourceModelElement) : option Rule :=
-    match tr with
-    | r :: rs => match matchRuleOnPattern r inelems with
-                | Some op => Some r
-                | None => matchPattern rs inelems
-                end
-    | nil => None
-    end.
-  
-  Definition instantiatePattern (tr: list Rule) (inelems: list SourceModelElement) : list TargetModelElement :=
-    match (matchPattern tr inelems) with
-    | Some r => instantiateRuleOnPattern r inelems
-    | None => nil
-    end.
-
-  Definition applyPattern (tr: list Rule) (inelems: list SourceModelElement) : list TargetModelLink :=
-    match (matchPattern tr inelems) with
-    | Some r => applyRuleOnPattern r inelems
-    | None => nil
-    end.
-
-  Definition transformPattern (tr: list Rule) (inelems: list SourceModelElement) : option (list TargetModelElement * list TargetModelLink) :=
-    match (matchPattern tr inelems) with
-    | Some r => executeRuleOnPattern r inelems
-    | None => None
-    end.
-
-  (** ** Rule scheduling
-  Execution order:
-
-   - execute
-     - instantiatePattern 
-         matchPattern (recursive on rules)
-         instantiateRuleOnPattern
-            matchRuleOnPattern (recursive on source pattern)
-     - applyPattern
-         matchPattern (recursive on rules)
-         applyRuleOnPattern
-            matchRuleOnPattern (recursive on source pattern)
-   **)
-
-  Definition matchPhase (f: Transformation) : Phase := (f (fun c:SourceModel => nil)).
-
-  Definition matched (p: Phase) (m: SourceModel) :=
-      p m.
-
-  Definition applyPhase (f: Transformation) : Phase := (f (matchPhase f)).
-
-  Fixpoint arity (tr: Rule) : nat :=
-    match tr with
-    | BuildMultiElementRule InElType1 x => 1 + (arity (x (bottomModelClass InElType1)))
-    | BuildSingleElementRule InElType x => 1
-    end.
-
-  Fixpoint maxArity (tr: list Rule) : nat :=
-    match tr with
-    | r :: rl => (max (arity r) (maxArity rl))
-    | _ => 0
-    end.
-
-  Definition getRules (tr: Transformation) (sm: SourceModel) : list Rule :=
-    matchPhase tr sm.
-
-  Definition getRules' (tr: Transformation) (sm: SourceModel) : list Rule :=
-    applyPhase tr sm.
-
-  Definition numberOfRules (tr: Transformation) : nat
-    := length ((getRules tr) (BuildModel nil nil)).
-    
-  Definition allTuples (f: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
-    tuples_up_to_n (allModelElements sm) (maxArity (getRules f sm)).
-
-  Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
-    BuildModel
-      (concat (map (instantiatePattern (matchPhase tr sm))
-                   (allTuples tr sm)))
-      (concat (map (applyPattern (applyPhase tr sm))
-                   (allTuples tr sm))). 
-
-  (*  Definition allTuples  (sm : SourceModel) :list (list SourceModelElement) :=
-    tuples_up_to_n (allModelElements sm) 10.
-  
-  Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
-    BuildModel
-      (concat (map (instantiatePattern (matchPhase tr sm))
-                   (allTuples sm)))
-      (concat (map (applyPattern (applyPhase tr sm))
-                   (allTuples sm))). *)
-
-  (** * Certification **)
-
-  Definition RuleDef : Type := nat * Transformation.
-
-  Fixpoint getRulesFun' (n : nat) (tr: Transformation) : list RuleDef :=
-    match n with
-        | S x => (cons (n, tr) (getRulesFun' x tr))
-        | _ => nil
-    end.
-
-  Definition getRule (r : RuleDef) (sm : SourceModel) : option Rule :=
-    nth_error (getRules (snd r) sm) (fst r).
-
-  (*
-  Definition getRule'''' (n : nat) (sm : SourceModel) : option RuleDef :=
-    nth_error (getRules (snd r) sm) (fst r).
-  *)
-
-  (* Definition getRuleDef (r : Rule) (tr : Transformation) (sm: SourceModel) : option RuleDef := None. *)
-  
-  Fixpoint matchPattern'' (tr: list Rule) (inelems: list SourceModelElement) : option nat :=
-    match tr with
-    | r :: rs => match matchRuleOnPattern r inelems with
-                | Some op => Some (length rs)
-                | None => matchPattern'' rs inelems
-                end
-    | nil => None
-    end.
-
-  Lemma matchPatternLimit :
+(*  Lemma matchPatternLimit :
     forall (tr: list Rule) (inelems: list SourceModelElement) (n: nat),
       matchPattern'' tr inelems = Some n -> n < length tr.
   Proof.
@@ -630,7 +432,7 @@ Section CoqTL.
       ** apply IHtr in H. simpl.
          apply lt_trans with (n:=n) (m:=Datatypes.length tr) (p:=S (Datatypes.length tr)) in H.
          exact H. omega.
-  Qed.
+  Qed.*)
 
   (*
   Definition matchPattern' (tr: Transformation) (sp: list SourceModelElement) (sm: SourceModel) : option Rule :=
@@ -664,7 +466,7 @@ Section CoqTL.
   Abort.
   *)
 
-  Lemma matchPattern_in_getRules :
+  (*Lemma matchPattern_in_getRules :
     forall (tr: Transformation) (sm: SourceModel) (r: Rule) (sp: list SourceModelElement),
       (matchPattern (matchPhase tr sm) sp) = Some r -> In r (getRules tr sm).
   Proof.
@@ -678,9 +480,9 @@ Section CoqTL.
       destruct (matchRuleOnPattern a sp) in H.
       -- left. inversion H. reflexivity.
       -- right. apply IHl in H. apply H.
-  Qed.
+  Qed. *)
 
-  Theorem tr_surj : 
+  (* Theorem tr_surj : 
     forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
       tm = execute tr sm -> In t1 (allModelElements tm) -> 
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
@@ -719,7 +521,7 @@ Section CoqTL.
           ** split.
              *** apply concat_map_incl. assumption.
              *** unfold getRules. symmetry. assumption.
-  Qed.
+  Qed. *)
 
   (*
   Lemma matchPattern_in_getRules' :
@@ -784,7 +586,7 @@ Section CoqTL.
   Qed. 
   *)
 
-  Instance CoqTLEngine : TransformationEngineTypeClass Transformation RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
+  (* Instance CoqTLEngine : TransformationEngineTypeClass Transformation RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel :=
     {
       executeFun := execute;
       getRulesFun tr := getRulesFun' (numberOfRules tr) tr;
@@ -809,7 +611,7 @@ Section CoqTL.
     inversion H.
     Focus 1.
     symmetry in Heqm.
-    apply matchPatternLimit in Heqm.
+    apply matchPatternLimit in Heqm. *)
     
     
     
@@ -856,8 +658,8 @@ Section CoqTL.
 
     
     Focus 2.
-    unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction. *)
-  Abort.
+    unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction.
+  Abort.  *)
   
 End CoqTL.
 
@@ -871,4 +673,3 @@ Arguments BuildOutputPatternElementReference : default implicits.
 Arguments resolve : default implicits.
 Arguments execute : default implicits.
 Arguments getOutputPatternElementTargetModelElement : default implicits.
-Arguments matchPhase : default implicits.
