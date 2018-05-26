@@ -362,13 +362,9 @@ Section CoqTL.
 
   Definition applyRuleOnPatternA (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (tes: list TargetModelElement): option (list TargetModelLink) :=
   return (concat (zipWith (applyOutputPatternReferencesOnPatternA tr sm sp) 
-                           (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) tes)).
+                          (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) tes)).
 
-  Definition maxArityA (tr: TransformationA) : nat :=
-    fold_left max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))) 0.
-                                                     
-  Definition allTuplesA (tr: TransformationA) (sm : SourceModel) :list (list SourceModelElement) :=
-    tuples_up_to_n (allModelElements sm) (maxArityA tr).
+  (** ** Rule matching **)
 
   Fixpoint matchPatternA (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option RuleA :=
     match l with
@@ -393,11 +389,33 @@ Section CoqTL.
         tls <- applyPatternA l tr sm sp;
   return BuildModelFragment tes tls.
 
+  (** ** Resolution **)
+
+  Definition resolveFixA (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
+    r <- matchPatternA l tr sm sp;
+      ope <- find (fun oel => beq_string (OutputPatternElementA_getName oel) name) (RuleA_getOutputPattern r);
+      te <- evalOutputPatternElementExpressionA tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope);
+      toModelClass type te.
+
+  Definition resolveA (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement): option (denoteModelClass type) :=
+    resolveFixA (TransformationA_getRules tr) tr sm name type sp.
+    
+  Definition resolveAllA (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) : option (list (denoteModelClass type)) :=
+    Some (optionList2List (map (resolveA tr sm name type) sps)).
+
+  (** ** Rule scheduling **)
+  
+  Definition maxArityA (tr: TransformationA) : nat :=
+    fold_left max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))) 0.
+                                                     
+  Definition allTuplesA (tr: TransformationA) (sm : SourceModel) :list (list SourceModelElement) :=
+    tuples_up_to_n (allModelElements sm) (maxArityA tr).
+
   Definition executeA (tr: TransformationA) (sm : SourceModel) : TargetModel :=
     BuildModel
       (concat (optionList2List (map (instantiatePatternA (TransformationA_getRules tr) tr sm) (allTuplesA tr sm))))
       (concat (optionList2List (map (applyPatternA (TransformationA_getRules tr) tr sm) (allTuplesA tr sm)))). 
-
+  
   (** * Functions **)
 
   (** ** list OutputPatternElement **)
