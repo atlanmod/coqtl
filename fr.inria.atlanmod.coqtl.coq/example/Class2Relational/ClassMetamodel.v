@@ -268,7 +268,7 @@ Fixpoint ClassMetamodel_getClassAttributesOnLinks (c : Class) (l : list ClassMet
   end.
 
 Definition getClassAttributes (c : Class) (m : Model ClassMetamodel_EObject ClassMetamodel_ELink) : option (list Attribute) :=
-  ClassMetamodel_getClassAttributesOnLinks c (allModelLinks m).
+  ClassMetamodel_getClassAttributesOnLinks c (@allModelLinks _ _ m).
 
 Fixpoint ClassMetamodel_getAttributeTypeOnLinks (a : Attribute) (l : list ClassMetamodel_ELink) : option Class :=
   match l with
@@ -279,7 +279,7 @@ Fixpoint ClassMetamodel_getAttributeTypeOnLinks (a : Attribute) (l : list ClassM
 
 Definition getAttributeType (a : Attribute) (m : Model ClassMetamodel_EObject ClassMetamodel_ELink) : option Class :=
   match m with
-    (BuildModel cs ls) => ClassMetamodel_getAttributeTypeOnLinks a ls
+    (Build_Model cs ls) => ClassMetamodel_getAttributeTypeOnLinks a ls
   end.
 
 Definition ClassMetamodel_defaultInstanceOfEClass (c: ClassMetamodel_EClass) : (ClassMetamodel_getTypeByEClass c) :=
