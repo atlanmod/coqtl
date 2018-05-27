@@ -50,6 +50,32 @@ Proof.
          +++ simpl. right. destruct H. exists x. split. right. destruct H. assumption. destruct H. assumption.
 Qed.
 
+Lemma prod_cons_in_inv :
+  forall (T: Type) (se: T) (ss: list T) (s1: list T) (s2: list T) (s3: list (list T)),
+    s1 = se :: ss -> In se s2 -> In ss s3 -> In s1 (prod_cons s2 s3).
+Proof.
+  intros T se ss s1 s2.
+  generalize dependent se.
+  generalize dependent ss.
+  generalize dependent s1.
+  induction s2.
+  - intros. inversion H0.
+  - intros. simpl.
+    apply in_or_app.
+    apply in_inv in H0.
+    destruct H0.
+    + left.
+      rewrite H0.
+      rewrite H.
+      apply in_map.
+      assumption.
+    + right.
+      apply IHs2 with (ss:=ss) (se:=se).
+      * assumption.
+      * assumption.
+      * assumption.
+Qed.
+
 (** * tuples_of_length_n *)
 
 Fixpoint tuples_of_length_n {A :Type} (s1: list A) (n : nat) : list (list A) :=
@@ -86,6 +112,30 @@ Proof.
       * assumption.
     + assumption.
 Qed.
+
+Lemma tuples_of_length_n_incl_length :
+    forall (T: Type) (n: nat) (sm: list T) (sp: list T),
+      incl sp sm -> length sp = n -> In sp (tuples_of_length_n sm n).
+Proof.
+  induction n.
+  - intros. simpl.
+    apply length_zero_iff_nil in H0.
+    left. symmetry. assumption.
+  - intros. simpl.
+    induction sp.
+    + inversion H0.
+    + simpl.
+      apply prod_cons_in_inv with (se:=a) (ss:=sp).
+      * reflexivity.
+      * unfold incl in H.
+        apply H.
+        simpl. left. trivial.
+      * apply IHn.
+        apply incl_tran with (m:= a::sp).
+        -- unfold incl. simpl. intros. right. assumption.
+        -- assumption.
+        -- inversion H0. trivial.
+Qed.        
 
 (** * tuples_up_to_n *)
 
@@ -158,3 +208,28 @@ Proof.
       * assumption.
     + unfold incl. intros. apply IHn in H. unfold incl in H.  apply H. assumption.
 Qed.
+
+Lemma tuples_up_to_n_incl_length :
+    forall (T: Type) (n: nat) (sm: list T) (sp: list T),
+      incl sp sm -> le (length sp) n -> In sp (tuples_up_to_n sm n).
+Proof.
+  induction n.
+  - intros.
+    simpl.
+    left.
+    symmetry.
+    apply length_zero_iff_nil.
+    apply le_n_0_eq in H0.
+    symmetry.
+    assumption.
+  - intros.
+    simpl.
+    apply in_or_app.
+    inversion H0.
+    Focus 2. right. apply IHn. assumption. assumption.
+    Focus 1. left. apply tuples_of_length_n_incl_length with (n:= S n) in H.
+    + simpl in H. assumption.
+    + assumption.
+Qed.
+    
+      

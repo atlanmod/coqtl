@@ -18,6 +18,23 @@ Proof.
       exact H.
 Qed.
 
+Lemma concat_incl :
+    forall (A: Type) (a: list A) (b: list A) (c: list (list A)),
+      incl a b -> In b c -> incl a (concat c).
+  Proof.
+    intros.
+    induction c.
+    - inversion H0.
+    - simpl. simpl in H0.
+      destruct H0.
+      * rewrite H0.
+        apply incl_appl.
+        assumption.
+      * apply incl_appr.
+        apply IHc.
+        apply H0.
+   Qed.
+  
 Lemma concat_exists :
     forall (T : Type) (a : T) (l : list (list T)),
       In a (concat l) -> (exists (la : list T), In la l /\ In a la).

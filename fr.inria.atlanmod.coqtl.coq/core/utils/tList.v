@@ -13,6 +13,12 @@ Definition optionToList {A:Type} (o: option A) : list A :=
   | None => nil
   end.
 
+Definition optionListToList {A:Type} (o: option (list A)) : list A :=
+  match o with
+  | Some a => a
+  | None => nil
+  end.
+
 Definition optionList2List {A : Type} (l:list (option A)) : list A :=
   flat_map optionToList l.
 
@@ -38,6 +44,31 @@ Proof.
       simpl.
       right.
       assumption.
+Qed.
+
+Theorem optionList2List_In_inv :
+  forall (A:Type) (a: A) (l: list (option A)), (In (Some a) l) -> (In a (optionList2List l)).
+Proof.
+  intros.
+  induction l.
+  - inversion H.
+  - destruct a0.
+    + simpl in H.
+      destruct H.
+      * rewrite H.
+        simpl.
+        left.
+        reflexivity.
+      * simpl.
+        right.
+        apply IHl.
+        assumption.
+    + simpl.
+      simpl in H.
+      destruct H.
+      * inversion H.
+      * apply IHl.
+        assumption.
 Qed.
 
 Definition singletons {A: Type} (l : list A) : list (list A) :=
