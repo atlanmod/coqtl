@@ -266,7 +266,7 @@ Section CoqTL.
   
   Definition parseTransformation (tr: Transformation) : TransformationA :=
     BuildTransformationA 
-      (mapWithIndex (parseRule tr) 0 (tr (fun c:SourceModel => nil) (BuildModel nil nil) )) tr.
+      (mapWithIndex (parseRule tr) 0 (tr (fun c:SourceModel => nil) (Build_Model nil nil) )) tr.
 
   Definition parsePhase (tr: Phase) : TransformationA :=
     parseTransformation (fun t: Phase => tr).
@@ -397,10 +397,10 @@ Section CoqTL.
     fold_left max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))) 0.
                                                      
   Definition allTuples (tr: TransformationA) (sm : SourceModel) :list (list SourceModelElement) :=
-    tuples_up_to_n (allModelElements sm) (maxArity tr).
+    tuples_up_to_n (@allModelElements _ _ sm) (maxArity tr).
 
   Definition execute (tr: TransformationA) (sm : SourceModel) : TargetModel :=
-    BuildModel
+    Build_Model
       (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
       (concat (optionList2List (map (applyPattern tr sm) (allTuples tr sm)))). 
 
