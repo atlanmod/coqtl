@@ -57,3 +57,15 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (S
         matchPatternFun tr sp sm = Some r ); *)
                                             
   }.
+
+
+Theorem match_functionality :  
+  forall (TransformationDef RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel: Type) (eng: TransformationEngineTypeClass TransformationDef RuleDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel)
+    (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r1: RuleDef) (r2: RuleDef),
+          matchPatternFun tr sp sm  = Some r1 -> matchPatternFun tr sp sm = Some r2 -> r1 = r2.
+Proof.
+    intros.
+    rewrite H in H0.
+    inversion H0.
+    reflexivity.
+Qed.
