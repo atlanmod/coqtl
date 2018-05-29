@@ -21,6 +21,8 @@ Section CoqTL.
   
   Definition SourceModel := Model SourceModelElement SourceModelLink.
   Definition TargetModel := Model TargetModelElement TargetModelLink.
+  
+  About SourceModel.
 
   (** * Concrete Syntax
 
@@ -425,27 +427,53 @@ Section CoqTL.
         assumption.
   Qed.
 
-(*
-
-  Theorem matchPattern_maxArity :
+(*Theorem evalGuardExpression_patternLength :
+    forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
+      length sp > length (RuleA_getInTypes r) -> In r (TransformationA_getRules tr) -> not (evalGuardExpression (RuleA_getGuard r) tr sm sp = Some true).
+Proof.
+  intros.
+  unfold evalGuardExpression.
+  destruct (nth_error (TransformationA_getTransformation tr (fun _ : SourceModel => nil) sm)
+                      (GuardExpressionA_getRule (RuleA_getGuard r))) eqn:eqr.
+  - destruct (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule (RuleA_getGuard r))) eqn:eqra.
+    + induction (RuleA_getInTypes r1).
+      ++ unfold evalGuardExpressionFix.
+         destruct r0 eqn:eqr0.
+         +++ unfold not. intros. inversion H1.
+         +++ unfold not. intros. inversion H1.
+      ++ *)
+  
+(* Theorem matchPattern_maxArity :
+    forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
+      length sp > maxArity tr -> In r (TransformationA_getRules tr) -> evalGuardExpression (RuleA_getGuard r) tr sm sp = Some false.
+ Proof.
+   intros.
+   unfold evalGuardExpression.
+   induction sp.
+   - inversion H.
+   - destruct (le_dec (Datatypes.length sp) (maxArity tr)). *)
+  
+(* Theorem matchPattern_maxArity :
     forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement),
       length sp > maxArity tr -> 
-      matchPattern (TransformationA_getRules tr) tr sm sp = None.
+      matchPattern tr sm sp = None.
   Proof.
+    unfold matchPattern.
     intros tr.
-    destruct tr.
-    generalize dependent t.
-    induction l.
+    induction (TransformationA_getRules tr).
     - reflexivity.
     - intros.
       simpl.
-    
-      
+      destruct (evalGuardExpression (RuleA_getGuard a) tr sm sp) eqn:guard.
+      Focus 2.
+      apply IHl.
+      apply H.
+      Focus 1. *)
 
-  Theorem In_allTuples :
+(*Theorem In_allTuples :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement),
-          incl sp (allModelElements sm) ->
-          instantiatePattern (TransformationA_getRules tr) tr sm sp = Some tp -> In sp (allTuples tr sm).
+          incl sp (@allModelElements _ _ sm) ->
+          instantiatePattern tr sm sp = Some tp -> In sp (allTuples tr sm).
   Proof.
     intros.
     case (le_lt_dec (length sp) (maxArity tr)).
@@ -454,13 +482,9 @@ Section CoqTL.
       apply tuples_up_to_n_incl_length.
       + assumption.
       + assumption.
-    - intros.
-      
-*)
+    - intros. *)
 
-  (*
-  
-  Theorem outp_incl :
+  (* Theorem outp_incl :
         forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (tp : list TargetModelElement),
           tm = execute tr sm -> incl sp (allModelElements sm) ->
           instantiatePattern (TransformationA_getRules tr) tr sm sp = Some tp -> incl tp (allModelElements tm).
