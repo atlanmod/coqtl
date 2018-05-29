@@ -54,8 +54,64 @@ Definition Class2Relational :=
 
   ].
 
-(*Unset Printing Notations.*)
-Compute maxArity (parseTransformation Class2Relational).
+Unset Printing Notations.
+Print Class2Relational.
 
-(* Print Class2Relational. *)
-(* Check Class2Relational. *)
+(*Definition Class2Relational :=
+  (BuildTransformation ClassMetamodel RelationalMetamodel
+  [
+     (BuildRule ClassEClass
+        (fun (m: ClassModel) (c: Class) => true)
+        [
+        (BuildOutputPatternElement "tab" TableClass
+            (fun (m: ClassModel) (c: Class) => BuildTable (getClassId c) (getClassName c))
+            [
+                (BuildOutputPatternElementReference TableColumnReference
+                    (fun (m: ClassModel) (c: Class) (t: Table) (Class2Relational: Transformation) =>
+                        reference TableColumnsReference from RelationalMetamodel :=
+                        attrs <- getClassAttributes c m;
+                        cols <- resolveAll Class2Relational m "col" ColumnClass
+                            (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
+                        return BuildTableColumns t cols))
+            ])                               
+        ]);
+     (BuildRule AttributeEClass
+        (fun (m: ClassModel) (a: Attribute) => true)
+        [
+        (BuildOutputPatternElement "col" ColumnClass
+            (fun (m: ClassModel) (a: Attribute) => BuildColumn (getAttributeId a) (getAttributeName a))
+            [
+                (BuildOutputPatternElementReference ColumnReferenceReference
+                    (fun (m: ClassModel) (a: Attribute) (c: Column) (Class2Relational: Transformation) =>
+                        reference ColumnReferenceReference from RelationalMetamodel :=
+                            cl <- getAttributeType a m;
+                            tb <- resolve Class2Relational m "tab" TableClass [ClassMetamodel_toEObject cl];
+                            return BuildColumnReference c tb))
+            ])                               
+        ])
+  ].*)
+
+Theorem Table_all_classes_matched :
+  forall (cm : ClassModel) (c: Class) ,
+    exists (r: RuleA ClassMetamodel_EClass RelationalMetamodel_EClass RelationalMetamodel_EReference),
+      matchPattern (parseTransformation Class2Relational) cm [ClassMetamodel_toEObject c] = Some r.    
+Proof.
+  intros.
+  exists (hd (BuildRuleA nil (BuildGuardExpressionA 0) nil) (TransformationA_getRules (parseTransformation Class2Relational))).
+  unfold matchPattern.
+  reflexivity.
+Qed.
+
+Theorem Table_all_classes_instantiate :
+  forall (cm : ClassModel) (c: Class),
+    exists (t: Table),
+      instantiatePattern (parseTransformation Class2Relational) cm [ClassMetamodel_toEObject c] = Some [RelationalMetamodel_toEObject t].
+Proof.
+  intros.
+  exists (BuildTable (getClassId c) (getClassName c)).
+  unfold instantiatePattern.
+  unfold instantiateRuleOnPattern.
+  reflexivity.
+Qed.
+
+Compute maxArity (parseTransformation Class2Relational).
