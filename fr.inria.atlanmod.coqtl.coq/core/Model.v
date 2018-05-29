@@ -1,5 +1,3 @@
-Require Import core.Metamodel.
-
 Set Implicit Arguments.
 
 (** * Model

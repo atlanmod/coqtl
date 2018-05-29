@@ -1,4 +1,6 @@
 (** * Metamodel **)
+Require Import core.Model.
+
 
 Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=
   {
