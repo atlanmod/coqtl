@@ -54,10 +54,10 @@ Definition Class2Relational :=
 
   ].
 
-Unset Printing Notations.
+(*Unset Printing Notations.*)
 Print Class2Relational.
 
-Theorem Table_all_classes_matched :
+Theorem All_classes_match :
   forall (cm : ClassModel) (c: Class) ,
     exists (r: RuleA ClassMetamodel_EClass RelationalMetamodel_EClass RelationalMetamodel_EReference),
       matchPattern (parseTransformation Class2Relational) cm [ClassMetamodel_toEObject c] = Some r.    
@@ -68,7 +68,7 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem Table_all_classes_instantiate :
+Theorem All_classes_instantiate :
   forall (cm : ClassModel) (c: Class),
     exists (t: Table),
       instantiatePattern (parseTransformation Class2Relational) cm [ClassMetamodel_toEObject c] = Some [RelationalMetamodel_toEObject t].
@@ -77,6 +77,21 @@ Proof.
   exists (BuildTable (getClassId c) (getClassName c)).
   unfold instantiatePattern.
   unfold instantiateRuleOnPattern.
+  reflexivity.
+Qed.
+
+Theorem Concrete_attributes_instantiate :
+  forall (cm : ClassModel) (a: Attribute),
+    exists (c: Column), getAttributeDerived a=false -> 
+      instantiatePattern (parseTransformation Class2Relational) cm [ClassMetamodel_toEObject a] = Some [RelationalMetamodel_toEObject c].
+Proof.
+  intros.
+  exists (BuildColumn (getAttributeId a) (getAttributeName a)).
+  intros.
+  unfold instantiatePattern.
+  unfold instantiateRuleOnPattern.
+  simpl.
+  rewrite H.
   reflexivity.
 Qed.
 
