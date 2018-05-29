@@ -31,7 +31,7 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (O
     instantiateRuleOnPatternFun: RuleDef -> TransformationDef -> list SourceModelElement -> SourceModel -> option (list TargetModelElement); 
     applyRuleOnPatternFun: RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> list TargetModelElement -> option (list TargetModelLink);
 
-    (* Surjectivity (everything in the target model is produced by a rule application)*)
+    (* "Soundness" (everything in the target model is produced by a rule application)*)
     
     tr_surj_elements : 
     forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
@@ -55,7 +55,7 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (O
         incl tpl (allTargetModelLinks tm) /\
         matchPatternFun tr sp sm = Some r );
 
-    (* Functionality (if a rule matches, than its output is included in the target model) *)
+    (* "Completeness" (if a rule matches, then its output is included in the target model) *)
     
     outp_incl_elements :
         forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) (tls: list TargetModelLink),
@@ -70,20 +70,27 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (O
           applyRuleOnPatternFun r tr sm sp tes = Some tls ->
           incl tls (allTargetModelLinks tm);
 
+    (* Correctness (the transformation does not generate dangling links) *)
+
+    (* Convergence *)
+
+    (* Additivity *)
+
     (* Well-formedness *)
     
     match_in :
         forall (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleDef),
-          matchPatternFun tr sp sm = Some r -> In r (getRulesFun tr);
+          matchPatternFun tr sp sm = Some r -> In r (getRulesFun tr);    
+
+    (* Termination (implicit) *)
+    
+    (* Functionality (implicit) *)
     
     match_functional :
         forall (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r1: RuleDef) (r2: RuleDef),
           matchPatternFun tr sp sm = Some r1 -> matchPatternFun tr sp sm = Some r2 -> r1 = r2;
-
-    (* Additivity *)
     
   }.
-
 
 Theorem match_functionality :  
   forall (TransformationDef RuleDef OutputPatternElementDef OutputPatternElementReferenceDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel: Type) (eng: TransformationEngineTypeClass TransformationDef RuleDef OutputPatternElementDef OutputPatternElementReferenceDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel)
