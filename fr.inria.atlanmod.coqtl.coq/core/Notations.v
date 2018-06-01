@@ -12,7 +12,7 @@ Notation "'[' r1 ; .. ; r2 ']'" := (cons r1 .. (cons r2 nil) ..) (right associat
 Notation "'rule' rulename 'from' rbody" := (rbody) (right associativity, at level 60).
 
 (* InputPatternElement *)
-Notation "'element' sid 'class' stype 'from' sinstance ',' sbody" := (BuildMultiElementRule sinstance stype (fun sid => sbody)) (right associativity, at level 60).
+Notation "'element' sid 'class' stype ',' sbody" := (BuildMultiElementRule stype (fun sid => sbody)) (right associativity, at level 60).
 
 (* InputPatternElement *)
 Notation "'element' sid 'class' stype 'from' sinstance 'when' guard 'to' outputels" := (BuildSingleElementRule sinstance stype (fun sid => (guard, outputels))) (right associativity, at level 60).
