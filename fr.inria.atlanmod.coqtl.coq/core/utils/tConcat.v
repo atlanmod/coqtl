@@ -1,4 +1,5 @@
 Require Import List.
+Require Import utils.tList.
 
 Lemma concat_map_incl:
   forall (T1 T2: Type) (a: T1) (l: list T1) (f: T1-> (list T2)),
@@ -48,6 +49,31 @@ Proof.
         -- apply in_cons. apply H.
         -- apply H0.
 Qed.
+
+Lemma concat_map_option_exists :
+    forall (T1 T2: Type) (b : T2) 
+           (l : list T1) (f : T1 -> option (list T2)),
+      In b (concat (optionList2List (map f l))) -> 
+       (exists (a : T1), In a l /\ 
+         (match (f a) with
+          | None => False
+          | Some lst => In b lst
+          end)
+       ).
+Proof.
+    intros.
+    apply concat_exists in H.
+    destruct H. destruct H.
+    induction l.
+    - inversion H.
+    - simpl in H. destruct (f a) eqn: fa. simpl in H. destruct H.
+      -- exists a. split. 
+         --- simpl. left. reflexivity. 
+         --- rewrite fa. rewrite <- H in H0. exact H0.         
+      -- apply IHl in H. destruct H. exists x0. destruct H. split. simpl. right. apply H. apply H1.
+      -- apply IHl in H. destruct H. exists x0. destruct H. split. simpl. right. apply H. apply H1.
+Qed.
+
 
 Lemma concat_map_exists :
     forall (T1 T2: Type) (b : T2) (l : list T1) (f : T1 -> list T2),
