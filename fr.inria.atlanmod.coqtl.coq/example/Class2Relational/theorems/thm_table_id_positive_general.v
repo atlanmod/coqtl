@@ -13,11 +13,15 @@ Require Import example.Class2Relational.
 Require Import example.ClassMetamodel.
 Require Import example.RelationalMetamodel.
 
+
+
+
+
 Theorem Table_id_positive_by_surj :
   forall (cm : ClassModel) (rm : RelationalModel), 
     rm = execute Class2Relational cm (* transformation *) ->
-      (forall (c1 : ClassMetamodel_EObject), In c1 (allModelElements cm) -> ClassMetamodel_getId c1 > 0) (* precondition *) ->
-        (forall (t1 : RelationalMetamodel_EObject), In t1 (allModelElements rm) -> RelationalMetamodel_getId t1 > 0). (* postcondition *)
+      (forall (c1 : ClassMetamodel_EObject), In c1 (@allModelElements _ _ cm) -> ClassMetamodel_getId c1 > 0) (* precondition *) ->
+        (forall (t1 : RelationalMetamodel_EObject), In t1 (@allModelElements _ _ rm) -> RelationalMetamodel_getId t1 > 0). (* postcondition *)
 Proof.
   intros cm rm H Hpre t1 Hintm.  
   apply tr_surj with (t1:=t1) in H.
