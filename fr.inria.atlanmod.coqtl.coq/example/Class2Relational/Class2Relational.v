@@ -11,7 +11,7 @@ Require Import core.CoqTL.
 Require Import example.ClassMetamodel.
 Require Import example.RelationalMetamodel.
 
-Definition Class2Relational :=
+Definition Class2RelationalConcrete :=
   transformation Class2Relational from ClassMetamodel to RelationalMetamodel
     with m as ClassModel := [
 
@@ -54,16 +54,20 @@ Definition Class2Relational :=
 
   ].
 
-(*Unset Printing Notations.*)
-Print Class2Relational.
+(* Unset Printing Notations.*)
+(* Print Class2Relational. *)
+(* Compute maxArity (parseTransformation Class2Relational). *)
+
+Definition Class2Relational := parseTransformation Class2RelationalConcrete.
+
 
 Theorem All_classes_match :
   forall (cm : ClassModel) (c: Class) ,
     exists (r: RuleA ClassMetamodel_EClass RelationalMetamodel_EClass RelationalMetamodel_EReference),
-      matchPattern (parseTransformation Class2Relational) cm [ClassMetamodel_toEObject c] = Some r.    
+      matchPattern Class2Relational cm [ClassMetamodel_toEObject c] = Some r.    
 Proof.
   intros.
-  exists (hd (BuildRuleA nil (BuildGuardExpressionA 0) nil) (TransformationA_getRules (parseTransformation Class2Relational))).
+  exists (hd (BuildRuleA nil (BuildGuardExpressionA 0) nil) (TransformationA_getRules Class2Relational)).
   unfold matchPattern.
   reflexivity.
 Qed.
@@ -71,7 +75,7 @@ Qed.
 Theorem All_classes_instantiate :
   forall (cm : ClassModel) (c: Class),
     exists (t: Table),
-      instantiatePattern (parseTransformation Class2Relational) cm [ClassMetamodel_toEObject c] = Some [RelationalMetamodel_toEObject t].
+      instantiatePattern Class2Relational cm [ClassMetamodel_toEObject c] = Some [RelationalMetamodel_toEObject t].
 Proof.
   intros.
   exists (BuildTable (getClassId c) (getClassName c)).
@@ -83,7 +87,7 @@ Qed.
 Theorem Concrete_attributes_instantiate :
   forall (cm : ClassModel) (a: Attribute),
     exists (c: Column), getAttributeDerived a=false -> 
-      instantiatePattern (parseTransformation Class2Relational) cm [ClassMetamodel_toEObject a] = Some [RelationalMetamodel_toEObject c].
+      instantiatePattern Class2Relational cm [ClassMetamodel_toEObject a] = Some [RelationalMetamodel_toEObject c].
 Proof.
   intros.
   exists (BuildColumn (getAttributeId a) (getAttributeName a)).
@@ -95,4 +99,4 @@ Proof.
   reflexivity.
 Qed.
 
-Compute maxArity (parseTransformation Class2Relational).
+
