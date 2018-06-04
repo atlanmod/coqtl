@@ -427,6 +427,18 @@ Section CoqTL.
         assumption.
   Qed.
 
+  Theorem tr_surj : 
+    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
+      tm = execute tr sm -> In t1 (@allModelElements _ _ tm) -> 
+      (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleA),
+        In r (TransformationA_getRules tr) /\
+        In t1 tp /\
+        instantiateRuleOnPattern r tr sm sp = Some tp /\
+        incl sp (@allModelElements _ _ sm) /\
+        incl tp (@allModelElements _ _ tm) /\
+        matchPattern tr sm sp = Some r ).
+  Abort.
+
 (*Theorem evalGuardExpression_patternLength :
     forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
       length sp > length (RuleA_getInTypes r) -> In r (TransformationA_getRules tr) -> not (evalGuardExpression (RuleA_getGuard r) tr sm sp = Some true).
