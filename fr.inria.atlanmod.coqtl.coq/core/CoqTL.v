@@ -8,7 +8,7 @@ Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Engine.
 Require Import core.utils.tTop.
-Require Import core.utils.tList.
+
 
 Set Implicit Arguments.
 
@@ -427,17 +427,52 @@ Section CoqTL.
         assumption.
   Qed.
 
+
+
+
   Theorem tr_surj : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
       tm = execute tr sm -> In t1 (@allModelElements _ _ tm) -> 
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleA),
         In r (TransformationA_getRules tr) /\
         In t1 tp /\
-        instantiateRuleOnPattern r tr sm sp = Some tp /\
+        instantiatePattern tr sm sp = Some tp /\
         incl sp (@allModelElements _ _ sm) /\
         incl tp (@allModelElements _ _ tm) /\
         matchPattern tr sm sp = Some r ).
-  Abort.
+  Proof.
+    intros tr sm tm t1 H0.
+    rewrite H0. simpl.
+    intros.
+    apply concat_map_option_exists in H.
+    destruct H. destruct H.
+    rename x into sp1.
+    remember (matchPattern tr sm sp1) as r'.
+    destruct r'.
+    
+    Focus 2.
+    unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction.  
+    
+    Focus 1.
+    remember (instantiatePattern tr sm sp1) as tp_temp.
+    destruct tp_temp eqn:tp1_case.
+     Focus 2.
+     contradiction.
+     
+     Focus 1.
+     rename l into tp1.
+     exists sp1, tp1, r.
+     repeat split.
+      - apply match_incl with (sp:=sp1) (sm:=sm).
+         rewrite Heqr'. reflexivity.
+      - assumption.
+      - symmetry. assumption.
+      - apply tuples_up_to_n_incl with (n:=(maxArity tr)).
+         assumption.
+      - apply concat_map_option_incl with (a:=sp1). assumption. symmetry. assumption.
+      - symmetry. assumption.
+Qed.
+
 
 (*Theorem evalGuardExpression_patternLength :
     forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
