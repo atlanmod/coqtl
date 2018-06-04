@@ -14,7 +14,14 @@ Require Import example.ClassMetamodel.
 Require Import example.RelationalMetamodel.
 
 
-
+Lemma app_inj_tail2 :
+    forall (A: Type) (a b: A), [a] = [b] -> a = b.
+Proof.
+intros.
+inversion H.
+reflexivity.
+Qed.
+    
 
 
 Theorem Table_id_positive_by_surj :
@@ -38,45 +45,68 @@ Proof.
     + inversion Hmatch.
     Focus 1.
     + destruct c eqn:c_ca. 
-      * destruct c0 eqn:c0_ca.
-        ** simpl in Hmatch.
-           inversion Hmatch.
-           rewrite <- H0 in Hexec.
-           unfold instantiateRuleOnPattern in Hexec. simpl in Hexec.
-           rewrite <- Hexec in Hintp.
+      destruct c0 eqn:c0_ca.
+        ** (* t is the only element in tp *)
+           assert (exists (t: Table), instantiatePattern Class2Relational cm [ClassMetamodel_toEObject c1] = Some [RelationalMetamodel_toEObject t]).
+           { apply All_classes_instantiate. }
+           destruct H.
+           rewrite Hexec in H.
+           inversion H.
+           rewrite H1 in Hintp.
            simpl in Hintp.
+           (* t = BuildTable (getClassId c1) (getClassName c1) *)
            destruct Hintp.
-           rewrite <- H.
-           simpl.
-           unfold incl in Hinclsp.
-           assert (In c ([ClassMetamodel_BuildEObject ClassEClass c1])). {
-             simpl. left. symmetry. assumption.
-           }
-           apply Hinclsp in H1. apply Hpre in H1.
-           unfold ClassMetamodel_getId in H1.
-           rewrite  c_ca in H1.
-           assumption.
-           contradiction H.
-        ** simpl in Hmatch.
-           destruct (getAttributeDerived c1) eqn:derived_ca.
-           simpl in Hmatch.
-           inversion Hmatch.
-           simpl in Hmatch.
-           inversion Hmatch.
-           rewrite <- H0 in Hexec.
-           unfold instantiateRuleOnPattern in Hexec. unfold executeRuleOnPattern in Hexec. simpl in Hexec. rewrite derived_ca in Hexec. simpl in Hexec.
-           rewrite <- Hexec in Hintp.
-           simpl in Hintp.
-           destruct Hintp.
-           rewrite <- H.
-           simpl.
-           unfold incl in Hinclsp.
-           assert (In c ([ClassMetamodel_BuildEObject AttributeEClass c1])). {
-             simpl. left. symmetry. assumption.
-           }
-           apply Hinclsp in H1. apply Hpre in H1.
-           unfold ClassMetamodel_getId in H1.
-           rewrite  c_ca in H1.
-           assumption.
-           contradiction H.
+           *** unfold instantiatePattern in Hexec.           
+               unfold instantiateRuleOnPattern in Hexec. 
+               simpl in Hexec.
+               inversion Hexec.    
+               rewrite H1 in H3.
+               (* BUG? inversion H3 doesn't give the following assertion *)
+               assert (RelationalMetamodel_toEObject x = (RelationalMetamodel_BuildEObject TableClass (BuildTable (getClassId c1) (getClassName c1)))).
+               { apply app_inj_tail2 in H3. auto. }
+               unfold RelationalMetamodel_toEObject in H2.
+               rewrite <- H0.
+               rewrite H2.
+               simpl.
+               assert (In c ([ClassMetamodel_BuildEObject ClassEClass c1])). { simpl. left. symmetry. assumption. }
+               apply Hinclsp in H4. apply Hpre in H4. 
+               unfold ClassMetamodel_getId in H4.
+               rewrite  c_ca in H4.
+               assumption.
+           *** contradiction.
+        ** (* t is the only element in tp *)
+           rename c0 into a0.
+           rename c1 into a1.
+           assert (exists (col: Column), getAttributeDerived a1=false -> 
+                     instantiatePattern Class2Relational cm [ClassMetamodel_toEObject a1] = Some [RelationalMetamodel_toEObject col]).
+           { apply Concrete_attributes_instantiate. }
+           destruct H.
+           rewrite Hexec in H.
+           unfold instantiatePattern in Hexec.           
+           unfold instantiateRuleOnPattern in Hexec. 
+           simpl in Hexec.
+           destruct (getAttributeDerived a1) eqn:derived_ca.
+           *** inversion Hexec.
+           *** assert (false = false). { reflexivity. }
+               apply H in H0.
+               inversion H0.
+               rewrite H2 in Hintp.
+               simpl in Hintp.
+               (* col = BuildColumn ... *)
+               destruct Hintp.
+               *** 
+                   inversion Hexec.    
+                   rewrite H2 in H4.
+                   assert (RelationalMetamodel_toEObject x = RelationalMetamodel_toEObjectOfEClass ColumnClass (BuildColumn (getAttributeId a1) (getAttributeName a1))).
+                   { apply app_inj_tail2 in H4. auto. }
+                   unfold RelationalMetamodel_toEObject in H2.
+                   rewrite <- H1.
+                   rewrite H3.
+                   simpl.
+                   assert (In c ([ClassMetamodel_BuildEObject AttributeEClass a1])). { simpl. left. symmetry. assumption. }
+                   apply Hinclsp in H5. apply Hpre in H5. 
+                   unfold ClassMetamodel_getId in H5.
+                   rewrite  c_ca in H5.
+                   assumption.
+               *** contradiction.
 Qed.
