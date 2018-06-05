@@ -14,15 +14,6 @@ Require Import example.ClassMetamodel.
 Require Import example.RelationalMetamodel.
 
 
-Lemma app_inj_tail2 :
-    forall (A: Type) (a b: A), [a] = [b] -> a = b.
-Proof.
-intros.
-inversion H.
-reflexivity.
-Qed.
-    
-
 
 Theorem Table_id_positive_by_surj :
   forall (cm : ClassModel) (rm : RelationalModel), 
