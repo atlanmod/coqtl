@@ -529,12 +529,9 @@ Qed.
                ---- assumption. 
                ---- unfold applyPattern. rewrite Hmatch. rewrite Hinst. symmetry. assumption.
           --- assumption.
-          --- admit.
-          --- admit.
-    - admit.
-    
-
-Qed.
+(*    -- admit.
+    - admit. *)
+Abort.
 
 Instance CoqTLEngine : 
   TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA
