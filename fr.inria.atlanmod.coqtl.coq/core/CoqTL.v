@@ -436,7 +436,7 @@ Section CoqTL.
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleA),
         In r (TransformationA_getRules tr) /\
         In t1 tp /\
-        instantiatePattern tr sm sp = Some tp /\
+        instantiateRuleOnPattern r tr sm sp = Some tp /\
         incl sp (@allModelElements _ _ sm) /\
         incl tp (@allModelElements _ _ tm) /\
         matchPattern tr sm sp = Some r ).
@@ -451,7 +451,7 @@ Section CoqTL.
     destruct r'.
     
     Focus 2.
-    unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction.  
+    unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction.
     
     Focus 1.
     remember (instantiatePattern tr sm sp1) as tp_temp.
@@ -466,13 +466,65 @@ Section CoqTL.
       - apply match_incl with (sp:=sp1) (sm:=sm).
          rewrite Heqr'. reflexivity.
       - assumption.
-      - symmetry. assumption.
+      - symmetry. unfold instantiatePattern in Heqtp_temp. rewrite <- Heqr' in Heqtp_temp. assumption.
       - apply tuples_up_to_n_incl with (n:=(maxArity tr)).
          assumption.
       - apply concat_map_option_incl with (a:=sp1). assumption. symmetry. assumption.
       - symmetry. assumption.
 Qed.
 
+Instance CoqTLEngine : 
+  TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA
+  SourceModelElement SourceModelLink SourceModel
+  TargetModelElement TargetModelLink TargetModel := {}.
+Proof.
+  (* allSourceModelElements: SourceModel -> list SourceModelElement; *)
+  exact (@allModelElements SourceModelElement SourceModelLink).
+
+  (* allSourceModelLinks: SourceModel -> list SourceModelLink; *)
+  exact (@allModelLinks SourceModelElement SourceModelLink).
+
+  (* allTargetModelElements: TargetModel -> list TargetModelElement; *)
+  exact (@allModelElements TargetModelElement TargetModelLink).
+
+  (* allTargetModelLinks: TargetModel -> list TargetModelLink; *)
+  exact (@allModelLinks TargetModelElement TargetModelLink).
+  
+  (* getRulesFun: TransformationDef -> list RuleDef; *)
+  exact TransformationA_getRules.
+  
+  (* getOutputPatternElementsFun: RuleDef -> list OutputPatternElementDef; *)
+  exact RuleA_getOutputPattern.
+  
+  (* getOutputPatternElementReferencesFun: OutputPatternElementDef -> list OutputPatternElementReferenceDef; *)
+  exact OutputPatternElementA_getOutputPatternElementReferences.
+
+  (* executeFun: TransformationDef -> SourceModel -> TargetModel; *)
+  exact execute.
+    
+  (* matchPatternFun: TransformationDef -> list SourceModelElement -> SourceModel -> option RuleDef; *)
+  exact matchPattern. 
+
+  
+  (* instantiatePatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelElement); *)
+  exact instantiatePattern.
+  
+  (* applyPatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelLink); *)
+  exact applyPattern.
+
+  (* matchRuleOnPatternFun:  RuleDef -> TransformationDef -> list SourceModelElement -> SourceModel -> option bool; *)
+  admit.
+  
+  (* instantiateRuleOnPatternFun: RuleDef -> TransformationDef -> list SourceModelElement -> SourceModel -> option (list TargetModelElement); *)
+  exact instantiateRuleOnPattern.
+  
+  (* applyRuleOnPatternFun: RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> list TargetModelElement -> option (list TargetModelLink); *)
+  exact applyRuleOnPattern.
+  
+  (* tr_surj_elements *)
+  exact tr_surj.
+
+Abort.
 
 (*Theorem evalGuardExpression_patternLength :
     forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
