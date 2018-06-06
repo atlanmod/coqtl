@@ -537,6 +537,25 @@ Qed.
           --- assumption.
 Qed.
 
+Theorem outp_incl_elements :
+        forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
+               (sp : list SourceModelElement) (r: RuleA) (tes: list TargetModelElement),
+          tm = execute tr sm -> In r (TransformationA_getRules tr) -> incl sp (@allModelElements _ _ sm) ->
+          instantiateRuleOnPattern r tr sm sp = Some tes ->
+          incl tes (@allModelElements _ _ tm).
+Proof.
+Abort.
+
+Theorem outp_incl_links :
+        forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
+               (sp : list SourceModelElement) (r: RuleA) (tes: list TargetModelElement) (tls: list TargetModelLink),
+          tm = execute tr sm -> In r (TransformationA_getRules tr) -> incl sp (@allModelElements _ _ sm) ->
+          instantiateRuleOnPattern r tr sm sp = Some tes ->
+          applyRuleOnPattern r tr sm sp tes = Some tls ->
+          incl tls (@allModelLinks _ _ tm).
+Proof.
+Abort.
+
 Instance CoqTLEngine : 
   TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA
   SourceModelElement SourceModelLink SourceModel
