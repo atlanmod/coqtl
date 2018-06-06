@@ -35,8 +35,17 @@ Class TransformationEngineTypeClass
     instantiateRuleOnPatternFun: RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelElement); 
     applyRuleOnPatternFun: RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> list TargetModelElement -> option (list TargetModelLink);
 
+
+    tr_instantiate_pattern : 
+    forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement)
+           (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleDef),
+      tm = executeFun tr sm -> In t1 (allTargetModelElements tm) ->
+      instantiateRuleOnPatternFun r tr sm sp = Some tp ->
+      matchPatternFun tr sm sp = Some r ->
+      instantiatePatternFun tr sm sp = Some tp;
+
     (* "Soundness" (everything in the target model is produced by a rule application)*)
-    
+
     tr_surj_elements : 
     forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
       tm = executeFun tr sm -> In t1 (allTargetModelElements tm) ->
@@ -60,7 +69,7 @@ Class TransformationEngineTypeClass
         matchPatternFun tr sm sp = Some r );
 
     (* "Completeness" (if a rule matches, then its output is included in the target model) *)
-    
+
     outp_incl_elements :
         forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) (tls: list TargetModelLink),
           tm = executeFun tr sm -> In r (getRulesFun tr) -> incl sp (allSourceModelElements sm) ->

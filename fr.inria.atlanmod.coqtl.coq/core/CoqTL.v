@@ -429,8 +429,17 @@ Section CoqTL.
 
 
 
-
-  Theorem tr_surj : 
+ Theorem tr_instantiate_pattern : 
+    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement)
+           (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleA),
+      tm = execute tr sm -> In t1 (@allModelElements _ _ tm) ->
+      instantiateRuleOnPattern r tr sm sp = Some tp ->
+      matchPattern tr sm sp = Some r ->
+      instantiatePattern tr sm sp = Some tp.
+ Proof.
+ Admitted.
+      
+ Theorem tr_surj_elements : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
       tm = execute tr sm -> In t1 (@allModelElements _ _ tm) -> 
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleA),
@@ -476,54 +485,31 @@ Qed.
 Instance CoqTLEngine : 
   TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA
   SourceModelElement SourceModelLink SourceModel
-  TargetModelElement TargetModelLink TargetModel := {}.
-Proof.
-  (* allSourceModelElements: SourceModel -> list SourceModelElement; *)
-  exact (@allModelElements SourceModelElement SourceModelLink).
+  TargetModelElement TargetModelLink TargetModel := 
+  {
+    allSourceModelElements := (@allModelElements SourceModelElement SourceModelLink);
+    allSourceModelLinks := (@allModelLinks SourceModelElement SourceModelLink);
+    allTargetModelElements := (@allModelElements TargetModelElement TargetModelLink);
+    allTargetModelLinks := (@allModelLinks TargetModelElement TargetModelLink);
 
-  (* allSourceModelLinks: SourceModel -> list SourceModelLink; *)
-  exact (@allModelLinks SourceModelElement SourceModelLink).
+    getRulesFun := TransformationA_getRules;
+    getOutputPatternElementsFun := RuleA_getOutputPattern;
+    getOutputPatternElementReferencesFun := OutputPatternElementA_getOutputPatternElementReferences;
 
-  (* allTargetModelElements: TargetModel -> list TargetModelElement; *)
-  exact (@allModelElements TargetModelElement TargetModelLink).
-
-  (* allTargetModelLinks: TargetModel -> list TargetModelLink; *)
-  exact (@allModelLinks TargetModelElement TargetModelLink).
-  
-  (* getRulesFun: TransformationDef -> list RuleDef; *)
-  exact TransformationA_getRules.
-  
-  (* getOutputPatternElementsFun: RuleDef -> list OutputPatternElementDef; *)
-  exact RuleA_getOutputPattern.
-  
-  (* getOutputPatternElementReferencesFun: OutputPatternElementDef -> list OutputPatternElementReferenceDef; *)
-  exact OutputPatternElementA_getOutputPatternElementReferences.
-
-  (* executeFun: TransformationDef -> SourceModel -> TargetModel; *)
-  exact execute.
+    executeFun := execute;
     
-  (* matchPatternFun: TransformationDef -> list SourceModelElement -> SourceModel -> option RuleDef; *)
-  exact matchPattern. 
+    matchPatternFun := matchPattern;
+    instantiatePatternFun := instantiatePattern;
+    applyPatternFun := applyPattern;
 
-  
-  (* instantiatePatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelElement); *)
-  exact instantiatePattern.
-  
-  (* applyPatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelLink); *)
-  exact applyPattern.
+(*     matchRuleOnPatternFun := *)
+    instantiateRuleOnPatternFun := instantiateRuleOnPattern;
+    applyRuleOnPatternFun := applyRuleOnPattern;
 
-  (* matchRuleOnPatternFun:  RuleDef -> TransformationDef -> list SourceModelElement -> SourceModel -> option bool; *)
-  admit.
-  
-  (* instantiateRuleOnPatternFun: RuleDef -> TransformationDef -> list SourceModelElement -> SourceModel -> option (list TargetModelElement); *)
-  exact instantiateRuleOnPattern.
-  
-  (* applyRuleOnPatternFun: RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> list TargetModelElement -> option (list TargetModelLink); *)
-  exact applyRuleOnPattern.
-  
-  (* tr_surj_elements *)
-  exact tr_surj.
-
+    tr_instantiate_pattern :=  tr_instantiate_pattern;
+    tr_surj_elements := tr_surj_elements;
+  }.
+Proof.  
 Abort.
 
 (*Theorem evalGuardExpression_patternLength :
