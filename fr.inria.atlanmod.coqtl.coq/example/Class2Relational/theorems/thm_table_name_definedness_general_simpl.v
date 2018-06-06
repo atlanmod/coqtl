@@ -35,11 +35,16 @@ Theorem Table_name_definedness_by_surj :
 Proof.
   (* general bookkeeping *)
   intros cm rm H Hpre t1 Hintm.
-  apply tr_surj with (t1:=t1) in H.
+  remember H as tr.
+  clear Heqtr.
+  apply tr_surj_elements with (t1:=t1) in H.
   Focus 2. assumption.
   Focus 1.
   destruct H as [sp]. destruct H as [tp]. destruct H as [r].
-  destruct H as [Hinsm]. destruct H as [Hintp]. destruct H as [Hexec]. destruct H as [Hinclsp]. destruct H as [incltp].
+  destruct H as [Hinsm]. destruct H as [Hintp]. destruct H as [Hexec']. destruct H as [Hinclsp]. destruct H as [incltp].
+  assert (instantiatePattern Class2Relational cm sp = return tp).
+  { apply tr_instantiate_pattern with (tm:=rm) (t1:=t1) (r:=r); assumption. }
+  rename H0 into Hexec.
   rename H into Hmatch.
   destruct Hpre as [Hpre1 Hpre2].
   try destruct sp eqn:sp_ca; inversion Hmatch. (* try ... inversion Hmatch; elimin impossible case *)

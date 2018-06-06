@@ -22,11 +22,16 @@ Theorem Table_id_positive_by_surj :
         (forall (t1 : RelationalMetamodel_EObject), In t1 (@allModelElements _ _ rm) -> RelationalMetamodel_getId t1 > 0). (* postcondition *)
 Proof.
   intros cm rm H Hpre t1 Hintm.  
-  apply tr_surj with (t1:=t1) in H.
+  remember H as tr.
+  clear Heqtr.
+  apply tr_surj_elements with (t1:=t1) in H.
   Focus 2. assumption.
   Focus 1.
   destruct H as [sp]. destruct H as [tp]. destruct H as [r].
-  destruct H as [Hinsm]. destruct H as [Hintp]. destruct H as [Hexec]. destruct H as [Hinclsp]. destruct H as [incltp].
+  destruct H as [Hinsm]. destruct H as [Hintp]. destruct H as [Hexec']. destruct H as [Hinclsp]. destruct H as [incltp].
+  assert (instantiatePattern Class2Relational cm sp = return tp).
+  { apply tr_instantiate_pattern with (tm:=rm) (t1:=t1) (r:=r); assumption. }
+  rename H0 into Hexec.
   rename H into Hmatch.
   simpl in Hmatch.
   destruct sp eqn:sp_ca.
@@ -37,13 +42,13 @@ Proof.
     Focus 1.
     + destruct c eqn:c_ca. 
       destruct c0 eqn:c0_ca.
-      ++  unfold instantiatePattern in Hexec.           
-          unfold instantiateRuleOnPattern in Hexec. 
-          simpl in Hexec.
-          inversion Hexec as [Htp].
-          rewrite <- Htp in Hintp.
-          simpl in Hintp.
-          destruct Hintp as [Hintp1|Hintp2].
+      ++ unfold instantiatePattern in Hexec.
+         unfold instantiateRuleOnPattern in Hexec.
+         simpl in Hexec.
+         inversion Hexec as [Htp].
+         rewrite <- Htp in Hintp.
+         simpl in Hintp.
+         destruct Hintp as [Hintp1|Hintp2].
           +++ rewrite <- Hintp1. simpl.
              assert (In c ([ClassMetamodel_BuildEObject ClassEClass c1])). { simpl. left. symmetry. assumption. }
              apply Hinclsp in H. apply Hpre in H. 
