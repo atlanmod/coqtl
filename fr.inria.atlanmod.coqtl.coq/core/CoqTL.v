@@ -429,7 +429,7 @@ Section CoqTL.
 
 
 
- Theorem tr_instantiate_pattern : 
+ Theorem tr_instantiate_pattern_derivable : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement)
            (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleA),
       tm = execute tr sm -> In t1 (@allModelElements _ _ tm) ->
@@ -511,7 +511,7 @@ Instance CoqTLEngine :
     instantiateRuleOnPatternFun := instantiateRuleOnPattern;
     applyRuleOnPatternFun := applyRuleOnPattern;
 
-    tr_instantiate_pattern :=  tr_instantiate_pattern;
+    tr_instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
     tr_surj_elements := tr_surj_elements;
   }.
 Proof.  

@@ -36,7 +36,7 @@ Class TransformationEngineTypeClass
     applyRuleOnPatternFun: RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> list TargetModelElement -> option (list TargetModelLink);
 
 
-    tr_instantiate_pattern : 
+    tr_instantiate_pattern_derivable : 
     forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement)
            (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleDef),
       tm = executeFun tr sm -> In t1 (allTargetModelElements tm) ->
