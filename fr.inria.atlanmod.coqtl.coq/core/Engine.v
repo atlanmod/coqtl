@@ -10,7 +10,11 @@ Require Import core.Model.
 
 Set Implicit Arguments.
 
-Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (OutputPatternElementDef: Type) (OutputPatternElementReferenceDef: Type) (SourceModelElement: Type) (SourceModelLink: Type) (SourceModel: Type) (TargetModelElement: Type) (TargetModelLink: Type) (TargetModel: Type) :=
+Class TransformationEngineTypeClass 
+  (TransformationDef: Type) (RuleDef: Type) 
+  (OutputPatternElementDef: Type) (OutputPatternElementReferenceDef: Type) 
+  (SourceModelElement: Type) (SourceModelLink: Type) (SourceModel: Type) 
+  (TargetModelElement: Type) (TargetModelLink: Type) (TargetModel: Type) :=
   {
     allSourceModelElements: SourceModel -> list SourceModelElement;
     allSourceModelLinks: SourceModel -> list SourceModelLink;
@@ -23,7 +27,7 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (O
 
     executeFun: TransformationDef -> SourceModel -> TargetModel;
     
-    matchPatternFun: TransformationDef -> list SourceModelElement -> SourceModel -> option RuleDef;
+    matchPatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option RuleDef;
     instantiatePatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelElement);
     applyPatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
 
@@ -42,7 +46,7 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (O
         instantiateRuleOnPatternFun r tr sp sm = Some tp /\
         incl sp (allSourceModelElements sm) /\
         incl tp (allTargetModelElements tm) /\
-        matchPatternFun tr sp sm = Some r );
+        matchPatternFun tr sm sp = Some r );
 
     tr_surj_links : 
     forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
@@ -53,7 +57,7 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (O
         applyRuleOnPatternFun r tr sm sp tel = Some tpl /\
         incl sp (allSourceModelElements sm) /\
         incl tpl (allTargetModelLinks tm) /\
-        matchPatternFun tr sp sm = Some r );
+        matchPatternFun tr sm sp = Some r );
 
     (* "Completeness" (if a rule matches, then its output is included in the target model) *)
     
@@ -80,7 +84,7 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (O
     
     match_in :
         forall (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleDef),
-          matchPatternFun tr sp sm = Some r -> In r (getRulesFun tr);    
+          matchPatternFun tr sm sp = Some r -> In r (getRulesFun tr);    
 
     (* Termination (implicit) *)
     
@@ -88,14 +92,14 @@ Class TransformationEngineTypeClass (TransformationDef: Type) (RuleDef: Type) (O
     
     match_functional :
         forall (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r1: RuleDef) (r2: RuleDef),
-          matchPatternFun tr sp sm = Some r1 -> matchPatternFun tr sp sm = Some r2 -> r1 = r2;
+          matchPatternFun tr sm sp = Some r1 -> matchPatternFun tr sm sp = Some r2 -> r1 = r2;
     
   }.
 
 Theorem match_functionality :  
   forall (TransformationDef RuleDef OutputPatternElementDef OutputPatternElementReferenceDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel: Type) (eng: TransformationEngineTypeClass TransformationDef RuleDef OutputPatternElementDef OutputPatternElementReferenceDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel)
     (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r1: RuleDef) (r2: RuleDef),
-          matchPatternFun tr sp sm  = Some r1 -> matchPatternFun tr sp sm = Some r2 -> r1 = r2.
+          matchPatternFun tr sm sp  = Some r1 -> matchPatternFun tr sm sp = Some r2 -> r1 = r2.
 Proof.
     intros.
     rewrite H in H0.
