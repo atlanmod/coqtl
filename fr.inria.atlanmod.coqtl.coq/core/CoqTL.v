@@ -430,9 +430,9 @@ Section CoqTL.
 
 
  Theorem tr_instantiate_pattern_derivable : 
-    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement)
+    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
            (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleA),
-      tm = execute tr sm -> In t1 (@allModelElements _ _ tm) ->
+      tm = execute tr sm -> incl tp (@allModelElements _ _ tm) ->
       instantiateRuleOnPattern r tr sm sp = Some tp ->
       matchPattern tr sm sp = Some r ->
       instantiatePattern tr sm sp = Some tp.
@@ -544,7 +544,12 @@ Theorem outp_incl_elements :
           instantiateRuleOnPattern r tr sm sp = Some tes ->
           incl tes (@allModelElements _ _ tm).
 Proof.
+intros.
+rewrite H.
+simpl.
 Abort.
+
+
 
 Theorem outp_incl_links :
         forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
@@ -580,7 +585,7 @@ Instance CoqTLEngine :
     instantiateRuleOnPatternFun := instantiateRuleOnPattern;
     applyRuleOnPatternFun := applyRuleOnPattern;
 
-    tr_instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
+    tr_instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable; 
     tr_surj_elements := tr_surj_elements;
     tr_surj_links := tr_surj_links;
 
