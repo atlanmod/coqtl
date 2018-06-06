@@ -537,6 +537,31 @@ Qed.
           --- assumption.
 Qed.
 
+(*
+Theorem InstantiatePattern_le_maxArity :
+        forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement),
+          incl sp (@allModelElements _ _ sm) ->
+          instantiatePattern tr sm sp = Some tp -> maxArity tr >= Datatypes.length sp.
+Proof.
+Admitted.
+
+Theorem In_allTuples :
+        forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement),
+          incl sp (@allModelElements _ _ sm) ->
+          instantiatePattern tr sm sp = Some tp -> In sp (allTuples tr sm).
+  Proof.
+    intros.
+    case (le_lt_dec (length sp) (maxArity tr)).
+    - intros.
+      unfold allTuples.
+      apply tuples_up_to_n_incl_length.
+      + assumption.
+      + assumption.
+    - intros.
+      assert (maxArity tr >= Datatypes.length sp). { apply InstantiatePattern_le_maxArity with (sm:=sm) (tp:=tp); assumption. }
+      omega.
+  Qed.
+
 Theorem outp_incl_elements :
         forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
                (sp : list SourceModelElement) (r: RuleA) (tes: list TargetModelElement),
@@ -547,6 +572,8 @@ Proof.
 intros.
 rewrite H.
 simpl.
+unfold incl in H1.
+Locate allTuples.
 Abort.
 
 
@@ -560,6 +587,7 @@ Theorem outp_incl_links :
           incl tls (@allModelLinks _ _ tm).
 Proof.
 Abort.
+*)
 
 Instance CoqTLEngine : 
   TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA
