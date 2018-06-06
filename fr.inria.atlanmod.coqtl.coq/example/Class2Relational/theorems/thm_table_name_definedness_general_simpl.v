@@ -43,7 +43,7 @@ Proof.
   destruct H as [sp]. destruct H as [tp]. destruct H as [r].
   destruct H as [Hinsm]. destruct H as [Hintp]. destruct H as [Hexec']. destruct H as [Hinclsp]. destruct H as [incltp].
   assert (instantiatePattern Class2Relational cm sp = return tp).
-  { apply tr_instantiate_pattern with (tm:=rm) (t1:=t1) (r:=r); assumption. }
+  { apply tr_instantiate_pattern_derivable with (tm:=rm) (r:=r); assumption. }
   rename H0 into Hexec.
   rename H into Hmatch.
   destruct Hpre as [Hpre1 Hpre2].

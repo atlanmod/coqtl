@@ -37,9 +37,9 @@ Class TransformationEngineTypeClass
 
 
     tr_instantiate_pattern_derivable : 
-    forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement)
+    forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) 
            (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleDef),
-      tm = executeFun tr sm -> In t1 (allTargetModelElements tm) ->
+      tm = executeFun tr sm -> incl tp (allTargetModelElements tm) ->
       instantiateRuleOnPatternFun r tr sm sp = Some tp ->
       matchPatternFun tr sm sp = Some r ->
       instantiatePatternFun tr sm sp = Some tp;
