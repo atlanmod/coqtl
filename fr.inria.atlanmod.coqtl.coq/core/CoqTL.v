@@ -487,6 +487,55 @@ Section CoqTL.
       - symmetry. assumption.
 Qed.
 
+ Theorem tr_surj_links : 
+    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
+      tm = execute tr sm -> In t1 (@allModelLinks _ _ tm) -> 
+      (exists (sp : list SourceModelElement) (tel : list TargetModelElement) (tpl : list TargetModelLink) (r : RuleA),
+        In r (TransformationA_getRules tr) /\
+        In t1 tpl /\
+        applyRuleOnPattern r tr sm sp tel = Some tpl /\
+        incl sp (@allModelElements _ _ sm) /\
+        incl tpl (@allModelLinks _ _ tm) /\
+        matchPattern tr sm sp = Some r ).
+  Proof.
+    intros tr sm tm t1 H0.
+    rewrite H0. simpl.
+    intros.
+    apply concat_map_option_exists in H.
+    destruct H. destruct H.
+    rename x into sp1.
+    remember (applyPattern tr sm sp1) as r'.
+    destruct r'.
+    
+    Focus 2.
+    contradiction.
+    
+    Focus 1.
+
+    unfold applyPattern in Heqr'.
+    destruct (matchPattern tr sm sp1) eqn:Hmatch. 
+    - destruct (instantiateRuleOnPattern r tr sm sp1) eqn:Hinst.
+      --  rename l0 into te1.
+          rename l into tpl.
+          exists sp1, te1, tpl, r. 
+          repeat split.
+          --- apply match_incl with (sp:=sp1) (sm:=sm).
+            assumption.
+          --- assumption.
+          --- symmetry. assumption.
+          --- apply tuples_up_to_n_incl with (n:=(maxArity tr)).
+             assumption.
+          --- apply concat_map_option_incl with (a:=sp1). 
+               ---- assumption. 
+               ---- unfold applyPattern. rewrite Hmatch. rewrite Hinst. symmetry. assumption.
+          --- assumption.
+          --- admit.
+          --- admit.
+    - admit.
+    
+
+Qed.
+
 Instance CoqTLEngine : 
   TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA
   SourceModelElement SourceModelLink SourceModel
