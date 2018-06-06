@@ -31,8 +31,8 @@ Class TransformationEngineTypeClass
     instantiatePatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelElement);
     applyPatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
 
-    matchRuleOnPatternFun:  RuleDef -> TransformationDef -> list SourceModelElement -> SourceModel -> option bool;
-    instantiateRuleOnPatternFun: RuleDef -> TransformationDef -> list SourceModelElement -> SourceModel -> option (list TargetModelElement); 
+    matchRuleOnPatternFun:  RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> option bool;
+    instantiateRuleOnPatternFun: RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelElement); 
     applyRuleOnPatternFun: RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> list TargetModelElement -> option (list TargetModelLink);
 
     (* "Soundness" (everything in the target model is produced by a rule application)*)
@@ -43,7 +43,7 @@ Class TransformationEngineTypeClass
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleDef),
         In r (getRulesFun tr) /\
         In t1 tp /\
-        instantiateRuleOnPatternFun r tr sp sm = Some tp /\
+        instantiateRuleOnPatternFun r tr sm sp = Some tp /\
         incl sp (allSourceModelElements sm) /\
         incl tp (allTargetModelElements tm) /\
         matchPatternFun tr sm sp = Some r );
@@ -64,13 +64,13 @@ Class TransformationEngineTypeClass
     outp_incl_elements :
         forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) (tls: list TargetModelLink),
           tm = executeFun tr sm -> In r (getRulesFun tr) -> incl sp (allSourceModelElements sm) ->
-          instantiateRuleOnPatternFun r tr sp sm = Some tes ->
+          instantiateRuleOnPatternFun r tr sm sp = Some tes ->
           incl tes (allTargetModelElements tm);
 
     outp_incl_links :
         forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) (tls: list TargetModelLink),
           tm = executeFun tr sm -> In r (getRulesFun tr) -> incl sp (allSourceModelElements sm) ->
-          instantiateRuleOnPatternFun r tr sp sm = Some tes ->
+          instantiateRuleOnPatternFun r tr sm sp = Some tes ->
           applyRuleOnPatternFun r tr sm sp tes = Some tls ->
           incl tls (allTargetModelLinks tm);
 
