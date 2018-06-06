@@ -564,6 +564,8 @@ Instance CoqTLEngine :
     tr_instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
     tr_surj_elements := tr_surj_elements;
     tr_surj_links := tr_surj_links;
+
+    match_in := match_incl;
   }.
 Proof.  
 Abort.
