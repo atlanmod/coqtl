@@ -506,21 +506,27 @@ Qed.
     rename x into sp1.
     remember (applyPattern tr sm sp1) as r'.
     destruct r'.
+      Focus 2.
+      contradiction.
     
-    Focus 2.
-    contradiction.
-    
-    Focus 1.
+      Focus 1.
+      unfold applyPattern in Heqr'.
+      destruct (matchPattern tr sm sp1) eqn:Hmatch. 
+        Focus 2.
+        inversion Heqr'.
 
-    unfold applyPattern in Heqr'.
-    destruct (matchPattern tr sm sp1) eqn:Hmatch. 
-    - destruct (instantiateRuleOnPattern r tr sm sp1) eqn:Hinst.
-      --  rename l0 into te1.
+        Focus 1.
+        destruct (instantiateRuleOnPattern r tr sm sp1) eqn:Hinst.
+          Focus 2.
+          inversion Heqr'.
+
+          Focus 1.
+          rename l0 into te1.
           rename l into tpl.
           exists sp1, te1, tpl, r. 
           repeat split.
           --- apply match_incl with (sp:=sp1) (sm:=sm).
-            assumption.
+              assumption.
           --- assumption.
           --- symmetry. assumption.
           --- apply tuples_up_to_n_incl with (n:=(maxArity tr)).
@@ -529,9 +535,7 @@ Qed.
                ---- assumption. 
                ---- unfold applyPattern. rewrite Hmatch. rewrite Hinst. symmetry. assumption.
           --- assumption.
-(*    -- admit.
-    - admit. *)
-Abort.
+Qed.
 
 Instance CoqTLEngine : 
   TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA
@@ -559,6 +563,7 @@ Instance CoqTLEngine :
 
     tr_instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
     tr_surj_elements := tr_surj_elements;
+    tr_surj_links := tr_surj_links;
   }.
 Proof.  
 Abort.
