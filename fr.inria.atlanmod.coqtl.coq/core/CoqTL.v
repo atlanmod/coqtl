@@ -437,7 +437,12 @@ Section CoqTL.
       matchPattern tr sm sp = Some r ->
       instantiatePattern tr sm sp = Some tp.
  Proof.
- Admitted.
+   intros.
+   unfold instantiatePattern.
+   rewrite H2.
+   assumption.
+ Qed.
+ 
       
  Theorem tr_surj_elements : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
