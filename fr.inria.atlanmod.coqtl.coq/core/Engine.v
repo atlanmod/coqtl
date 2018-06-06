@@ -71,7 +71,7 @@ Class TransformationEngineTypeClass
     (* "Completeness" (if a rule matches, then its output is included in the target model) *)
 
     outp_incl_elements :
-        forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) (tls: list TargetModelLink),
+        forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) ,
           tm = executeFun tr sm -> In r (getRulesFun tr) -> incl sp (allSourceModelElements sm) ->
           instantiateRuleOnPatternFun r tr sm sp = Some tes ->
           incl tes (allTargetModelElements tm);
