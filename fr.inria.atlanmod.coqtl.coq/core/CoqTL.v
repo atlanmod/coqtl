@@ -406,9 +406,17 @@ Section CoqTL.
     Some (optionList2List (map (resolve tr sm name type) sps)).
 
   (** ** Rule scheduling **)
-  
+  Fixpoint max (l : list nat) : nat :=
+    match l with nil => 0
+    | a::nil => a
+    | a::m => let b:= max m in if beq_nat a b then b else a
+    end.
+
+  (* Definition maxArity (tr: TransformationA) : nat :=
+    fold_left max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))) 0. *)
+    
   Definition maxArity (tr: TransformationA) : nat :=
-    fold_left max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))) 0.
+    max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))).
                                                      
   Definition allTuples (tr: TransformationA) (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (@allModelElements _ _ sm) (maxArity tr).
@@ -549,6 +557,14 @@ Qed.
           --- assumption.
 Qed.
 
+Lemma ge_trans : forall a b c,
+  a >= b -> b >= c -> a >= c.
+Proof.
+  intuition.
+Qed.
+
+
+
 Theorem MaxArity_geq_lenOfrule :
         forall (tr: TransformationA) (r: RuleA),
           In r (TransformationA_getRules tr) -> 
@@ -561,6 +577,25 @@ rename l into rules.
 induction rules.
 - contradiction.
 - simpl in H.
+  destruct H.
+  + unfold maxArity.
+    unfold TransformationA_getRules.
+
+    rewrite H.
+    simpl. 
+    destruct ((map (Datatypes.length (A:=SourceModelClass)) (map RuleA_getInTypes rules))).
+    ++ simpl. omega.
+    ++ destruct (Datatypes.length (RuleA_getInTypes r) =? max (n :: l)) eqn:max.
+       +++ apply beq_nat_true in max.
+           rewrite max. omega.
+       +++ omega.
+  + apply IHrules in H.
+    assert (maxArity (BuildTransformationA (a :: rules) t) >= maxArity (BuildTransformationA rules t)).
+    { admit. }
+    remember (maxArity (BuildTransformationA (a :: rules) t)) as x.
+    remember (maxArity (BuildTransformationA rules t)) as y.
+    remember (Datatypes.length (RuleA_getInTypes r)) as z.
+    apply (@ge_trans x y z); assumption. 
 Admitted.
 
 Theorem eq_ruletype_sp :
@@ -593,7 +628,7 @@ rewrite H2 in H3.
 assumption.
 Qed.
 
-Theorem In_allTuples :
+Lemma In_allTuples :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
           incl sp (@allModelElements _ _ sm) ->
           In r (TransformationA_getRules tr) ->
