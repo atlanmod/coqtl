@@ -406,10 +406,20 @@ Section CoqTL.
     Some (optionList2List (map (resolve tr sm name type) sps)).
 
   (** ** Rule scheduling **)
+  Fixpoint ble_nat (n m : nat) : bool :=
+  match n with
+  | O => true
+  | S n' =>
+      match m with
+      | O => false
+      | S m' => ble_nat n' m'
+      end
+  end.
+  
   Fixpoint max (l : list nat) : nat :=
     match l with nil => 0
     | a::nil => a
-    | a::m => let b:= max m in if beq_nat a b then b else a
+    | a::m => let b:= max m in if ble_nat a b then b else a
     end.
 
   (* Definition maxArity (tr: TransformationA) : nat :=
@@ -563,6 +573,49 @@ Proof.
   intuition.
 Qed.
 
+Theorem O_le_n : forall n,
+  0 <= n.
+Proof.
+  intros. induction n.
+  apply le_n.
+  apply le_S. apply IHn.
+Qed.
+
+Theorem n_le_m__Sn_le_Sm : forall n m,
+  n <= m -> S n <= S m.
+Proof.
+  intros. induction H.
+  apply le_n.
+  apply le_S. apply IHle.
+Qed.
+
+Locate le_n.
+Lemma ble_nat_true : forall n m,
+    ble_nat n m = true -> n <= m.
+Proof.
+  intros n m. generalize dependent n. induction m.
+  - destruct n.
+    -- intros. apply le_n.
+    -- simpl. intros. inversion H.
+  - intros. destruct n.
+    -- apply O_le_n.
+    -- apply n_le_m__Sn_le_Sm. apply IHm.
+                 simpl in H. apply H.
+Qed.
+
+
+Lemma ble_nat_false : forall n m,
+    ble_nat n m = false -> n > m.
+Proof.
+induction n; intros.
+- inversion H.
+- destruct m.
+  -- auto with arith.
+  -- apply lt_n_S.
+     apply IHn.
+     simpl in H.
+     assumption.
+Qed.
 
 
 Theorem MaxArity_geq_lenOfrule :
@@ -580,23 +633,31 @@ induction rules.
   destruct H.
   + unfold maxArity.
     unfold TransformationA_getRules.
-
     rewrite H.
     simpl. 
     destruct ((map (Datatypes.length (A:=SourceModelClass)) (map RuleA_getInTypes rules))).
     ++ simpl. omega.
-    ++ destruct (Datatypes.length (RuleA_getInTypes r) =? max (n :: l)) eqn:max.
-       +++ apply beq_nat_true in max.
-           rewrite max. omega.
+    ++ destruct (ble_nat (Datatypes.length (RuleA_getInTypes r)) (max (n :: l))) eqn:max.
+       +++ apply ble_nat_true. assumption.
        +++ omega.
   + apply IHrules in H.
     assert (maxArity (BuildTransformationA (a :: rules) t) >= maxArity (BuildTransformationA rules t)).
-    { admit. }
+    { 
+    unfold maxArity.
+    unfold TransformationA_getRules.
+    simpl. 
+    destruct (map (Datatypes.length (A:=SourceModelClass)) (map RuleA_getInTypes rules)) eqn: rules_ca.
+    ++ simpl. omega.
+    ++ destruct (ble_nat (Datatypes.length (RuleA_getInTypes a)) (max (n :: l))) eqn:max.
+       +++ omega.
+       +++ apply ble_nat_false in max.
+           omega.
+    }
     remember (maxArity (BuildTransformationA (a :: rules) t)) as x.
     remember (maxArity (BuildTransformationA rules t)) as y.
     remember (Datatypes.length (RuleA_getInTypes r)) as z.
-    apply (@ge_trans x y z); assumption. 
-Admitted.
+    apply (@ge_trans x y z); assumption.
+Qed.
 
 Theorem eq_ruletype_sp :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
