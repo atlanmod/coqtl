@@ -316,11 +316,14 @@ Section CoqTL.
 
 
   (* Before evaluate guard, pre-check the intypes of rule and source elems length are equal. immediate stop eval if not. *)
-  Fixpoint evalGuardExpressionPre (r: RuleA) (sp: list SourceModelElement) : option bool :=
+  Definition evalGuardExpressionPre (r: RuleA) (sp: list SourceModelElement) : option bool :=
     let lenInTypes := (length (RuleA_getInTypes r)) in
       let lenSp := (length sp) in
-        if beq_nat lenInTypes lenSp then Some true else None.
-    
+        match beq_nat lenInTypes lenSp with
+         | true => Some true 
+         | false => None
+        end.
+
   (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
   Fixpoint evalGuardExpressionFix (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) : option bool :=
     match r, intypes, el with
@@ -336,7 +339,6 @@ Section CoqTL.
   Definition evalGuardExpression (o : GuardExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
     r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (GuardExpressionA_getRule o));
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
-        pre <- evalGuardExpressionPre ra sp;
           evalGuardExpressionFix r (RuleA_getInTypes ra) sm sp. 
 
   (** * Engine **)
@@ -347,6 +349,7 @@ Section CoqTL.
     BuildModelFragment: list ModelElement -> list ModelLink -> ModelFragment ModelElement ModelLink.
   
   Definition instantiateRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
+    pre <- evalGuardExpressionPre r sp;
     m <- evalGuardExpression (RuleA_getGuard r) tr sm sp;
       if m then 
         return optionList2List (map (evalOutputPatternElementExpression tr sm sp) (map OutputPatternElementA_getOutputPatternElementExpression (RuleA_getOutputPattern r)))
@@ -558,37 +561,43 @@ rename l into rules.
 induction rules.
 - contradiction.
 - simpl in H.
-  destruct H.
-  -- rewrite H.
-     unfold maxArity. simpl. admit.
-  -- apply IHrules in H.
-     unfold maxArity. simpl.
-     unfold maxArity in H. simpl in H.
-Abort.
+Admitted.
 
-Theorem InstantiatePattern_le_maxArity :
+Theorem eq_ruletype_sp :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
           incl sp (@allModelElements _ _ sm) ->
           instantiateRuleOnPattern r tr sm sp = Some tp -> length (RuleA_getInTypes r) = Datatypes.length sp.
 Proof.
 intros.
 unfold instantiateRuleOnPattern in H0.
-destruct (evalGuardExpression (RuleA_getGuard r) tr sm sp) eqn: guard.
-destruct b.
-unfold evalGuardExpression.
+destruct (evalGuardExpressionPre r sp) eqn: guard; inversion H0.
+unfold evalGuardExpressionPre in guard.
+destruct (Datatypes.length (RuleA_getInTypes r) =? Datatypes.length sp) eqn: ca.
+- apply  beq_nat_true in ca. assumption.
+- inversion guard.
+Qed.
+
+
+
 
 Theorem InstantiatePattern_le_maxArity :
-        forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement),
+        forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
           incl sp (@allModelElements _ _ sm) ->
-          instantiatePattern tr sm sp = Some tp -> maxArity tr >= Datatypes.length sp.
+          In r (TransformationA_getRules tr) ->
+          instantiateRuleOnPattern r tr sm sp= Some tp -> maxArity tr >= Datatypes.length sp.
 Proof.
-Admitted.
-
+intros.
+assert (length (RuleA_getInTypes r) = Datatypes.length sp). { apply (@eq_ruletype_sp tr sm sp tp r); assumption. }
+assert ( maxArity tr >= length (RuleA_getInTypes r)). { apply (@MaxArity_geq_lenOfrule). assumption. }
+rewrite H2 in H3.
+assumption.
+Qed.
 
 Theorem In_allTuples :
-        forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement),
+        forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
           incl sp (@allModelElements _ _ sm) ->
-          instantiatePattern tr sm sp = Some tp -> In sp (allTuples tr sm).
+          In r (TransformationA_getRules tr) ->
+          instantiateRuleOnPattern r tr sm sp = Some tp -> In sp (allTuples tr sm).
 Proof.
   intros.
   case (le_lt_dec (length sp) (maxArity tr)).
@@ -598,7 +607,7 @@ Proof.
     + assumption.
     + assumption.
   - intros.
-    assert (maxArity tr >= Datatypes.length sp). { apply InstantiatePattern_le_maxArity with (sm:=sm) (tp:=tp); assumption. }
+    assert (maxArity tr >= Datatypes.length sp). { apply (@InstantiatePattern_le_maxArity tr sm sp tp r); assumption. }
     omega.
 Qed.
 
@@ -606,15 +615,19 @@ Theorem outp_incl_elements :
         forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
                (sp : list SourceModelElement) (r: RuleA) (tes: list TargetModelElement),
           tm = execute tr sm -> In r (TransformationA_getRules tr) -> incl sp (@allModelElements _ _ sm) ->
+          matchPattern tr sm sp = Some r ->
           instantiateRuleOnPattern r tr sm sp = Some tes ->
           incl tes (@allModelElements _ _ tm).
 Proof.
 intros.
 rewrite H.
 simpl.
-unfold incl in H1.
-Locate allTuples.
-Abort.
+apply concat_map_option_incl with (a:=sp).
+- apply In_allTuples with (tp:=tes) (r:=r); assumption.
+- unfold instantiatePattern.
+  rewrite H2.
+  assumption.
+Qed.
 
 
 
@@ -622,6 +635,7 @@ Theorem outp_incl_links :
         forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
                (sp : list SourceModelElement) (r: RuleA) (tes: list TargetModelElement) (tls: list TargetModelLink),
           tm = execute tr sm -> In r (TransformationA_getRules tr) -> incl sp (@allModelElements _ _ sm) ->
+          matchPattern tr sm sp = Some r ->
           instantiateRuleOnPattern r tr sm sp = Some tes ->
           applyRuleOnPattern r tr sm sp tes = Some tls ->
           incl tls (@allModelLinks _ _ tm).
@@ -656,6 +670,7 @@ Instance CoqTLEngine :
     tr_surj_elements := tr_surj_elements;
     tr_surj_links := tr_surj_links;
 
+    outp_incl_elements := outp_incl_elements;
     match_in := match_incl;
   }.
 Proof.  
