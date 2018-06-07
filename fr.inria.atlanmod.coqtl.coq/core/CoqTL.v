@@ -3,6 +3,7 @@ Require Import List.
 Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
+Require Import ZArith.
 
 Require Import core.Metamodel.
 Require Import core.Model.
@@ -313,6 +314,13 @@ Section CoqTL.
     ra <- (nth_error (TransformationA_getRules tr) (OutputPatternElementExpressionA_getRule o));
   evalOutputPatternElementExpressionFix o r (RuleA_getInTypes ra) sm sp. 
 
+
+  (* Before evaluate guard, pre-check the intypes of rule and source elems length are equal. immediate stop eval if not. *)
+  Fixpoint evalGuardExpressionPre (r: RuleA) (sp: list SourceModelElement) : option bool :=
+    let lenInTypes := (length (RuleA_getInTypes r)) in
+      let lenSp := (length sp) in
+        if beq_nat lenInTypes lenSp then Some true else None.
+    
   (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
   Fixpoint evalGuardExpressionFix (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) : option bool :=
     match r, intypes, el with
@@ -324,11 +332,12 @@ Section CoqTL.
       return (fst (f e'))
     | _, _, _ => None
     end.
-  
+
   Definition evalGuardExpression (o : GuardExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
     r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (GuardExpressionA_getRule o));
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
-  evalGuardExpressionFix r (RuleA_getInTypes ra) sm sp. 
+        pre <- evalGuardExpressionPre ra sp;
+          evalGuardExpressionFix r (RuleA_getInTypes ra) sm sp. 
 
   (** * Engine **)
 
@@ -537,7 +546,37 @@ Qed.
           --- assumption.
 Qed.
 
-(*
+Theorem MaxArity_geq_lenOfrule :
+        forall (tr: TransformationA) (r: RuleA),
+          In r (TransformationA_getRules tr) -> 
+          maxArity tr >= length (RuleA_getInTypes r).
+Proof.
+intros.
+destruct tr.
+simpl in H.
+rename l into rules.
+induction rules.
+- contradiction.
+- simpl in H.
+  destruct H.
+  -- rewrite H.
+     unfold maxArity. simpl. admit.
+  -- apply IHrules in H.
+     unfold maxArity. simpl.
+     unfold maxArity in H. simpl in H.
+Abort.
+
+Theorem InstantiatePattern_le_maxArity :
+        forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
+          incl sp (@allModelElements _ _ sm) ->
+          instantiateRuleOnPattern r tr sm sp = Some tp -> length (RuleA_getInTypes r) = Datatypes.length sp.
+Proof.
+intros.
+unfold instantiateRuleOnPattern in H0.
+destruct (evalGuardExpression (RuleA_getGuard r) tr sm sp) eqn: guard.
+destruct b.
+unfold evalGuardExpression.
+
 Theorem InstantiatePattern_le_maxArity :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement),
           incl sp (@allModelElements _ _ sm) ->
@@ -545,22 +584,23 @@ Theorem InstantiatePattern_le_maxArity :
 Proof.
 Admitted.
 
+
 Theorem In_allTuples :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement),
           incl sp (@allModelElements _ _ sm) ->
           instantiatePattern tr sm sp = Some tp -> In sp (allTuples tr sm).
-  Proof.
-    intros.
-    case (le_lt_dec (length sp) (maxArity tr)).
-    - intros.
-      unfold allTuples.
-      apply tuples_up_to_n_incl_length.
-      + assumption.
-      + assumption.
-    - intros.
-      assert (maxArity tr >= Datatypes.length sp). { apply InstantiatePattern_le_maxArity with (sm:=sm) (tp:=tp); assumption. }
-      omega.
-  Qed.
+Proof.
+  intros.
+  case (le_lt_dec (length sp) (maxArity tr)).
+  - intros.
+    unfold allTuples.
+    apply tuples_up_to_n_incl_length.
+    + assumption.
+    + assumption.
+  - intros.
+    assert (maxArity tr >= Datatypes.length sp). { apply InstantiatePattern_le_maxArity with (sm:=sm) (tp:=tp); assumption. }
+    omega.
+Qed.
 
 Theorem outp_incl_elements :
         forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
@@ -587,7 +627,6 @@ Theorem outp_incl_links :
           incl tls (@allModelLinks _ _ tm).
 Proof.
 Abort.
-*)
 
 Instance CoqTLEngine : 
   TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA
