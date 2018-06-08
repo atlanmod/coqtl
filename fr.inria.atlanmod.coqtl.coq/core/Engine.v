@@ -73,12 +73,14 @@ Class TransformationEngineTypeClass
     outp_incl_elements :
         forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) ,
           tm = executeFun tr sm -> In r (getRulesFun tr) -> incl sp (allSourceModelElements sm) ->
+          matchPatternFun tr sm sp = Some r ->
           instantiateRuleOnPatternFun r tr sm sp = Some tes ->
           incl tes (allTargetModelElements tm);
 
     outp_incl_links :
         forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) (tls: list TargetModelLink),
           tm = executeFun tr sm -> In r (getRulesFun tr) -> incl sp (allSourceModelElements sm) ->
+          matchPatternFun tr sm sp = Some r ->
           instantiateRuleOnPatternFun r tr sm sp = Some tes ->
           applyRuleOnPatternFun r tr sm sp tes = Some tls ->
           incl tls (allTargetModelLinks tm);
