@@ -707,7 +707,7 @@ Proof.
 Qed.
 
 
-Instance CoqTLEngine : 
+Instance CoqTLPlusEngine : 
   TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA
   SourceModelElement SourceModelLink SourceModel
   TargetModelElement TargetModelLink TargetModel := 
@@ -731,14 +731,7 @@ Instance CoqTLEngine :
     instantiateRuleOnPatternFun := instantiateRuleOnPattern;
     applyRuleOnPatternFun := applyRuleOnPattern;
 
-    tr_instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable; 
-    tr_surj_elements := tr_surj_elements;
-    tr_surj_links := tr_surj_links;
 
-    outp_incl_elements := outp_incl_elements;
-    outp_incl_links := outp_incl_links;
-    match_in := match_incl;
-    match_functional := match_functional;
   }.
 
 

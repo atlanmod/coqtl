@@ -39,15 +39,16 @@ Class TransformationEngineTypeClass
 
     (* Correctness (the transformation does not generate dangling links)  our CoqTL does not hold on this *)
     tr_correctness : 
-    forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
-      tm = executeFun tr sm -> In t1 (allTargetModelLinks tm) ->
-      (exists (sp : list SourceModelElement) (tel : list TargetModelElement) (tpl : list TargetModelLink) (r : RuleDef),
-        In r (getRulesFun tr) /\
-        In t1 tpl /\
-        applyRuleOnPatternFun r tr sm sp tel = Some tpl /\
-        incl sp (allSourceModelElements sm) /\
-        incl tpl (allTargetModelLinks tm) /\
-        matchPatternFun tr sm sp = Some r );
+    forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) 
+               (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) (tls: list TargetModelLink),
+          tm = executeFun tr sm -> 
+          In r (getRulesFun tr) -> 
+          incl sp (allSourceModelElements sm) ->
+          matchPatternFun tr sm sp = Some r ->
+          instantiateRuleOnPatternFun r tr sm sp = Some tes ->
+          applyRuleOnPatternFun r tr sm sp tes = Some tls ->
+          True
+    ;
 
     (* Convergence our CoqTL does not hold on this *)
 
