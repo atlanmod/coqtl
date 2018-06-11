@@ -364,6 +364,9 @@ Section CoqTL.
                           (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) tes)).
 
   (** ** Rule matching **)
+  Definition matchRuleOnPattern (r: RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
+    evalGuardExpression (RuleA_getGuard r) tr sm sp.
+
 
   Fixpoint matchPatternFix (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option RuleA :=
     match l with
@@ -691,6 +694,19 @@ apply concat_map_option_incl with (a:=sp).
   assumption.
 Qed.
 
+Theorem match_functional :
+        forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r1: RuleA) (r2: RuleA),
+          matchPattern tr sm sp = Some r1 -> 
+           matchPattern tr sm sp = Some r2 -> 
+            r1 = r2.
+Proof.
+  intros.
+  rewrite H in H0.
+  inversion H0.
+  reflexivity.
+Qed.
+
+
 Instance CoqTLEngine : 
   TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA
   SourceModelElement SourceModelLink SourceModel
@@ -711,7 +727,7 @@ Instance CoqTLEngine :
     instantiatePatternFun := instantiatePattern;
     applyPatternFun := applyPattern;
 
-(*     matchRuleOnPatternFun := *)
+    matchRuleOnPatternFun := matchRuleOnPattern;
     instantiateRuleOnPatternFun := instantiateRuleOnPattern;
     applyRuleOnPatternFun := applyRuleOnPattern;
 
@@ -722,9 +738,8 @@ Instance CoqTLEngine :
     outp_incl_elements := outp_incl_elements;
     outp_incl_links := outp_incl_links;
     match_in := match_incl;
+    match_functional := match_functional;
   }.
-Proof.  
-Abort.
 
 (*Theorem evalGuardExpression_patternLength :
     forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
