@@ -680,7 +680,16 @@ Theorem outp_incl_links :
           applyRuleOnPattern r tr sm sp tes = Some tls ->
           incl tls (@allModelLinks _ _ tm).
 Proof.
-Abort.
+intros.
+rewrite H.
+simpl.
+apply concat_map_option_incl with (a:=sp).
+- apply In_allTuples with (tp:=tes) (r:=r); assumption.
+- unfold applyPattern.
+  rewrite H2.
+  rewrite H3.
+  assumption.
+Qed.
 
 Instance CoqTLEngine : 
   TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA
@@ -711,6 +720,7 @@ Instance CoqTLEngine :
     tr_surj_links := tr_surj_links;
 
     outp_incl_elements := outp_incl_elements;
+    outp_incl_links := outp_incl_links;
     match_in := match_incl;
   }.
 Proof.  
