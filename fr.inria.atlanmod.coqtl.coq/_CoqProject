@@ -1,4 +1,5 @@
 -R "core/utils" "core.utils"
+core/utils/tArith.v
 core/utils/tList.v
 core/utils/tConcat.v
 core/utils/tTuple.v

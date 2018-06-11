@@ -1,4 +1,5 @@
 Require Export List.
+Require Export core.utils.tArith.
 Require Export core.utils.tList.
 Require Export core.utils.tTuple.
 Require Export core.utils.tConcat.

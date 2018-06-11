@@ -3,7 +3,7 @@ Require Import List.
 Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
-Require Import ZArith.
+
 
 Require Import core.Metamodel.
 Require Import core.Model.
@@ -406,15 +406,7 @@ Section CoqTL.
     Some (optionList2List (map (resolve tr sm name type) sps)).
 
   (** ** Rule scheduling **)
-  Fixpoint ble_nat (n m : nat) : bool :=
-  match n with
-  | O => true
-  | S n' =>
-      match m with
-      | O => false
-      | S m' => ble_nat n' m'
-      end
-  end.
+
   
   Fixpoint max (l : list nat) : nat :=
     match l with nil => 0
@@ -567,58 +559,10 @@ Qed.
           --- assumption.
 Qed.
 
-Lemma ge_trans : forall a b c,
-  a >= b -> b >= c -> a >= c.
-Proof.
-  intuition.
-Qed.
-
-Theorem O_le_n : forall n,
-  0 <= n.
-Proof.
-  intros. induction n.
-  apply le_n.
-  apply le_S. apply IHn.
-Qed.
-
-Theorem n_le_m__Sn_le_Sm : forall n m,
-  n <= m -> S n <= S m.
-Proof.
-  intros. induction H.
-  apply le_n.
-  apply le_S. apply IHle.
-Qed.
-
-Locate le_n.
-Lemma ble_nat_true : forall n m,
-    ble_nat n m = true -> n <= m.
-Proof.
-  intros n m. generalize dependent n. induction m.
-  - destruct n.
-    -- intros. apply le_n.
-    -- simpl. intros. inversion H.
-  - intros. destruct n.
-    -- apply O_le_n.
-    -- apply n_le_m__Sn_le_Sm. apply IHm.
-                 simpl in H. apply H.
-Qed.
 
 
-Lemma ble_nat_false : forall n m,
-    ble_nat n m = false -> n > m.
-Proof.
-induction n; intros.
-- inversion H.
-- destruct m.
-  -- auto with arith.
-  -- apply lt_n_S.
-     apply IHn.
-     simpl in H.
-     assumption.
-Qed.
 
-
-Theorem MaxArity_geq_lenOfrule :
+Lemma MaxArity_geq_lenOfrule :
         forall (tr: TransformationA) (r: RuleA),
           In r (TransformationA_getRules tr) -> 
           maxArity tr >= length (RuleA_getInTypes r).
@@ -659,7 +603,7 @@ induction rules.
     apply (@ge_trans x y z); assumption.
 Qed.
 
-Theorem eq_ruletype_sp :
+Lemma eq_ruletype_sp :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
           incl sp (@allModelElements _ _ sm) ->
           instantiateRuleOnPattern r tr sm sp = Some tp -> length (RuleA_getInTypes r) = Datatypes.length sp.
@@ -676,7 +620,7 @@ Qed.
 
 
 
-Theorem InstantiatePattern_le_maxArity :
+Lemma InstantiatePattern_le_maxArity :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
           incl sp (@allModelElements _ _ sm) ->
           In r (TransformationA_getRules tr) ->
