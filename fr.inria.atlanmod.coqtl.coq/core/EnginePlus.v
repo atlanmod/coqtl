@@ -27,6 +27,9 @@ Class TransformationEngineTypeClass
     getOutputPatternElementsFun: RuleDef -> list OutputPatternElementDef;
     getOutputPatternElementReferencesFun: OutputPatternElementDef -> list OutputPatternElementReferenceDef;
 
+
+    getModelElementsInModelLink : TargetModel -> TargetModelLink -> list TargetModelElement;
+
     executeFun: TransformationDef -> SourceModel -> TargetModel;
     
     matchPatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option RuleDef;
@@ -40,14 +43,14 @@ Class TransformationEngineTypeClass
     (* Correctness (the transformation does not generate dangling links)  our CoqTL does not hold on this *)
     tr_correctness : 
     forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) 
-               (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) (tls: list TargetModelLink),
+               (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) (tl: TargetModelLink) (tpl : list TargetModelLink),
           tm = executeFun tr sm -> 
           In r (getRulesFun tr) -> 
           incl sp (allSourceModelElements sm) ->
-          matchPatternFun tr sm sp = Some r ->
-          instantiateRuleOnPatternFun r tr sm sp = Some tes ->
-          applyRuleOnPatternFun r tr sm sp tes = Some tls ->
-          True
+          applyRuleOnPatternFun r tr sm sp tes = Some tpl ->
+          incl tpl (allTargetModelLinks tm) ->
+          In tl tpl -> 
+          incl (getModelElementsInModelLink tm tl) (allTargetModelElements tm)
     ;
 
     (* Convergence our CoqTL does not hold on this *)
