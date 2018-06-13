@@ -426,6 +426,11 @@ Section CoqTL.
   Definition allTuples (tr: TransformationA) (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (@allModelElements _ _ sm) (maxArity tr).
 
+  Definition pexecute (tr: TransformationA) (sm : SourceModel) : TargetModel :=
+    Build_Model
+      (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
+      nil. 
+
   Definition execute (tr: TransformationA) (sm : SourceModel) : TargetModel :=
     Build_Model
       (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
@@ -704,6 +709,23 @@ Proof.
   rewrite H in H0.
   inversion H0.
   reflexivity.
+Qed.
+
+Theorem tr_apply_noncreation :
+        forall (tr: TransformationA) (sm : SourceModel) (tmf: TargetModel) (tmp: TargetModel)
+               (sp : list SourceModelElement) (r: RuleA) (tes: list TargetModelElement) (tl: TargetModelLink) (tpl : list TargetModelLink),
+          tmf = execute tr sm -> 
+          tmp = pexecute tr sm -> 
+          incl (@allModelElements _ _ tmp) (@allModelElements _ _ tmf).
+Proof.
+  intros.
+  rewrite 1 H.
+  simpl.
+  rewrite H0.
+  simpl.
+  unfold incl.
+  intros.
+  assumption.
 Qed.
 
 
