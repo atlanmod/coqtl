@@ -53,8 +53,16 @@ Class TransformationEngineTypeClass
           incl (getModelElementsInModelLink tm tl) (allTargetModelElements tm)
     ;
 
-    (* Convergence our CoqTL does not hold on this *)
-
+    (* Convergence: apply rules in different order get same output, our CoqTL does not hold on this *)
+    tr_converge : 
+    forall (tr1: TransformationDef) (tr2: TransformationDef) (sm : SourceModel) (tm1: TargetModel) (tm2: TargetModel),
+          incl (getRulesFun tr1) (getRulesFun tr2) ->
+          incl (getRulesFun tr2) (getRulesFun tr1) ->
+          tm1 = executeFun tr1 sm -> 
+          tm2 = executeFun tr2 sm -> 
+          tm1 = tm2
+    ;
+    
     (* Additivity *)
     (*  remove binding, the links is a subset of tm created before *)
     
