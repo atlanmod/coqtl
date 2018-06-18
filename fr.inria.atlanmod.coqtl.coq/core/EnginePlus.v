@@ -23,12 +23,19 @@ Class TransformationEngineTypeClass
     allTargetModelElements: TargetModel -> list TargetModelElement;
     allTargetModelLinks: TargetModel -> list TargetModelLink;
 
+
+    (** * Transformation Syntax
+     * Inductive types + equality decidability
+     **)
+    
     getRulesFun: TransformationDef -> list RuleDef;
     getOutputPatternElementsFun: RuleDef -> list OutputPatternElementDef;
     getOutputPatternElementReferencesFun: OutputPatternElementDef -> list OutputPatternElementReferenceDef;
 
 
-    
+     (** * Transformation Semantics
+     * 
+     **)
 
     executeFun: TransformationDef -> SourceModel -> TargetModel;
     
@@ -42,6 +49,10 @@ Class TransformationEngineTypeClass
 
     (* Correctness (the transformation does not generate dangling links)  our CoqTL does not hold on this *)
     getModelElementsInModelLink : TargetModel -> TargetModelLink -> list TargetModelElement;
+
+     (** * Theorems
+     * 
+     **)
     
     tr_correctness : 
     forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) 
@@ -83,7 +94,16 @@ Class TransformationEngineTypeClass
           incl (allTargetModelElements tm1) (allTargetModelElements tm2) 
     ;
     
-
+  
+    (* Additivity *)
+    (*  remove binding, the links is a subset of tm created before *)
+    tr_additivity_ope : 
+    forall (tr1: TransformationDef) (tr2: TransformationDef) (sm : SourceModel) (tm1: TargetModel) (tm2: TargetModel) (ope: OutputPatternElementDef),
+          tm1 = executeFun tr1 sm ->
+          tm2 = executeFun tr2 sm ->
+          tr1 = removeOutputPatternElement tr2 r ope ->
+          (incl (allTargetModelElements tm1) (allTargetModelElements tm2) /\ incl (allTargetModelLinks tm1) (allTargetModelLinks tm2))
+    ;
     (* Well-formedness *)
     
 
