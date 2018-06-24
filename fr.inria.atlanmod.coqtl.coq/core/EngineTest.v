@@ -1,3 +1,11 @@
+(** * Examplified transformation engine 
+
+    In this section, we experiment a simplified type 
+    classes for metamodel, model and transformation engine.
+    The goal is to better understand relationship among them.
+    
+    Note: Not intended to be used. *)
+
 Require Import Omega.
 Require Import List.      (* sequence *)
 Require Import String.
@@ -6,6 +14,8 @@ Require Import ListSet.   (* set *)
 
 
 Set Implicit Arguments.
+
+(** ** Metamodel type class *)
 
 Class Metamodel (ModelElement: Type) (ModelLink: Type)  :=
   {
@@ -36,12 +46,14 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type)  :=
   }.
 
 
+(** ** Model type class *)
 Class Model (ModelElement : Type) (ModelLink : Type) (MM: Metamodel ModelElement ModelLink):= 
 {
   allModelElements : list ModelElement;
   allModelLinks : list ModelLink;
 }.
 
+(** ** Transformation engine type class *)
 Class TransformationEngineTypeClass :=
   {
     (* Source Types *)
@@ -91,18 +103,5 @@ Class TransformationEngineTypeClass :=
     match_fun :
         forall (tr: TransformationDef) (sm : Model ofMMS) (sp : list SourceModelElement) (r1: RuleDef) (r2: RuleDef),
           matchPatternFun tr sp sm = Some r1 -> matchPatternFun tr sp sm = Some r2 -> r1 = r2;
-    
-    (*     
-    tr_surj'' : 
-    forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
-      tm = executeFun tr sm -> In t1 (allTargetModelLinks tm) ->
-      (exists (sp : list SourceModelElement) (tpl : list TargetModelLink) (r : RuleDef),
-        In r (getRulesFun tr) /\
-        In t1 tpl /\
-        applyRuleOnPatternFun r sp sm = tpl /\
-        incl sp (allSourceModelElements sm) /\
-        incl tpl (allTargetModelLinks tm) /\
-        matchPatternFun tr sp sm = Some r ); *)
 
-                                            
   }.
