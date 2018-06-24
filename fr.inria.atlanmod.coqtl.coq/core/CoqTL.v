@@ -731,7 +731,7 @@ Instance CoqTLEngine :
     instantiateRuleOnPatternFun := instantiateRuleOnPattern;
     applyRuleOnPatternFun := applyRuleOnPattern;
 
-    tr_instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable; 
+    instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable; 
     tr_surj_elements := tr_surj_elements;
     tr_surj_links := tr_surj_links;
 
