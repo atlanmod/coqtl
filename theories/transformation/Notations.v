@@ -1,4 +1,4 @@
-Require Import core.CoqTL.
+Require Import coqtl.transformation.CoqTL.
 
 (** * Notations **)
 

@@ -5,10 +5,10 @@ Require Import ListSet.
 Require Import Omega.
 
 
-Require Import core.Metamodel.
-Require Import core.Model.
-Require Import core.Engine.
-Require Import core.utils.tTop.
+Require Import coqtl.transformation.Metamodel.
+Require Import coqtl.transformation.Model.
+Require Import coqtl.transformation.Engine.
+Require Import coqtl.utils.tTop.
 
 
 Set Implicit Arguments.

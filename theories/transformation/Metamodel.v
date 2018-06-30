@@ -1,5 +1,5 @@
 (** * Metamodel **)
-Require Import core.Model.
+Require Import coqtl.transformation.Model.
 
 
 Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=

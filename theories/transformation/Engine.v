@@ -14,8 +14,7 @@ Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
 
-Require Import core.utils.tTop.
-Require Import core.Model.
+Require Import coqtl.transformation.Model.
 
 Set Implicit Arguments.
 
