@@ -113,7 +113,12 @@ VFILES:=theories/utils/tArith.v\
   theories/transformation/Model.v\
   theories/transformation/Engine.v\
   theories/transformation/CoqTL.v\
-  theories/transformation/Notations.v
+  theories/transformation/Notations.v\
+  theories/test/Class2Relational/ClassMetamodel.v\
+  theories/test/Class2Relational/RelationalMetamodel.v\
+  theories/test/Class2Relational/PersonModel.v\
+  theories/test/Class2Relational/Class2Relational.v\
+  theories/test/Class2Relational/Class2Relational_test.v
 
 ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(VFILES))
