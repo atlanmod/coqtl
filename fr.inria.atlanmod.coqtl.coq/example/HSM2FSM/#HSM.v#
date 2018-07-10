@@ -556,7 +556,7 @@ Instance HSMMetamodel : Metamodel HSMMetamodel_EObject HSMMetamodel_ELink HSMMet
     toModelClass := HSMMetamodel_toEClass;
     toModelReference := HSMMetamodel_toEReference;
     toModelElement := HSMMetamodel_toEObjectOfEClass;
-    toModelLink := ClassMetamodel_toELinkOfEReference;
+    toModelLink := HSMMetamodel_toELinkOfEReference;
     bottomModelClass := HSMMetamodel_defaultInstanceOfEClass;
 
     (* Theorems *)

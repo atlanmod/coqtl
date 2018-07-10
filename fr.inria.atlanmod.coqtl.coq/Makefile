@@ -123,7 +123,9 @@ VFILES:=core/utils/tArith.v\
   example/Class2Relational/ClassMetamodel.v\
   example/Class2Relational/RelationalMetamodel.v\
   example/Class2Relational/Class2Relational.v\
-  example/Class2Relational/PersonModel.v
+  example/Class2Relational/PersonModel.v\
+  example/HSM2FSM/HSM.v\
+  example/HSM2FSM/FSM.v
 
 ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(VFILES))
