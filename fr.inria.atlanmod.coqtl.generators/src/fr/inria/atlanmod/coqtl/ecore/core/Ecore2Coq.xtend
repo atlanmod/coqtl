@@ -133,7 +133,7 @@ class Ecore2Coq {
 		  match «farg_getERoleTypesByEReference» with
 		    «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
 				«FOR eReference : eClass.EAllReferences
-		    	»| «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» => («eClass.name» * «FOR eReferenceCtr : eClass.EAllReferences SEPARATOR " * "»«ReferenceType2Coq(eReferenceCtr)»«ENDFOR»)
+		    	»| «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» => («eClass.name» * «ReferenceType2Coq(eReference)»)
 		    	«ENDFOR»
 		    «ENDFOR»
 		  end.
