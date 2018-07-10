@@ -246,7 +246,9 @@ class Ecore2Coq {
 		Definition «mm»_toEObjectOfEClass («mm_eclass_qarg»: «mm_eclass») (t: «mm»_getTypeByEClass «mm_eclass_qarg») : «mm_eobject» :=
 		  (Build_«mm_eobject» «mm_eclass_qarg» t).
 		
-		
+		Definition «mm»_toELinkOfEReference («mm_eref_qarg»: «mm_eref») (t: «mm»_getTypeByEReference «mm_eref_qarg») : «mm_elink» :=
+				  (Build_«mm_elink» «mm_eref_qarg» t).
+				  
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
  			«FOR eReference : eClass.EAllReferences
  			»Fixpoint «mm»_get«eClass.name»«eReference.name.toFirstUpper»OnLinks («arg(eClass.name)» : «eClass.name») (l : list «mm_elink») : option («ReferenceType2Coq(eReference)») :=
@@ -278,6 +280,7 @@ class Ecore2Coq {
 		    toModelClass := «mm»_toEClass;
 		    toModelReference := «mm»_toEReference;
 		    toModelElement := «mm»_toEObjectOfEClass;
+		    toModelLink := «mm»_toELinkOfEReference;
 		    bottomModelClass := «mm»_defaultInstanceOfEClass;
 		
 		    (* Theorems *)
