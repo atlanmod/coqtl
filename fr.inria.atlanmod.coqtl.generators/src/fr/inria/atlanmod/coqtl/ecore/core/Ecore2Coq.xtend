@@ -27,6 +27,7 @@ class Ecore2Coq {
 		 ********************************************************************)
 		
 		(* Coq libraries *)
+		Require Import Bool.
 		Require Import String.
 		Require Import List.
 		Require Import Multiset.
@@ -35,14 +36,15 @@ class Ecore2Coq {
 		Require Import Coq.Logic.Eqdep_dec.
 		
 		(* CoqTL libraries *)
-		Require Import CoqTL.
-		Require Import Utils.
+		Require Import core.utils.tTop.
+		Require Import core.Metamodel.
+		Require Import core.Model.
 		
 		(* Base types *)
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
 			Inductive «eClass.name» : Set :=
 			  Build«eClass.name» :
-			  «FOR eAttribute : eClass.EAttributes»
+			  «FOR eAttribute : eClass.EAllAttributes»
 			    (* «eAttribute.name» *) «AttributeType2Coq(eAttribute)» ->
 			  «ENDFOR»
 			  «eClass.name».
@@ -50,7 +52,7 @@ class Ecore2Coq {
 		«ENDFOR»	
 		
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
- 			«FOR eReference : eClass.EReferences
+ 			«FOR eReference : eClass.EAllReferences
             »Inductive «eClass.name»«eReference.name.toFirstUpper» : Set :=
  			   Build«eClass.name»«eReference.name.toFirstUpper» :
  			   «eClass.name» ->
@@ -62,10 +64,10 @@ class Ecore2Coq {
 		
 		(* Accessors *)
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-			  «FOR eAttribute : eClass.EAttributes»
+			  «FOR eAttribute : eClass.EAllAttributes»
 			  «val v = eClass.name.toLowerCase.charAt(0)»
 			  Definition get«eClass.name»«eAttribute.name.toFirstUpper» («v» : «eClass.name») : «AttributeType2Coq(eAttribute)» :=
-			    match «v» with Build«eClass.name» «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «eAttribute.name» end.
+			    match «v» with Build«eClass.name» «FOR eAttributeCtr : eClass.EAllAttributes»«eAttributeCtr.name» «ENDFOR» => «eAttribute.name» end.
 			  
 			  «ENDFOR»
 			  
@@ -75,8 +77,8 @@ class Ecore2Coq {
 		(* Equality for Types *)
 		(**? We define eq for Eclass on their fist attribute **)
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-			«IF eClass.EAttributes.size > 0»
-			«val fstAttr = eClass.EAttributes.get(0)»
+			«IF eClass.EAllAttributes.size > 0»
+			«val fstAttr = eClass.EAllAttributes.get(0)»
 			Definition beq_«eClass.name» («arg1(eClass.name)» : «eClass.name») («arg2(eClass.name)» : «eClass.name») : bool :=
 			  beq_«AttributeType2Coq(fstAttr)» (get«eClass.name»«fstAttr.name.toFirstUpper» «arg1(eClass.name)») (get«eClass.name»«fstAttr.name.toFirstUpper» «arg2(eClass.name)»).
 			«ENDIF»
@@ -103,13 +105,13 @@ class Ecore2Coq {
 		Definition «ePackage.name»«Keywords.PostfixMetamodel»_getEAttributeTypesByEClass («farg_getEAttributeTypesByEClass» : «ePackage.name»«Keywords.PostfixMetamodel»_«Keywords.PostfixEClass») : Set :=
 		  match «farg_getEAttributeTypesByEClass» with
 		    «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-		    | «eClass.name»«Keywords.PostfixEClass» => («FOR eAttributeCtr : eClass.EAttributes SEPARATOR " * "»«AttributeType2Coq(eAttributeCtr)»«ENDFOR»)
+		    | «eClass.name»«Keywords.PostfixEClass» => («FOR eAttributeCtr : eClass.EAllAttributes SEPARATOR " * "»«AttributeType2Coq(eAttributeCtr)»«ENDFOR»)
 		    «ENDFOR»
 		  end.
 		
 		Inductive «ePackage.name»«Keywords.PostfixMetamodel»_«Keywords.PostfixEReference» : Set :=
 		  «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-			«FOR eReference : eClass.EReferences
+			«FOR eReference : eClass.EAllReferences
 		    »| «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference»
 		 	«ENDFOR» 
 		  «ENDFOR»
@@ -119,7 +121,7 @@ class Ecore2Coq {
 		Definition «ePackage.name»«Keywords.PostfixMetamodel»_getTypeByEReference («farg_getTypeByEReference» : «ePackage.name»«Keywords.PostfixMetamodel»_«Keywords.PostfixEReference») : Set :=
 		  match «farg_getTypeByEReference» with
 		    «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-				«FOR eReference : eClass.EReferences
+				«FOR eReference : eClass.EAllReferences
     		    »| «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» => «eClass.name»«eReference.name.toFirstUpper»
     		 	«ENDFOR» 
 		    «ENDFOR»
@@ -130,8 +132,8 @@ class Ecore2Coq {
 		Definition «ePackage.name»«Keywords.PostfixMetamodel»_getERoleTypesByEReference («farg_getERoleTypesByEReference» : «ePackage.name»«Keywords.PostfixMetamodel»_«Keywords.PostfixEReference») : Set :=
 		  match «farg_getERoleTypesByEReference» with
 		    «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-				«FOR eReference : eClass.EReferences
-		    	»| «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» => («eClass.name» * «FOR eReferenceCtr : eClass.EReferences SEPARATOR " * "»«ReferenceType2Coq(eReferenceCtr)»«ENDFOR»)
+				«FOR eReference : eClass.EAllReferences
+		    	»| «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» => («eClass.name» * «FOR eReferenceCtr : eClass.EAllReferences SEPARATOR " * "»«ReferenceType2Coq(eReferenceCtr)»«ENDFOR»)
 		    	«ENDFOR»
 		    «ENDFOR»
 		  end.
@@ -196,7 +198,7 @@ class Ecore2Coq {
 		Definition «ePackage.name»«Keywords.PostfixMetamodel»_getEObjectFromEAttributeValues («farg_getEAttributeTypesByEClass» : «ePackage.name»«Keywords.PostfixMetamodel»_«Keywords.PostfixEClass») : («mm»_getEAttributeTypesByEClass «farg_getEAttributeTypesByEClass») -> «mm_eobject» :=
 		  match «farg_getEAttributeTypesByEClass» with
 		    «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-		    | «eClass.name»«Keywords.PostfixEClass» => (fun («larg»: («FOR eAttributeCtr : eClass.EAttributes SEPARATOR " * "»«AttributeType2Coq(eAttributeCtr)»«ENDFOR»)) => (Build_«mm_eobject» «eClass.name»«Keywords.PostfixEClass» (Build«eClass.name» «PrintCtrArgsByPair(eClass.EAttributes.size, larg)»)))
+		    | «eClass.name»«Keywords.PostfixEClass» => (fun («larg»: («FOR eAttributeCtr : eClass.EAllAttributes SEPARATOR " * "»«AttributeType2Coq(eAttributeCtr)»«ENDFOR»)) => (Build_«mm_eobject» «eClass.name»«Keywords.PostfixEClass» (Build«eClass.name» «PrintCtrArgsByPair(eClass.EAllAttributes.size, larg)»)))
 		    «ENDFOR»
 		  end.
 		
@@ -204,8 +206,8 @@ class Ecore2Coq {
 		Definition «ePackage.name»«Keywords.PostfixMetamodel»_getELinkFromERoleValues («farg_getERoleTypesByEReference» : «ePackage.name»«Keywords.PostfixMetamodel»_«Keywords.PostfixEReference») : («mm»_getERoleTypesByEReference «farg_getERoleTypesByEReference») -> «mm_elink» :=
 		  match «farg_getERoleTypesByEReference» with
 		    «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-				«FOR eReference : eClass.EReferences
-		    	»| «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» => (fun («larg»: («eClass.name» * «FOR eReferenceCtr : eClass.EReferences SEPARATOR " * "»«ReferenceType2Coq(eReferenceCtr)»«ENDFOR»)) => (Build_«mm_elink» «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» (Build«eClass.name»«eReference.name.toFirstUpper» «PrintCtrArgsByPair(eClass.EReferences.size+1, larg)»)))
+				«FOR eReference : eClass.EAllReferences
+		    	»| «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» => (fun («larg»: («eClass.name» * «FOR eReferenceCtr : eClass.EAllReferences SEPARATOR " * "»«ReferenceType2Coq(eReferenceCtr)»«ENDFOR»)) => (Build_«mm_elink» «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» (Build«eClass.name»«eReference.name.toFirstUpper» «PrintCtrArgsByPair(eClass.EAllReferences.size+1, larg)»)))
 		    	«ENDFOR»
 		    «ENDFOR»
 		  end.
@@ -244,16 +246,9 @@ class Ecore2Coq {
 		Definition «mm»_toEObjectOfEClass («mm_eclass_qarg»: «mm_eclass») (t: «mm»_getTypeByEClass «mm_eclass_qarg») : «mm_eobject» :=
 		  (Build_«mm_eobject» «mm_eclass_qarg» t).
 		
-		(**? Not very general **)
-		Definition «mm»_getId («mm_eobject_qarg» : «mm_eobject») : nat :=
-		  match «mm_eobject_qarg» with
-		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-		  | (Build_«mm_eobject» «eClass.name»EClass «mm_eobject_qarg») => «IF eClass.EAttributes.size > 0»«val fstAttr = eClass.EAttributes.get(0)»(get«eClass.name»«fstAttr.name.toFirstUpper» «mm_eobject_qarg») «ENDIF» 
-  		«ENDFOR»
-		  end.
 		
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
- 			«FOR eReference : eClass.EReferences
+ 			«FOR eReference : eClass.EAllReferences
  			»Fixpoint «mm»_get«eClass.name»«eReference.name.toFirstUpper»OnLinks («arg(eClass.name)» : «eClass.name») (l : list «mm_elink») : option («ReferenceType2Coq(eReference)») :=
  			match l with
  			| (Build_«mm_elink» «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» (Build«eClass.name»«eReference.name.toFirstUpper» «eClass.name»_ctr «eReference.name»_ctr)) :: l' => 
@@ -263,7 +258,7 @@ class Ecore2Coq {
  			end.
  			
  			Definition get«eClass.name»«eReference.name.toFirstUpper»OnLinks («arg(eClass.name)» : «eClass.name») (m : «ePackage.name»Model) : option («ReferenceType2Coq(eReference)») :=
- 			  «mm»_get«eClass.name»«eReference.name.toFirstUpper»OnLinks «arg(eClass.name)» (allModelLinks m).
+ 			  «mm»_get«eClass.name»«eReference.name.toFirstUpper»OnLinks «arg(eClass.name)» (@allModelLinks _ _ m).
 			«ENDFOR»
 
 		«ENDFOR»
@@ -271,7 +266,7 @@ class Ecore2Coq {
 		Definition «mm»_defaultInstanceOfEClass («mm_eclass_qarg»: «mm_eclass») : («mm»_getTypeByEClass «mm_eclass_qarg») :=
 		  match «mm_eclass_qarg» with
 		  «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-		   | «eClass.name»«Keywords.PostfixEClass» => (Build«eClass.name» «FOR eAttribute : eClass.EAttributes SEPARATOR " "»«EMFUtil.PrintDefaultValue(eAttribute)»«ENDFOR»)
+		   | «eClass.name»«Keywords.PostfixEClass» => (Build«eClass.name» «FOR eAttribute : eClass.EAllAttributes SEPARATOR " "»«EMFUtil.PrintDefaultValue(eAttribute)»«ENDFOR»)
 		  «ENDFOR»
 		  end.
 		
@@ -332,7 +327,9 @@ class Ecore2Coq {
 	»'''
 	
 	def static  <T extends EObject> String PrintCtrArgsByPair(int size, String c){	
-		if(size - 1 == 1){
+		if(size - 1 == 0){
+			return '''«c»'''
+		}else if(size - 1 == 1){
 			return '''(fst «c») (snd «c»)'''
 		}else{
 			return String.format("%s %s", PrintCtrArgsByPair(size-1, '''(fst «c»)'''), '''(snd «c»)''')
@@ -341,3 +338,17 @@ class Ecore2Coq {
 	}
 	
 }
+
+
+
+/**
+ * Removed
+ * 
+		(**? Not very general **)
+		Definition «mm»_getId («mm_eobject_qarg» : «mm_eobject») : nat :=
+		  match «mm_eobject_qarg» with
+		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
+		  | (Build_«mm_eobject» «eClass.name»EClass «mm_eobject_qarg») => «IF eClass.EAllAttributes.size > 0»«val fstAttr = eClass.EAllAttributes.get(0)»(get«eClass.name»«fstAttr.name.toFirstUpper» «mm_eobject_qarg») «ENDIF» 
+  		«ENDFOR»
+		  end.
+ */
