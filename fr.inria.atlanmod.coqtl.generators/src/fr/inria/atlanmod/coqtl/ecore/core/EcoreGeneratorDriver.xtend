@@ -28,10 +28,10 @@ class EcoreGeneratorDriver {
 	}
 	
 	def static void main(String[] args) {
-		val mm_path = "./resources/HSM.ecore"
+		val mm_path = "./resources/FSM.ecore"
 		//val mm_path = "./resources/Relational.ecore"
 		val mm_uri = URI.createFileURI(mm_path);
-		val output_path = "./resources/HSM.v"
+		val output_path = "./resources/FSM.v"
 		val output_uri = URI.createFileURI(output_path);
 		
 		doEMFSetup
