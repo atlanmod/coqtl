@@ -8,8 +8,8 @@ Require Import core.utils.tTop.
 Require Import core.Notations.
 Require Import core.CoqTL.
 
-Require Import example.HSM.
-Require Import example.FSM.
+Require Import HSM.
+Require Import FSM.
 
 Definition HSM2FSMConcrete :=
   transformation HSM2FSM from HSMetamodel to FSMMetamodel
