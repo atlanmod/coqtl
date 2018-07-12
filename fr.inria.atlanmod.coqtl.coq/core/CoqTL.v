@@ -429,8 +429,15 @@ Section CoqTL.
   Definition execute (tr: TransformationA) (sm : SourceModel) : TargetModel :=
     Build_Model
       (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
-      (concat (optionList2List (map (applyPattern tr sm) (allTuples tr sm)))). 
+      (concat (optionList2List (map (applyPattern tr sm) (allTuples tr sm)))).
 
+  (*Definition pairconcat 
+  
+  Definition execute (tr: TransformationA) (sm : SourceModel) : TargetModel :=
+    let res := (pairconcat (map (transformPattern tr sm) (allTuples tr sm))) in
+    Build_Model
+      (fst res) (snd res).*)
+  
   Theorem match_incl :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
           matchPattern tr sm sp = Some r -> In r (TransformationA_getRules tr).
