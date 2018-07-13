@@ -18,6 +18,12 @@ Definition isNone (A: Type) (e : option A) : bool :=
   | Some a => false
  end.
 
+Definition isComposite (A: Type) (e : option A) : bool :=
+ match e with
+  | None => false
+  | Some a => false
+ end.
+ 
 Definition HSM2FSMConcrete :=
   transformation HSM2FSM from HSMMetamodel to FSMMetamodel
     with m as HSMModel := [
@@ -91,7 +97,36 @@ Definition HSM2FSMConcrete :=
                    return BuildFRegularStateStateMachine rs2 fsm_sm 
                ]
           ]
+        ;
 
+       rule T2TA
+         from
+           element t1 class TransitionEClass from HSMMetamodel
+             when  andb (negb (isComposite (getFTransitionSourceOnLinks t1 m)))
+                        (negb (isComposite (getFTransitionTargetOnLinks t1 m)))
+         to
+          [
+           output "t2"
+             element t2 class FTransitionEClass from FSMMetamodel :=
+               BuildFTransition (getTransitionLabel t1)
+             links
+               [
+                 reference FTransitionStateMachineEReference from FSMMetamodel :=
+                   hsm_sm <- (getTransitionStateMachineOnLinks t1 m);
+                   fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
+                   return BuildFTransitionStateMachine t2 fsm_sm ;
+                   
+                 reference FTransitionStateMachineEReference from FSMMetamodel :=
+                   hsm_sm <- (getTransitionStateMachineOnLinks t1 m);
+                   fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
+                   return BuildFTransitionStateMachine t2 fsm_sm ;
+                   
+                 reference FTransitionStateMachineEReference from FSMMetamodel :=
+                   hsm_sm <- (getTransitionStateMachineOnLinks t1 m);
+                   fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
+                   return BuildFTransitionStateMachine t2 fsm_sm ;
+               ]
+          ]
   ].
 
 (* Unset Printing Notations.*)
