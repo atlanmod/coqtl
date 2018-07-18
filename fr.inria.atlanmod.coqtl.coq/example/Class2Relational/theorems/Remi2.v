@@ -19,10 +19,12 @@ Require Import example.PersonModel.
 
 (* a simplified version of the problem *)
 
+(* class | attribute | derived attribute *)
 Inductive Input : Set := | I0 : nat -> Input | I1 | I2.
-
+(* table | column *)
 Inductive Output : Set := | O0 : nat -> Output | O1.
 
+(* transformation framework *)
 Fixpoint tranfo is1 :=
   match is1 with
   | nil => nil
@@ -31,7 +33,7 @@ Fixpoint tranfo is1 :=
   | I2::is2 => tranfo is2
   end.
 
- 
+
 Theorem Remi1 :
   forall (is1 : list Input), 
     forall (n : nat),
@@ -94,7 +96,7 @@ Proof.
            auto.
        *** inversion H.
        *** inversion H.
-Qed.
+Defined.
            
 (* remi adhoc/specialized transformation *)
   
@@ -103,6 +105,8 @@ Qed.
    - Attribute to Column
    - derived Attribute to nothing 
 *)
+
+(* specialized transformation *)
 
 Fixpoint objectsClassToRelational os :=
   match os with
@@ -285,5 +289,6 @@ Proof.
            exists (ClassMetamodel_BuildEObject AttributeEClass (BuildAttribute n0 b s0)).
            simpl.
            auto.
-Qed.
+Defined.
          
+Check (unfold Remi2).
