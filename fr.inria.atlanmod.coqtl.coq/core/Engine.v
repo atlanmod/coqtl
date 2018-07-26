@@ -157,7 +157,7 @@ Class TransformationEngineTypeClass
               incl tls (allTargetModelLinks tm);
 
     
-      (** *** Well-formatness Theorems *)
+      (** *** Well-formedness Theorems *)
 
         (** **** match_in 
 
@@ -184,7 +184,15 @@ Class TransformationEngineTypeClass
           matchPatternFun tr sm sp = Some r ->
           instantiatePatternFun tr sm sp = Some tp;
 
-
+        apply_pattern_derivable : 
+        forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) 
+               (sp : list SourceModelElement) (tp : list TargetModelElement) (tls : list TargetModelLink) (r : RuleDef),
+          tm = executeFun tr sm -> incl tls (allTargetModelLinks tm) ->
+          applyRuleOnPatternFun r tr sm sp tp = Some tls ->
+          instantiateRuleOnPatternFun r tr sm sp = Some tp ->
+          matchPatternFun tr sm sp = Some r ->
+          applyPatternFun tr sm sp = Some tls;
+        
       (** *** Termination theorems (implicit) *)
 
 

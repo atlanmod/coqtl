@@ -474,7 +474,22 @@ Section CoqTL.
    rewrite H2.
    assumption.
  Qed.
- 
+
+ Theorem tr_apply_pattern_derivable : 
+        forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
+               (sp : list SourceModelElement) (tp : list TargetModelElement) (tls : list TargetModelLink) (r : RuleA),
+          tm = execute tr sm -> incl tls (@allModelLinks _ _ tm) ->
+          applyRuleOnPattern r tr sm sp tp = Some tls ->
+          instantiateRuleOnPattern r tr sm sp = Some tp ->
+          matchPattern tr sm sp = Some r ->
+          applyPattern tr sm sp = Some tls.
+ Proof.
+   intros.
+   unfold applyPattern.
+   rewrite H3.
+   rewrite H2.
+   assumption.
+ Qed.
       
  Theorem tr_surj_elements : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
