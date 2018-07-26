@@ -49,57 +49,57 @@ Class TransformationEngineTypeClass
 
     (** ** Transformation Engine Accessors *)
 
-      (** *** getRulesFun
+      (** *** getRules
 
               Return rules within given transformation. *)
-      getRulesFun: TransformationDef -> list RuleDef;
+      getRules: TransformationDef -> list RuleDef;
 
-      (** *** getOutputPatternElementsFun
+      (** *** getOutputPatternElements
 
               Return output pattern elements within given rule. *)
-      getOutputPatternElementsFun: RuleDef -> list OutputPatternElementDef;
+      getOutputPatternElements: RuleDef -> list OutputPatternElementDef;
 
-      (** *** getOutputPatternElementReferencesFun
+      (** *** getOutputPatternElementReferences
 
               Return output pattern references within given rule *)
-      getOutputPatternElementReferencesFun: OutputPatternElementDef -> list OutputPatternElementReferenceDef;
+      getOutputPatternElementReferences: OutputPatternElementDef -> list OutputPatternElementReferenceDef;
 
     (** ** Transformation Engine Functions *)
 
-      (** *** executeFun
+      (** *** execute
 
               Given a _souce model_ and a _transformation_, _execute_ should return a _target model_. *)
-      executeFun: TransformationDef -> SourceModel -> TargetModel;
+      execute: TransformationDef -> SourceModel -> TargetModel;
 
-      (** *** matchPatternFun 
-
-              TODO *)
-      matchPatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option RuleDef;
-
-      (** *** matchRuleOnPatternFun 
+      (** *** matchPattern 
 
               TODO *)
-      matchRuleOnPatternFun:  RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> option bool;
+      matchPattern: TransformationDef -> SourceModel -> list SourceModelElement -> option RuleDef;
 
-      (** *** instantiatePatternFun 
-
-              TODO *)
-      instantiatePatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelElement);
-
-      (** *** instantiateRuleOnPatternFun 
+      (** *** matchRuleOnPattern 
 
               TODO *)
-      instantiateRuleOnPatternFun: RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelElement); 
+      matchRuleOnPattern:  RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> option bool;
+
+      (** *** instantiatePattern 
+
+              TODO *)
+      instantiatePattern: TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelElement);
+
+      (** *** instantiateRuleOnPattern 
+
+              TODO *)
+      instantiateRuleOnPattern: RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelElement); 
       
-      (** *** applyPatternFun 
+      (** *** applyPattern 
 
               TODO *)      
-      applyPatternFun: TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
+      applyPattern: TransformationDef -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
       
-      (** *** applyRuleOnPatternFun 
+      (** *** applyRuleOnPattern 
 
               TODO *)      
-      applyRuleOnPatternFun: RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> list TargetModelElement -> option (list TargetModelLink);
+      applyRuleOnPattern: RuleDef -> TransformationDef -> SourceModel -> list SourceModelElement -> list TargetModelElement -> option (list TargetModelLink);
 
     (** ** Theorems of Transformation Engine *)
 
@@ -110,28 +110,28 @@ Class TransformationEngineTypeClass
                 Definition: every model element in the target model is produced by a rule application *)
         tr_surj_elements : 
         forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
-          tm = executeFun tr sm -> In t1 (allTargetModelElements tm) ->
+          tm = execute tr sm -> In t1 (allTargetModelElements tm) ->
           (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleDef),
-            In r (getRulesFun tr) /\
+            In r (getRules tr) /\
             In t1 tp /\
-            instantiateRuleOnPatternFun r tr sm sp = Some tp /\
+            instantiateRuleOnPattern r tr sm sp = Some tp /\
             incl sp (allSourceModelElements sm) /\
             incl tp (allTargetModelElements tm) /\
-            matchPatternFun tr sm sp = Some r );
+            matchPattern tr sm sp = Some r );
 
         (** **** tr_surj_links 
 
                 Definition: every model links in the target model is produced by a rule application *)
         tr_surj_links : 
         forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
-          tm = executeFun tr sm -> In t1 (allTargetModelLinks tm) ->
+          tm = execute tr sm -> In t1 (allTargetModelLinks tm) ->
           (exists (sp : list SourceModelElement) (tel : list TargetModelElement) (tpl : list TargetModelLink) (r : RuleDef),
-            In r (getRulesFun tr) /\
+            In r (getRules tr) /\
             In t1 tpl /\
-            applyRuleOnPatternFun r tr sm sp tel = Some tpl /\
+            applyRuleOnPattern r tr sm sp tel = Some tpl /\
             incl sp (allSourceModelElements sm) /\
             incl tpl (allTargetModelLinks tm) /\
-            matchPatternFun tr sm sp = Some r );
+            matchPattern tr sm sp = Some r );
 
       (** *** Completeness Theorems *)
 
@@ -140,9 +140,9 @@ Class TransformationEngineTypeClass
                 Definition: if a rule matches, then its output model elements is included in the target model *)
         outp_incl_elements :
             forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) ,
-              tm = executeFun tr sm -> In r (getRulesFun tr) -> incl sp (allSourceModelElements sm) ->
-              matchPatternFun tr sm sp = Some r ->
-              instantiateRuleOnPatternFun r tr sm sp = Some tes ->
+              tm = execute tr sm -> In r (getRules tr) -> incl sp (allSourceModelElements sm) ->
+              matchPattern tr sm sp = Some r ->
+              instantiateRuleOnPattern r tr sm sp = Some tes ->
               incl tes (allTargetModelElements tm);
 
         (** **** outp_incl_links 
@@ -150,10 +150,10 @@ Class TransformationEngineTypeClass
                 Definition: if a rule matches, then its output model references is included in the target model *)
         outp_incl_links :
             forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: RuleDef) (tes: list TargetModelElement) (tls: list TargetModelLink),
-              tm = executeFun tr sm -> In r (getRulesFun tr) -> incl sp (allSourceModelElements sm) ->
-              matchPatternFun tr sm sp = Some r ->
-              instantiateRuleOnPatternFun r tr sm sp = Some tes ->
-              applyRuleOnPatternFun r tr sm sp tes = Some tls ->
+              tm = execute tr sm -> In r (getRules tr) -> incl sp (allSourceModelElements sm) ->
+              matchPattern tr sm sp = Some r ->
+              instantiateRuleOnPattern r tr sm sp = Some tes ->
+              applyRuleOnPattern r tr sm sp tes = Some tls ->
               incl tls (allTargetModelLinks tm);
 
     
@@ -164,14 +164,14 @@ Class TransformationEngineTypeClass
                  Definition: if a source pattern matches a rule, then this rule should include in the transformation *)
         match_in :
             forall (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleDef),
-              matchPatternFun tr sm sp = Some r -> In r (getRulesFun tr);    
+              matchPattern tr sm sp = Some r -> In r (getRules tr);    
 
         (** **** match_functional 
 
                  Definition: execute matchPattern on same arguments produce same result. *)
         match_functional :
             forall (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r1: RuleDef) (r2: RuleDef),
-              matchPatternFun tr sm sp = Some r1 -> matchPatternFun tr sm sp = Some r2 -> r1 = r2;
+              matchPattern tr sm sp = Some r1 -> matchPattern tr sm sp = Some r2 -> r1 = r2;
 
         (** **** instantiate_pattern_derivable 
 
@@ -179,19 +179,19 @@ Class TransformationEngineTypeClass
         instantiate_pattern_derivable : 
         forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) 
                (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleDef),
-          tm = executeFun tr sm -> incl tp (allTargetModelElements tm) ->
-          instantiateRuleOnPatternFun r tr sm sp = Some tp ->
-          matchPatternFun tr sm sp = Some r ->
-          instantiatePatternFun tr sm sp = Some tp;
+          tm = execute tr sm -> incl tp (allTargetModelElements tm) ->
+          instantiateRuleOnPattern r tr sm sp = Some tp ->
+          matchPattern tr sm sp = Some r ->
+          instantiatePattern tr sm sp = Some tp;
 
         apply_pattern_derivable : 
         forall (tr: TransformationDef) (sm : SourceModel) (tm: TargetModel) 
                (sp : list SourceModelElement) (tp : list TargetModelElement) (tls : list TargetModelLink) (r : RuleDef),
-          tm = executeFun tr sm -> incl tls (allTargetModelLinks tm) ->
-          applyRuleOnPatternFun r tr sm sp tp = Some tls ->
-          instantiateRuleOnPatternFun r tr sm sp = Some tp ->
-          matchPatternFun tr sm sp = Some r ->
-          applyPatternFun tr sm sp = Some tls;
+          tm = execute tr sm -> incl tls (allTargetModelLinks tm) ->
+          applyRuleOnPattern r tr sm sp tp = Some tls ->
+          instantiateRuleOnPattern r tr sm sp = Some tp ->
+          matchPattern tr sm sp = Some r ->
+          applyPattern tr sm sp = Some tls;
         
       (** *** Termination theorems (implicit) *)
 
@@ -224,7 +224,7 @@ Class TransformationEngineTypeClass
 Theorem match_functionality :  
   forall (TransformationDef RuleDef OutputPatternElementDef OutputPatternElementReferenceDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel: Type) (eng: TransformationEngineTypeClass TransformationDef RuleDef OutputPatternElementDef OutputPatternElementReferenceDef SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel)
     (tr: TransformationDef) (sm : SourceModel) (sp : list SourceModelElement) (r1: RuleDef) (r2: RuleDef),
-          matchPatternFun tr sm sp  = Some r1 -> matchPatternFun tr sm sp = Some r2 -> r1 = r2.
+          matchPattern tr sm sp  = Some r1 -> matchPattern tr sm sp = Some r2 -> r1 = r2.
 Proof.
     intros.
     rewrite H in H0.

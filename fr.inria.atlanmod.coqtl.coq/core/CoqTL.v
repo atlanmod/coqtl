@@ -739,21 +739,22 @@ Instance CoqTLEngine :
     allTargetModelElements := (@allModelElements TargetModelElement TargetModelLink);
     allTargetModelLinks := (@allModelLinks TargetModelElement TargetModelLink);
 
-    getRulesFun := TransformationA_getRules;
-    getOutputPatternElementsFun := RuleA_getOutputPattern;
-    getOutputPatternElementReferencesFun := OutputPatternElementA_getOutputPatternElementReferences;
+    getRules := TransformationA_getRules;
+    getOutputPatternElements := RuleA_getOutputPattern;
+    getOutputPatternElementReferences := OutputPatternElementA_getOutputPatternElementReferences;
 
-    executeFun := execute;
+    execute := execute;
     
-    matchPatternFun := matchPattern;
-    instantiatePatternFun := instantiatePattern;
-    applyPatternFun := applyPattern;
+    matchPattern := matchPattern;
+    instantiatePattern := instantiatePattern;
+    applyPattern := applyPattern;
 
-    matchRuleOnPatternFun := matchRuleOnPattern;
-    instantiateRuleOnPatternFun := instantiateRuleOnPattern;
-    applyRuleOnPatternFun := applyRuleOnPattern;
+    matchRuleOnPattern := matchRuleOnPattern;
+    instantiateRuleOnPattern := instantiateRuleOnPattern;
+    applyRuleOnPattern := applyRuleOnPattern;
 
-    instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable; 
+    instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
+    apply_pattern_derivable :=  tr_apply_pattern_derivable; 
     tr_surj_elements := tr_surj_elements;
     tr_surj_links := tr_surj_links;
 
