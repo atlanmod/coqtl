@@ -15,7 +15,7 @@ core/Engine.v
 core/CoqTL.v
 core/Notations.v
 
--R "example/Class2Relational" example
+-R "examples/Class2Relational" example
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
 examples/Class2Relational/Class2Relational.v
