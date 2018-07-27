@@ -408,7 +408,6 @@ Section CoqTL.
     Some (optionList2List (map (resolve tr sm name type) sps)).
 
   (** ** Rule scheduling **)
-
   
   Fixpoint max (l : list nat) : nat :=
     match l with nil => 0
@@ -440,6 +439,8 @@ Section CoqTL.
      let res := (pairconcat (map (transformPattern tr sm) (allTuples tr sm))) in
      Build_Model
       (fst res) (snd res).*)
+  
+  (** * Typeclass instantiation **)
   
   Theorem match_incl :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
@@ -721,40 +722,7 @@ Section CoqTL.
     reflexivity.
   Qed.
 
-  Instance CoqTLEngine : 
-    TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel := 
-    {
-      allSourceModelElements := (@allModelElements SourceModelElement SourceModelLink);
-      allSourceModelLinks := (@allModelLinks SourceModelElement SourceModelLink);
-      allTargetModelElements := (@allModelElements TargetModelElement TargetModelLink);
-      allTargetModelLinks := (@allModelLinks TargetModelElement TargetModelLink);
-
-      getRules := TransformationA_getRules;
-      getOutputPatternElements := RuleA_getOutputPattern;
-      getOutputPatternElementReferences := OutputPatternElementA_getOutputPatternElementReferences;
-
-      execute := execute;
-      
-      matchPattern := matchPattern;
-      instantiatePattern := instantiatePattern;
-      applyPattern := applyPattern;
-
-      matchRuleOnPattern := matchRuleOnPattern;
-      instantiateRuleOnPattern := instantiateRuleOnPattern;
-      applyRuleOnPattern := applyRuleOnPattern;
-
-      instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
-      apply_pattern_derivable :=  tr_apply_pattern_derivable; 
-      tr_surj_elements := tr_surj_elements;
-      tr_surj_links := tr_surj_links;
-
-      outp_incl_elements := outp_incl_elements;
-      outp_incl_links := outp_incl_links;
-      match_in := match_incl;
-      match_functional := match_functional;
-    }.
-
-(* Theorems on pattern length 
+  (* Theorems on pattern length 
   
    Theorem evalGuardExpression_patternLength :
     forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
@@ -813,6 +781,39 @@ Proof.
          apply lt_trans with (n:=n) (m:=Datatypes.length tr) (p:=S (Datatypes.length tr)) in H.
          exact H. omega.
   Qed.*)
+
+  Instance CoqTLEngine : 
+    TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel := 
+    {
+      allSourceModelElements := (@allModelElements SourceModelElement SourceModelLink);
+      allSourceModelLinks := (@allModelLinks SourceModelElement SourceModelLink);
+      allTargetModelElements := (@allModelElements TargetModelElement TargetModelLink);
+      allTargetModelLinks := (@allModelLinks TargetModelElement TargetModelLink);
+
+      getRules := TransformationA_getRules;
+      getOutputPatternElements := RuleA_getOutputPattern;
+      getOutputPatternElementReferences := OutputPatternElementA_getOutputPatternElementReferences;
+
+      execute := execute;
+      
+      matchPattern := matchPattern;
+      instantiatePattern := instantiatePattern;
+      applyPattern := applyPattern;
+
+      matchRuleOnPattern := matchRuleOnPattern;
+      instantiateRuleOnPattern := instantiateRuleOnPattern;
+      applyRuleOnPattern := applyRuleOnPattern;
+
+      instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
+      apply_pattern_derivable :=  tr_apply_pattern_derivable; 
+      tr_surj_elements := tr_surj_elements;
+      tr_surj_links := tr_surj_links;
+
+      outp_incl_elements := outp_incl_elements;
+      outp_incl_links := outp_incl_links;
+      match_in := match_incl;
+      match_functional := match_functional;
+    }.
   
 End CoqTL.
 
