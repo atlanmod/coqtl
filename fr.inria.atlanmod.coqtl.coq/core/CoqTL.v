@@ -424,7 +424,7 @@ Section CoqTL.
      fold_left max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))) 0. *)
                                                      
   Definition allTuples (tr: TransformationA) (sm : SourceModel) :list (list SourceModelElement) :=
-    tuples_up_to_n (@allModelElements _ _ sm) (maxArity tr).
+    tuples_up_to_n (allModelElements sm) (maxArity tr).
 
   Definition execute (tr: TransformationA) (sm : SourceModel) : TargetModel :=
     Build_Model
@@ -495,13 +495,13 @@ Section CoqTL.
       
   Theorem tr_surj_elements : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
-      tm = execute tr sm -> In t1 (@allModelElements _ _ tm) -> 
+      tm = execute tr sm -> In t1 (allModelElements tm) -> 
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleA),
         In r (TransformationA_getRules tr) /\
         In t1 tp /\
         instantiateRuleOnPattern r tr sm sp = Some tp /\
-        incl sp (@allModelElements _ _ sm) /\
-        incl tp (@allModelElements _ _ tm) /\
+        incl sp (allModelElements sm) /\
+        incl tp (allModelElements tm) /\
         matchPattern tr sm sp = Some r ).
   Proof.
     intros tr sm tm t1 H0.
@@ -538,13 +538,13 @@ Section CoqTL.
 
    Theorem tr_surj_links : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
-      tm = execute tr sm -> In t1 (@allModelLinks _ _ tm) -> 
+      tm = execute tr sm -> In t1 (allModelLinks tm) -> 
       (exists (sp : list SourceModelElement) (tel : list TargetModelElement) (tpl : list TargetModelLink) (r : RuleA),
         In r (TransformationA_getRules tr) /\
         In t1 tpl /\
         applyRuleOnPattern r tr sm sp tel = Some tpl /\
-        incl sp (@allModelElements _ _ sm) /\
-        incl tpl (@allModelLinks _ _ tm) /\
+        incl sp (allModelElements sm) /\
+        incl tpl (allModelLinks tm) /\
         matchPattern tr sm sp = Some r ).
   Proof.
     intros tr sm tm t1 H0.
@@ -629,7 +629,7 @@ Section CoqTL.
 
   Lemma eq_ruletype_sp :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
-          incl sp (@allModelElements _ _ sm) ->
+          incl sp (allModelElements sm) ->
           instantiateRuleOnPattern r tr sm sp = Some tp -> length (RuleA_getInTypes r) = Datatypes.length sp.
   Proof.
     intros.
@@ -643,7 +643,7 @@ Section CoqTL.
 
   Lemma InstantiatePattern_le_maxArity :
     forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
-      incl sp (@allModelElements _ _ sm) ->
+      incl sp (allModelElements sm) ->
       In r (TransformationA_getRules tr) ->
       instantiateRuleOnPattern r tr sm sp= Some tp -> maxArity tr >= Datatypes.length sp.
   Proof.
@@ -656,7 +656,7 @@ Section CoqTL.
 
   Lemma In_allTuples :
     forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
-      incl sp (@allModelElements _ _ sm) ->
+      incl sp (allModelElements sm) ->
       In r (TransformationA_getRules tr) ->
       instantiateRuleOnPattern r tr sm sp = Some tp -> In sp (allTuples tr sm).
   Proof.
@@ -675,10 +675,10 @@ Section CoqTL.
   Theorem outp_incl_elements :
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
       (sp : list SourceModelElement) (r: RuleA) (tes: list TargetModelElement),
-      tm = execute tr sm -> In r (TransformationA_getRules tr) -> incl sp (@allModelElements _ _ sm) ->
+      tm = execute tr sm -> In r (TransformationA_getRules tr) -> incl sp (allModelElements sm) ->
       matchPattern tr sm sp = Some r ->
       instantiateRuleOnPattern r tr sm sp = Some tes ->
-      incl tes (@allModelElements _ _ tm).
+      incl tes (allModelElements tm).
   Proof.
     intros.
     rewrite H.
@@ -693,11 +693,11 @@ Section CoqTL.
   Theorem outp_incl_links :
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
       (sp : list SourceModelElement) (r: RuleA) (tes: list TargetModelElement) (tls: list TargetModelLink),
-      tm = execute tr sm -> In r (TransformationA_getRules tr) -> incl sp (@allModelElements _ _ sm) ->
+      tm = execute tr sm -> In r (TransformationA_getRules tr) -> incl sp (allModelElements sm) ->
       matchPattern tr sm sp = Some r ->
       instantiateRuleOnPattern r tr sm sp = Some tes ->
       applyRuleOnPattern r tr sm sp tes = Some tls ->
-      incl tls (@allModelLinks _ _ tm).
+      incl tls (allModelLinks tm).
   Proof.
     intros.
     rewrite H.
