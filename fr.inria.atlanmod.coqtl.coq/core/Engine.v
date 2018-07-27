@@ -179,15 +179,17 @@ Class TransformationEngineTypeClass
         instantiate_pattern_derivable : 
         forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) 
                (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
-          tm = execute tr sm -> incl tp (allTargetModelElements tm) ->
+          tm = execute tr sm ->
           instantiateRuleOnPattern r tr sm sp = Some tp ->
           matchPattern tr sm sp = Some r ->
           instantiatePattern tr sm sp = Some tp;
 
+       (** **** apply_pattern_derivable **)
+        
         apply_pattern_derivable : 
         forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) 
                (sp : list SourceModelElement) (tp : list TargetModelElement) (tls : list TargetModelLink) (r : Rule),
-          tm = execute tr sm -> incl tls (allTargetModelLinks tm) ->
+          tm = execute tr sm ->
           applyRuleOnPattern r tr sm sp tp = Some tls ->
           instantiateRuleOnPattern r tr sm sp = Some tp ->
           matchPattern tr sm sp = Some r ->
