@@ -19,7 +19,7 @@ Require Import core.Model.
 
 Set Implicit Arguments.
 
-Class TransformationEngineTypeClass 
+Class TransformationEngine 
   (Transformation: Type) (Rule: Type) 
   (OutputPatternElement: Type) (OutputPatternElementReference: Type) 
   (SourceModelElement: Type) (SourceModelLink: Type) (SourceModel: Type) 
@@ -224,7 +224,7 @@ Class TransformationEngineTypeClass
   }.
 
 Theorem match_functionality :  
-  forall (Transformation Rule OutputPatternElement OutputPatternElementReference SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel: Type) (eng: TransformationEngineTypeClass Transformation Rule OutputPatternElement OutputPatternElementReference SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel)
+  forall (Transformation Rule OutputPatternElement OutputPatternElementReference SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel: Type) (eng: TransformationEngine Transformation Rule OutputPatternElement OutputPatternElementReference SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel)
     (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r1: Rule) (r2: Rule),
           matchPattern tr sm sp  = Some r1 -> matchPattern tr sm sp = Some r2 -> r1 = r2.
 Proof.

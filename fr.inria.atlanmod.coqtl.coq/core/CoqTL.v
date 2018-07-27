@@ -723,7 +723,7 @@ Section CoqTL.
   Qed.
 
   Instance CoqTLEngine : 
-    TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel := 
+    TransformationEngine TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel := 
     {
       allSourceModelElements := (@allModelElements SourceModelElement SourceModelLink);
       allSourceModelLinks := (@allModelLinks SourceModelElement SourceModelLink);
