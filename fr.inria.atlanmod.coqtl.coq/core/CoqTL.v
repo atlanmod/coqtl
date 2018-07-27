@@ -723,13 +723,8 @@ Section CoqTL.
   Qed.
 
   Instance CoqTLEngine : 
-    TransformationEngine TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel := 
+    TransformationEngine TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA SourceModelElement SourceModelLink TargetModelElement TargetModelLink := 
     {
-      allSourceModelElements := (@allModelElements SourceModelElement SourceModelLink);
-      allSourceModelLinks := (@allModelLinks SourceModelElement SourceModelLink);
-      allTargetModelElements := (@allModelElements TargetModelElement TargetModelLink);
-      allTargetModelLinks := (@allModelLinks TargetModelElement TargetModelLink);
-
       getRules := TransformationA_getRules;
       getOutputPatternElements := RuleA_getOutputPattern;
       getOutputPatternElementReferences := OutputPatternElementA_getOutputPatternElementReferences;

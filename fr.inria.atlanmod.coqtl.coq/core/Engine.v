@@ -22,30 +22,12 @@ Set Implicit Arguments.
 Class TransformationEngine 
   (Transformation: Type) (Rule: Type) 
   (OutputPatternElement: Type) (OutputPatternElementReference: Type) 
-  (SourceModelElement: Type) (SourceModelLink: Type) (SourceModel: Type) 
-  (TargetModelElement: Type) (TargetModelLink: Type) (TargetModel: Type) :=
+  (SourceModelElement: Type) (SourceModelLink: Type) 
+  (TargetModelElement: Type) (TargetModelLink: Type) :=
   {
-    (** ** Functions of Models *)
 
-      (** *** allSourceModelElements
-
-              Return model elements of the source model. *)
-      allSourceModelElements: SourceModel -> list SourceModelElement;
-      
-      (** *** allSourceModelLinks
-
-              Return model links of the source model. *)
-      allSourceModelLinks: SourceModel -> list SourceModelLink;
-      
-      (** *** allTargetModelElements
-
-              Return model element of the target model. *)
-      allTargetModelElements: TargetModel -> list TargetModelElement;
-      
-      (** *** allTargetModelLinks
-
-              Return model element of the target model. *)
-      allTargetModelLinks: TargetModel -> list TargetModelLink;
+    SourceModel := Model SourceModelElement SourceModelLink;
+    TargetModel := Model TargetModelElement TargetModelLink;
 
     (** ** Transformation Engine Accessors *)
 
@@ -110,13 +92,13 @@ Class TransformationEngine
                 Definition: every model element in the target model is produced by a rule application *)
         tr_surj_elements : 
         forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
-          tm = execute tr sm -> In t1 (allTargetModelElements tm) ->
+          tm = execute tr sm -> In t1 (allModelElements tm) ->
           (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
             In r (getRules tr) /\
             In t1 tp /\
             instantiateRuleOnPattern r tr sm sp = Some tp /\
-            incl sp (allSourceModelElements sm) /\
-            incl tp (allTargetModelElements tm) /\
+            incl sp (allModelElements sm) /\
+            incl tp (allModelElements tm) /\
             matchPattern tr sm sp = Some r );
 
         (** **** tr_surj_links 
@@ -124,13 +106,13 @@ Class TransformationEngine
                 Definition: every model links in the target model is produced by a rule application *)
         tr_surj_links : 
         forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
-          tm = execute tr sm -> In t1 (allTargetModelLinks tm) ->
+          tm = execute tr sm -> In t1 (allModelLinks tm) ->
           (exists (sp : list SourceModelElement) (tel : list TargetModelElement) (tpl : list TargetModelLink) (r : Rule),
             In r (getRules tr) /\
             In t1 tpl /\
             applyRuleOnPattern r tr sm sp tel = Some tpl /\
-            incl sp (allSourceModelElements sm) /\
-            incl tpl (allTargetModelLinks tm) /\
+            incl sp (allModelElements sm) /\
+            incl tpl (allModelLinks tm) /\
             matchPattern tr sm sp = Some r );
 
       (** *** Completeness Theorems *)
@@ -140,21 +122,21 @@ Class TransformationEngine
                 Definition: if a rule matches, then its output model elements is included in the target model *)
         outp_incl_elements :
             forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: Rule) (tes: list TargetModelElement) ,
-              tm = execute tr sm -> In r (getRules tr) -> incl sp (allSourceModelElements sm) ->
+              tm = execute tr sm -> In r (getRules tr) -> incl sp (allModelElements sm) ->
               matchPattern tr sm sp = Some r ->
               instantiateRuleOnPattern r tr sm sp = Some tes ->
-              incl tes (allTargetModelElements tm);
+              incl tes (allModelElements tm);
 
         (** **** outp_incl_links 
 
                 Definition: if a rule matches, then its output model references is included in the target model *)
         outp_incl_links :
             forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: Rule) (tes: list TargetModelElement) (tls: list TargetModelLink),
-              tm = execute tr sm -> In r (getRules tr) -> incl sp (allSourceModelElements sm) ->
+              tm = execute tr sm -> In r (getRules tr) -> incl sp (allModelElements sm) ->
               matchPattern tr sm sp = Some r ->
               instantiateRuleOnPattern r tr sm sp = Some tes ->
               applyRuleOnPattern r tr sm sp tes = Some tls ->
-              incl tls (allTargetModelLinks tm);
+              incl tls (allModelLinks tm);
 
     
       (** *** Well-formedness Theorems *)
@@ -224,7 +206,7 @@ Class TransformationEngine
   }.
 
 Theorem match_functionality :  
-  forall (Transformation Rule OutputPatternElement OutputPatternElementReference SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel: Type) (eng: TransformationEngine Transformation Rule OutputPatternElement OutputPatternElementReference SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel)
+  forall (Transformation Rule OutputPatternElement OutputPatternElementReference SourceModelElement SourceModelLink TargetModelElement TargetModelLink: Type) (eng: TransformationEngine Transformation Rule OutputPatternElement OutputPatternElementReference SourceModelElement SourceModelLink TargetModelElement TargetModelLink)
     (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r1: Rule) (r2: Rule),
           matchPattern tr sm sp  = Some r1 -> matchPattern tr sm sp = Some r2 -> r1 = r2.
 Proof.
