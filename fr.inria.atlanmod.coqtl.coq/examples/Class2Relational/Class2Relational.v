@@ -29,7 +29,7 @@ Definition Class2RelationalConcrete :=
                  reference TableColumnsReference from RelationalMetamodel :=
                    attrs <- getClassAttributes c m;
                    cols <- resolveAll Class2Relational m "col" ColumnClass
-                      (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
+                      (map (fun a:Attribute => [ClassMetamodel_toEObject a]) attrs);
                    return BuildTableColumns t cols
                ]
           ];
@@ -54,8 +54,8 @@ Definition Class2RelationalConcrete :=
 
   ].
 
-(* Unset Printing Notations.*)
-(* Print Class2Relational. *)
+Unset Printing Notations.
+Print Class2RelationalConcrete. 
 (* Compute maxArity (parseTransformation Class2Relational). *)
 
 Definition Class2Relational := parseTransformation Class2RelationalConcrete.
