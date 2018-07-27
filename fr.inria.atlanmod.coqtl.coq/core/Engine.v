@@ -200,7 +200,7 @@ Class TransformationEngineTypeClass
 
       (** *** Correctness theorems *)
 
-        (** **** TODO dangle_links_absent
+        (** **** TODO no_dangling_links
 
                  Definition: all elements refered by links of target model, should be present in models of target model.
                  Note: CoqTL does not hold on this property yet *)

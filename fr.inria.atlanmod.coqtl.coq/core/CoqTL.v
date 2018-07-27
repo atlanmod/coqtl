@@ -722,66 +722,6 @@ Section CoqTL.
     reflexivity.
   Qed.
 
-  (* Theorems on pattern length 
-  
-   Theorem evalGuardExpression_patternLength :
-    forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
-      length sp > length (RuleA_getInTypes r) -> In r (TransformationA_getRules tr) -> not (evalGuardExpression (RuleA_getGuard r) tr sm sp = Some true).
-Proof.
-  intros.
-  unfold evalGuardExpression.
-  destruct (nth_error (TransformationA_getTransformation tr (fun _ : SourceModel => nil) sm)
-                      (GuardExpressionA_getRule (RuleA_getGuard r))) eqn:eqr.
-  - destruct (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule (RuleA_getGuard r))) eqn:eqra.
-    + induction (RuleA_getInTypes r1).
-      ++ unfold evalGuardExpressionFix.
-         destruct r0 eqn:eqr0.
-         +++ unfold not. intros. inversion H1.
-         +++ unfold not. intros. inversion H1.
-      ++
-  
-   Theorem matchPattern_maxArity :
-    forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
-      length sp > maxArity tr -> In r (TransformationA_getRules tr) -> evalGuardExpression (RuleA_getGuard r) tr sm sp = Some false.
- Proof.
-   intros.
-   unfold evalGuardExpression.
-   induction sp.
-   - inversion H.
-   - destruct (le_dec (Datatypes.length sp) (maxArity tr)).
-  
-   Theorem matchPattern_maxArity :
-    forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement),
-      length sp > maxArity tr -> 
-      matchPattern tr sm sp = None.
-  Proof.
-    unfold matchPattern.
-    intros tr.
-    induction (TransformationA_getRules tr).
-    - reflexivity.
-    - intros.
-      simpl.
-      destruct (evalGuardExpression (RuleA_getGuard a) tr sm sp) eqn:guard.
-      Focus 2.
-      apply IHl.
-      apply H.
-      Focus 1.
- 
- Lemma matchPatternLimit :
-    forall (tr: list Rule) (inelems: list SourceModelElement) (n: nat),
-      matchPattern'' tr inelems = Some n -> n < length tr.
-  Proof.
-    intros.
-    induction tr.
-    * simpl in H. inversion H.
-    * simpl in H.
-      destruct (matchRuleOnPattern a inelems) eqn:eq1.
-      ** inversion H. simpl. omega.
-      ** apply IHtr in H. simpl.
-         apply lt_trans with (n:=n) (m:=Datatypes.length tr) (p:=S (Datatypes.length tr)) in H.
-         exact H. omega.
-  Qed.*)
-
   Instance CoqTLEngine : 
     TransformationEngineTypeClass TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA SourceModelElement SourceModelLink SourceModel TargetModelElement TargetModelLink TargetModel := 
     {
