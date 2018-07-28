@@ -37,16 +37,19 @@ Proof.
 Qed.
 
 Theorem Concrete_attributes_instantiate :
-  forall (cm : ClassModel) (a: Attribute),
-    exists (c: Column), getAttributeDerived a=false -> 
+  forall (cm : ClassModel) (a: Attribute), getAttributeDerived a=false -> 
+    exists (c: Column), 
       instantiatePattern Class2Relational cm [ClassMetamodel_toEObject a] = Some [RelationalMetamodel_toEObject c].
 Proof.
   intros.
   exists (BuildColumn (getAttributeId a) (getAttributeName a)).
-  intros.
   unfold instantiatePattern.
   unfold instantiateRuleOnPattern.
+  unfold matchPattern.
   simpl.
   rewrite H.
+  simpl.
+  rewrite H.
+  simpl.
   reflexivity.
 Qed.
