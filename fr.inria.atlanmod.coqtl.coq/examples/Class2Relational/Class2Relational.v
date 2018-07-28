@@ -55,7 +55,7 @@ Definition Class2RelationalConcrete :=
   ].
 
 Unset Printing Notations.
-Print Class2RelationalConcrete. 
+(* Print Class2RelationalConcrete.  *)
 (* Compute maxArity (parseTransformation Class2Relational). *)
 
 Definition Class2Relational := parseTransformation Class2RelationalConcrete.

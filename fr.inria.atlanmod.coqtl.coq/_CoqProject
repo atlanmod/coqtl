@@ -20,5 +20,3 @@ examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
 examples/Class2Relational/Class2Relational.v
 examples/Class2Relational/PersonModel.v
-examples/HSM2FSM/HSM.v
-examples/HSM2FSM/FSM.v

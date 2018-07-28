@@ -291,4 +291,3 @@ Proof.
            auto.
 Defined.
          
-Check (unfold Remi2).
