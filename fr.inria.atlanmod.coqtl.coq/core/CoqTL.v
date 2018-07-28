@@ -498,7 +498,7 @@ Section CoqTL.
     assumption.
   Qed.
 
-(*      
+     
   Theorem tr_surj_elements : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
       tm = execute tr sm -> In t1 (allModelElements tm) -> 
@@ -542,6 +542,7 @@ Section CoqTL.
       - symmetry. assumption.
    Qed.
 
+(* 
    Theorem tr_surj_links : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
       tm = execute tr sm -> In t1 (allModelLinks tm) -> 
