@@ -370,6 +370,7 @@ Section CoqTL.
   Fixpoint matchPatternFix (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option RuleA :=
     match l with
     | r :: rs => match evalGuardExpression (RuleA_getGuard r) tr sm sp with
+                | Some false => matchPatternFix rs tr sm sp
                 | Some op => Some r
                 | None => matchPatternFix rs tr sm sp
                 end
@@ -425,7 +426,7 @@ Section CoqTL.
                                                      
   Definition allTuples (tr: TransformationA) (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (allModelElements sm) (maxArity tr).
-
+  
   Definition execute (tr: TransformationA) (sm : SourceModel) : TargetModel :=
     Build_Model
       (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
@@ -441,7 +442,7 @@ Section CoqTL.
       (fst res) (snd res).*)
   
   (** * Typeclass instantiation **)
-  
+  (*
   Theorem match_incl :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
           matchPattern tr sm sp = Some r -> In r (TransformationA_getRules tr).
@@ -748,7 +749,7 @@ Section CoqTL.
       outp_incl_links := outp_incl_links;
       match_in := match_incl;
       match_functional := match_functional;
-    }.
+    }.*)
   
 End CoqTL.
 
