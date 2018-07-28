@@ -442,7 +442,7 @@ Section CoqTL.
       (fst res) (snd res).*)
   
   (** * Typeclass instantiation **)
-  (*
+  
   Theorem match_incl :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
           matchPattern tr sm sp = Some r -> In r (TransformationA_getRules tr).
@@ -455,9 +455,13 @@ Section CoqTL.
       intros sm sp r.
       destruct (evalGuardExpression (RuleA_getGuard a) tr sm sp).
       * intros.
-        inversion H.
-        left.
-        reflexivity.
+        destruct b.
+        ** left.
+           inversion H. 
+           auto.
+        ** right.
+           apply IHl with sm sp.
+           auto.
       * intros.
         apply IHl in H.
         right.
@@ -749,7 +753,7 @@ Section CoqTL.
       outp_incl_links := outp_incl_links;
       match_in := match_incl;
       match_functional := match_functional;
-    }.*)
+    }.
   
 End CoqTL.
 
