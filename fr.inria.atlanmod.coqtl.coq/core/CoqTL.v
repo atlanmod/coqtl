@@ -732,7 +732,7 @@ Section CoqTL.
     inversion H0.
     reflexivity.
   Qed.
-(*
+
   Instance CoqTLEngine : 
     TransformationEngine TransformationA RuleA OutputPatternElementA OutputPatternElementReferenceA SourceModelElement SourceModelLink TargetModelElement TargetModelLink := 
     {
@@ -763,7 +763,7 @@ Section CoqTL.
   
 End CoqTL.
 
-*)
+
 
 (* Set Implicit Arguments Inference *)
 
