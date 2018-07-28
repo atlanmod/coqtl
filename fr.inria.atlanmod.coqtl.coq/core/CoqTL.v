@@ -371,7 +371,7 @@ Section CoqTL.
     match l with
     | r :: rs => match evalGuardExpression (RuleA_getGuard r) tr sm sp with
                 | Some false => matchPatternFix rs tr sm sp
-                | Some op => Some r
+                | Some true => Some r
                 | None => matchPatternFix rs tr sm sp
                 end
     | nil => None
