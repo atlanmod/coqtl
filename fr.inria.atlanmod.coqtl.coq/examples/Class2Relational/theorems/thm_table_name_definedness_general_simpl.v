@@ -74,19 +74,23 @@ Proof.
       (* c0 = AttributeEClass, prove post2 *)  
       * unfold instantiatePattern in Hexec.           
         unfold instantiateRuleOnPattern in Hexec. 
+unfold matchPattern in Hexec. 
+
         simpl in Hexec.
         destruct (getAttributeDerived c1) eqn:derived_ca; simpl in Hexec. 
         ** inversion Hexec.
-        ** inversion Hexec as [Htp].
+        ** rewrite derived_ca in Hexec.
+           simpl in Hexec.
+           inversion Hexec as [Htp].
            rewrite <- Htp in Hintp.
            simpl in Hintp.
            destruct Hintp.
-         ** rewrite <- H.
-            assert (In c ([ClassMetamodel_BuildEObject AttributeEClass c1])). { simpl. left. symmetry. assumption. }
-            apply Hinclsp in H2.
-            rewrite c_ca in H2.
-            apply Hpre2 in H2.
-            done.
-        ** done.
+           *** rewrite <- H.
+               assert (In c ([ClassMetamodel_BuildEObject AttributeEClass c1])). { simpl. left. symmetry. assumption. }
+               apply Hinclsp in H2.
+               rewrite c_ca in H2.
+               apply Hpre2 in H2.
+               done.
+           *** done.
 Qed.
 
