@@ -634,7 +634,7 @@ Section CoqTL.
         remember (Datatypes.length (RuleA_getInTypes r)) as z.
         apply (@ge_trans x y z); assumption.
   Qed.
-(*
+
   Lemma eq_ruletype_sp :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
           incl sp (allModelElements sm) ->
@@ -662,6 +662,7 @@ Section CoqTL.
     assumption.
   Qed.
 
+(*
   Lemma In_allTuples :
     forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
       incl sp (allModelElements sm) ->
