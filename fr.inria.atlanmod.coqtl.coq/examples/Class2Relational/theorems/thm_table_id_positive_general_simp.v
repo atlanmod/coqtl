@@ -57,11 +57,14 @@ Proof.
              assumption.
           +++ contradiction.
       ++ unfold instantiatePattern in Hexec.           
-         unfold instantiateRuleOnPattern in Hexec. 
+         unfold instantiateRuleOnPattern in Hexec.
+         unfold matchPattern in Hexec. 
          simpl in Hexec.
          destruct (getAttributeDerived c1) eqn:derived_ca.
-         *** inversion Hexec.
+         *** inversion Hexec. 
          *** simpl in Hexec.
+             rewrite derived_ca in Hexec.
+             simpl in Hexec.
              inversion Hexec as [Htp].
              rewrite <- Htp in Hintp.
              simpl in Hintp.
