@@ -656,9 +656,11 @@ Section CoqTL.
       instantiateRuleOnPattern r tr sm sp= Some tp -> maxArity tr >= Datatypes.length sp.
   Proof.
     intros.
-    assert (length (RuleA_getInTypes r) = Datatypes.length sp). { apply (@eq_ruletype_sp tr sm sp tp r); assumption. }
-                                                                assert ( maxArity tr >= length (RuleA_getInTypes r)). { apply (@MaxArity_geq_lenOfrule). assumption. }
-                                                                                                                     rewrite H2 in H3.
+    assert (length (RuleA_getInTypes r) = Datatypes.length sp). 
+    { apply (@eq_ruletype_sp tr sm sp tp r); assumption. }
+    assert ( maxArity tr >= length (RuleA_getInTypes r)). 
+    { apply (@MaxArity_geq_lenOfrule). assumption. }
+    rewrite H2 in H3.
     assumption.
   Qed.
 
