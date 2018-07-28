@@ -542,7 +542,7 @@ Section CoqTL.
       - symmetry. assumption.
    Qed.
 
-(* 
+
    Theorem tr_surj_links : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
       tm = execute tr sm -> In t1 (allModelLinks tm) -> 
@@ -593,6 +593,7 @@ Section CoqTL.
           --- assumption.
   Qed.
 
+(* 
   Lemma MaxArity_geq_lenOfrule :
         forall (tr: TransformationA) (r: RuleA),
           In r (TransformationA_getRules tr) -> 
