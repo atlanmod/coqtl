@@ -664,7 +664,7 @@ Section CoqTL.
     assumption.
   Qed.
 
-(*
+
   Lemma In_allTuples :
     forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (tp : list TargetModelElement) (r: RuleA),
       incl sp (allModelElements sm) ->
@@ -682,7 +682,7 @@ Section CoqTL.
       assert (maxArity tr >= Datatypes.length sp). { apply (@InstantiatePattern_le_maxArity tr sm sp tp r); assumption. }
         omega.
   Qed.
-
+(*
   Theorem outp_incl_elements :
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
       (sp : list SourceModelElement) (r: RuleA) (tes: list TargetModelElement),
