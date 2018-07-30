@@ -9,6 +9,7 @@ Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Engine.
 Require Import core.utils.tTop.
+Require Import core.utils.CpdtTactics.
 
 
 Set Implicit Arguments.
@@ -706,6 +707,24 @@ Section CoqTL.
       assumption.
   Qed.
 
+  Theorem outp_incl_elements2 :
+    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (tes: list TargetModelElement) ,
+      tm = execute tr sm -> incl sp (allModelElements sm) ->
+      instantiatePattern tr sm sp = Some tes ->
+      incl tes (allModelElements tm).
+  Proof.
+    intros.
+    unfold instantiatePattern in H1.
+    destruct (matchPattern tr sm sp) eqn:match_dest.
+    * apply outp_incl_elements with (tr:=tr) (sm:=sm) (sp:=sp) (r:=r).
+      ** crush.
+      ** apply match_incl with (sm:=sm) (sp:=sp). crush.
+      ** crush.
+      ** crush.
+      ** crush.
+    * crush.
+  Qed.
+
   Theorem outp_incl_links :
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
       (sp : list SourceModelElement) (r: RuleA) (tes: list TargetModelElement) (tls: list TargetModelLink),
@@ -761,6 +780,7 @@ Section CoqTL.
       tr_surj_links := tr_surj_links;
 
       outp_incl_elements := outp_incl_elements;
+      outp_incl_elements2 := outp_incl_elements2;
       outp_incl_links := outp_incl_links;
       match_in := match_incl;
       match_functional := match_functional;
