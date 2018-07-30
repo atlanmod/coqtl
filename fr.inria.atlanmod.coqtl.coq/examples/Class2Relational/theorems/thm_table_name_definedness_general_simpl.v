@@ -9,9 +9,9 @@ Require Import core.CoqTL.
 Require Import core.Metamodel.
 Require Import core.Model.
 
-Require Import example.Class2Relational.
-Require Import example.ClassMetamodel.
-Require Import example.RelationalMetamodel.
+Require Import examples.Class2Relational.Class2Relational.
+Require Import examples.Class2Relational.ClassMetamodel.
+Require Import examples.Class2Relational.RelationalMetamodel.
 
 
 

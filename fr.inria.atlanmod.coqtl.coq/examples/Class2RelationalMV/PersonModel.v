@@ -2,7 +2,7 @@ Require Import List.
 
 Require Import core.Model.
 
-Require Import example.ClassMetamodel.
+Require Import examples.Class2RelationalMV.ClassMetamodel.
 
 Definition PersonModel : Model ClassMetamodel_EObject ClassMetamodel_ELink :=
   (Build_Model

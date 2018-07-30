@@ -5,10 +5,10 @@ Require Import core.CoqTL.
 Require Import core.utils.tPrint.
 Require Import core.Model.
 
-Require Import example.ClassMetamodel.
-Require Import example.RelationalMetamodel.
-Require Import example.Class2Relational.
-Require Import example.PersonModel.
+Require Import examples.Class2RelationalMV.ClassMetamodel.
+Require Import examples.Class2RelationalMV.RelationalMetamodel.
+Require Import examples.Class2RelationalMV.Class2Relational.
+Require Import examples.Class2RelationalMV.PersonModel.
 
 
 (* Require Import Class2RelationalVerif. *)

@@ -8,8 +8,8 @@ Require Import core.utils.tTop.
 Require Import core.Notations.
 Require Import core.CoqTL.
 
-Require Import example.ClassMetamodel.
-Require Import example.RelationalMetamodel.
+Require Import examples.Class2RelationalMV.ClassMetamodel.
+Require Import examples.Class2RelationalMV.RelationalMetamodel.
 
 Definition Class2RelationalConcrete :=
   transformation Class2Relational from ClassMetamodel to RelationalMetamodel
