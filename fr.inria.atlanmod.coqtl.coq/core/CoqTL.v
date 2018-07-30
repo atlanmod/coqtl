@@ -519,27 +519,29 @@ Section CoqTL.
     remember (matchPattern tr sm sp1) as r'.
     destruct r'.
     
-    Focus 2.
-    unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction.
-    
-    Focus 1.
-    remember (instantiatePattern tr sm sp1) as tp_temp.
-    destruct tp_temp eqn:tp1_case.
-     Focus 2.
-     contradiction.
-     
-     Focus 1.
-     rename l into tp1.
-     exists sp1, tp1, r.
-     repeat split.
-      - apply match_incl with (sp:=sp1) (sm:=sm).
-         rewrite Heqr'. reflexivity.
-      - assumption.
-      - symmetry. unfold instantiatePattern in Heqtp_temp. rewrite <- Heqr' in Heqtp_temp. assumption.
-      - apply tuples_up_to_n_incl with (n:=(maxArity tr)).
-         assumption.
-      - apply concat_map_option_incl with (a:=sp1). assumption. symmetry. assumption.
-      - symmetry. assumption.
+    2: {
+      unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction.
+    }
+    1: {
+      remember (instantiatePattern tr sm sp1) as tp_temp.
+      destruct tp_temp eqn:tp1_case.
+        2: {
+          contradiction.
+        }
+        1: {
+          rename l into tp1.
+          exists sp1, tp1, r.
+          repeat split.
+          - apply match_incl with (sp:=sp1) (sm:=sm).
+            rewrite Heqr'. reflexivity.
+          - assumption.
+          - symmetry. unfold instantiatePattern in Heqtp_temp. rewrite <- Heqr' in Heqtp_temp. assumption.
+          - apply tuples_up_to_n_incl with (n:=(maxArity tr)).
+            assumption.
+          - apply concat_map_option_incl with (a:=sp1). assumption. symmetry. assumption.
+          - symmetry. assumption.
+        }
+    }
    Qed.
 
 
@@ -562,35 +564,38 @@ Section CoqTL.
     rename x into sp1.
     remember (applyPattern tr sm sp1) as r'.
     destruct r'.
-      Focus 2.
-      contradiction.
-    
-      Focus 1.
-      unfold applyPattern in Heqr'.
-      destruct (matchPattern tr sm sp1) eqn:Hmatch. 
-        Focus 2.
-        inversion Heqr'.
-
-        Focus 1.
-        destruct (instantiateRuleOnPattern r tr sm sp1) eqn:Hinst.
-          Focus 2.
+      2: {
+        contradiction.
+      }
+      1: {
+        unfold applyPattern in Heqr'.
+        destruct (matchPattern tr sm sp1) eqn:Hmatch. 
+        2: {
           inversion Heqr'.
-
-          Focus 1.
-          rename l0 into te1.
-          rename l into tpl.
-          exists sp1, te1, tpl, r. 
-          repeat split.
-          --- apply match_incl with (sp:=sp1) (sm:=sm).
-              assumption.
-          --- assumption.
-          --- symmetry. assumption.
-          --- apply tuples_up_to_n_incl with (n:=(maxArity tr)).
-             assumption.
-          --- apply concat_map_option_incl with (a:=sp1). 
-               ---- assumption. 
-               ---- unfold applyPattern. rewrite Hmatch. rewrite Hinst. symmetry. assumption.
-          --- assumption.
+        }  
+        1: {
+          destruct (instantiateRuleOnPattern r tr sm sp1) eqn:Hinst.
+          2: {
+            inversion Heqr'.
+          }
+          1: {
+            rename l0 into te1.
+            rename l into tpl.
+            exists sp1, te1, tpl, r. 
+            repeat split.
+            --- apply match_incl with (sp:=sp1) (sm:=sm).
+                assumption.
+            --- assumption.
+            --- symmetry. assumption.
+            --- apply tuples_up_to_n_incl with (n:=(maxArity tr)).
+                assumption.
+            --- apply concat_map_option_incl with (a:=sp1). 
+                ---- assumption. 
+                ---- unfold applyPattern. rewrite Hmatch. rewrite Hinst. symmetry. assumption.
+            --- assumption.
+          }
+        }
+      }
   Qed.
 
 
