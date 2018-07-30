@@ -27,7 +27,7 @@ Definition Class2RelationalConcrete :=
              links
                [
                  reference TableColumnsEReference from RelationalMetamodel :=
-                   attrs <- getClassAttributesOnLinks c m;
+                   attrs <- getClassAttributes c m;
                     cols <- (resolveAll Class2Relational m "col" ColumnEClass
                                        (map (fun a:Attribute => [ClassMetamodel_toEObject a]) attrs));
                     key <- resolve Class2Relational m "key" ColumnEClass [ClassMetamodel_toEObject c];
@@ -42,7 +42,7 @@ Definition Class2RelationalConcrete :=
       rule SinglevaluedAttribute2Column
         from
           element a class AttributeEClass from ClassMetamodel 
-            when (negb (getAttributeDerived a))
+            when (negb (getAttributeMultiValued a))
         to
          [
           output "col"
@@ -51,7 +51,7 @@ Definition Class2RelationalConcrete :=
             links
               [
                 reference ColumnReferenceEReference from RelationalMetamodel :=
-                  cl <- getAttributeTypeOnLinks a m;
+                  cl <- getAttributeType a m;
                   tb <- resolve Class2Relational m "tab" TableEClass [ClassMetamodel_toEObject cl];
                   return BuildColumnReference c tb
               ] 
@@ -60,7 +60,7 @@ Definition Class2RelationalConcrete :=
       rule MultivaluedAttribute2Column
         from
           element a class AttributeEClass from ClassMetamodel 
-            when (getAttributeDerived a)
+            when (getAttributeMultiValued a)
         to
          [
           output "col"
@@ -95,7 +95,7 @@ Definition Class2RelationalConcrete :=
             links
               [
                 reference ColumnReferenceEReference from RelationalMetamodel :=
-                  cl <- getAttributeTypeOnLinks a m;
+                  cl <- getAttributeType a m;
                   tb <- resolve Class2Relational m "tab" TableEClass [ClassMetamodel_toEObject cl];
                   return BuildColumnReference c tb
               ] 
