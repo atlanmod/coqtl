@@ -26,10 +26,6 @@ Theorem information_preservation :
         getColumnName c = getAttributeName a.
 Proof.
   intros.
-  destruct a eqn:a_dest.
-  destruct b eqn:multivalued.
-  * exists (BuildColumn (getAttributeId a ++ "_MA2C_col") (getAttributeName a)).
-    crush.
-  * exists (BuildColumn (getAttributeId a ++ "_SA2C_col") (getAttributeName a)).
-    crush.
+  exists (BuildColumn (getAttributeId a ++ "_MA2C_col") (getAttributeName a)).
+  crush.
 Qed.
