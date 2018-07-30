@@ -277,7 +277,7 @@ class Ecore2Coq {
  			| nil => None
  			end.
  			
- 			Definition get«eClass.name»«eReference.name.toFirstUpper»OnLinks («arg(eClass.name)» : «eClass.name») (m : «ePackage.name»Model) : option («ReferenceType2Coq(eReference)») :=
+ 			Definition get«eClass.name»«eReference.name.toFirstUpper» («arg(eClass.name)» : «eClass.name») (m : «ePackage.name»Model) : option («ReferenceType2Coq(eReference)») :=
  			  «mm»_get«eClass.name»«eReference.name.toFirstUpper»OnLinks «arg(eClass.name)» (@allModelLinks _ _ m).
 			«ENDFOR»
 
