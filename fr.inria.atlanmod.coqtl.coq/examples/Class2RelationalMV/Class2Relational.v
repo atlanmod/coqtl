@@ -54,7 +54,7 @@ Definition Class2RelationalConcrete :=
                   cl <- getAttributeType a m;
                   tb <- resolve Class2Relational m "tab" TableEClass [ClassMetamodel_toEObject cl];
                   return BuildColumnReference c tb
-              ] 
+              ]
          ];
 
       rule MultivaluedAttribute2Column
@@ -107,3 +107,5 @@ Print Class2RelationalConcrete.
 (* Compute maxArity (parseTransformation Class2Relational). *)
 
 Definition Class2Relational := parseTransformation Class2RelationalConcrete.
+
+                                              

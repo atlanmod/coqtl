@@ -143,7 +143,7 @@ Class TransformationEngine
 
         (** **** match_in 
 
-                 Definition: if a source pattern matches a rule, then this rule should include in the transformation *)
+                 Definition: if a source pattern matches a rule, then this rule should be included in the transformation *)
         match_in :
             forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r: Rule),
               matchPattern tr sm sp = Some r -> In r (getRules tr);    
