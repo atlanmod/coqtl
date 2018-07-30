@@ -22,10 +22,13 @@ Theorem information_preservation :
     forall (a: Attribute),
       In (ClassMetamodel_toEObject a) (allModelElements cm) ->
       exists (c: Column),
-        In (RelationalMetamodel_toEObject c) (allModelElements rm) ->
+        In (RelationalMetamodel_toEObject c) (allModelElements rm) /\
         getColumnName c = getAttributeName a.
-Proof.
   intros.
-  exists (BuildColumn (getAttributeId a ++ "_MA2C_col") (getAttributeName a)).
-  crush.
-Qed.
+  destruct a eqn:a_dest.
+  destruct b eqn:b_dest.
+  * exists (BuildColumn ((getAttributeId a) ++ "_MA2C_col") (getAttributeName a)).
+    simpl.
+    split.
+    
+Abort.
