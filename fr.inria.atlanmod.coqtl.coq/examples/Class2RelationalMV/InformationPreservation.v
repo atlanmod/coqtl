@@ -27,8 +27,39 @@ Theorem information_preservation :
   intros.
   destruct a eqn:a_dest.
   destruct b eqn:b_dest.
-  * exists (BuildColumn ((getAttributeId a) ++ "_MA2C_col") (getAttributeName a)).
-    simpl.
+  * assert (incl [RelationalMetamodel_toEObjectOfEClass ColumnEClass
+            (BuildColumn (s ++ "_MA2C_col") s0);
+         RelationalMetamodel_toEObjectOfEClass TableEClass
+           (BuildTable (s ++ "_MA2C_pivot")
+              (String "P"
+                 (String "i"
+                    (String "v" (String "o" (String "t" s0))))));
+         RelationalMetamodel_toEObjectOfEClass ColumnEClass
+           (BuildColumn (s ++ "_MA2C_psrc") "key");
+         RelationalMetamodel_toEObjectOfEClass ColumnEClass
+           (BuildColumn (s ++ "_MA2C_ptrg") s0)] (allModelElements rm)). {
+      apply outp_incl_elements2 with (tr:=Class2Relational) (sm:=cm) (sp:= [ClassMetamodel_toEObject a]).
+      * crush.
+      * apply incl_cons.
+        ** crush.
+        ** unfold incl. crush.
+      * crush.    
+    }
+    exists (BuildColumn (s ++ "_MA2C_col") s0).
     split.
-    
-Abort.
+    ** crush.
+    ** crush.
+  * assert (incl [RelationalMetamodel_toEObjectOfEClass ColumnEClass
+                                                        (BuildColumn (s ++ "_SA2C_col") s0)] (allModelElements rm)). {
+      apply outp_incl_elements2 with (tr:=Class2Relational) (sm:=cm) (sp:= [ClassMetamodel_toEObject a]).
+      * crush.
+      * apply incl_cons.
+        ** crush.
+        ** unfold incl. crush.
+      * crush.
+    }
+    exists (BuildColumn (s ++ "_SA2C_col") s0).
+    split.
+    ** crush.
+    ** crush.
+Qed.
