@@ -22,37 +22,37 @@ Definition Class2RelationalConcrete :=
          to
           [
            output "tab"
-             element t class TableClass from RelationalMetamodel :=
-               BuildTable (getClassId c) (getClassName c)
+             element t class TableEClass from RelationalMetamodel :=
+               BuildTable (getClassId c ++ "_C2T_tab") (getClassName c)
              links
                [
-                 reference TableColumnsReference from RelationalMetamodel :=
-                   attrs <- getClassAttributes c m;
-                    cols <- (resolveAll Class2Relational m "col" ColumnClass
+                 reference TableColumnsEReference from RelationalMetamodel :=
+                   attrs <- getClassAttributesOnLinks c m;
+                    cols <- (resolveAll Class2Relational m "col" ColumnEClass
                                        (map (fun a:Attribute => [ClassMetamodel_toEObject a]) attrs));
-                    key <- resolve Class2Relational m "key" ColumnClass [ClassMetamodel_toEObject c];
+                    key <- resolve Class2Relational m "key" ColumnEClass [ClassMetamodel_toEObject c];
                    return BuildTableColumns t (cons key cols)
                ];
            output "key"
-             element k class ColumnClass from RelationalMetamodel :=
-               BuildColumn (getClassId c) (append "id" (getClassName c))
+             element k class ColumnEClass from RelationalMetamodel :=
+               BuildColumn (getClassId c ++ "_C2T_key") (append "id" (getClassName c))
              links nil
           ];
 
       rule SinglevaluedAttribute2Column
         from
           element a class AttributeEClass from ClassMetamodel 
-            when (negb (getAttributeMultivalued a))
+            when (negb (getAttributeDerived a))
         to
          [
           output "col"
-            element c class ColumnClass from RelationalMetamodel := 
-               BuildColumn (getAttributeId a) (getAttributeName a)
+            element c class ColumnEClass from RelationalMetamodel := 
+               BuildColumn (getAttributeId a ++ "_SA2C_col") (getAttributeName a)
             links
               [
-                reference ColumnReferenceReference from RelationalMetamodel :=
-                  cl <- getAttributeType a m;
-                  tb <- resolve Class2Relational m "tab" TableClass [ClassMetamodel_toEObject cl];
+                reference ColumnReferenceEReference from RelationalMetamodel :=
+                  cl <- getAttributeTypeOnLinks a m;
+                  tb <- resolve Class2Relational m "tab" TableEClass [ClassMetamodel_toEObject cl];
                   return BuildColumnReference c tb
               ] 
          ];
@@ -60,43 +60,43 @@ Definition Class2RelationalConcrete :=
       rule MultivaluedAttribute2Column
         from
           element a class AttributeEClass from ClassMetamodel 
-            when (getAttributeMultivalued a)
+            when (getAttributeDerived a)
         to
          [
           output "col"
-            element c class ColumnClass from RelationalMetamodel := 
-               BuildColumn (getAttributeId a) (getAttributeName a)
+            element c class ColumnEClass from RelationalMetamodel := 
+               BuildColumn (getAttributeId a ++ "_MA2C_col") (getAttributeName a)
             links
               [
-                reference ColumnReferenceReference from RelationalMetamodel :=
-                  tb <- resolve Class2Relational m "pivot" TableClass [ClassMetamodel_toEObject a];
+                reference ColumnReferenceEReference from RelationalMetamodel :=
+                  tb <- resolve Class2Relational m "pivot" TableEClass [ClassMetamodel_toEObject a];
                   return BuildColumnReference c tb
               ];
                  
            output "pivot"
-            element t class TableClass from RelationalMetamodel := 
-               BuildTable (getAttributeId a) (append "Pivot" (getAttributeName a))
+            element t class TableEClass from RelationalMetamodel := 
+               BuildTable (getAttributeId a ++ "_MA2C_pivot") (append "Pivot" (getAttributeName a))
             links
               [
-                reference TableColumnsReference from RelationalMetamodel :=
-                  psrc <- resolve Class2Relational m "psrc" ColumnClass [ClassMetamodel_toEObject a];
-                  ptrg <- resolve Class2Relational m "ptrg" ColumnClass [ClassMetamodel_toEObject a];
+                reference TableColumnsEReference from RelationalMetamodel :=
+                  psrc <- resolve Class2Relational m "psrc" ColumnEClass [ClassMetamodel_toEObject a];
+                  ptrg <- resolve Class2Relational m "ptrg" ColumnEClass [ClassMetamodel_toEObject a];
                   return BuildTableColumns t [psrc; ptrg]
               ];
                  
             output "psrc"
-            element c class ColumnClass from RelationalMetamodel := 
-               BuildColumn (getAttributeId a) "key"
+            element c class ColumnEClass from RelationalMetamodel := 
+               BuildColumn (getAttributeId a ++ "_MA2C_psrc") "key"
             links nil;
                  
             output "ptrg"
-            element c class ColumnClass from RelationalMetamodel := 
-               BuildColumn (getAttributeId a) (getAttributeName a)
+            element c class ColumnEClass from RelationalMetamodel := 
+               BuildColumn (getAttributeId a ++ "_MA2C_ptrg") (getAttributeName a)
             links
               [
-                reference ColumnReferenceReference from RelationalMetamodel :=
-                  cl <- getAttributeType a m;
-                  tb <- resolve Class2Relational m "tab" TableClass [ClassMetamodel_toEObject cl];
+                reference ColumnReferenceEReference from RelationalMetamodel :=
+                  cl <- getAttributeTypeOnLinks a m;
+                  tb <- resolve Class2Relational m "tab" TableEClass [ClassMetamodel_toEObject cl];
                   return BuildColumnReference c tb
               ] 
          ]
