@@ -18,6 +18,7 @@ Require Import Coq.Logic.Eqdep_dec.
 Require Import core.utils.tTop.
 Require Import core.Metamodel.
 Require Import core.Model.
+Require Import core.Object.
 
 (* Base types *)
 Inductive Table : Set :=
@@ -59,12 +60,29 @@ Definition getTableId (t : Table) : string :=
   match t with BuildTable id name  => id end.
 Definition getTableName (t : Table) : string :=
   match t with BuildTable id name  => name end.
- 
+
+Definition setTableId (c : Table) (s : string) : Table :=
+  BuildTable s (getTableName c).
+
+Instance objectTable : Object Table :=
+  {
+    getId := getTableId;
+    setId := setTableId;
+  }.
+
 Definition getColumnId (c : Column) : string :=
   match c with BuildColumn id name  => id end.
 Definition getColumnName (c : Column) : string :=
   match c with BuildColumn id name  => name end.
- 
+
+Definition setColumnId (c : Column) (s : string) : Column :=
+  BuildColumn s (getColumnName c).
+
+Instance objectColumn : Object Column :=
+  {
+    getId := getColumnId;
+    setId := setColumnId;
+  }.
 
 (* Equality for Types *)
 (**? We define eq for Eclass on their fist attribute **)
