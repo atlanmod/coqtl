@@ -1,4 +1,6 @@
 Require Import core.CoqTL.
+Require Import String.
+
 
 (** * Notations **)
 
@@ -9,7 +11,7 @@ Notation "'transformation' tname 'from' sinstance 'to' tinstance 'with' m 'as' s
 Notation "'[' r1 ; .. ; r2 ']'" := (cons r1 .. (cons r2 nil) ..) (right associativity, at level 9).
 
 (* Rule *)
-Notation "'rule' rulename 'from' rbody" := (rbody) (right associativity, at level 60).
+Notation "'rule' rulename 'from' rbody" := (rulename%string, (rbody)) (right associativity, at level 60).
 
 (* InputPatternElement *)
 Notation "'element' sid 'class' stype ',' sbody" := (BuildMultiElementRule stype (fun sid => sbody)) (right associativity, at level 60).

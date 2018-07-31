@@ -138,8 +138,8 @@ Section CoqTL.
       forall (InElType: SourceModelClass),
         ((denoteModelClass InElType) -> (bool * list OutputPatternElement))
         -> Rule.
-
-  Definition Phase : Type := SourceModel -> list Rule.
+  
+  Definition Phase : Type := SourceModel -> list (string * Rule).
 
   Definition Transformation : Type := Phase -> Phase.
 
@@ -214,18 +214,22 @@ Section CoqTL.
   
   Inductive RuleA : Type := 
     BuildRuleA :
+      string ->
       list SourceModelClass ->
       GuardExpressionA ->
       list OutputPatternElementA -> RuleA.
 
+  Definition RuleA_getName (x : RuleA) : string :=
+    match x with BuildRuleA y _ _ _ => y end.
+
   Definition RuleA_getInTypes (x : RuleA) : list SourceModelClass :=
-    match x with BuildRuleA y _ _ => y end.
+    match x with BuildRuleA _ y _ _ => y end.
 
   Definition RuleA_getGuard (x : RuleA) : GuardExpressionA :=
-    match x with BuildRuleA _ y _ => y end.
+    match x with BuildRuleA _ _ y _ => y end.
 
   Definition RuleA_getOutputPattern (x : RuleA) : list OutputPatternElementA :=
-    match x with BuildRuleA _ _ y => y end.  
+    match x with BuildRuleA _ _ _ y => y end.  
   
   Inductive TransformationA : Type := 
     BuildTransformationA :
@@ -264,13 +268,13 @@ Section CoqTL.
     | BuildMultiElementRule iet f => (cons iet (parseRuleTypes (f (bottomModelClass iet))))
     | BuildSingleElementRule iet f => iet::nil
     end.
-  
-  Definition parseRule (tr: Transformation) (n: nat) (r: Rule) : RuleA :=
-    (BuildRuleA (parseRuleTypes r) (BuildGuardExpressionA n) (parseRuleOutput tr n r)).
+
+  Definition parseRuleDeclaration (tr: Transformation) (n: nat) (r: (string * Rule)) : RuleA :=
+    (BuildRuleA (fst r) (parseRuleTypes (snd r)) (BuildGuardExpressionA n) (parseRuleOutput tr n (snd r))).
   
   Definition parseTransformation (tr: Transformation) : TransformationA :=
     BuildTransformationA 
-      (mapWithIndex (parseRule tr) 0 (tr (fun c:SourceModel => nil) (Build_Model nil nil) )) tr.
+      (mapWithIndex (parseRuleDeclaration tr) 0 (tr (fun c:SourceModel => nil) (Build_Model nil nil) )) tr.
 
   Definition parsePhase (tr: Phase) : TransformationA :=
     parseTransformation (fun t: Phase => tr).
@@ -295,7 +299,7 @@ Section CoqTL.
   Definition evalOutputBindingExpression (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) (o : OutputBindingExpressionA) : option (TargetModelLink) :=
   r <- (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (OutputBindingExpressionA_getRule o));
     ra <- (nth_error (TransformationA_getRules tr) (OutputBindingExpressionA_getRule o));
-  evalOutputBindingExpressionFix o r (RuleA_getInTypes ra) sm sp te. 
+  evalOutputBindingExpressionFix o (snd r) (RuleA_getInTypes ra) sm sp te. 
 
   (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
   Fixpoint evalOutputPatternElementExpressionFix (o : OutputPatternElementExpressionA) (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) : option TargetModelElement :=
@@ -313,7 +317,7 @@ Section CoqTL.
   Definition evalOutputPatternElementExpression (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (o : OutputPatternElementExpressionA): option TargetModelElement :=
   r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputPatternElementExpressionA_getRule o));
     ra <- (nth_error (TransformationA_getRules tr) (OutputPatternElementExpressionA_getRule o));
-  evalOutputPatternElementExpressionFix o r (RuleA_getInTypes ra) sm sp. 
+  evalOutputPatternElementExpressionFix o (snd r) (RuleA_getInTypes ra) sm sp. 
 
 
   (* Before evaluate guard, pre-check the intypes of rule and source elems length are equal. immediate stop eval if not. *)
@@ -340,7 +344,7 @@ Section CoqTL.
   Definition evalGuardExpression (o : GuardExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
     r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (GuardExpressionA_getRule o));
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
-          evalGuardExpressionFix r (RuleA_getInTypes ra) sm sp. 
+          evalGuardExpressionFix (snd r) (RuleA_getInTypes ra) sm sp. 
 
   (** * Engine **)
 
