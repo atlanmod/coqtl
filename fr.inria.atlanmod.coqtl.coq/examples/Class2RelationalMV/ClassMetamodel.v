@@ -18,6 +18,7 @@ Require Import Coq.Logic.Eqdep_dec.
 Require Import core.utils.tTop.
 Require Import core.Metamodel.
 Require Import core.Model.
+Require Import core.Object.
 
 (* Base types *)
 Inductive Class : Set :=
@@ -60,6 +61,15 @@ Definition getClassId (c : Class) : string :=
   match c with BuildClass id name  => id end.
 Definition getClassName (c : Class) : string :=
   match c with BuildClass id name  => name end.
+
+Definition setClassId (c : Class) (s : string) : Class :=
+  BuildClass s (getClassName c).
+
+Instance objectClass : Object Class :=
+  {
+    getId := getClassId;
+    setId := setClassId;
+  }.
  
 Definition getAttributeId (a : Attribute) : string :=
   match a with BuildAttribute id multiValued name  => id end.
@@ -67,6 +77,15 @@ Definition getAttributeMultiValued (a : Attribute) : bool :=
   match a with BuildAttribute id multiValued name  => multiValued end.
 Definition getAttributeName (a : Attribute) : string :=
   match a with BuildAttribute id multiValued name  => name end.
+
+Definition setAttributeId (a : Attribute) (s : string) : Attribute :=
+  BuildAttribute s (getAttributeMultiValued a) (getAttributeName a).
+
+Instance objectAttribute : Object Attribute :=
+  {
+    getId := getAttributeId;
+    setId := setAttributeId;
+  }.
  
 
 (* Equality for Types *)
