@@ -277,11 +277,13 @@ class Ecore2Coq {
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))
 		»Definition beq_«eClass.name» («arg1(eClass.name)» : «eClass.name») («arg2(eClass.name)» : «eClass.name») : bool :=
 			«IF eClass.EAttributes.size > 0»
-				«val fstAttr = eClass.EAttributes.get(0)
-				» beq_«AttributeType2Coq(fstAttr)» (get«eClass.name»«fstAttr.name.toFirstUpper» «arg1(eClass.name)») (get«eClass.name»«fstAttr.name.toFirstUpper» «arg2(eClass.name)»)«
-			ELSE
+				«FOR eAttribute : eClass.EAttributes SEPARATOR " && "»
+					( beq_«AttributeType2Coq(eAttribute)» (get«eClass.name»«eAttribute.name.toFirstUpper» «arg1(eClass.name)») (get«eClass.name»«eAttribute.name.toFirstUpper» «arg2(eClass.name)») )
+				«ENDFOR
+			»«ELSE
 				» true«
-			ENDIF».
+			ENDIF»
+		.
 			
 		«ENDFOR»
 		
