@@ -29,7 +29,7 @@ Definition Class2RelationalConcrete :=
                  reference TableColumnsReference from RelationalMetamodel :=
                    attrs <- getClassAttributes c m;
                    cols <- resolveAll Class2Relational m "col" ColumnClass
-                      (map (fun a:Attribute => [ClassMetamodel_toEObject a]) attrs);
+                      (map (fun a:Attribute => [a: ClassMetamodel_EObject]) attrs);
                    return BuildTableColumns t cols
                ]
           ];
