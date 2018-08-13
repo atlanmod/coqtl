@@ -28,14 +28,14 @@ Definition Class2RelationalConcrete :=
                [
                  reference TableColumnsEReference from RelationalMetamodel :=
                    attrs <- getClassAttributes c m;
-                    cols <- (resolveAll Class2Relational m "col" ColumnEClass
+                   cols <- (resolveAll Class2Relational m "col" ColumnEClass
                                        (map (fun a:Attribute => [a: ClassMetamodel_EObject]) attrs));
-                    key <- resolve Class2Relational m "key" ColumnEClass [c: ClassMetamodel_EObject];
-                   return BuildTableColumns t (cons key cols)
+                   key <- resolve Class2Relational m "key" ColumnEClass [c: ClassMetamodel_EObject];
+                   return BuildTableColumns t (key :: cols)
                ];
            output "key"
              element k class ColumnEClass from RelationalMetamodel :=
-               BuildColumn newId (append "id" (getClassName c))
+               BuildColumn newId (getClassName c ++ "id")
              links nil
           ];
 
@@ -73,9 +73,9 @@ Definition Class2RelationalConcrete :=
                   return BuildColumnReference c tb
               ];
                  
-           output "pivot"
+          output "pivot"
             element t class TableEClass from RelationalMetamodel := 
-               BuildTable newId (append "Pivot" (getAttributeName a))
+               BuildTable newId (getAttributeName a ++ "Pivot")
             links
               [
                 reference TableColumnsEReference from RelationalMetamodel :=
@@ -84,12 +84,12 @@ Definition Class2RelationalConcrete :=
                   return BuildTableColumns t [psrc; ptrg]
               ];
                  
-            output "psrc"
+          output "psrc"
             element c class ColumnEClass from RelationalMetamodel := 
                BuildColumn newId "key"
             links nil;
                  
-            output "ptrg"
+          output "ptrg"
             element c class ColumnEClass from RelationalMetamodel := 
                BuildColumn newId (getAttributeName a)
             links
