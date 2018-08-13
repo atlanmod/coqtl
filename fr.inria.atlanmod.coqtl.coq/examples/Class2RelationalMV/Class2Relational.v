@@ -18,7 +18,6 @@ Definition Class2RelationalConcrete :=
        rule "Class2Table"
          from
            element c class ClassEClass from ClassMetamodel
-             when true
          to
           [
            output "tab"
