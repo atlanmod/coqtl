@@ -164,6 +164,11 @@ Definition ClassMetamodel_getEClass (cleo_arg : ClassMetamodel_EObject) : ClassM
   | (Build_ClassMetamodel_EObject cleo_arg _) => cleo_arg
    end.
 
+Definition ClassMetamodel_getObject (cleo_arg : ClassMetamodel_EObject) : ClassMetamodel_getTypeByEClass (ClassMetamodel_getEClass cleo_arg) :=
+   match cleo_arg with
+  | (Build_ClassMetamodel_EObject _ b) => b
+   end.
+  
 Definition ClassMetamodel_getEReference (clel_arg : ClassMetamodel_ELink) : ClassMetamodel_EReference :=
    match clel_arg with
   | (Build_ClassMetamodel_ELink clel_arg _) => clel_arg
@@ -227,7 +232,23 @@ Definition ClassMetamodel_toEObjectOfEClass (clec_arg: ClassMetamodel_EClass) (t
 
 Definition ClassMetamodel_toELinkOfEReference (cler_arg: ClassMetamodel_EReference) (t: ClassMetamodel_getTypeByEReference cler_arg) : ClassMetamodel_ELink :=
 		  (Build_ClassMetamodel_ELink cler_arg t).
-		  
+
+Definition ClassMetamodel_getId (a : ClassMetamodel_EObject) : string.
+Proof.
+  destruct a.
+  destruct clec_arg.
+  * simpl in c. exact (getClassId c).
+  * simpl in c. exact (getAttributeId c).
+Defined.
+
+Definition ClassMetamodel_setId (a : ClassMetamodel_EObject) (s: string) : ClassMetamodel_EObject.
+Proof.
+  destruct a.
+  destruct clec_arg.
+  * simpl in c. exact (setClassId c s).
+  * simpl in c. exact (setAttributeId c s).
+Defined.
+
 Fixpoint ClassMetamodel_getClassAttributesOnLinks (cl_arg : Class) (l : list ClassMetamodel_ELink) : option (list Attribute) :=
 match l with
 | (Build_ClassMetamodel_ELink ClassAttributesEReference (BuildClassAttributes Class_ctr attributes_ctr)) :: l' => 
@@ -275,6 +296,9 @@ Instance ClassMetamodel : Metamodel ClassMetamodel_EObject ClassMetamodel_ELink 
     (* Constructors *)
     BuildModelElement := Build_ClassMetamodel_EObject;
     BuildModelLink := Build_ClassMetamodel_ELink;
+
+    getId := ClassMetamodel_getId;
+    setId := ClassMetamodel_setId;
   }.
   
 (* Useful lemmas *)

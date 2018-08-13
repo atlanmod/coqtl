@@ -1,5 +1,6 @@
 (** * Metamodel **)
 Require Import core.Model.
+Require Import String.
 
 
 Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=
@@ -26,4 +27,7 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
     (* Constructors *)
     BuildModelElement: forall (r: ModelClass), (denoteModelClass r) -> ModelElement;
     BuildModelLink:  forall (r: ModelReference), (denoteModelReference r) -> ModelLink;
+
+    getId: ModelElement -> string;
+    setId: ModelElement -> string -> ModelElement;
   }.

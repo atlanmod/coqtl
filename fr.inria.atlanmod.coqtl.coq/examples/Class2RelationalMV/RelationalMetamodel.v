@@ -160,6 +160,11 @@ Definition RelationalMetamodel_getEClass (reeo_arg : RelationalMetamodel_EObject
   | (Build_RelationalMetamodel_EObject reeo_arg _) => reeo_arg
    end.
 
+Definition RelationalMetamodel_getObject (cleo_arg : RelationalMetamodel_EObject) : RelationalMetamodel_getTypeByEClass (RelationalMetamodel_getEClass cleo_arg) :=
+   match cleo_arg with
+  | (Build_RelationalMetamodel_EObject _ b) => b
+   end.
+  
 Definition RelationalMetamodel_getEReference (reel_arg : RelationalMetamodel_ELink) : RelationalMetamodel_EReference :=
    match reel_arg with
   | (Build_RelationalMetamodel_ELink reel_arg _) => reel_arg
@@ -223,7 +228,23 @@ Definition RelationalMetamodel_toEObjectOfEClass (reec_arg: RelationalMetamodel_
 
 Definition RelationalMetamodel_toELinkOfEReference (reer_arg: RelationalMetamodel_EReference) (t: RelationalMetamodel_getTypeByEReference reer_arg) : RelationalMetamodel_ELink :=
 		  (Build_RelationalMetamodel_ELink reer_arg t).
-		  
+
+Definition RelationalMetamodel_getId (a : RelationalMetamodel_EObject) : string.
+Proof.
+  destruct a.
+  destruct reec_arg.
+  * simpl in r. exact (getTableId r).
+  * simpl in r. exact (getColumnId r).
+Defined.
+
+Definition RelationalMetamodel_setId (a : RelationalMetamodel_EObject) (s: string) : RelationalMetamodel_EObject.
+Proof.
+  destruct a.
+  destruct reec_arg.
+  * simpl in r. exact (setTableId r s).
+  * simpl in r. exact (setColumnId r s).
+Defined.
+
 Fixpoint RelationalMetamodel_getTableColumnsOnLinks (ta_arg : Table) (l : list RelationalMetamodel_ELink) : option (list Column) :=
 match l with
 | (Build_RelationalMetamodel_ELink TableColumnsEReference (BuildTableColumns Table_ctr columns_ctr)) :: l' => 
@@ -271,6 +292,9 @@ Instance RelationalMetamodel : Metamodel RelationalMetamodel_EObject RelationalM
     (* Constructors *)
     BuildModelElement := Build_RelationalMetamodel_EObject;
     BuildModelLink := Build_RelationalMetamodel_ELink;
+
+    getId := RelationalMetamodel_getId;
+    setId := RelationalMetamodel_setId;
   }.
   
 (* Useful lemmas *)
