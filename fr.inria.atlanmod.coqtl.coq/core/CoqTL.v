@@ -3,7 +3,8 @@ Require Import List.
 Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
-
+Require Import DecimalNat.
+Require Import DecimalString.
 
 Require Import core.Metamodel.
 Require Import core.Model.
@@ -362,8 +363,13 @@ Section CoqTL.
   Definition newId := ""%string.
 
   Definition setTargetElementId (te: TargetModelElement) (r: RuleA) (ope: OutputPatternElementA) (sp: list SourceModelElement) : TargetModelElement :=
-    if (beq_string (getId te) "") then 
-      setId te  ("__" ++ (getSourcePatternId sp) ++ (RuleA_getName r) ++ "_" ++ (OutputPatternElementA_getName ope))%string
+    if (beq_string (getId te) "") then
+      match (OutputPatternElementA_getOutputPatternElementExpression ope) with
+        BuildOutputPatternElementExpressionA a b => 
+      setId te  ("__" ++ (getSourcePatternId sp) ++
+                      NilZero.string_of_uint (Unsigned.to_lu a) ++ "_" ++
+                      NilZero.string_of_uint (Unsigned.to_lu b))%string
+            end
     else te.
   
   Definition instantiateRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=

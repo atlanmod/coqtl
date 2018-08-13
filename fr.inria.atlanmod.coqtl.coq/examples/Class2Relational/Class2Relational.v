@@ -15,7 +15,7 @@ Definition Class2RelationalConcrete :=
   transformation Class2Relational from ClassMetamodel to RelationalMetamodel
     with m as ClassModel := [
 
-      rule "Class2Table"
+      rule Class2Table
         from
           element c class ClassEClass
         to [
@@ -31,7 +31,7 @@ Definition Class2RelationalConcrete :=
              ]
         ];
 
-      rule "Attribute2Column"
+      rule Attribute2Column
         from
           element a class AttributeEClass 
             when negb (getAttributeMultiValued a)
