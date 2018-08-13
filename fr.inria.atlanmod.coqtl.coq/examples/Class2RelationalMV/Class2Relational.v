@@ -29,8 +29,8 @@ Definition Class2RelationalConcrete :=
                  reference TableColumnsEReference from RelationalMetamodel :=
                    attrs <- getClassAttributes c m;
                     cols <- (resolveAll Class2Relational m "col" ColumnEClass
-                                       (map (fun a:Attribute => [ClassMetamodel_toEObject a]) attrs));
-                    key <- resolve Class2Relational m "key" ColumnEClass [ClassMetamodel_toEObject c];
+                                       (map (fun a:Attribute => [a: ClassMetamodel_EObject]) attrs));
+                    key <- resolve Class2Relational m "key" ColumnEClass [c: ClassMetamodel_EObject];
                    return BuildTableColumns t (cons key cols)
                ];
            output "key"
@@ -52,7 +52,7 @@ Definition Class2RelationalConcrete :=
               [
                 reference ColumnReferenceEReference from RelationalMetamodel :=
                   cl <- getAttributeType a m;
-                  tb <- resolve Class2Relational m "tab" TableEClass [ClassMetamodel_toEObject cl];
+                  tb <- resolve Class2Relational m "tab" TableEClass [cl: ClassMetamodel_EObject];
                   return BuildColumnReference c tb
               ]
          ];
@@ -69,7 +69,7 @@ Definition Class2RelationalConcrete :=
             links
               [
                 reference ColumnReferenceEReference from RelationalMetamodel :=
-                  tb <- resolve Class2Relational m "pivot" TableEClass [ClassMetamodel_toEObject a];
+                  tb <- resolve Class2Relational m "pivot" TableEClass [a: ClassMetamodel_EObject];
                   return BuildColumnReference c tb
               ];
                  
@@ -79,8 +79,8 @@ Definition Class2RelationalConcrete :=
             links
               [
                 reference TableColumnsEReference from RelationalMetamodel :=
-                  psrc <- resolve Class2Relational m "psrc" ColumnEClass [ClassMetamodel_toEObject a];
-                  ptrg <- resolve Class2Relational m "ptrg" ColumnEClass [ClassMetamodel_toEObject a];
+                  psrc <- resolve Class2Relational m "psrc" ColumnEClass [a: ClassMetamodel_EObject];
+                  ptrg <- resolve Class2Relational m "ptrg" ColumnEClass [a: ClassMetamodel_EObject];
                   return BuildTableColumns t [psrc; ptrg]
               ];
                  
@@ -96,7 +96,7 @@ Definition Class2RelationalConcrete :=
               [
                 reference ColumnReferenceEReference from RelationalMetamodel :=
                   cl <- getAttributeType a m;
-                  tb <- resolve Class2Relational m "tab" TableEClass [ClassMetamodel_toEObject cl];
+                  tb <- resolve Class2Relational m "tab" TableEClass [cl: ClassMetamodel_EObject];
                   return BuildColumnReference c tb
               ] 
          ]
