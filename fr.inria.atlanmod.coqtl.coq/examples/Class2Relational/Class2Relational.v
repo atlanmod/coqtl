@@ -15,42 +15,37 @@ Definition Class2RelationalConcrete :=
   transformation Class2Relational from ClassMetamodel to RelationalMetamodel
     with m as ClassModel := [
 
-       rule "Class2Table"
-         from
-           element c class ClassEClass
-         to
-          [
-           output "tab"
-             element t class TableEClass :=
-               BuildTable newId (getClassName c)
-             links
-               [
-                 reference TableColumnsEReference :=
-                   attrs <- getClassAttributes c m;
-                   cols <- resolveAll Class2Relational m "col" ColumnEClass
-                      (map (fun a:Attribute => [a: ClassMetamodel_EObject]) attrs);
-                   return BuildTableColumns t cols
-               ]
-          ];
+      rule "Class2Table"
+        from
+          element c class ClassEClass
+        to [
+          output "tab"
+            element t class TableEClass :=
+              BuildTable newId (getClassName c)
+            links [
+              reference TableColumnsEReference :=
+                attrs <- getClassAttributes c m;
+                cols <- resolveAll Class2Relational m "col" ColumnEClass
+                  (map (fun a:Attribute => [a: ClassMetamodel_EObject]) attrs);
+                return BuildTableColumns t cols
+             ]
+        ];
 
       rule "Attribute2Column"
         from
           element a class AttributeEClass 
             when negb (getAttributeMultiValued a)
-        to
-         [
+        to [
           output "col"
             element c class ColumnEClass := 
                BuildColumn newId (getAttributeName a)
-            links
-              [
-                reference ColumnReferenceEReference :=
-                  cl <- getAttributeType a m;
-                  tb <- resolve Class2Relational m "tab" TableEClass [cl: ClassMetamodel_EObject];
-                  return BuildColumnReference c tb
-              ] 
-         ]
-
+            links [
+              reference ColumnReferenceEReference :=
+                cl <- getAttributeType a m;
+                tb <- resolve Class2Relational m "tab" TableEClass [cl: ClassMetamodel_EObject];
+                return BuildColumnReference c tb
+            ] 
+        ]
   ].
 
 Unset Printing Notations.
