@@ -28,7 +28,7 @@ Definition Class2RelationalConcrete :=
                  reference TableColumnsEReference :=
                    attrs <- getClassAttributes c m;
                    cols <- (resolveAll Class2Relational m "col" ColumnEClass
-                                       (map (fun a:Attribute => [a: ClassMetamodel_EObject]) attrs));
+                     (map (fun a:Attribute => [a: ClassMetamodel_EObject]) attrs));
                    key <- resolve Class2Relational m "key" ColumnEClass [c: ClassMetamodel_EObject];
                    return BuildTableColumns t (key :: cols)
                ];
@@ -41,7 +41,7 @@ Definition Class2RelationalConcrete :=
       rule "SinglevaluedAttribute2Column"
         from
           element a class AttributeEClass 
-            when (negb (getAttributeMultiValued a))
+            when negb (getAttributeMultiValued a)
         to
          [
           output "col"
@@ -59,7 +59,7 @@ Definition Class2RelationalConcrete :=
       rule "MultivaluedAttribute2Column"
         from
           element a class AttributeEClass 
-            when (getAttributeMultiValued a)
+            when getAttributeMultiValued a
         to
          [
           output "col"

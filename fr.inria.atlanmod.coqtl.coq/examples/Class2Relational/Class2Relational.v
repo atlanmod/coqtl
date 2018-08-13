@@ -15,39 +15,38 @@ Definition Class2RelationalConcrete :=
   transformation Class2Relational from ClassMetamodel to RelationalMetamodel
     with m as ClassModel := [
 
-       rule Class2Table
+       rule "Class2Table"
          from
-           element c class ClassEClass from ClassMetamodel
-             when true
+           element c class ClassEClass
          to
           [
            output "tab"
-             element t class TableClass from RelationalMetamodel :=
-               BuildTable (getClassId c) (getClassName c)
+             element t class TableEClass :=
+               BuildTable newId (getClassName c)
              links
                [
-                 reference TableColumnsReference from RelationalMetamodel :=
+                 reference TableColumnsEReference :=
                    attrs <- getClassAttributes c m;
-                   cols <- resolveAll Class2Relational m "col" ColumnClass
-                      (map (fun a:Attribute => [ClassMetamodel_toEObject a]) attrs);
+                   cols <- resolveAll Class2Relational m "col" ColumnEClass
+                      (map (fun a:Attribute => [a: ClassMetamodel_EObject]) attrs);
                    return BuildTableColumns t cols
                ]
           ];
 
-      rule Attribute2Column
+      rule "Attribute2Column"
         from
-          element a class AttributeEClass from ClassMetamodel 
-            when (negb (getAttributeDerived a))
+          element a class AttributeEClass 
+            when negb (getAttributeMultiValued a)
         to
          [
           output "col"
-            element c class ColumnClass from RelationalMetamodel := 
-               BuildColumn (getAttributeId a) (getAttributeName a)
+            element c class ColumnEClass := 
+               BuildColumn newId (getAttributeName a)
             links
               [
-                reference ColumnReferenceReference from RelationalMetamodel :=
+                reference ColumnReferenceEReference :=
                   cl <- getAttributeType a m;
-                  tb <- resolve Class2Relational m "tab" TableClass [ClassMetamodel_toEObject cl];
+                  tb <- resolve Class2Relational m "tab" TableEClass [cl: ClassMetamodel_EObject];
                   return BuildColumnReference c tb
               ] 
          ]
