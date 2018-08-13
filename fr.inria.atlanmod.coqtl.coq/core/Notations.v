@@ -17,13 +17,13 @@ Notation "'rule' rulename 'from' rbody" := (rulename%string, (rbody)) (right ass
 Notation "'element' sid 'class' stype 'from' sinstance ',' sbody" := (BuildMultiElementRule stype (fun sid => sbody)) (right associativity, at level 60).
 
 (* InputPatternElement no guard *)
-Notation "'element' sid 'class' stype 'from' sinstance 'to' outputels" := (BuildSingleElementRule sinstance stype (fun sid => (true, outputels))) (right associativity, at level 60).
+Notation "'element' sid 'class' stype 'to' outputels" := (BuildSingleElementRule _ stype (fun sid => (true, outputels))) (right associativity, at level 60).
 
 (* InputPatternElement *)
-Notation "'element' sid 'class' stype 'from' sinstance 'when' guard 'to' outputels" := (BuildSingleElementRule sinstance stype (fun sid => (guard, outputels))) (right associativity, at level 60).
+Notation "'element' sid 'class' stype 'when' guard 'to' outputels" := (BuildSingleElementRule _ stype (fun sid => (guard, outputels))) (right associativity, at level 60).
 
 (* OutputPatternElement *)
-Notation "'output' elid 'element' elname 'class' eltype 'from' tinstance := eldef 'links' refdef" := (BuildOutputPatternElement eltype elid eldef (fun elname => refdef))  (right associativity, at level 60).
+Notation "'output' elid 'element' elname 'class' eltype := eldef 'links' refdef" := (BuildOutputPatternElement eltype elid eldef (fun elname => refdef))  (right associativity, at level 60).
 
 (* OutputPatternElementReferenceDefinition *)
-Notation "'reference' reftype 'from' tinstance ':=' refends" := (BuildOutputPatternElementReference tinstance reftype refends) (right associativity, at level 60).
+Notation "'reference' reftype ':=' refends" := (BuildOutputPatternElementReference _ reftype refends) (right associativity, at level 60).
