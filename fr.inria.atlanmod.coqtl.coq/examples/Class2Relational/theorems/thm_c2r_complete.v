@@ -8,6 +8,7 @@ Require Import core.Notations.
 Require Import core.CoqTL.
 Require Import core.Metamodel.
 Require Import core.Model.
+Require Import core.utils.CpdtTactics.
 
 Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.ClassMetamodel.
@@ -19,8 +20,13 @@ Theorem All_classes_match :
       matchPattern Class2Relational cm [ClassMetamodel_toEObject c] = Some r.    
 Proof.
   intros.
-  exists (hd (BuildRuleA nil (BuildGuardExpressionA 0) nil) (TransformationA_getRules Class2Relational)).
-  unfold matchPattern.
+  unfold matchPattern. simpl.
+  unfold parseRuleDeclaration. simpl.
+  exists (BuildRuleA "" [ClassEClass] (BuildGuardExpressionA 0)
+             [BuildOutputPatternElementA "tab" TableEClass
+                (BuildOutputPatternElementExpressionA 0 0)
+                [BuildOutputPatternElementReferenceA TableColumnsEReference
+                                                     (BuildOutputBindingExpressionA 0 0 0)]]).
   reflexivity.
 Qed.
 
@@ -30,26 +36,39 @@ Theorem All_classes_instantiate :
       instantiatePattern Class2Relational cm [ClassMetamodel_toEObject c] = Some [RelationalMetamodel_toEObject t].
 Proof.
   intros.
-  exists (BuildTable (getClassId c) (getClassName c)).
-  unfold instantiatePattern.
-  unfold instantiateRuleOnPattern.
-  reflexivity.
+    unfold instantiatePattern.
+    unfold instantiateRuleOnPattern.
+    unfold setTargetElementId.
+    simpl.
+    unfold setTableId.
+    simpl.
+
+    exists (BuildTable
+         (String.String "_"
+             (String.String "_"
+                (String.append (String.append (getClassId c) "__") "0_0")))
+         (getClassName c)).
+
+    reflexivity.
 Qed.
 
 Theorem Concrete_attributes_instantiate :
-  forall (cm : ClassModel) (a: Attribute), getAttributeDerived a=false -> 
+  forall (cm : ClassModel) (a: Attribute), getAttributeMultiValued a=false -> 
     exists (c: Column), 
       instantiatePattern Class2Relational cm [ClassMetamodel_toEObject a] = Some [RelationalMetamodel_toEObject c].
 Proof.
   intros.
-  exists (BuildColumn (getAttributeId a) (getAttributeName a)).
-  unfold instantiatePattern.
-  unfold instantiateRuleOnPattern.
-  unfold matchPattern.
-  simpl.
-  rewrite H.
-  simpl.
-  rewrite H.
-  simpl.
+  unfold instantiatePattern. simpl.
+  unfold instantiateRuleOnPattern. simpl.
+  unfold matchPattern. simpl.
+  rewrite H. simpl.
+  rewrite H. simpl.
+  unfold setTargetElementId. simpl.
+  exists (setColumnId (BuildColumn newId (getAttributeName a))
+              (String.String "_"
+                 (String.String "_"
+                    (String.append (String.append (getAttributeId a) "__")
+                                   "1_0")))).
   reflexivity.
 Qed.
+
