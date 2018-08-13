@@ -352,12 +352,32 @@ Section CoqTL.
 
   Inductive ModelFragment (ModelElement: Type) (ModelLink: Type): Type :=
     BuildModelFragment: list ModelElement -> list ModelLink -> ModelFragment ModelElement ModelLink.
+
+  Fixpoint getSourcePatternId (sp: list SourceModelElement) : string :=
+    match sp with
+    | se :: ses => (getId se) ++ "_" ++ (getSourcePatternId ses)
+    | _ => "_"
+    end.
+
+  Definition newId := ""%string.
+
+  Definition setTargetElementId (te: TargetModelElement) (r: RuleA) (ope: OutputPatternElementA) (sp: list SourceModelElement) : TargetModelElement :=
+    if (beq_string (getId te) "") then 
+      setId te  ("__" ++ (getSourcePatternId sp) ++ (RuleA_getName r) ++ "_" ++ (OutputPatternElementA_getName ope))%string
+    else te.
   
   Definition instantiateRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     pre <- evalGuardExpressionPre r sp;
-    m <- evalGuardExpression (RuleA_getGuard r) tr sm sp;
+      m <- evalGuardExpression (RuleA_getGuard r) tr sm sp;
       if m then 
-        return optionList2List (map (evalOutputPatternElementExpression tr sm sp) (map OutputPatternElementA_getOutputPatternElementExpression (RuleA_getOutputPattern r)))
+        return 
+        optionList2List
+          (map
+             (fun ope: OutputPatternElementA =>
+                te <- (evalOutputPatternElementExpression
+                        tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope));
+              return (setTargetElementId te r ope sp))
+             (RuleA_getOutputPattern r))
       else
         None.
 
@@ -405,7 +425,7 @@ Section CoqTL.
     r <- matchPattern tr sm sp;
       ope <- find (fun oel => beq_string (OutputPatternElementA_getName oel) name) (RuleA_getOutputPattern r);
       te <- evalOutputPatternElementExpression tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope);
-      toModelClass type te.
+      toModelClass type (setTargetElementId te r ope sp).
 
   Definition resolve (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement): option (denoteModelClass type) :=
     resolveFix (TransformationA_getRules (parsePhase tr)) (parsePhase tr) sm name type sp.

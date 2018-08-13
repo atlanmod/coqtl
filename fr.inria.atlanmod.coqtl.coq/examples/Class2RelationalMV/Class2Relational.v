@@ -23,7 +23,7 @@ Definition Class2RelationalConcrete :=
           [
            output "tab"
              element t class TableEClass from RelationalMetamodel :=
-               BuildTable (getClassId c ++ "_C2T_tab") (getClassName c)
+               BuildTable newId (getClassName c)
              links
                [
                  reference TableColumnsEReference from RelationalMetamodel :=
@@ -35,7 +35,7 @@ Definition Class2RelationalConcrete :=
                ];
            output "key"
              element k class ColumnEClass from RelationalMetamodel :=
-               BuildColumn (getClassId c ++ "_C2T_key") (append "id" (getClassName c))
+               BuildColumn newId (append "id" (getClassName c))
              links nil
           ];
 
@@ -47,7 +47,7 @@ Definition Class2RelationalConcrete :=
          [
           output "col"
             element c class ColumnEClass from RelationalMetamodel := 
-               BuildColumn (getAttributeId a ++ "_SA2C_col") (getAttributeName a)
+               BuildColumn newId (getAttributeName a)
             links
               [
                 reference ColumnReferenceEReference from RelationalMetamodel :=
@@ -65,7 +65,7 @@ Definition Class2RelationalConcrete :=
          [
           output "col"
             element c class ColumnEClass from RelationalMetamodel := 
-               BuildColumn (getAttributeId a ++ "_MA2C_col") (getAttributeName a)
+               BuildColumn newId (getAttributeName a)
             links
               [
                 reference ColumnReferenceEReference from RelationalMetamodel :=
@@ -75,7 +75,7 @@ Definition Class2RelationalConcrete :=
                  
            output "pivot"
             element t class TableEClass from RelationalMetamodel := 
-               BuildTable (getAttributeId a ++ "_MA2C_pivot") (append "Pivot" (getAttributeName a))
+               BuildTable newId (append "Pivot" (getAttributeName a))
             links
               [
                 reference TableColumnsEReference from RelationalMetamodel :=
@@ -86,12 +86,12 @@ Definition Class2RelationalConcrete :=
                  
             output "psrc"
             element c class ColumnEClass from RelationalMetamodel := 
-               BuildColumn (getAttributeId a ++ "_MA2C_psrc") "key"
+               BuildColumn newId "key"
             links nil;
                  
             output "ptrg"
             element c class ColumnEClass from RelationalMetamodel := 
-               BuildColumn (getAttributeId a ++ "_MA2C_ptrg") (getAttributeName a)
+               BuildColumn newId (getAttributeName a)
             links
               [
                 reference ColumnReferenceEReference from RelationalMetamodel :=
