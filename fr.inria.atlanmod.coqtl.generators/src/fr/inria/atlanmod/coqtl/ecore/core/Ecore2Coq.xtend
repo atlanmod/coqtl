@@ -9,7 +9,6 @@ import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.EReference
 import fr.inria.atlanmod.coqtl.util.Keywords
-import java.util.ArrayList
 import java.util.HashSet
 
 class Ecore2Coq {
@@ -278,31 +277,28 @@ class Ecore2Coq {
 		(*? We currently define eq for Eclass on their fist attribute *)
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))
 		»Definition beq_«eClass.name» («arg1(eClass.name)» : «eClass.name») («arg2(eClass.name)» : «eClass.name») : bool :=
-			«IF eClass.EAttributes.size > 0»
-				«FOR eAttribute : eClass.EAttributes SEPARATOR " && "»
-					( beq_«AttributeType2Coq(eAttribute)» (get«eClass.name»«eAttribute.name.toFirstUpper» «arg1(eClass.name)») (get«eClass.name»«eAttribute.name.toFirstUpper» «arg2(eClass.name)») )
-				«ENDFOR
-			»«ELSE
-				» true«
-			ENDIF»
+			«IF eClass.ESuperTypes.size > 0 »
+		    	«val supName = eClass.ESuperTypes.get(0).name»
+		    	«val supAcc = eClass.name+"_get"+supName.toFirstUpper»
+		    	«IF eClass.EAttributes.size > 0»
+		    	beq_«eClass.ESuperTypes.get(0).name» («supAcc» «arg1(eClass.name)») («supAcc» «arg2(eClass.name)») &&
+		    	«FOR eAttribute : eClass.EAttributes SEPARATOR " && "
+		    	»( beq_«AttributeType2Coq(eAttribute)» («eClass.name»_get«eClass.name»«eAttribute.name.toFirstUpper» «arg1(eClass.name)») («eClass.name»_get«eClass.name»«eAttribute.name.toFirstUpper» «arg2(eClass.name)») )
+				«ENDFOR»
+		    	«ELSE»
+		    	beq_«eClass.ESuperTypes.get(0).name» («supAcc» «arg1(eClass.name)») («supAcc» «arg2(eClass.name)»)
+		    	«ENDIF»
+		    «ELSE»
+		    	«IF eClass.EAttributes.size > 0»
+		    	«FOR eAttribute : eClass.EAttributes SEPARATOR " && "
+		    	»( beq_«AttributeType2Coq(eAttribute)» («eClass.name»_get«eClass.name»«eAttribute.name.toFirstUpper» «arg1(eClass.name)») («eClass.name»_get«eClass.name»«eAttribute.name.toFirstUpper» «arg2(eClass.name)») )
+				«ENDFOR»
+		    	«ELSE»
+		    	(true)
+		    	«ENDIF»
+		    «ENDIF»
 		.
-			
-		«ENDFOR»
 		
-		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
- 			«FOR eSuper : eClass.ESuperTypes
- 			»Fixpoint «mm»_getSuperOf«eClass.name»OnLinks («arg(eClass.name)» : «eClass.name») (l : list «mm_elink») : option («eSuper.name.toFirstUpper») :=
- 			match l with
- 			| (Build_«mm_elink» «eClass.name»«Keywords.Inherit»«eSuper.name.toFirstUpper»«Keywords.PostfixEReference» (Build«eClass.name»«Keywords.Inherit»«eSuper.name.toFirstUpper» «eClass.name»_ctr «eSuper.name»_ctr)) :: l' => 
- 				  if beq_«eClass.name» «eClass.name»_ctr «arg(eClass.name)» then Some «eSuper.name»_ctr else «mm»_getSuperOf«eClass.name»OnLinks «arg(eClass.name)» l'
- 			| _ :: l' => «mm»_getSuperOf«eClass.name»OnLinks «arg(eClass.name)» l'
- 			| nil => None
- 			end.
- 			
- 			Definition getSuperOf«eClass.name» («arg(eClass.name)» : «eClass.name») (m : «ePackage.name»Model) : option («eSuper.name.toFirstUpper») :=
- 			  «mm»_getSuperOf«eClass.name»OnLinks «arg(eClass.name)» (@allModelLinks _ _ m).
-			«ENDFOR»
-
 		«ENDFOR»
 		
 		«val candidates = new HashSet»
@@ -314,20 +310,21 @@ class Ecore2Coq {
 			«ENDFOR»
 		«ENDFOR»
 
-		«FOR eSuper : candidates
-		»Fixpoint «mm»_getSubOf«eSuper.name»OnLinks («arg(eSuper.name)» : «eSuper.name») (l : list «mm_elink») : option («mm_eobject») := match l with
- 			«FOR eSub : ePackage.EClassifiers.filter(typeof(EClass))»
- 			«IF eSub.ESuperTypes.contains(eSuper)
- 			»| (Build_«mm_elink» «eSub.name»«Keywords.Inherit»«eSuper.name.toFirstUpper»«Keywords.PostfixEReference» (Build«eSub.name»«Keywords.Inherit»«eSuper.name.toFirstUpper» «eSub.name»_ctr «eSuper.name»_ctr)) :: l' => 
- 				  if beq_«eSuper.name» «eSuper.name»_ctr «arg(eSuper.name)» then Some («mm»_toEObjectOfEClass  «eSub.name»«Keywords.PostfixEClass» «eSub.name»_ctr) else «mm»_getSubOf«eSuper.name»OnLinks «arg(eSuper.name)» l'
-			«ENDIF»
-			«ENDFOR
-			»| _ :: l' => «mm»_getSubOf«eSuper.name»OnLinks «arg(eSuper.name)» l' 
-			| nil => None 
-			end.
+		«FOR eSuper : candidates»
+		   «FOR eSub : ePackage.EClassifiers.filter(typeof(EClass))»«IF eSub.ESuperTypes.contains(eSuper)
+		   »Fixpoint «mm»_«eSuper.name»_downcast«eSub.name» («arg(eSuper.name)» : «eSuper.name») (l : list «mm_eobject») : option «eSub.name» := 
+		     match l with
+		   	 | Build_«mm_eobject» «eSub.name»«Keywords.PostfixEClass» (Build«eSub.name» eSuper «FOR eAttributeCtr : eSub.EAttributes»«eAttributeCtr.name» «ENDFOR») :: l' => 
+		   		if beq_«eSuper.name» «arg(eSuper.name)» eSuper then (Some (Build«eSub.name» eSuper «FOR eAttributeCtr : eSub.EAttributes»«eAttributeCtr.name» «ENDFOR»)) else («mm»_«eSuper.name»_downcast«eSub.name» «arg(eSuper.name)» l')
+		   	 | _ :: l' => («mm»_«eSuper.name»_downcast«eSub.name» «arg(eSuper.name)» l')
+		   	 | nil => None
+		   end.
+		   
+		   Definition «eSuper.name»_downcast«eSub.name» («arg(eSuper.name)» : «eSuper.name») (m : «ePackage.name»Model) : option «eSub.name» :=
+		     «mm»_«eSuper.name»_downcast«eSub.name» «arg(eSuper.name)» (@allModelElements _ _ m).
+		   
+		   «ENDIF»«ENDFOR»
 
-Definition getSubOf«eSuper.name» («arg(eSuper.name)» : «eSuper.name») (m : «ePackage.name»Model) : option («mm_eobject») :=
-  «mm»_getSubOf«eSuper.name»OnLinks «arg(eSuper.name)» (@allModelLinks _ _ m).
 		«ENDFOR»
 		
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
@@ -340,7 +337,7 @@ Definition getSubOf«eSuper.name» («arg(eSuper.name)» : «eSuper.name») (m :
  			| nil => None
  			end.
  			
- 			Definition get«eClass.name»«eReference.name.toFirstUpper» («arg(eClass.name)» : «eClass.name») (m : «ePackage.name»Model) : option («ReferenceType2Coq(eReference)») :=
+ 			Definition «eClass.name»_get«eClass.name»«eReference.name.toFirstUpper» («arg(eClass.name)» : «eClass.name») (m : «ePackage.name»Model) : option («ReferenceType2Coq(eReference)») :=
  			  «mm»_get«eClass.name»«eReference.name.toFirstUpper»OnLinks «arg(eClass.name)» (@allModelLinks _ _ m).
 			«ENDFOR»
 
@@ -437,7 +434,5 @@ Definition getSubOf«eSuper.name» («arg(eSuper.name)» : «eSuper.name») (m :
 		  end.
 
 	eq check for super class:	
-	«IF eClass.ESuperTypes.size > 0»
-				«FOR eSuper : eClass.ESuperTypes SEPARATOR "/\\"»   beq_«eSuper.name» «arg1(eClass.name)» «arg2(eClass.name)» «ENDFOR» /\«
-			ENDIF»
+	
  */
