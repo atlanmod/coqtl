@@ -64,6 +64,21 @@ class EMFUtil {
 	»'''
 	
 	/**
+	 * @return the default value of an {@code EClass}
+	 * */
+	def static String PrintDefaultValue(EClass eClass) '''
+	«IF eClass.ESuperTypes.size > 0 »«
+		IF eClass.EAttributes.size > 0»(Build«eClass.name» «EMFUtil.PrintDefaultValue(eClass.ESuperTypes.get(0))» «FOR eAttribute : eClass.EAttributes SEPARATOR " "»«ENDFOR»)«
+		ELSE»(Build«eClass.name» «EMFUtil.PrintDefaultValue(eClass.ESuperTypes.get(0))»)«
+		ENDIF»«
+    ELSE»«
+    	IF eClass.EAttributes.size > 0»(Build«eClass.name» «FOR eAttribute : eClass.EAttributes SEPARATOR " "»«EMFUtil.PrintDefaultValue(eAttribute)»«ENDFOR»)«
+    	ELSE»()«
+    	ENDIF»«
+    ENDIF»'''
+    	
+	
+	/**
 	 * @return the string represtation of an {@code o}
 	 * */
 	def static PrintValue(Object o) '''

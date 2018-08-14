@@ -346,7 +346,20 @@ class Ecore2Coq {
 		Definition «mm»_defaultInstanceOfEClass («mm_eclass_qarg»: «mm_eclass») : («mm»_getTypeByEClass «mm_eclass_qarg») :=
 		  match «mm_eclass_qarg» with
 		  «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-		   | «eClass.name»«Keywords.PostfixEClass» => (Build«eClass.name» «FOR eAttribute : eClass.EAttributes SEPARATOR " "»«EMFUtil.PrintDefaultValue(eAttribute)»«ENDFOR»)
+		   | «eClass.name»«Keywords.PostfixEClass» => 
+		   «IF eClass.ESuperTypes.size > 0 »
+		    	«IF eClass.EAttributes.size > 0»
+		    	(Build«eClass.name» «EMFUtil.PrintDefaultValue(eClass.ESuperTypes.get(0))» «FOR eAttribute : eClass.EAttributes SEPARATOR " "»«EMFUtil.PrintDefaultValue(eAttribute)»«ENDFOR»)
+		    	«ELSE»
+		    	(Build«eClass.name» «EMFUtil.PrintDefaultValue(eClass.ESuperTypes.get(0))»)
+		    	«ENDIF»
+		   «ELSE»
+		    	«IF eClass.EAttributes.size > 0»
+		    	(Build«eClass.name» «FOR eAttribute : eClass.EAttributes SEPARATOR " "»«EMFUtil.PrintDefaultValue(eAttribute)»«ENDFOR»)
+		    	«ELSE»
+		    	()
+		    	«ENDIF»
+		    «ENDIF»
 		  «ENDFOR»
 		  end.
 		
