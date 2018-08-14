@@ -42,10 +42,12 @@ class Ecore2Coq {
 		Require Import core.Metamodel.
 		Require Import core.Model.
 		
+			
 		(* Base types *)
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
 			Inductive «eClass.name» : Set :=
 			  Build«eClass.name» :
+			  «IF eClass.ESuperTypes.size>0»(* Inheritence Attribute *) «eClass.ESuperTypes.get(0).name» -> «ENDIF»
 			  «FOR eAttribute : eClass.EAttributes»
 			    (* «eAttribute.name» *) «AttributeType2Coq(eAttribute)» ->
 			  «ENDFOR»
@@ -64,24 +66,18 @@ class Ecore2Coq {
 
 		«ENDFOR»
 		
-		(* Inheritence *)
-		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
- 			«FOR eSupClass : eClass.ESuperTypes
-            »Inductive «eClass.name»«Keywords.Inherit»«eSupClass.name.toFirstUpper» : Set :=
- 			   Build«eClass.name»«Keywords.Inherit»«eSupClass.name.toFirstUpper» :
- 			   «eClass.name» ->
- 			   «eSupClass.name» ->
- 			   «eClass.name»«Keywords.Inherit»«eSupClass.name.toFirstUpper».
-			«ENDFOR»
-
-		«ENDFOR»
 		
 		(* Accessors *)
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-			  «FOR eAttribute : eClass.EAttributes»
 			  «val v = eClass.name.toLowerCase.charAt(0)»
-			  Definition get«eClass.name»«eAttribute.name.toFirstUpper» («v» : «eClass.name») : «AttributeType2Coq(eAttribute)» :=
-			    match «v» with Build«eClass.name» «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «eAttribute.name» end.
+			  «IF eClass.ESuperTypes.size>0»
+			  «val supName = eClass.ESuperTypes.get(0).name»
+			  Definition «eClass.name»_get«supName.toFirstUpper» («v» : «eClass.name») : «supName» :=
+			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«supName.toLowerCase»«ENDIF» «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «supName.toLowerCase» end.
+			  «ENDIF»		  
+			  «FOR eAttribute : eClass.EAttributes»
+			  Definition «eClass.name»_get«eClass.name»«eAttribute.name.toFirstUpper» («v» : «eClass.name») : «AttributeType2Coq(eAttribute)» :=
+			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«eClass.ESuperTypes.get(0).name.toLowerCase»«ENDIF» «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «eAttribute.name» end.
 			  «ENDFOR»	 
 			   
 		«ENDFOR»
@@ -101,13 +97,26 @@ class Ecore2Coq {
 		    «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
 		    | «eClass.name»«Keywords.PostfixEClass» => «eClass.name»
 		    «ENDFOR»
-		  end.
+		  end.	
 		
 		«val farg_getEAttributeTypesByEClass = arg('''«ePackage.name»«Keywords.PostfixMetamodel»_«Keywords.PostfixEClass»''')»
 		Definition «ePackage.name»«Keywords.PostfixMetamodel»_getEAttributeTypesByEClass («farg_getEAttributeTypesByEClass» : «ePackage.name»«Keywords.PostfixMetamodel»_«Keywords.PostfixEClass») : Set :=
 		  match «farg_getEAttributeTypesByEClass» with
 		    «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-		    | «eClass.name»«Keywords.PostfixEClass» => «IF eClass.EAttributes.size > 0»(«FOR eAttributeCtr : eClass.EAttributes SEPARATOR " * "»«AttributeType2Coq(eAttributeCtr)»«ENDFOR»)«ELSE»(Empty_set)«ENDIF»
+		    | «eClass.name»«Keywords.PostfixEClass» => 
+		    «IF eClass.ESuperTypes.size > 0 »
+		    	«IF eClass.EAttributes.size > 0»
+		    	(«eClass.ESuperTypes.get(0).name» * «FOR eAttributeCtr : eClass.EAttributes SEPARATOR " * "»«AttributeType2Coq(eAttributeCtr)»«ENDFOR»)
+		    	«ELSE»
+		    	(«eClass.ESuperTypes.get(0).name»)
+		    	«ENDIF»
+		    «ELSE»
+		    	«IF eClass.EAttributes.size > 0»
+		    	(«FOR eAttributeCtr : eClass.EAttributes SEPARATOR " * "»«AttributeType2Coq(eAttributeCtr)»«ENDFOR»)
+		    	«ELSE»
+		    	(Empty_set)
+		    	«ENDIF»
+		    «ENDIF»
 			«ENDFOR»
 		  end.
 		
@@ -117,11 +126,6 @@ class Ecore2Coq {
 		    »| «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference»
 		 	«ENDFOR»
 		  «ENDFOR»
-	      «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-			«FOR eSuper : eClass.ESuperTypes
-		    »| «eClass.name»«Keywords.Inherit»«eSuper.name.toFirstUpper»«Keywords.PostfixEReference»
-		 	«ENDFOR» 
-	  	  «ENDFOR»
 		.
 		
 		«val farg_getTypeByEReference = arg('''«ePackage.name»«Keywords.PostfixMetamodel»_«Keywords.PostfixEReference»''')»
@@ -132,11 +136,6 @@ class Ecore2Coq {
     		    »| «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» => «eClass.name»«eReference.name.toFirstUpper»
     		 	«ENDFOR» 
 		    «ENDFOR»
-		    «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-				«FOR eSuper : eClass.ESuperTypes
-			    »| «eClass.name»«Keywords.Inherit»«eSuper.name.toFirstUpper»«Keywords.PostfixEReference» => «eClass.name»«Keywords.Inherit»«eSuper.name.toFirstUpper»
-			 	«ENDFOR» 
-		    «ENDFOR»
 		  end.
 		
 		«val farg_getERoleTypesByEReference = arg('''«ePackage.name»«Keywords.PostfixMetamodel»_«Keywords.PostfixEReference»''')»
@@ -146,11 +145,6 @@ class Ecore2Coq {
 				«FOR eReference : eClass.EReferences
 		    	»| «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» => («eClass.name» * «ReferenceType2Coq(eReference)»)
 		    	«ENDFOR»
-		    «ENDFOR»
-		    «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-				«FOR eSuper : eClass.ESuperTypes
-			    »| «eClass.name»«Keywords.Inherit»«eSuper.name.toFirstUpper»«Keywords.PostfixEReference» => («eClass.name» * «eSuper.name»)
-			 	«ENDFOR» 
 		    «ENDFOR»
 		  end.
 		
@@ -212,8 +206,21 @@ class Ecore2Coq {
 		Definition «ePackage.name»«Keywords.PostfixMetamodel»_getEObjectFromEAttributeValues («farg_getEAttributeTypesByEClass» : «ePackage.name»«Keywords.PostfixMetamodel»_«Keywords.PostfixEClass») : («mm»_getEAttributeTypesByEClass «farg_getEAttributeTypesByEClass») -> «mm_eobject» :=
 		  match «farg_getEAttributeTypesByEClass» with
 		    «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-		    | «eClass.name»«Keywords.PostfixEClass» => «IF eClass.EAttributes.size > 0»(fun («larg»: («FOR eAttributeCtr : eClass.EAttributes SEPARATOR " * "»«AttributeType2Coq(eAttributeCtr)»«ENDFOR»)) => (Build_«mm_eobject» «eClass.name»«Keywords.PostfixEClass» (Build«eClass.name» «PrintCtrArgsByPair(eClass.EAttributes.size, larg)»)))«ELSE»(fun («larg»: Empty_set) => (Build_«mm_eobject» «eClass.name»«Keywords.PostfixEClass» (Build«eClass.name»)))«ENDIF»
-		    «ENDFOR»
+		    | «eClass.name»«Keywords.PostfixEClass» => 
+		    «IF eClass.ESuperTypes.size > 0 »
+		    	«IF eClass.EAttributes.size > 0»
+		    	(fun («larg»: («eClass.ESuperTypes.get(0).name» * «FOR eAttributeCtr : eClass.EAttributes SEPARATOR " * "»«AttributeType2Coq(eAttributeCtr)»«ENDFOR»)) => (Build_«mm_eobject» «eClass.name»«Keywords.PostfixEClass» (Build«eClass.name» «PrintCtrArgsByPair(eClass.EAttributes.size+1, larg)»)))
+		    	«ELSE»
+		    	(fun («larg»: («eClass.ESuperTypes.get(0).name»)) => (Build_«mm_eobject» «eClass.name»«Keywords.PostfixEClass» (Build«eClass.name» «PrintCtrArgsByPair(1, larg)»)))
+		    	«ENDIF»
+		    «ELSE»
+		    	«IF eClass.EAttributes.size > 0»
+		    	(fun («larg»: («FOR eAttributeCtr : eClass.EAttributes SEPARATOR " * "»«AttributeType2Coq(eAttributeCtr)»«ENDFOR»)) => (Build_«mm_eobject» «eClass.name»«Keywords.PostfixEClass» (Build«eClass.name» «PrintCtrArgsByPair(eClass.EAttributes.size, larg)»)))
+		    	«ELSE»
+		    	(fun («larg»: Empty_set) => (Build_«mm_eobject» «eClass.name»«Keywords.PostfixEClass» (Build«eClass.name»)))
+		    	«ENDIF»
+		    «ENDIF»
+			«ENDFOR»
 		  end.
 		
 		(** Helper of building ELink for model **)
@@ -223,11 +230,6 @@ class Ecore2Coq {
 				«FOR eReference : eClass.EReferences
 		    	»| «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» => (fun («larg»: («eClass.name» * «ReferenceType2Coq(eReference)»)) => (Build_«mm_elink» «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» (Build«eClass.name»«eReference.name.toFirstUpper» «PrintCtrArgsByPair(2, larg)»)))
 		    	«ENDFOR»
-		    «ENDFOR»
-		    «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-				«FOR eSuper : eClass.ESuperTypes
-			    »| «eClass.name»«Keywords.Inherit»«eSuper.name.toFirstUpper»«Keywords.PostfixEReference» => (fun («larg»: («eClass.name» * «eSuper.name»)) => (Build_«mm_elink» «eClass.name»«Keywords.Inherit»«eSuper.name.toFirstUpper»«Keywords.PostfixEReference» (Build«eClass.name»«Keywords.Inherit»«eSuper.name.toFirstUpper» «PrintCtrArgsByPair(2, larg)»)))
-			 	«ENDFOR» 
 		    «ENDFOR»
 		  end.
 		
