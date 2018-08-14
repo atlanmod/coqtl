@@ -27,39 +27,37 @@ Theorem information_preservation :
   intros.
   destruct a eqn:a_dest.
   destruct b eqn:b_dest.
-  * assert (incl [RelationalMetamodel_toEObjectOfEClass ColumnEClass
-            (BuildColumn (s ++ "_MA2C_col") s0);
-         RelationalMetamodel_toEObjectOfEClass TableEClass
-           (BuildTable (s ++ "_MA2C_pivot")
-              (String "P"
-                 (String "i"
-                    (String "v" (String "o" (String "t" s0))))));
-         RelationalMetamodel_toEObjectOfEClass ColumnEClass
-           (BuildColumn (s ++ "_MA2C_psrc") "key");
-         RelationalMetamodel_toEObjectOfEClass ColumnEClass
-           (BuildColumn (s ++ "_MA2C_ptrg") s0)] (allModelElements rm)). {
-      apply outp_incl_elements2 with (tr:=Class2Relational) (sm:=cm) (sp:= [ClassMetamodel_toEObject a]).
-      * crush.
-      * apply incl_cons.
-        ** crush.
-        ** unfold incl. crush.
-      * crush.    
+  * eapply outp_incl_elements2 with (sp := [ClassMetamodel_toEObject a]) in H.
+    3: {
+      rewrite a_dest.
+      unfold instantiatePattern. 
+      unfold matchPattern. 
+      unfold instantiateRuleOnPattern.
+      unfold setTargetElementId.
+      simpl.
+      unfold setColumnId.
+      unfold setTableId.
+      simpl.
+      reflexivity.
     }
-    exists (BuildColumn (s ++ "_MA2C_col") s0).
-    split.
-    ** crush.
-    ** crush.
-  * assert (incl [RelationalMetamodel_toEObjectOfEClass ColumnEClass
-                                                        (BuildColumn (s ++ "_SA2C_col") s0)] (allModelElements rm)). {
-      apply outp_incl_elements2 with (tr:=Class2Relational) (sm:=cm) (sp:= [ClassMetamodel_toEObject a]).
-      * crush.
-      * apply incl_cons.
-        ** crush.
-        ** unfold incl. crush.
-      * crush.
+    + exists (BuildColumn (String "_" (String "_" ((s ++ "__") ++ "2_0"))) s0).
+      crush.
+    + unfold incl.
+      crush.
+  * eapply outp_incl_elements2 with (sp := [ClassMetamodel_toEObject a]) in H.
+    3: {
+      rewrite a_dest.
+      unfold instantiatePattern. 
+      unfold matchPattern. 
+      unfold instantiateRuleOnPattern.
+      unfold setTargetElementId.
+      simpl.
+      unfold setColumnId.
+      simpl.
+      reflexivity.
     }
-    exists (BuildColumn (s ++ "_SA2C_col") s0).
-    split.
-    ** crush.
-    ** crush.
+    + exists (BuildColumn (String "_" (String "_" ((s ++ "__") ++ "1_0"))) s0).
+      crush.
+    + unfold incl.
+      crush.
 Qed.
