@@ -28,36 +28,15 @@ Theorem information_preservation :
   destruct a eqn:a_dest.
   destruct b eqn:b_dest.
   * eapply outp_incl_elements2 with (sp := [ClassMetamodel_toEObject a]) in H.
-    3: {
-      rewrite a_dest.
-      unfold instantiatePattern. 
-      unfold matchPattern. 
-      unfold instantiateRuleOnPattern.
-      unfold setTargetElementId.
-      simpl.
-      unfold setColumnId.
-      unfold setTableId.
-      simpl.
-      reflexivity.
-    }
     + exists (BuildColumn (String "_" (String "_" ((s ++ "__") ++ "2_0"))) s0).
       crush.
     + unfold incl.
       crush.
+    + crush.
   * eapply outp_incl_elements2 with (sp := [ClassMetamodel_toEObject a]) in H.
-    3: {
-      rewrite a_dest.
-      unfold instantiatePattern. 
-      unfold matchPattern. 
-      unfold instantiateRuleOnPattern.
-      unfold setTargetElementId.
-      simpl.
-      unfold setColumnId.
-      simpl.
-      reflexivity.
-    }
     + exists (BuildColumn (String "_" (String "_" ((s ++ "__") ++ "1_0"))) s0).
       crush.
     + unfold incl.
       crush.
+    + crush.
 Qed.
