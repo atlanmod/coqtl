@@ -18,10 +18,10 @@ Definition isNone (A: Type) (e : option A) : bool :=
   | Some a => false
  end.
 
-Definition isComposite (A: Type) (e : option A) : bool :=
+Definition isComposite (e : option AbstractState) (m : HSMModel) : bool :=
  match e with
   | None => false
-  | Some a => false
+  | Some a => negb (isNone CompositeState (AbstractState_downcastCompositeState a m))
  end.
  
 Definition HSM2FSMConcrete :=
@@ -36,9 +36,29 @@ Definition HSM2FSMConcrete :=
           [
            output "sm2"
              element sm2 class FStateMachineEClass from FSMMetamodel :=
-               BuildFStateMachine (getStateMachineName sm1)
+               BuildFStateMachine (StateMachine_getName sm1) (StateMachine_getStateMachineID sm1)
              links
                nil
+          ]
+        ;
+
+      (* AbstractState to FAbstractState, need to be explicit *)
+       rule AS2AS
+         from
+           element as1 class AbstractStateEClass from HSMMetamodel
+             when true
+         to
+          [
+           output "as2"
+             element as2 class FAbstractStateEClass from FSMMetamodel :=
+               BuildFAbstractState (AbstractState_getName as1) (AbstractState_getAbstractStateID as1)
+             links
+               [
+                 reference FAbstractStateStateMachineEReference from FSMMetamodel :=
+                   hsm_sm <- (AbstractState_getStateMachine as1 m);
+                   fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
+                   return BuildFAbstractStateStateMachine as2 fsm_sm 
+               ]
           ]
         ;
 
@@ -50,81 +70,62 @@ Definition HSM2FSMConcrete :=
           [
            output "rs2"
              element rs2 class FRegularStateEClass from FSMMetamodel :=
-               BuildFRegularState (getRegularStateName rs1)
+               let hsm_as := (RegularState_getAbstractState rs1) in
+                let fsm_as := (BuildFAbstractState (AbstractState_getName hsm_as) (AbstractState_getAbstractStateID hsm_as)) in
+                  BuildFRegularState fsm_as (RegularState_getRegularStateID rs1)
              links
-               [
-                 reference FRegularStateStateMachineEReference from FSMMetamodel :=
-                   hsm_sm <- (getRegularStateStateMachineOnLinks rs1 m);
-                   fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
-                   return BuildFRegularStateStateMachine rs2 fsm_sm 
-               ]
+               nil
           ]
-        ;
+      ;
 
-       rule IS2IS
+      rule IS2IS
          from
            element is1 class InitialStateEClass from HSMMetamodel
-             when (isNone CompositeState (getInitialStateCompositeStateOnLinks is1 m))
+             when (isNone CompositeState (AbstractState_getCompositeState (InitialState_getAbstractState is1) m))
          to
           [
            output "is2"
              element is2 class FInitialStateEClass from FSMMetamodel :=
-               BuildFInitialState (getInitialStateName is1)
+               let hsm_as := (InitialState_getAbstractState is1) in
+                let fsm_as := (BuildFAbstractState (AbstractState_getName hsm_as) (AbstractState_getAbstractStateID hsm_as)) in
+                  BuildFInitialState fsm_as (InitialState_getInitialStateID is1)
              links
-               [
-                 reference FInitialStateStateMachineEReference from FSMMetamodel :=
-                   hsm_sm <- (getInitialStateStateMachineOnLinks is1 m);
-                   fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
-                   return BuildFInitialStateStateMachine is2 fsm_sm 
-               ]
+               nil
           ]
-        ;
+      ;
 
        rule IS2RS
          from
            element is1 class InitialStateEClass from HSMMetamodel
-             when (negb (isNone CompositeState (getInitialStateCompositeStateOnLinks is1 m)))
+             when (negb (isNone CompositeState (AbstractState_getCompositeState (InitialState_getAbstractState is1) m)))
          to
           [
            output "rs2"
              element rs2 class FRegularStateEClass from FSMMetamodel :=
-               BuildFRegularState (getInitialStateName is1)
+               let hsm_as := (InitialState_getAbstractState is1) in
+                let fsm_as := (BuildFAbstractState (AbstractState_getName hsm_as) (AbstractState_getAbstractStateID hsm_as)) in
+                  BuildFRegularState fsm_as (InitialState_getInitialStateID is1)
              links
-               [
-                 reference FRegularStateStateMachineEReference from FSMMetamodel :=
-                   hsm_sm <- (getInitialStateStateMachineOnLinks is1 m);
-                   fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
-                   return BuildFRegularStateStateMachine rs2 fsm_sm 
-               ]
+               nil
           ]
-        ;
+       ;
 
        rule T2TA
          from
            element t1 class TransitionEClass from HSMMetamodel
-             when  andb (negb (isComposite (getFTransitionSourceOnLinks t1 m)))
-                        (negb (isComposite (getFTransitionTargetOnLinks t1 m)))
+             when  andb (negb (isComposite (Transition_getSource t1 m) m))
+                        (negb (isComposite (Transition_getTarget t1 m) m))
          to
           [
            output "t2"
              element t2 class FTransitionEClass from FSMMetamodel :=
-               BuildFTransition (getTransitionLabel t1)
+               BuildFTransition (Transition_getLabel t1) (Transition_getTransitionID t1)
              links
                [
                  reference FTransitionStateMachineEReference from FSMMetamodel :=
-                   hsm_sm <- (getTransitionStateMachineOnLinks t1 m);
+                   hsm_sm <- (Transition_getStateMachine t1 m);
                    fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
-                   return BuildFTransitionStateMachine t2 fsm_sm ;
-                   
-                 reference FTransitionStateMachineEReference from FSMMetamodel :=
-                   hsm_sm <- (getTransitionStateMachineOnLinks t1 m);
-                   fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
-                   return BuildFTransitionStateMachine t2 fsm_sm ;
-                   
-                 reference FTransitionStateMachineEReference from FSMMetamodel :=
-                   hsm_sm <- (getTransitionStateMachineOnLinks t1 m);
-                   fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
-                   return BuildFTransitionStateMachine t2 fsm_sm ;
+                   return BuildFTransitionStateMachine t2 fsm_sm 
                ]
           ]
   ].
@@ -135,5 +136,14 @@ Definition HSM2FSMConcrete :=
 
 Definition HSM2FSM := parseTransformation HSM2FSMConcrete.
 
+       
 
 
+
+(*
+
+                 reference FTransitionSourceEReference from FSMMetamodel :=
+                   hsm_tr_source <- (Transition_getStateMachine t1 m);
+                   return None
+*)
+       
