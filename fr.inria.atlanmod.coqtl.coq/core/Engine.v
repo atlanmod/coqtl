@@ -101,6 +101,17 @@ Class TransformationEngine
             incl tp (allModelElements tm) /\
             matchPattern tr sm sp = Some r );
 
+        tr_surj_elements2 : 
+          forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
+            tm = execute tr sm ->
+            forall (t1 : TargetModelElement),
+              In t1 (allModelElements tm) ->
+              (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
+                  incl sp (allModelElements sm) /\
+                  In t1 tp /\
+                  incl tp (allModelElements tm) /\
+                  instantiatePattern tr sm sp = Some tp);
+
         (** **** tr_surj_links 
 
                 Definition: every model links in the target model is produced by a rule application *)

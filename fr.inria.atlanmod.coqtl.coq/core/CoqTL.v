@@ -573,8 +573,49 @@ Section CoqTL.
           - symmetry. assumption.
         }
     }
-   Qed.
+  Qed.
 
+  Theorem tr_surj_elements2 : 
+    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel),
+      tm = execute tr sm ->
+      forall (t1 : TargetModelElement),
+        In t1 (allModelElements tm) ->
+        (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
+            incl sp (allModelElements sm) /\
+            In t1 tp /\
+            incl tp (allModelElements tm) /\
+            instantiatePattern tr sm sp = Some tp).
+  Proof.
+    intros tr sm tm H0 t1.
+    rewrite H0. simpl.
+    intros.
+    apply concat_map_option_exists in H.
+    destruct H. destruct H.
+    rename x into sp1.
+    remember (matchPattern tr sm sp1) as r'.
+    destruct r'.
+    
+    2: {
+      unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction.
+    }
+    1: {
+      remember (instantiatePattern tr sm sp1) as tp_temp.
+      destruct tp_temp eqn:tp1_case.
+      2: {
+        contradiction.
+      }
+      1: {
+        rename l into tp1.
+        exists sp1, tp1.
+        repeat split.
+        - apply tuples_up_to_n_incl with (n:=(maxArity tr)).
+          assumption.
+        - assumption.
+        - apply concat_map_option_incl with (a:=sp1). assumption. symmetry. assumption.
+        - symmetry. assumption.
+      }
+    }
+  Qed.
 
    Theorem tr_surj_links : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
@@ -807,6 +848,7 @@ Section CoqTL.
       instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
       apply_pattern_derivable :=  tr_apply_pattern_derivable; 
       tr_surj_elements := tr_surj_elements;
+      tr_surj_elements2 := tr_surj_elements2;
       tr_surj_links := tr_surj_links;
 
       outp_incl_elements := outp_incl_elements;
