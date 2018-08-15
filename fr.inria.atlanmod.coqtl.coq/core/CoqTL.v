@@ -398,18 +398,11 @@ Section CoqTL.
   Definition matchRuleOnPattern (r: RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
     evalGuardExpression (RuleA_getGuard r) tr sm sp.
 
-  Fixpoint matchPatternFix (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option RuleA :=
-    match l with
-    | r :: rs => match matchRuleOnPattern r tr sm sp with
-                | Some false => matchPatternFix rs tr sm sp
-                | Some true => Some r
-                | None => matchPatternFix rs tr sm sp
-                end
-    | nil => None
-    end.
-
   Definition matchPattern (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option RuleA :=
-    matchPatternFix (TransformationA_getRules tr) tr sm sp.
+    find (fun (r:RuleA) =>
+            match matchRuleOnPattern r tr sm sp with
+            | (Some true) => true
+            | _ => false end) (TransformationA_getRules tr).
   
   Definition instantiatePattern (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     r <- matchPattern tr sm sp;
