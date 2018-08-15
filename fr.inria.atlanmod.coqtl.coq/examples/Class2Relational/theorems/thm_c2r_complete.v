@@ -23,11 +23,7 @@ Proof.
   intros.
   unfold matchPattern. simpl.
   unfold parseRuleDeclaration. simpl.
-  exists (BuildRuleA "" [ClassEClass] (BuildGuardExpressionA 0)
-             [BuildOutputPatternElementA "tab" TableEClass
-                (BuildOutputPatternElementExpressionA 0 0)
-                [BuildOutputPatternElementReferenceA TableColumnsEReference
-                                                     (BuildOutputBindingExpressionA 0 0 0)]]).
+  eexists _.
   reflexivity.
 Qed.
 
@@ -43,11 +39,7 @@ Proof.
     simpl.
     unfold setTableId.
     simpl.
-
-    exists (BuildTable
-         (((getClassId c) ++ "__") ++ "0_0") 
-         (getClassName c)).
-
+    eexists _.
     reflexivity.
 Qed.
 
@@ -63,9 +55,7 @@ Proof.
   rewrite H. simpl.
   rewrite H. simpl.
   unfold setTargetElementId. simpl.
-  exists (setColumnId (BuildColumn newId (getAttributeName a))
-                 (((getAttributeId a) ++ "__") ++
-                                "1_0")).
+  eexists _.
   reflexivity.
 Qed.
 
