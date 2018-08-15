@@ -582,19 +582,19 @@ Section CoqTL.
       }
     }
   Qed.
-
-   Theorem tr_surj_links : 
-    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
-      tm = execute tr sm -> In t1 (allModelLinks tm) -> 
-      (exists (sp : list SourceModelElement) (tel : list TargetModelElement) (tpl : list TargetModelLink) (r : RuleA),
-        In r (TransformationA_getRules tr) /\
-        In t1 tpl /\
-        applyRuleOnPattern r tr sm sp tel = Some tpl /\
-        incl sp (allModelElements sm) /\
-        incl tpl (allModelLinks tm) /\
-        matchPattern tr sm sp = Some r ).
+  
+  Theorem tr_surj_links : 
+    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel),
+      tm = execute tr sm ->
+      forall  (t1 : TargetModelLink),
+        In t1 (allModelLinks tm) ->
+        (exists (sp : list SourceModelElement) (tpl : list TargetModelLink),
+            incl sp (allModelElements sm) /\
+            In t1 tpl /\
+            incl tpl (allModelLinks tm) /\
+            applyPattern tr sm sp = Some tpl).
   Proof.
-    intros tr sm tm t1 H0.
+    intros tr sm tm H0 t1.
     rewrite H0. simpl.
     intros.
     apply concat_map_option_exists in H.
@@ -619,18 +619,19 @@ Section CoqTL.
           1: {
             rename l0 into te1.
             rename l into tpl.
-            exists sp1, te1, tpl, r. 
+            exists sp1, tpl. 
             repeat split.
-            --- apply match_incl with (sp:=sp1) (sm:=sm).
-                assumption.
-            --- assumption.
-            --- symmetry. assumption.
             --- apply tuples_up_to_n_incl with (n:=(maxArity tr)).
                 assumption.
+            --- assumption.
             --- apply concat_map_option_incl with (a:=sp1). 
                 ---- assumption. 
                 ---- unfold applyPattern. rewrite Hmatch. rewrite Hinst. symmetry. assumption.
-            --- assumption.
+            --- apply tr_apply_pattern_derivable with (tm:=tm) (tp:=te1) (r:=r).
+                ---- assumption.
+                ---- symmetry. assumption.
+                ---- assumption.
+                ---- assumption.
           }
         }
       }

@@ -104,15 +104,15 @@ Class TransformationEngine
 
             Every model link in the target model is produced by a rule application *)
     tr_surj_links : 
-      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
-        tm = execute tr sm -> In t1 (allModelLinks tm) ->
-        (exists (sp : list SourceModelElement) (tel : list TargetModelElement) (tpl : list TargetModelLink) (r : Rule),
-            In r (getRules tr) /\
-            In t1 tpl /\
-            applyRuleOnPattern r tr sm sp tel = Some tpl /\
-            incl sp (allModelElements sm) /\
-            incl tpl (allModelLinks tm) /\
-            matchPattern tr sm sp = Some r );
+      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
+        tm = execute tr sm ->
+        forall  (t1 : TargetModelLink),
+          In t1 (allModelLinks tm) ->
+          (exists (sp : list SourceModelElement) (tpl : list TargetModelLink),
+              incl sp (allModelElements sm) /\
+              In t1 tpl /\
+              incl tpl (allModelLinks tm) /\
+              applyPattern tr sm sp = Some tpl);
 
     (** *** Completeness *)
 
