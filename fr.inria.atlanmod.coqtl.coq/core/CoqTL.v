@@ -493,6 +493,24 @@ Section CoqTL.
         assumption.
   Qed.
 
+  Theorem tr_match_pattern_derivable : 
+    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel),
+      tm = execute tr sm ->
+      forall (sp : list SourceModelElement)(r : RuleA),
+        matchPattern tr sm sp = return r ->
+        matchRuleOnPattern r tr sm sp = return true.
+  Proof.
+    intros.
+    unfold matchPattern in H0.
+    apply find_some in H0.
+    destruct H0.
+    destruct (matchRuleOnPattern r tr sm sp).
+    + destruct b.
+      * reflexivity.
+      * inversion H1.
+    + inversion H1.
+  Qed.
+
   Theorem tr_instantiate_pattern_derivable : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel),
       tm = execute tr sm ->
@@ -839,6 +857,7 @@ Section CoqTL.
       instantiateRuleOnPattern := instantiateRuleOnPattern;
       applyRuleOnPattern := applyRuleOnPattern;
 
+      match_pattern_derivable :=  tr_match_pattern_derivable; 
       instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
       apply_pattern_derivable :=  tr_apply_pattern_derivable; 
       tr_surj_elements := tr_surj_elements;

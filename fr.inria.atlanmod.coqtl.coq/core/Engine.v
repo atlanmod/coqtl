@@ -155,6 +155,14 @@ Class TransformationEngine
         incl tls (allModelLinks tm);
 
     (** *** Rules *)
+
+    (** **** match_pattern_derivable **)
+    match_pattern_derivable : 
+      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
+        tm = execute tr sm ->
+        forall (sp : list SourceModelElement)(r : Rule),
+          matchPattern tr sm sp = return r -> 
+          matchRuleOnPattern r tr sm sp = return true;
     
     (** **** instantiate_pattern_derivable 
 
