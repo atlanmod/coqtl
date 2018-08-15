@@ -90,17 +90,6 @@ Class TransformationEngine
 
             Every model element in the target model is produced by a rule application *)
     tr_surj_elements : 
-      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
-        tm = execute tr sm -> In t1 (allModelElements tm) ->
-        (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
-            In r (getRules tr) /\
-            In t1 tp /\
-            instantiateRuleOnPattern r tr sm sp = Some tp /\
-            incl sp (allModelElements sm) /\
-            incl tp (allModelElements tm) /\
-            matchPattern tr sm sp = Some r );
-
-    tr_surj_elements2 : 
       forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
         tm = execute tr sm ->
         forall (t1 : TargetModelElement),
@@ -131,13 +120,6 @@ Class TransformationEngine
 
             If a rule matches, then its output model elements is included in the target model *)
     outp_incl_elements :
-      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: Rule) (tes: list TargetModelElement) ,
-        tm = execute tr sm -> In r (getRules tr) -> incl sp (allModelElements sm) ->
-        matchPattern tr sm sp = Some r ->
-        instantiateRuleOnPattern r tr sm sp = Some tes ->
-        incl tes (allModelElements tm);
-
-    outp_incl_elements2 :
       forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (tes: list TargetModelElement) ,
         tm = execute tr sm -> incl sp (allModelElements sm) ->
         instantiatePattern tr sm sp = Some tes ->

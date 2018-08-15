@@ -27,7 +27,7 @@ Theorem information_preservation :
   intros.
   destruct a eqn:a_dest.
   destruct b eqn:b_dest; 
-    (eapply outp_incl_elements2 with (sp := [ClassMetamodel_toEObject a]) in H; 
+    (eapply outp_incl_elements with (sp := [ClassMetamodel_toEObject a]) in H; 
      [ eexists (BuildColumn _ s0); crush | 
        unfold incl; crush | 
        crush ]).

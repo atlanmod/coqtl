@@ -541,53 +541,7 @@ Section CoqTL.
     assumption.
   Qed.
 
-     
   Theorem tr_surj_elements : 
-    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
-      tm = execute tr sm -> In t1 (allModelElements tm) -> 
-      (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleA),
-        In r (TransformationA_getRules tr) /\
-        In t1 tp /\
-        instantiateRuleOnPattern r tr sm sp = Some tp /\
-        incl sp (allModelElements sm) /\
-        incl tp (allModelElements tm) /\
-        matchPattern tr sm sp = Some r ).
-  Proof.
-    intros tr sm tm t1 H0.
-    rewrite H0. simpl.
-    intros.
-    apply concat_map_option_exists in H.
-    destruct H. destruct H.
-    rename x into sp1.
-    remember (matchPattern tr sm sp1) as r'.
-    destruct r'.
-    
-    2: {
-      unfold instantiatePattern in H1. rewrite <- Heqr' in H1. contradiction.
-    }
-    1: {
-      remember (instantiatePattern tr sm sp1) as tp_temp.
-      destruct tp_temp eqn:tp1_case.
-        2: {
-          contradiction.
-        }
-        1: {
-          rename l into tp1.
-          exists sp1, tp1, r.
-          repeat split.
-          - apply match_incl with (sp:=sp1) (sm:=sm).
-            rewrite Heqr'. reflexivity.
-          - assumption.
-          - symmetry. unfold instantiatePattern in Heqtp_temp. rewrite <- Heqr' in Heqtp_temp. assumption.
-          - apply tuples_up_to_n_incl with (n:=(maxArity tr)).
-            assumption.
-          - apply concat_map_option_incl with (a:=sp1). assumption. symmetry. assumption.
-          - symmetry. assumption.
-        }
-    }
-  Qed.
-
-  Theorem tr_surj_elements2 : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel),
       tm = execute tr sm ->
       forall (t1 : TargetModelElement),
@@ -772,7 +726,7 @@ Section CoqTL.
         omega.
   Qed.
 
-  Theorem outp_incl_elements :
+  Theorem outp_incl_elements2 :
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
       (sp : list SourceModelElement) (r: RuleA) (tes: list TargetModelElement),
       tm = execute tr sm -> In r (TransformationA_getRules tr) -> incl sp (allModelElements sm) ->
@@ -790,7 +744,7 @@ Section CoqTL.
       assumption.
   Qed.
 
-  Theorem outp_incl_elements2 :
+  Theorem outp_incl_elements :
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (tes: list TargetModelElement) ,
       tm = execute tr sm -> incl sp (allModelElements sm) ->
       instantiatePattern tr sm sp = Some tes ->
@@ -799,7 +753,7 @@ Section CoqTL.
     intros.
     unfold instantiatePattern in H1.
     destruct (matchPattern tr sm sp) eqn:match_dest.
-    * apply outp_incl_elements with (tr:=tr) (sm:=sm) (sp:=sp) (r:=r).
+    * apply outp_incl_elements2 with (tr:=tr) (sm:=sm) (sp:=sp) (r:=r).
       ** crush.
       ** apply match_incl with (sm:=sm) (sp:=sp). crush.
       ** crush.
@@ -861,11 +815,9 @@ Section CoqTL.
       instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
       apply_pattern_derivable :=  tr_apply_pattern_derivable; 
       tr_surj_elements := tr_surj_elements;
-      tr_surj_elements2 := tr_surj_elements2;
       tr_surj_links := tr_surj_links;
 
       outp_incl_elements := outp_incl_elements;
-      outp_incl_elements2 := outp_incl_elements2;
       outp_incl_links := outp_incl_links;
       match_in := match_incl;
       match_functional := match_functional;
