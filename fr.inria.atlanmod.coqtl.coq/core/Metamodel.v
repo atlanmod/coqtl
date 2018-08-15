@@ -1,4 +1,7 @@
 (** * Metamodel **)
+Require Import core.Model.
+Require Import String.
+
 
 Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=
   {
@@ -15,7 +18,8 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
 
     (* Upcasting *)
     toModelElement: forall (t: ModelClass), (denoteModelClass t) -> ModelElement;
-
+    toModelLink: forall (t: ModelReference), (denoteModelReference t) -> ModelLink;
+    
     (* Decidability of equality *)
     eqModelClass_dec: forall (c1:ModelClass) (c2:ModelClass), { c1 = c2 } + { c1 <> c2 };
     eqModelReference_dec: forall (c1:ModelReference) (c2:ModelReference), { c1 = c2 } + { c1 <> c2 };
@@ -23,4 +27,7 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
     (* Constructors *)
     BuildModelElement: forall (r: ModelClass), (denoteModelClass r) -> ModelElement;
     BuildModelLink:  forall (r: ModelReference), (denoteModelReference r) -> ModelLink;
+
+    getId: ModelElement -> string;
+    setId: ModelElement -> string -> ModelElement;
   }.
