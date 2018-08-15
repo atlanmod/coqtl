@@ -160,23 +160,22 @@ Class TransformationEngine
 
             The result of _instantiatePattern_ can be derived from _instantiateRuleOnPattern_ and _matchPattern_ *)
     instantiate_pattern_derivable : 
-      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) 
-        (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
+      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
         tm = execute tr sm ->
-        instantiateRuleOnPattern r tr sm sp = Some tp ->
-        matchPattern tr sm sp = Some r ->
-        instantiatePattern tr sm sp = Some tp;
+        forall (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
+          instantiateRuleOnPattern r tr sm sp = Some tp ->
+          matchPattern tr sm sp = Some r ->
+          instantiatePattern tr sm sp = Some tp;
 
     (** **** apply_pattern_derivable **)
-    
     apply_pattern_derivable : 
-      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) 
-        (sp : list SourceModelElement) (tp : list TargetModelElement) (tls : list TargetModelLink) (r : Rule),
+      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
         tm = execute tr sm ->
-        applyRuleOnPattern r tr sm sp tp = Some tls ->
-        instantiateRuleOnPattern r tr sm sp = Some tp ->
-        matchPattern tr sm sp = Some r ->
-        applyPattern tr sm sp = Some tls;
+        forall (sp : list SourceModelElement) (tp : list TargetModelElement) (tls : list TargetModelLink) (r : Rule),
+          applyRuleOnPattern r tr sm sp tp = Some tls ->
+          instantiateRuleOnPattern r tr sm sp = Some tp ->
+          matchPattern tr sm sp = Some r ->
+          applyPattern tr sm sp = Some tls;
 
     (** *** Syntactic containment *)
     

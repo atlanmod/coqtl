@@ -400,7 +400,7 @@ Section CoqTL.
 
   Fixpoint matchPatternFix (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option RuleA :=
     match l with
-    | r :: rs => match evalGuardExpression (RuleA_getGuard r) tr sm sp with
+    | r :: rs => match matchRuleOnPattern r tr sm sp with
                 | Some false => matchPatternFix rs tr sm sp
                 | Some true => Some r
                 | None => matchPatternFix rs tr sm sp
@@ -484,6 +484,7 @@ Section CoqTL.
     - intros. inversion H.
     - simpl.
       intros sm sp r.
+      unfold matchRuleOnPattern.
       destruct (evalGuardExpression (RuleA_getGuard a) tr sm sp).
       * intros.
         destruct b.
@@ -500,12 +501,12 @@ Section CoqTL.
   Qed.
 
   Theorem tr_instantiate_pattern_derivable : 
-    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
-           (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleA),
+    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel),
       tm = execute tr sm ->
-      instantiateRuleOnPattern r tr sm sp = Some tp ->
-      matchPattern tr sm sp = Some r ->
-      instantiatePattern tr sm sp = Some tp.
+      forall (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleA),
+        instantiateRuleOnPattern r tr sm sp = Some tp ->
+        matchPattern tr sm sp = Some r ->
+        instantiatePattern tr sm sp = Some tp.
   Proof.
     intros.
     unfold instantiatePattern.
@@ -514,13 +515,13 @@ Section CoqTL.
   Qed.
 
   Theorem tr_apply_pattern_derivable : 
-        forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
-               (sp : list SourceModelElement) (tp : list TargetModelElement) (tls : list  TargetModelLink) (r : RuleA),
-          tm = execute tr sm ->
-          applyRuleOnPattern r tr sm sp tp = Some tls ->
-          instantiateRuleOnPattern r tr sm sp = Some tp ->
-          matchPattern tr sm sp = Some r ->
-          applyPattern tr sm sp = Some tls.
+    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel),
+      tm = execute tr sm ->
+      forall (sp : list SourceModelElement) (tp : list TargetModelElement) (tls : list TargetModelLink) (r : RuleA),
+        applyRuleOnPattern r tr sm sp tp = Some tls ->
+        instantiateRuleOnPattern r tr sm sp = Some tp ->
+        matchPattern tr sm sp = Some r ->
+        applyPattern tr sm sp = Some tls.
   Proof.
     intros.
     unfold applyPattern.
