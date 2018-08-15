@@ -28,13 +28,13 @@ Theorem information_preservation :
   destruct a eqn:a_dest.
   destruct b eqn:b_dest.
   * eapply outp_incl_elements2 with (sp := [ClassMetamodel_toEObject a]) in H.
-    + exists (BuildColumn ((s ++ "__") ++ "2_0") s0).
+    + eexists (BuildColumn _ s0).
       crush.
     + unfold incl.
       crush.
     + crush.
   * eapply outp_incl_elements2 with (sp := [ClassMetamodel_toEObject a]) in H.
-    + exists (BuildColumn ((s ++ "__") ++ "1_0") s0).
+    + eexists (BuildColumn _ s0).
       crush.
     + unfold incl.
       crush.
