@@ -765,7 +765,7 @@ Section CoqTL.
     * crush.
   Qed.
 
-  Theorem outp_incl_links :
+  Theorem outp_incl_links2 :
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) 
       (sp : list SourceModelElement) (r: RuleA) (tes: list TargetModelElement) (tls: list TargetModelLink),
       tm = execute tr sm -> In r (TransformationA_getRules tr) -> incl sp (allModelElements sm) ->
@@ -783,6 +783,29 @@ Section CoqTL.
       rewrite H2.
       rewrite H3.
       assumption.
+  Qed.
+
+  Theorem outp_incl_links :
+    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel),
+      tm = execute tr sm ->
+      forall  (sp : list SourceModelElement) (tls: list TargetModelLink),
+        incl sp (allModelElements sm) ->
+        applyPattern tr sm sp = Some tls ->
+        incl tls (allModelLinks tm).
+  Proof.
+    intros.
+    unfold applyPattern in H1.
+    destruct (matchPattern tr sm sp) eqn:match_dest.
+    - destruct (instantiateRuleOnPattern r tr sm sp) eqn:inst_dest.
+      apply outp_incl_links2 with (tr:=tr) (sm:=sm) (sp:=sp) (r:=r) (tes:=l).
+      + crush.
+      + apply match_incl with (sm:=sm) (sp:=sp). crush.
+      + crush.
+      + crush.
+      + crush.
+      + crush.
+      + crush.
+    - crush.
   Qed.
 
   Theorem match_functional :

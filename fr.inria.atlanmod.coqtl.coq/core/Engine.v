@@ -131,12 +131,12 @@ Class TransformationEngine
 
             If a rule matches, then its output model references is included in the target model *)
     outp_incl_links :
-      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: Rule) (tes: list TargetModelElement) (tls: list TargetModelLink),
-        tm = execute tr sm -> In r (getRules tr) -> incl sp (allModelElements sm) ->
-        matchPattern tr sm sp = Some r ->
-        instantiateRuleOnPattern r tr sm sp = Some tes ->
-        applyRuleOnPattern r tr sm sp tes = Some tls ->
-        incl tls (allModelLinks tm);
+      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
+        tm = execute tr sm ->
+        forall  (sp : list SourceModelElement) (tls: list TargetModelLink),
+          incl sp (allModelElements sm) ->
+          applyPattern tr sm sp = Some tls ->
+          incl tls (allModelLinks tm);
 
     (** *** Rules *)
 
