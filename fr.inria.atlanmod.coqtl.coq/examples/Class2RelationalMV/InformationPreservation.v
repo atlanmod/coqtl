@@ -18,7 +18,7 @@ Require Import examples.Class2RelationalMV.RelationalMetamodel.
 Theorem information_preservation :
   forall (rm : Model RelationalMetamodel_EObject RelationalMetamodel_ELink)
     (cm: Model ClassMetamodel_EObject ClassMetamodel_ELink),
-    rm = execute Class2Relational cm ->
+    rm = execute Class2RelationalMV cm ->
     forall (a: Attribute),
       In (ClassMetamodel_toEObject a) (allModelElements cm) ->
       exists (c: Column),
@@ -28,13 +28,13 @@ Theorem information_preservation :
   destruct a eqn:a_dest.
   destruct b eqn:b_dest.
   * eapply outp_incl_elements2 with (sp := [ClassMetamodel_toEObject a]) in H.
-    + exists (BuildColumn (String "_" (String "_" ((s ++ "__") ++ "2_0"))) s0).
+    + exists (BuildColumn ((s ++ "__") ++ "2_0") s0).
       crush.
     + unfold incl.
       crush.
     + crush.
   * eapply outp_incl_elements2 with (sp := [ClassMetamodel_toEObject a]) in H.
-    + exists (BuildColumn (String "_" (String "_" ((s ++ "__") ++ "1_0"))) s0).
+    + exists (BuildColumn ((s ++ "__") ++ "1_0") s0).
       crush.
     + unfold incl.
       crush.

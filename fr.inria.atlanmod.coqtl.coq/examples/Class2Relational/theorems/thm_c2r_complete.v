@@ -1,6 +1,7 @@
 Require Import Coq.Logic.Eqdep_dec.
 Require Import Coq.Arith.EqNat.
 Require Import List.
+Require Import String.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype.  
 
 Require Import core.utils.tTop.
@@ -44,9 +45,7 @@ Proof.
     simpl.
 
     exists (BuildTable
-         (String.String "_"
-             (String.String "_"
-                (String.append (String.append (getClassId c) "__") "0_0")))
+         (((getClassId c) ++ "__") ++ "0_0") 
          (getClassName c)).
 
     reflexivity.
@@ -65,10 +64,8 @@ Proof.
   rewrite H. simpl.
   unfold setTargetElementId. simpl.
   exists (setColumnId (BuildColumn newId (getAttributeName a))
-              (String.String "_"
-                 (String.String "_"
-                    (String.append (String.append (getAttributeId a) "__")
-                                   "1_0")))).
+                 (((getAttributeId a) ++ "__") ++
+                                "1_0")).
   reflexivity.
 Qed.
 

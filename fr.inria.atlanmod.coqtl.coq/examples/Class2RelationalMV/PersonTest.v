@@ -13,5 +13,5 @@ Require Import examples.Class2RelationalMV.PersonModel.
 
 (* Require Import Class2RelationalVerif. *)
 
-Compute execute Class2Relational PersonModel .
+Compute execute Class2RelationalMV PersonModel .
 

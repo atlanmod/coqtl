@@ -366,7 +366,7 @@ Section CoqTL.
     if (beq_string (getId te) "") then
       match (OutputPatternElementA_getOutputPatternElementExpression ope) with
         BuildOutputPatternElementExpressionA a b => 
-      setId te  ("__" ++ (getSourcePatternId sp) ++
+      setId te  ((getSourcePatternId sp) ++
                       NilZero.string_of_uint (Unsigned.to_lu a) ++ "_" ++
                       NilZero.string_of_uint (Unsigned.to_lu b))%string
             end

@@ -11,7 +11,7 @@ Require Import core.CoqTL.
 Require Import examples.Class2RelationalMV.ClassMetamodel.
 Require Import examples.Class2RelationalMV.RelationalMetamodel.
 
-Definition Class2RelationalConcrete :=
+Definition Class2RelationalMVConcrete :=
   transformation Class2Relational from ClassMetamodel to RelationalMetamodel
     with m as ClassModel := [
 
@@ -93,9 +93,9 @@ Definition Class2RelationalConcrete :=
         ]
   ].
 
-Print Class2RelationalConcrete. 
+Print Class2RelationalMVConcrete. 
 (* Compute maxArity (parseTransformation Class2Relational). *)
 
-Definition Class2Relational := parseTransformation Class2RelationalConcrete.
+Definition Class2RelationalMV := parseTransformation Class2RelationalMVConcrete.
 
                                               
