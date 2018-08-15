@@ -75,7 +75,7 @@ class Ecore2Coq {
 			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«supName.toLowerCase»«ENDIF» «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «supName.toLowerCase» end.
 			  «ENDIF»		  
 			  «FOR eAttribute : eClass.EAttributes»
-			  Definition «eClass.name»_get«eClass.name»«eAttribute.name.toFirstUpper» («v» : «eClass.name») : «AttributeType2Coq(eAttribute)» :=
+			  Definition «eClass.name»_get«eAttribute.name.toFirstUpper» («v» : «eClass.name») : «AttributeType2Coq(eAttribute)» :=
 			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«eClass.ESuperTypes.get(0).name.toLowerCase»«ENDIF» «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «eAttribute.name» end.
 			  «ENDFOR»	 
 			   
@@ -283,7 +283,7 @@ class Ecore2Coq {
 		    	«IF eClass.EAttributes.size > 0»
 		    	beq_«eClass.ESuperTypes.get(0).name» («supAcc» «arg1(eClass.name)») («supAcc» «arg2(eClass.name)») &&
 		    	«FOR eAttribute : eClass.EAttributes SEPARATOR " && "
-		    	»( beq_«AttributeType2Coq(eAttribute)» («eClass.name»_get«eClass.name»«eAttribute.name.toFirstUpper» «arg1(eClass.name)») («eClass.name»_get«eClass.name»«eAttribute.name.toFirstUpper» «arg2(eClass.name)») )
+		    	»( beq_«AttributeType2Coq(eAttribute)» («eClass.name»_get«eAttribute.name.toFirstUpper» «arg1(eClass.name)») («eClass.name»_get«eAttribute.name.toFirstUpper» «arg2(eClass.name)») )
 				«ENDFOR»
 		    	«ELSE»
 		    	beq_«eClass.ESuperTypes.get(0).name» («supAcc» «arg1(eClass.name)») («supAcc» «arg2(eClass.name)»)
@@ -291,7 +291,7 @@ class Ecore2Coq {
 		    «ELSE»
 		    	«IF eClass.EAttributes.size > 0»
 		    	«FOR eAttribute : eClass.EAttributes SEPARATOR " && "
-		    	»( beq_«AttributeType2Coq(eAttribute)» («eClass.name»_get«eClass.name»«eAttribute.name.toFirstUpper» «arg1(eClass.name)») («eClass.name»_get«eClass.name»«eAttribute.name.toFirstUpper» «arg2(eClass.name)») )
+		    	»( beq_«AttributeType2Coq(eAttribute)» («eClass.name»_get«eAttribute.name.toFirstUpper» «arg1(eClass.name)») («eClass.name»_get«eAttribute.name.toFirstUpper» «arg2(eClass.name)») )
 				«ENDFOR»
 		    	«ELSE»
 		    	(true)
@@ -329,16 +329,16 @@ class Ecore2Coq {
 		
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
  			«FOR eReference : eClass.EReferences
- 			»Fixpoint «mm»_get«eClass.name»«eReference.name.toFirstUpper»OnLinks («arg(eClass.name)» : «eClass.name») (l : list «mm_elink») : option («ReferenceType2Coq(eReference)») :=
+ 			»Fixpoint «eClass.name»_get«eReference.name.toFirstUpper»OnLinks («arg(eClass.name)» : «eClass.name») (l : list «mm_elink») : option («ReferenceType2Coq(eReference)») :=
  			match l with
  			| (Build_«mm_elink» «eClass.name»«eReference.name.toFirstUpper»«Keywords.PostfixEReference» (Build«eClass.name»«eReference.name.toFirstUpper» «eClass.name»_ctr «eReference.name»_ctr)) :: l' => 
- 				  if beq_«eClass.name» «eClass.name»_ctr «arg(eClass.name)» then Some «eReference.name»_ctr else «mm»_get«eClass.name»«eReference.name.toFirstUpper»OnLinks «arg(eClass.name)» l'
- 			| _ :: l' => «mm»_get«eClass.name»«eReference.name.toFirstUpper»OnLinks «arg(eClass.name)» l'
+ 				  if beq_«eClass.name» «eClass.name»_ctr «arg(eClass.name)» then Some «eReference.name»_ctr else «eClass.name»_get«eReference.name.toFirstUpper»OnLinks «arg(eClass.name)» l'
+ 			| _ :: l' => «eClass.name»_get«eReference.name.toFirstUpper»OnLinks «arg(eClass.name)» l'
  			| nil => None
  			end.
  			
- 			Definition «eClass.name»_get«eClass.name»«eReference.name.toFirstUpper» («arg(eClass.name)» : «eClass.name») (m : «ePackage.name»Model) : option («ReferenceType2Coq(eReference)») :=
- 			  «mm»_get«eClass.name»«eReference.name.toFirstUpper»OnLinks «arg(eClass.name)» (@allModelLinks _ _ m).
+ 			Definition «eClass.name»_get«eReference.name.toFirstUpper» («arg(eClass.name)» : «eClass.name») (m : «ePackage.name»Model) : option («ReferenceType2Coq(eReference)») :=
+ 			  «eClass.name»_get«eReference.name.toFirstUpper»OnLinks «arg(eClass.name)» (@allModelLinks _ _ m).
 			«ENDFOR»
 
 		«ENDFOR»
