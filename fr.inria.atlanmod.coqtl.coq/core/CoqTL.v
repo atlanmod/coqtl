@@ -746,10 +746,12 @@ Section CoqTL.
   Qed.
 
   Theorem outp_incl_elements :
-    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (tes: list TargetModelElement) ,
-      tm = execute tr sm -> incl sp (allModelElements sm) ->
-      instantiatePattern tr sm sp = Some tes ->
-      incl tes (allModelElements tm).
+    forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel),
+      tm = execute tr sm ->
+      forall (sp : list SourceModelElement) (tes: list TargetModelElement),
+        incl sp (allModelElements sm) ->
+        instantiatePattern tr sm sp = Some tes ->
+        incl tes (allModelElements tm).
   Proof.
     intros.
     unfold instantiatePattern in H1.

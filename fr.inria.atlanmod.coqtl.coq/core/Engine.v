@@ -120,10 +120,12 @@ Class TransformationEngine
 
             If a rule matches, then its output model elements is included in the target model *)
     outp_incl_elements :
-      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (tes: list TargetModelElement) ,
-        tm = execute tr sm -> incl sp (allModelElements sm) ->
-        instantiatePattern tr sm sp = Some tes ->
-        incl tes (allModelElements tm);
+      forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
+        tm = execute tr sm ->
+        forall (sp : list SourceModelElement) (tes: list TargetModelElement),
+          incl sp (allModelElements sm) ->
+          instantiatePattern tr sm sp = Some tes ->
+          incl tes (allModelElements tm);
 
     (** **** outp_incl_links 
 
