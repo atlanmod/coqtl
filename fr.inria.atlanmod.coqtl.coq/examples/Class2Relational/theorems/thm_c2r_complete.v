@@ -21,8 +21,6 @@ Theorem All_classes_match :
       matchPattern Class2Relational cm [ClassMetamodel_toEObject c] = Some r.    
 Proof.
   intros.
-  unfold matchPattern. simpl.
-  unfold parseRuleDeclaration. simpl.
   eexists _.
   reflexivity.
 Qed.
@@ -33,14 +31,8 @@ Theorem All_classes_instantiate :
       instantiatePattern Class2Relational cm [ClassMetamodel_toEObject c] = Some [RelationalMetamodel_toEObject t].
 Proof.
   intros.
-    unfold instantiatePattern.
-    unfold instantiateRuleOnPattern.
-    unfold setTargetElementId.
-    simpl.
-    unfold setTableId.
-    simpl.
-    eexists _.
-    reflexivity.
+  eexists _.
+  reflexivity.
 Qed.
 
 Theorem Concrete_attributes_instantiate :
@@ -49,13 +41,12 @@ Theorem Concrete_attributes_instantiate :
       instantiatePattern Class2Relational cm [ClassMetamodel_toEObject a] = Some [RelationalMetamodel_toEObject c].
 Proof.
   intros.
+  eexists _.
   unfold instantiatePattern. simpl.
   unfold instantiateRuleOnPattern. simpl.
   unfold matchPattern. simpl.
   rewrite H. simpl.
   rewrite H. simpl.
-  unfold setTargetElementId. simpl.
-  eexists _.
   reflexivity.
 Qed.
 
