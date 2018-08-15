@@ -541,17 +541,36 @@ Section CoqTL.
   Theorem tr_apply_pattern_derivable : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel),
       tm = execute tr sm ->
-      forall (sp : list SourceModelElement) (tp : list TargetModelElement) (tls : list TargetModelLink) (r : RuleA),
-        applyRuleOnPattern r tr sm sp tp = Some tls ->
-        instantiateRuleOnPattern r tr sm sp = Some tp ->
-        matchPattern tr sm sp = Some r ->
+      forall (sp : list SourceModelElement) (tls : list TargetModelLink),
+        (exists (r : RuleA) (tp : list TargetModelElement),
+            matchPattern tr sm sp = Some r /\
+            instantiateRuleOnPattern r tr sm sp = Some tp /\
+            applyRuleOnPattern r tr sm sp tp = Some tls) <->
         applyPattern tr sm sp = Some tls.
   Proof.
     intros.
-    unfold applyPattern.
-    rewrite H2.
-    rewrite H1.
-    assumption.
+    split.
+    - unfold applyPattern.
+      intros.
+      destruct H0.
+      destruct H0.
+      destruct H0.
+      destruct H1.
+      rewrite H0.
+      rewrite H1.
+      assumption.
+    - intros.
+      unfold applyPattern in H0.
+      destruct  (matchPattern tr sm sp) eqn:md.
+      + destruct (instantiateRuleOnPattern r tr sm sp) eqn:id.
+        * exists r, l.
+          split.
+          -- reflexivity.
+          -- split.
+             ++ assumption.
+             ++ assumption.
+        * inversion H0.
+      + inversion H0.
   Qed.
 
   Theorem tr_surj_elements : 
@@ -640,11 +659,14 @@ Section CoqTL.
             --- apply concat_map_option_incl with (a:=sp1). 
                 ---- assumption. 
                 ---- unfold applyPattern. rewrite Hmatch. rewrite Hinst. symmetry. assumption.
-            --- apply tr_apply_pattern_derivable with (tm:=tm) (tp:=te1) (r:=r).
-                ---- assumption.
-                ---- symmetry. assumption.
-                ---- assumption.
-                ---- assumption.
+            --- rewrite <- tr_apply_pattern_derivable.
+                exists r, te1.
+                split.
+                +++ assumption.
+                +++ split.
+                    *** assumption.
+                    *** symmetry. assumption.
+                +++ apply H0.
           }
         }
       }
