@@ -26,17 +26,9 @@ Theorem information_preservation :
         getColumnName c = getAttributeName a.
   intros.
   destruct a eqn:a_dest.
-  destruct b eqn:b_dest.
-  * eapply outp_incl_elements2 with (sp := [ClassMetamodel_toEObject a]) in H.
-    + eexists (BuildColumn _ s0).
-      crush.
-    + unfold incl.
-      crush.
-    + crush.
-  * eapply outp_incl_elements2 with (sp := [ClassMetamodel_toEObject a]) in H.
-    + eexists (BuildColumn _ s0).
-      crush.
-    + unfold incl.
-      crush.
-    + crush.
+  destruct b eqn:b_dest; 
+    (eapply outp_incl_elements2 with (sp := [ClassMetamodel_toEObject a]) in H; 
+     [ eexists (BuildColumn _ s0); crush | 
+       unfold incl; crush | 
+       crush ]).
 Qed.
