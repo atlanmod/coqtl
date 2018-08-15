@@ -154,9 +154,10 @@ Class TransformationEngine
     instantiate_pattern_derivable : 
       forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
         tm = execute tr sm ->
-        forall (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
-          instantiateRuleOnPattern r tr sm sp = Some tp ->
-          matchPattern tr sm sp = Some r ->
+        forall (sp : list SourceModelElement) (tp : list TargetModelElement),
+          ( exists (r : Rule),
+              instantiateRuleOnPattern r tr sm sp = Some tp /\
+              matchPattern tr sm sp = Some r) <->
           instantiatePattern tr sm sp = Some tp;
 
     (** **** apply_pattern_derivable **)
