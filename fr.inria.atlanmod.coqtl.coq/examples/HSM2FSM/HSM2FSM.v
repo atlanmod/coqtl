@@ -1,3 +1,4 @@
+Require Import Bool.
 Require Import String.
 Require Import List.
 Require Import Multiset.
@@ -34,6 +35,18 @@ Definition isCompositeState (e : option AbstractState) (m : HSMModel) : bool :=
  match e with
   | None => false
   | Some a => negb (isNone CompositeState (AbstractState_downcastCompositeState a m))
+ end.
+
+Definition beq_AbstractState_option (tr_arg1 : option AbstractState) (tr_arg2 : option AbstractState) : bool :=
+ match tr_arg1, tr_arg2 with
+  | Some a1, Some a2 => beq_AbstractState a1 a2
+  | _, _ => false
+ end.
+
+Definition beq_CompositeState_option (tr_arg1 : option CompositeState) (tr_arg2 : option CompositeState) : bool :=
+ match tr_arg1, tr_arg2 with
+  | Some a1, Some a2 => beq_CompositeState a1 a2
+  | _, _ => false
  end.
 
 
@@ -130,7 +143,7 @@ Definition HSM2FSMConcrete :=
                         (negb (isCompositeState (Transition_getTarget t1 m) m))
          to
           [
-           output "t2"
+           output "t2_t2ta"
              element t2 class FTransitionEClass from FSMMetamodel :=
                BuildFTransition (Transition_getLabel t1) (Transition_getTransitionID t1)
              links
@@ -151,7 +164,82 @@ Definition HSM2FSMConcrete :=
                    return BuildFTransitionTarget t2 fsm_tr_target
                ]
           ]
+       ;
+
+       rule T2TB
+         from
+           element t1 class TransitionEClass,
+           element src class CompositeStateEClass,
+           element trg class AbstractStateEClass,
+           element c class AbstractStateEClass from HSMMetamodel
+             when   (negb (isCompositeState (Some trg) m)) &&
+                    (negb (beq_AbstractState c (CompositeState_getAbstractState src))) &&
+                     beq_AbstractState_option (Transition_getSource t1 m) (Some (CompositeState_getAbstractState src)) && 
+                     beq_AbstractState_option (Transition_getTarget t1 m) (Some trg) &&
+                     beq_CompositeState_option (AbstractState_getCompositeState c m) (Some src)
+
+         to
+          [
+           output "t2_t2tb"
+             element t2 class FTransitionEClass from FSMMetamodel :=
+               BuildFTransition (Transition_getLabel t1) (Transition_getTransitionID t1)
+             links
+               [
+                 reference FTransitionStateMachineEReference from FSMMetamodel :=
+                   hsm_sm <- (Transition_getStateMachine t1 m);
+                   fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
+                   return BuildFTransitionStateMachine t2 fsm_sm ;
+
+                 reference FTransitionSourceEReference from FSMMetamodel :=
+                   fsm_tr_source <- resolve HSM2FSM m "as2" FAbstractStateEClass [HSMMetamodel_toEObject c];
+                   return BuildFTransitionSource t2 fsm_tr_source ;
+
+                 reference FTransitionTargetEReference from FSMMetamodel :=
+                   fsm_tr_target <- resolve HSM2FSM m "as2" FAbstractStateEClass [HSMMetamodel_toEObject trg];
+                   return BuildFTransitionTarget t2 fsm_tr_target
+               ]
+          ]
+       ;
+
+       rule T2TC
+         from
+           element t1 class TransitionEClass,
+           element src class AbstractStateEClass,
+           element trg class CompositeStateEClass,
+           element c class InitialStateEClass from HSMMetamodel
+             when   (negb (isCompositeState (Some src) m)) &&
+                     beq_AbstractState_option (Transition_getSource t1 m) (Some src) && 
+                     beq_AbstractState_option (Transition_getTarget t1 m) (Some (CompositeState_getAbstractState trg))&&
+                     beq_CompositeState_option (AbstractState_getCompositeState (InitialState_getAbstractState c) m) (Some trg)
+         to
+          [
+           output "t2_t2tc"
+             element t2 class FTransitionEClass from FSMMetamodel :=
+               BuildFTransition (Transition_getLabel t1) (Transition_getTransitionID t1)
+             links
+               [
+                 reference FTransitionStateMachineEReference from FSMMetamodel :=
+                   hsm_sm <- (Transition_getStateMachine t1 m);
+                   fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
+                   return BuildFTransitionStateMachine t2 fsm_sm ;
+
+                 reference FTransitionSourceEReference from FSMMetamodel :=
+                   fsm_tr_source <- resolve HSM2FSM m "as2" FAbstractStateEClass [HSMMetamodel_toEObject src];
+                   return BuildFTransitionSource t2 fsm_tr_source ;
+
+                 reference FTransitionTargetEReference from FSMMetamodel :=
+                   hsm_c_abstract <- Some (InitialState_getAbstractState c);
+                   fsm_tr_target <- resolve HSM2FSM m "as2" FAbstractStateEClass [HSMMetamodel_toEObject hsm_c_abstract];
+                   return BuildFTransitionTarget t2 fsm_tr_target
+               ]
+          ]
+       
   ].
+
+
+
+
+
 
 (* Unset Printing Notations.*)
 (* Print Class2Relational. *)
