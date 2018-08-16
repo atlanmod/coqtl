@@ -10,6 +10,7 @@ Require Import core.CoqTL.
 
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
+Require Import examples.Class2Relational.ClassMetamodelPattern.
 
 Definition Class2RelationalConcrete :=
   transformation Class2Relational from ClassMetamodel to RelationalMetamodel
@@ -26,7 +27,7 @@ Definition Class2RelationalConcrete :=
               reference TableColumnsEReference :=
                 attrs <- getClassAttributes c m;
                 cols <- resolveAll Class2Relational m "col" ColumnEClass
-                  (map (fun a:Attribute => [a: ClassMetamodel_EObject]) attrs);
+                  (map (fun a:Attribute => [[ a ]]) attrs);
                 return BuildTableColumns t cols
              ]
         ];
@@ -42,15 +43,10 @@ Definition Class2RelationalConcrete :=
             links [
               reference ColumnReferenceEReference :=
                 cl <- getAttributeType a m;
-                tb <- resolve Class2Relational m "tab" TableEClass [cl: ClassMetamodel_EObject];
+                tb <- resolve Class2Relational m "tab" TableEClass [[ cl ]];
                 return BuildColumnReference c tb
             ] 
         ]
   ].
 
-Unset Printing Notations.
-(* Print Class2RelationalConcrete.  *)
-(* Compute maxArity (parseTransformation Class2Relational). *)
-
 Definition Class2Relational := parseTransformation Class2RelationalConcrete.
-
