@@ -1,0 +1,49 @@
+PREFIX : <http://www.lehigh.edu//univ-bench.owl#>
+
+SELECT ?x ?y WHERE 
+{
+  {
+    { ?x a :UndergradStudent .  
+      ?x :takesCourse ?y }
+       UNION 
+    { ?x a :GraduateStudent .
+      ?x :takesCourse ?y 
+    }
+  } 
+  ?y a :CsCourse .
+}
+
+
+rule us2us{
+	from s1: src!UndergradStudent, 
+	     s2: src!CsCourse (s1.takesCourse = s2)
+	to 
+		 t1:trg!UndergradStudent
+		{
+			URI <- s1.URI
+			takesCourse <- t2
+			isShow <- true
+		},
+		 t2:trg!CsCourse
+		{
+			URI <- s2.URI
+			isShow <- true
+		}
+}
+
+rule gs2gs{
+	from s1: src!GraduateStudent, 
+	     s2: src!CsCourse (s1.takesCourse = s2)
+	to 
+		 t1:trg!GraduateStudent
+		{
+			URI <- s1.URI
+			takesCourse <- t2
+			isShow <- true
+		},
+		 t2:trg!CsCourse
+		{
+			URI <- s2.URI
+			isShow <- true
+		}
+}

@@ -1,0 +1,17 @@
+--# PREFIX : <http://www.lehigh.edu//univ-bench.owl#>
+
+--# SELECT ?x WHERE {
+--#   ?x :headOf ?y.
+--# }
+
+
+rule s2s{
+	from s: EObject (s.headOf <> null)
+	to t: EObject
+	{
+		URI <- s.URI
+		isShow <- true
+	}
+}
+
+-- post: forall a : EObject  :: isShow(a)

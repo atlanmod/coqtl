@@ -1,0 +1,29 @@
+--# PREFIX : <http://www.lehigh.edu//univ-bench.owl#>
+
+--# SELECT ?x WHERE { 
+--#   {?x a :GraduateStudent . }
+--#     UNION 
+--#   {?x a :UndergradStudent . }
+--# }
+
+
+
+rule gs2gs{
+	from s: src!GraduateStudent
+	to t:trg!GraduateStudent
+	{
+		URI <- s.URI
+		isShow <- true
+	}
+}
+
+rule us2us{
+	from s: src!UndergradStudent
+	to t:trg!UndergradStudent
+	{
+		URI <- s.URI
+		isShow <- true
+	}
+}
+
+-- post: forall a : trg!GraduateStudent  :: isShow(a) /\ forall a : trg!UndergradStudent  :: isShow(a)

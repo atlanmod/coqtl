@@ -1,0 +1,11 @@
+{ 
+  (maleHeadOf,sp,headOf),
+  (femaleHeadOf,sp,headOf ), 
+  (FullProfessor,sc,Professor),
+  (headOf,dom,FullProfessor)
+}
+
+--# sp ->　subPropertyOf
+--# sc -> subClassOf
+--# dom -> domain
+--# range -> range

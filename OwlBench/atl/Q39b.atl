@@ -1,0 +1,17 @@
+PREFIX : <http://www.lehigh.edu//univ-bench.owl#>
+
+SELECT ?x WHERE {
+  ?x a :GraduateStudent .
+}
+
+
+rule G2G{
+	from s: src!GraduateStudent
+	to t:trg!GraduateStudent
+	{
+		URI <- s.URI
+		isShow <- true
+	}
+}
+
+-- post: forall a : trg!GraduateStudent  :: isShow(a)

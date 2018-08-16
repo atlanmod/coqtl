@@ -1,0 +1,18 @@
+--# PREFIX : <http://www.lehigh.edu//univ-bench.owl#>
+
+--# SELECT ?x WHERE { 
+--# 	?x a :Student .
+--# }
+
+
+
+rule s2s{
+	from s: src!Student
+	to t:trg!Student
+	{
+		URI <- s.URI
+		isShow <- true
+	}
+}
+
+-- post: forall a : trg!Student  :: isShow(a)

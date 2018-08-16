@@ -1,0 +1,28 @@
+-- @atlcompiler atl2010
+
+module ER2REL; create OUT : REL from IN : ER;
+
+rule S2S { from s : ER!ERSchema 
+	       to t : REL!RELSchema (name<-s.name, 
+	       	                     relations <- s.entities, 
+								 relations <- s.relships)}
+
+rule E2R { from s : ER!Entity 
+		   to t : REL!Relation ( name  <- s.name  ) }
+
+rule R2R { from s : ER!Relship 
+           to t : REL!Relation ( name  <- s.name  ) }
+
+
+rule EA2A { from att : ER!ERAttribute, ent : ER!Entity (att.entity = ent)
+	        to t : REL!RELAttribute 
+				  ( name <- att.name, isKey <- att.isKey, relation <- ent) }
+
+rule RA2A { from att : ER!ERAttribute, rs  : ER!Relship ( att.relship = rs )
+	        to t : REL!RELAttribute
+			       ( name <- att.name, isKey <- att.isKey, relation <- rs ) }
+
+rule RA2AK { from att : ER!ERAttribute, rse : ER!RelshipEnd 
+	           ( att.entity = rse.entity and att.isKey = true )
+	to   t : REL!RELAttribute 
+	         ( name <- att.name, isKey <- att.isKey, relation <- rse.relship )}
