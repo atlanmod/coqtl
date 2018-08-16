@@ -18,12 +18,25 @@ Definition isNone (A: Type) (e : option A) : bool :=
   | Some a => false
  end.
 
-Definition isComposite (e : option AbstractState) (m : HSMModel) : bool :=
+Definition isRegularState (e : option AbstractState) (m : HSMModel) : bool :=
+ match e with
+  | None => false
+  | Some a => negb (isNone RegularState (AbstractState_downcastRegularState a m))
+ end.
+
+Definition isInitialState (e : option AbstractState) (m : HSMModel) : bool :=
+ match e with
+  | None => false
+  | Some a => negb (isNone InitialState (AbstractState_downcastInitialState a m))
+ end.
+
+Definition isCompositeState (e : option AbstractState) (m : HSMModel) : bool :=
  match e with
   | None => false
   | Some a => negb (isNone CompositeState (AbstractState_downcastCompositeState a m))
  end.
- 
+
+
 Definition HSM2FSMConcrete :=
   transformation HSM2FSM from HSMMetamodel to FSMMetamodel
     with m as HSMModel := [
@@ -113,8 +126,8 @@ Definition HSM2FSMConcrete :=
        rule T2TA
          from
            element t1 class TransitionEClass from HSMMetamodel
-             when  andb (negb (isComposite (Transition_getSource t1 m) m))
-                        (negb (isComposite (Transition_getTarget t1 m) m))
+             when  andb (negb (isCompositeState (Transition_getSource t1 m) m))
+                        (negb (isCompositeState (Transition_getTarget t1 m) m))
          to
           [
            output "t2"
@@ -125,7 +138,17 @@ Definition HSM2FSMConcrete :=
                  reference FTransitionStateMachineEReference from FSMMetamodel :=
                    hsm_sm <- (Transition_getStateMachine t1 m);
                    fsm_sm <- resolve HSM2FSM m "sm2" FStateMachineEClass [HSMMetamodel_toEObject hsm_sm];
-                   return BuildFTransitionStateMachine t2 fsm_sm 
+                   return BuildFTransitionStateMachine t2 fsm_sm ;
+
+                 reference FTransitionSourceEReference from FSMMetamodel :=
+                   hsm_tr_source <- (Transition_getSource t1 m);
+                   fsm_tr_source <- resolve HSM2FSM m "as2" FAbstractStateEClass [HSMMetamodel_toEObject hsm_tr_source];
+                   return BuildFTransitionSource t2 fsm_tr_source ;
+
+                 reference FTransitionTargetEReference from FSMMetamodel :=
+                   hsm_tr_target <- (Transition_getTarget t1 m);
+                   fsm_tr_target <- resolve HSM2FSM m "as2" FAbstractStateEClass [HSMMetamodel_toEObject hsm_tr_target];
+                   return BuildFTransitionTarget t2 fsm_tr_target
                ]
           ]
   ].
