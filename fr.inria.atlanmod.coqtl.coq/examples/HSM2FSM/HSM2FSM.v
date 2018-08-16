@@ -242,19 +242,9 @@ Definition HSM2FSMConcrete :=
 
 
 (* Unset Printing Notations.*)
-(* Print Class2Relational. *)
-(* Compute maxArity (parseTransformation Class2Relational). *)
+(* Print HSM2FSMConcrete. *)
+(* Compute maxArity (parseTransformation HSM2FSMConcrete). *)
 
 Definition HSM2FSM := parseTransformation HSM2FSMConcrete.
 
-       
 
-
-
-(*
-
-                 reference FTransitionSourceEReference from FSMMetamodel :=
-                   hsm_tr_source <- (Transition_getStateMachine t1 m);
-                   return None
-*)
-       
