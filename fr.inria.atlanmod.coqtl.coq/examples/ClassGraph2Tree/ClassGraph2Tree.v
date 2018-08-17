@@ -6,10 +6,14 @@ Require Import Omega.
 
 Require Import core.utils.tTop.
 Require Import core.Notations.
+Require Import core.Model.
 Require Import core.CoqTL.
 
 Require Import examples.ClassGraph2Tree.ClassMetamodel.
 Require Import examples.ClassGraph2Tree.ClassMetamodelPattern.
+
+Definition rootClass (m : ClassModel) : ClassMetamodel_EObject :=
+  hd ((BuildClass "" ""): ClassMetamodel_EObject) (allModelElements m).
 
 Definition ClassGraph2Tree' :=
   transformation ClassGraph2Tree from ClassMetamodel to ClassMetamodel
