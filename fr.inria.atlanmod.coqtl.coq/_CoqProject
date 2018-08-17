@@ -28,3 +28,9 @@ examples/Class2RelationalMV/ClassMetamodel.v
 examples/Class2RelationalMV/RelationalMetamodel.v
 examples/Class2RelationalMV/Class2Relational.v
 examples/Class2RelationalMV/PersonModel.v
+
+-R "examples/ClassGraph2Tree" examples.ClassGraph2Tree
+examples/ClassGraph2Tree/ClassMetamodel.v
+examples/ClassGraph2Tree/ClassMetamodelPattern.v
+examples/ClassGraph2Tree/ClassGraph2Tree.v
+examples/ClassGraph2Tree/PersonModel.v
