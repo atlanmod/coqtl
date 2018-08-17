@@ -5,7 +5,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:HSM="http://HSM/1.0"
     xsi:schemaLocation="http://HSM/1.0 HSM2FSM/HSM.ecore"
-    name="SM1">
+    name="SM1"
+    StateMachineID="1">
   <transitions
       source="//@states.0"
       target="//@states.2"

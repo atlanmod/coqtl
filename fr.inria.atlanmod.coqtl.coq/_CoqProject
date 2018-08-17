@@ -31,3 +31,5 @@ examples/Class2RelationalMV/PersonModel.v
 -R "examples/HSM2FSM" examples.HSM2FSM
 examples/HSM2FSM/HSM.v
 examples/HSM2FSM/FSM.v
+examples/HSM2FSM/HSM2FSM.v
+examples/HSM2FSM/HSMModel.v

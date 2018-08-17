@@ -83,7 +83,7 @@ class EMFUtil {
 	 * */
 	def static PrintValue(Object o) '''
 		«IF o instanceof String»"«o.toString»"«
-		ELSE»«o.toString»«ENDIF
+		ELSE»"Error"«ENDIF
 	»'''
 	
 }
