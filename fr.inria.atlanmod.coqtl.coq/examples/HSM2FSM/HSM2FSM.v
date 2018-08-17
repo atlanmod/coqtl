@@ -49,6 +49,12 @@ Definition beq_CompositeState_option (tr_arg1 : option CompositeState) (tr_arg2 
   | _, _ => false
  end.
 
+Definition AbstractState_getName_option (a : option AbstractState) : string :=
+ match a with
+  | Some a1 => AbstractState_getName a1
+  | _ => "EmptyString"
+ end.
+
 
 Definition HSM2FSMConcrete :=
   transformation HSM2FSM from HSMMetamodel to FSMMetamodel
@@ -72,7 +78,7 @@ Definition HSM2FSMConcrete :=
        rule AS2AS
          from
            element as1 class AbstractStateEClass from HSMMetamodel
-             when true
+             when (negb (isCompositeState (Some as1) m))
          to
           [
            output "as2"
@@ -182,7 +188,7 @@ Definition HSM2FSMConcrete :=
           [
            output "t2_t2tb"
              element t2 class FTransitionEClass from FSMMetamodel :=
-               BuildFTransition (Transition_getLabel t1) (Transition_getTransitionID t1)
+               BuildFTransition ((Transition_getLabel t1) ++ "_from_" ++ (AbstractState_getName c) ++ "_to_" ++ (AbstractState_getName trg)) (Transition_getTransitionID t1)
              links
                [
                  reference FTransitionStateMachineEReference from FSMMetamodel :=
@@ -215,7 +221,7 @@ Definition HSM2FSMConcrete :=
           [
            output "t2_t2tc"
              element t2 class FTransitionEClass from FSMMetamodel :=
-               BuildFTransition (Transition_getLabel t1) (Transition_getTransitionID t1)
+               BuildFTransition ((Transition_getLabel t1) ++ "_from_" ++ (AbstractState_getName src) ++ "_to_" ++ (AbstractState_getName (InitialState_getAbstractState c))) (Transition_getTransitionID t1)
              links
                [
                  reference FTransitionStateMachineEReference from FSMMetamodel :=
