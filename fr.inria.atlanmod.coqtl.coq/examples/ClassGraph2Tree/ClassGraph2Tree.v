@@ -12,8 +12,35 @@ Require Import core.CoqTL.
 Require Import examples.ClassGraph2Tree.ClassMetamodel.
 Require Import examples.ClassGraph2Tree.ClassMetamodelPattern.
 
-Definition rootClass (m : ClassModel) : ClassMetamodel_EObject :=
-  hd ((BuildClass "" ""): ClassMetamodel_EObject) (allModelElements m).
+Definition rootClass (m : ClassModel) : Class :=
+  (BuildClass "0" "Person").
+
+Definition nextPaths (p: list Class) (m: ClassModel) : list (list Class) :=
+  match p with
+  | c :: p' =>
+    match getClassAttributes c m with
+    | Some attrs =>
+      map
+        (fun a =>
+           match getAttributeType a m with
+           | Some cls => cls :: p
+           | None => nil
+           end
+        )
+        attrs
+    | None => nil
+    end
+  | nil => nil
+  end.
+
+Fixpoint allPathsFix (m: ClassModel) (l : nat) (p: list Class) :  list (list Class) :=
+  match l with
+  | S l' => p :: concat (map (allPathsFix m l') (nextPaths p m))
+  | 0 => [ p ]
+  end.
+
+Definition allPaths (m : ClassModel) (l : nat) : list (list Class) :=
+  allPathsFix m l [ rootClass m ].
 
 Definition ClassGraph2Tree' :=
   transformation ClassGraph2Tree from ClassMetamodel to ClassMetamodel
@@ -33,21 +60,6 @@ Definition ClassGraph2Tree' :=
                   (map (fun a:Attribute => [[ a ]]) attrs);
                 return BuildClassAttributes c' attrs'
              ]
-        ];
-
-      rule Attribute2Attribute
-        from
-          element a class AttributeEClass 
-        to [
-          output "at"
-            element a' class AttributeEClass := 
-               BuildAttribute newId (getAttributeMultiValued a) (getAttributeName a)
-            links [
-              reference AttributeTypeEReference :=
-                cl <- getAttributeType a m;
-                cl' <- resolve ClassGraph2Tree m "cl" ClassEClass [[ cl ]];
-                return BuildAttributeType a' cl'
-            ] 
         ]
   ].
 
