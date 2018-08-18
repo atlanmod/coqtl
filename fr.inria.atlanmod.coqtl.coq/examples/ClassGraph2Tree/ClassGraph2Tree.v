@@ -13,7 +13,8 @@ Require Import examples.ClassGraph2Tree.ClassMetamodel.
 Require Import examples.ClassGraph2Tree.ClassMetamodelPattern.
 
 Definition rootClass (m : ClassModel) : Class :=
-  (BuildClass "0" "Person").
+  hd (ClassMetamodel_defaultInstanceOfEClass ClassEClass)
+     (ClassMetamodel_allInstances ClassEClass m).
 
 Definition nextPaths (p: list Class) (m: ClassModel) : list (list Class) :=
   match p with

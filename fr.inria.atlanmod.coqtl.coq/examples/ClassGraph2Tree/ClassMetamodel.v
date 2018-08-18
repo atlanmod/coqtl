@@ -271,6 +271,8 @@ end.
 Definition getAttributeType (at_arg : Attribute) (m : ClassModel) : option (Class) :=
   ClassMetamodel_getAttributeTypeOnLinks at_arg (@allModelLinks _ _ m).
 
+Definition ClassMetamodel_allInstances (ec: ClassMetamodel_EClass) (m: ClassModel): list (ClassMetamodel_getTypeByEClass ec) :=
+  optionList2List (map (ClassMetamodel_toEClass ec)  (filter (ClassMetamodel_instanceOfEClass ec) (@allModelElements _ _ m))).
 
 Definition ClassMetamodel_defaultInstanceOfEClass (clec_arg: ClassMetamodel_EClass) : (ClassMetamodel_getTypeByEClass clec_arg) :=
   match clec_arg with
