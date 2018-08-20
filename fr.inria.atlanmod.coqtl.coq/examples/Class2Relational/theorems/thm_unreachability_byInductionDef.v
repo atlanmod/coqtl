@@ -6,6 +6,7 @@ Require Import Omega.
 From mathcomp Require Import ssreflect ssrfun ssrbool eqtype.  
 
 Require Import core.utils.tTop.
+Require Import core.utils.CpdtTactics.
 Require Import core.Notations.
 Require Import core.CoqTL.
 Require Import core.Metamodel.
@@ -16,12 +17,61 @@ Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
 
 
+Lemma rel_elink_invert : 
+  forall (t: RelationalMetamodel_EReference) (t1 t2: RelationalMetamodel_getTypeByEReference t), Build_RelationalMetamodel_ELink t t1 = Build_RelationalMetamodel_ELink t t2 -> t1 = t2.
+Proof.
+intros.
+inversion H.
+apply inj_pair2_eq_dec in H1.
+exact H1.
+apply RelationalMetamodel_eqEReference_dec.
+Qed.
 
 
+Lemma rel_invert : 
+  forall (t: RelationalMetamodel_EClass) (t1 t2: RelationalMetamodel_getTypeByEClass t), Build_RelationalMetamodel_EObject t t1 = Build_RelationalMetamodel_EObject t t2 -> t1 = t2.
+Proof.
+intros.
+inversion H.
+apply inj_pair2_eq_dec in H1.
+exact H1.
+apply RelationalMetamodel_eqEClass_dec.
+Qed.
 
 
+Lemma lem_beq_Table_id:
+ forall (a1 a2: Table),
+   beq_Table a1 a2 = true -> a1 = a2.
+Proof.
+intros.
+unfold beq_Table in H.
+unfold "&&" in H.
+destruct (beq_string (getTableId a1) (getTableId a2)) eqn: ca1.
+- apply (lem_beq_string_eq2) in H.
+  apply (lem_beq_string_eq2) in ca1.
+  destruct a1,a2.
+  simpl in ca1, H.
+  rewrite ca1 H.
+  auto.
+- congruence.
+Qed.
 
-
+Lemma lem_beq_Column_id:
+ forall (a1 a2: Column),
+   beq_Column a1 a2 = true -> a1 = a2.
+Proof.
+intros.
+unfold beq_Column in H.
+unfold "&&" in H.
+destruct (beq_string (getColumnId a1) (getColumnId a2)) eqn: ca1.
+- apply (lem_beq_string_eq2) in H.
+  apply (lem_beq_string_eq2) in ca1.
+  destruct a1,a2.
+  simpl in ca1, H.
+  rewrite ca1 H.
+  auto.
+- congruence.
+Qed.
 
 
 Definition reachable_class_step (m: ClassModel) (x y: Class) : Prop :=
@@ -129,39 +179,7 @@ destruct (applyPattern Class2Relational cm (ClassMetamodel_toEObject attr::nil))
 Qed.
 
 
-Lemma lem_beq_Table_id:
- forall (a1 a2: Table),
-   beq_Table a1 a2 = true -> a1 = a2.
-Proof.
-intros.
-unfold beq_Table in H.
-unfold "&&" in H.
-destruct (beq_string (getTableId a1) (getTableId a2)) eqn: ca1.
-- apply (lem_beq_string_eq2) in H.
-  apply (lem_beq_string_eq2) in ca1.
-  destruct a1,a2.
-  simpl in ca1, H.
-  rewrite ca1 H.
-  auto.
-- congruence.
-Qed.
 
-Lemma lem_beq_Column_id:
- forall (a1 a2: Column),
-   beq_Column a1 a2 = true -> a1 = a2.
-Proof.
-intros.
-unfold beq_Column in H.
-unfold "&&" in H.
-destruct (beq_string (getColumnId a1) (getColumnId a2)) eqn: ca1.
-- apply (lem_beq_string_eq2) in H.
-  apply (lem_beq_string_eq2) in ca1.
-  destruct a1,a2.
-  simpl in ca1, H.
-  rewrite ca1 H.
-  auto.
-- congruence.
-Qed.
 
 
 Lemma lem_getColumnReference:
@@ -238,7 +256,7 @@ induction rm_links.
     right. apply IHrm_links. done. 
 Qed.
 
-(*
+
 Lemma lem_disagree_tableColums:
  (forall (cm : ClassModel) (rm : RelationalModel), rm = execute Class2Relational cm -> (* transformation *)
    forall (c: Class) (t : Table) (cols: list Column),
@@ -251,64 +269,81 @@ Lemma lem_disagree_tableColums:
 Proof.
   intros cm rm tr c t cols Hinc_c_cm Hinc_c_apply Hclass_attrs Htablecolumns_rm.
   (* simpl Hinc_c_apply *)
-  unfold instantiatePattern, instantiateRuleOnPattern, executeRuleOnPattern in Hinc_c_apply.
+  unfold instantiatePattern, instantiateRuleOnPattern, matchPattern, setTargetElementId in Hinc_c_apply.
+  simpl in Hinc_c_apply.
+  unfold setTableId in Hinc_c_apply.
   simpl in Hinc_c_apply.
   try destruct Hinc_c_apply; inversion H.
   clear H0. rename H into Hinc_c_apply.
   apply rel_invert in Hinc_c_apply.
   
   (* find sp corresponding to col_t2 *)
-  assert (In (RelationalMetamodel_BuildELink TableColumnsReference (BuildTableColumns t cols)) (allModelLinks rm)).
+  assert (In (Build_RelationalMetamodel_ELink TableColumnsEReference (BuildTableColumns t cols)) (allModelLinks rm)).
   { apply (@lem_getTableColumns cm); auto. }
 
   rewrite tr in H.
   unfold execute in H.
   simpl in H.
-  apply concat_map_exists in H.
+  apply concat_map_option_exists in H.
   destruct H.
   destruct H.
+  destruct (applyPattern Class2Relational cm x ) eqn: apply_res.
+  + rename x into sp.
+    rename H into Hinc_sp_cm.
+    rename H0 into H1.
+    destruct sp.
+    - done.
+    - destruct sp.
+      --  destruct c0.
+          destruct clec_arg.
+          --- (* class  *)
+              inversion apply_res.
+              unfold applyOutputPatternReferencesOnPattern, evalOutputBindingExpression, setTargetElementId, optionToList in H0.
+              simpl in H0.
+              unfold setTableId in H0.
+              simpl in H0.
+              rewrite <- H0 in H1.
+              destruct (getClassAttributes c0 cm) eqn: c1_ca.
+              * simpl in H1.
+                destruct H1.
+                ** apply rel_elink_invert in H.
+                  inversion H.
+                  rewrite <- Hinc_c_apply in H2.
+                  assert (c = c0). {inversion H2. destruct c, c0. simpl in H4, H5. admit. }
+                  rewrite <- H1 in c1_ca.
+                  rewrite Hclass_attrs in c1_ca.
+                  done.
+                ** done.
+              * done.
+          --- (* attribute impossible *)
+              unfold applyPattern, matchPattern in apply_res.
+              simpl in apply_res.
+              destruct (getAttributeMultiValued c0) eqn: c1_ca.
+              * done.
+              * simpl in H1.
+                simpl in apply_res.
+                unfold instantiateRuleOnPattern, applyRuleOnPattern in apply_res.
+                simpl in apply_res.
+                rewrite c1_ca in apply_res.
+                simpl in apply_res.
+                unfold applyOutputPatternReferencesOnPattern, evalOutputBindingExpression in apply_res.
+                simpl in apply_res.
+                unfold getAttributeType in apply_res.
+                simpl in apply_res.
+                unfold optionToList in apply_res.
+                simpl in apply_res.
+                destruct ( ClassMetamodel_getAttributeTypeOnLinks c0 (allModelLinks cm)) eqn: attr_type.
+                **  inversion apply_res.
+                    rewrite <- H0 in H1. 
+                    destruct H1.
+                    *** done.
+                    *** done.
+                ** crush. 
+       -- done.
+   + done.
+Abort.
+(*
 
-  rename x into sp.
-  rename H into Hinc_sp_cm.
-  rename H0 into H1.
-  destruct sp.
-  - done.
-  - destruct sp.
-    - destruct c0.
-      destruct c0.
-      - (* class  *)
-        unfold applyPhase, applyPattern, matchPhase, matchPattern,applyRuleOnPattern,executeRuleOnPattern in H1.
-        simpl in H1.
-        destruct (getClassAttributes c1 cm) eqn: c1_ca.
-        - simpl in H1.
-          destruct H1.
-          - apply rel_elink_invert in H.
-            inversion H.
-            rewrite <- Hinc_c_apply in H1.
-            clear H H2.
-            assert (c = c1). {inversion H1. destruct c, c1. simpl in H0, H2. rewrite H0 H2. done. }
-            rewrite <- H in c1_ca.
-            rewrite Hclass_attrs in c1_ca.
-            done.
-          - done.
-        - done.
-      - (* attribute impossible *)
-        unfold applyPhase, applyPattern, matchPhase, matchPattern,applyRuleOnPattern,executeRuleOnPattern in H1.
-        simpl in H1.
-        destruct (getAttributeDerived c1) eqn: c1_ca.
-        - done.
-        - simpl in H1.
-          rewrite c1_ca in H1. simpl in H1.
-          unfold getAllOuputPatternElementLinks in H1.
-          simpl in H1.
-          destruct (getAttributeType c1 cm) eqn:c1_type_ca.
-          - simpl in H1.
-            destruct H1.
-            - done.
-            - done.
-          - done.
-   - done.
-Qed.
 
 
 Lemma lem_disagree_colrefs:
