@@ -309,7 +309,7 @@ Proof.
                 ** apply rel_elink_invert in H.
                   inversion H.
                   rewrite <- Hinc_c_apply in H2.
-                  assert (c = c0). {inversion H2. destruct c, c0. simpl in H4, H5. admit. }
+                  assert (c = c0). {inversion H2. destruct c, c0. simpl in H4, H5. repeat apply lem_string_app_inv_tail in H4. rewrite H4 H5. done. }
                   rewrite <- H1 in c1_ca.
                   rewrite Hclass_attrs in c1_ca.
                   done.
@@ -341,7 +341,7 @@ Proof.
                 ** crush. 
        -- done.
    + done.
-Abort.
+Qed.
 (*
 
 
