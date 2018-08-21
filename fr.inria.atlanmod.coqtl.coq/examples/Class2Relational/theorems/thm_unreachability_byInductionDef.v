@@ -73,6 +73,28 @@ destruct (beq_string (getColumnId a1) (getColumnId a2)) eqn: ca1.
 - congruence.
 Qed.
 
+Lemma eq_class_table:
+  (forall (cm : ClassModel) (rm : RelationalModel), rm = execute Class2Relational cm -> (* transformation *)
+   forall (t1 t2 : Table) (c1 c2: Class),
+     In (RelationalMetamodel_toEObject t1) (optionListToList (instantiatePattern Class2Relational cm (ClassMetamodel_toEObject c1::nil))) -> 
+     In (RelationalMetamodel_toEObject t2) (optionListToList (instantiatePattern Class2Relational cm (ClassMetamodel_toEObject c2::nil))) ->
+     t1 = t2 ->
+     c1 = c2).
+Proof.
+intros cm rm tr t1 t2 c1 c2  Hinc_t1_sp1 Hinc_t2_sp2 Heq_tables.
+unfold instantiatePattern in Hinc_t1_sp1, Hinc_t2_sp2.
+simpl in Hinc_t1_sp1, Hinc_t2_sp2.
+try destruct Hinc_t1_sp1; destruct Hinc_t2_sp2; crush.
+- rewrite <- H in H0.
+  apply rel_invert in H0.
+  inversion H0.
+  destruct c1, c2.
+  simpl in H2, H3.
+  repeat apply lem_string_app_inv_tail in H2.
+  rewrite H2 H3.
+  done.
+Qed.
+
 
 Definition reachable_class_step (m: ClassModel) (x y: Class) : Prop :=
   In (ClassMetamodel_toEObject x) (allModelElements m) /\
@@ -551,34 +573,7 @@ destruct (getAttributeType attr cm) eqn: attr_type_ca.
 - done.
 Qed.
 
-Lemma eq_class_table:
-  (forall (cm : ClassModel) (rm : RelationalModel), rm = execute Class2Relational cm -> (* transformation *)
-   forall (t1 t2 : Table) (c1 c2: Class),
-(*   TODO: Bugs in model construction prevent we have this.
-     In (ClassMetamodel_toEObject c1) (allModelElements cm) ->
-     In (ClassMetamodel_toEObject c2) (allModelElements cm) -> *)
-     In (RelationalMetamodel_toEObject t1) (instantiatePattern (getRules Class2Relational cm) (ClassMetamodel_toEObject c1::nil)) ->
-     In (RelationalMetamodel_toEObject t2) (instantiatePattern (getRules Class2Relational cm) (ClassMetamodel_toEObject c2::nil)) ->
-     t1 = t2 ->
-     c1 = c2).
-Proof.
-intros cm rm tr t1 t2 c1 c2  Hinc_t1_sp1 Hinc_t2_sp2 Heq_tables.
-unfold instantiatePattern in Hinc_t1_sp1, Hinc_t2_sp2.
-simpl in Hinc_t1_sp1, Hinc_t2_sp2.
-try destruct Hinc_t1_sp1; destruct Hinc_t2_sp2; auto.
-- rewrite Heq_tables in H.
-  rewrite <- H in H0.
-  apply rel_invert in H0.
-  inversion H0.
-  destruct c1, c2.
-  simpl in H2, H3.
-  rewrite H2.
-  rewrite H3.
-  done.
-- done.
-- done.
-- done.
-Qed.
+
 
 Lemma lem_col_table_infer_attr_class:
  (forall (cm : ClassModel) (rm : RelationalModel), rm = execute Class2Relational cm -> (* transformation *)
