@@ -78,7 +78,7 @@ Definition ClassGraph2Tree' :=
             links [
               reference AttributeTypeEReference :=
                 path <- i;
-                cls <- resolve ClassGraph2Tree m "cl" ClassEClass [[ c ]] i;
+                cls <- resolve ClassGraph2Tree m "cl" ClassEClass [[ c ]] path;
                 return BuildAttributeType a' cls
              ];
           output "cl"
@@ -89,7 +89,7 @@ Definition ClassGraph2Tree' :=
                 path <- i;
                 cls <- step m c;
                 attrs <- resolveAll ClassGraph2Tree m "at" AttributeEClass
-                  (map (fun c:Class => [[ c ]]) cls) (nextPaths m i);
+                  (map (fun c:Class => [[ c ]]) cls) (nextPaths m path);
                 return BuildClassAttributes c' attrs
             ]
         ]

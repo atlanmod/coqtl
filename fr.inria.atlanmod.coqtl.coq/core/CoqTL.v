@@ -298,9 +298,9 @@ Section CoqTL.
     | BuildMultiElementRule s f, t::ts, e::els =>
       e' <- toModelClass s e;
         evalOutputBindingExpressionFix o (f e') ts sm els te
-    | BuildSingleElementRule s f, t::nil, e::nil =>
+    | BuildSingleElementRule s f g, t::nil, e::nil =>
       e' <- toModelClass s e;
-        ope <- (nth_error (snd (f e')) (OutputBindingExpressionA_getOutputPatternElement o));
+        ope <- (nth_error (g e' None) (OutputBindingExpressionA_getOutputPatternElement o));
         te' <- toModelClass (getOutputPatternElementType ope) te;
         oper <- (nth_error ((getOutputPatternElementBindings ope) te') (OutputBindingExpressionA_getOutputBinding o));
         (OutputPatternElementReferenceLink oper)
@@ -318,9 +318,9 @@ Section CoqTL.
     | BuildMultiElementRule s f, t::ts, e::els =>
       e' <- toModelClass s e;
         evalOutputPatternElementExpressionFix o (f e') ts sm els
-    | BuildSingleElementRule s f, t::nil, e::nil =>
+    | BuildSingleElementRule s f g, t::nil, e::nil =>
       e' <- toModelClass s e;
-        ope <- (nth_error (snd (f e')) (OutputPatternElementExpressionA_getOutputPatternElement o));
+        ope <- (nth_error (g e' None) (OutputPatternElementExpressionA_getOutputPatternElement o));
         return (getOutputPatternElementTargetModelElement ope)
     | _, _, _ => None
     end.
@@ -346,7 +346,7 @@ Section CoqTL.
     | BuildMultiElementRule s f, t::ts, e::els =>
       e' <- toModelClass s e;
         evalGuardExpressionFix (f e') ts sm els
-    | BuildSingleElementRule s f, t::nil, e::nil =>
+    | BuildSingleElementRule s f g, t::nil, e::nil =>
       e' <- toModelClass s e;
       return (fst (f e'))
     | _, _, _ => None
