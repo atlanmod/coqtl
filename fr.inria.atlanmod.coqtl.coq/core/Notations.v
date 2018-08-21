@@ -17,10 +17,10 @@ Notation "'rule' rulename 'from' rbody" := (""%string, (rbody)) (right associati
 Notation "'element' sid 'class' stype 'from' sinstance ',' sbody" := (BuildMultiElementRule stype (fun sid => sbody)) (right associativity, at level 60).
 
 (* InputPatternElement no guard *)
-Notation "'element' sid 'class' stype 'to' outputels" := (BuildSingleElementRule _ stype (fun sid => (true, outputels))) (right associativity, at level 60).
+Notation "'element' sid 'class' stype 'for' forid 'in' forset 'to' outputels" := (BuildSingleElementRule _ stype (fun sid => (true, forset)) (fun sid forid => outputels)) (right associativity, at level 60).
 
 (* InputPatternElement *)
-Notation "'element' sid 'class' stype 'when' guard 'to' outputels" := (BuildSingleElementRule _ stype (fun sid => (guard, outputels))) (right associativity, at level 60).
+Notation "'element' sid 'class' stype 'when' guard 'for' forid 'in' forset 'to' outputels" := (BuildSingleElementRule _ stype (fun sid => (true, forset)) (fun sid forid => outputels)) (right associativity, at level 60).
 
 (* OutputPatternElement *)
 Notation "'output' elid 'element' elname 'class' eltype := eldef 'links' refdef" := (BuildOutputPatternElement eltype elid eldef (fun elname => refdef))  (right associativity, at level 60).

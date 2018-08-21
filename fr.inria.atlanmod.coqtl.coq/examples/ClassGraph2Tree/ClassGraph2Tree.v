@@ -12,11 +12,18 @@ Require Import core.CoqTL.
 Require Import examples.ClassGraph2Tree.ClassMetamodel.
 Require Import examples.ClassGraph2Tree.ClassMetamodelPattern.
 
-Definition rootClass (m : ClassModel) : Class :=
-  hd (ClassMetamodel_defaultInstanceOfEClass ClassEClass)
-     (ClassMetamodel_allInstances ClassEClass m).
+Definition step (m: ClassModel) (c: Class) : option (list Class) :=
+  attrs <- getClassAttributes c m;
+  return
+  concat
+    (map
+       (fun a => match getAttributeType a m with
+              | Some cls => [ cls ]
+              | None => nil
+              end
+       ) attrs).
 
-Definition nextPaths (p: list Class) (m: ClassModel) : list (list Class) :=
+Definition nextPaths (m: ClassModel) (p: list Class) : list (list Class) :=
   match p with
   | c :: p' =>
     match getClassAttributes c m with
@@ -36,12 +43,24 @@ Definition nextPaths (p: list Class) (m: ClassModel) : list (list Class) :=
 
 Fixpoint allPathsFix (m: ClassModel) (l : nat) (p: list Class) :  list (list Class) :=
   match l with
-  | S l' => p :: concat (map (allPathsFix m l') (nextPaths p m))
+  | S l' => p :: concat (map (allPathsFix m l') (nextPaths m p))
   | 0 => [ p ]
   end.
 
+Definition rootClass (m : ClassModel) : Class :=
+  hd (ClassMetamodel_defaultInstanceOfEClass ClassEClass)
+     (ClassMetamodel_allInstances ClassEClass m).
+
 Definition allPaths (m : ClassModel) (l : nat) : list (list Class) :=
   allPathsFix m l [ rootClass m ].
+
+Definition allPathsTo (m : ClassModel) (l : nat) (o: Class) : list (list Class) :=
+  filter (fun p =>
+            match p with
+            | h :: t => beq_Class h o
+            | nil => false
+            end
+         ) (allPaths m l).
 
 Definition ClassGraph2Tree' :=
   transformation ClassGraph2Tree from ClassMetamodel to ClassMetamodel
@@ -50,17 +69,27 @@ Definition ClassGraph2Tree' :=
       rule Class2Class
         from
           element c class ClassEClass
+        for
+          i in (allPathsTo m 3 c)  
         to [
+          output "at"
+            element a' class AttributeEClass :=
+              BuildAttribute newId false (getClassName c)
+            links [
+              reference AttributeTypeEReference :=
+                cls <- resolve ClassGraph2Tree m "cl" ClassEClass [[ c ]] i;
+                return BuildAttributeType a' cls
+             ];
           output "cl"
             element c' class ClassEClass :=
               BuildClass newId (getClassName c)
             links [
               reference ClassAttributesEReference :=
-                attrs <- getClassAttributes c m;
-                attrs' <- resolveAll ClassGraph2Tree m "at" AttributeEClass
-                  (map (fun a:Attribute => [[ a ]]) attrs);
-                return BuildClassAttributes c' attrs'
-             ]
+                cls <- step m c;
+                attrs <- resolveAll ClassGraph2Tree m "at" AttributeEClass
+                  (map (fun c:Class => [[ c ]]) cls) (nextPaths m i);
+                return BuildClassAttributes c' attrs
+            ]
         ]
   ].
 

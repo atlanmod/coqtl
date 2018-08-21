@@ -426,11 +426,11 @@ Section CoqTL.
       te <- evalOutputPatternElementExpression tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope);
       toModelClass type (setTargetElementId te r ope sp).
 
-  Definition resolve (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement): option (denoteModelClass type) :=
+  Definition resolve {A: Type} (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) (iter: A): option (denoteModelClass type) :=
     resolveFix (TransformationA_getRules (parsePhase tr)) (parsePhase tr) sm name type sp.
     
-  Definition resolveAll (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) : option (list (denoteModelClass type)) :=
-    Some (optionList2List (map (resolve tr sm name type) sps)).
+  Definition resolveAll (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) {A: Type} (iters: list A) : option (list (denoteModelClass type)) :=
+    Some (optionList2List (zipWith (resolve tr sm name type) sps iters)).
 
   (** ** Rule scheduling **)
   
