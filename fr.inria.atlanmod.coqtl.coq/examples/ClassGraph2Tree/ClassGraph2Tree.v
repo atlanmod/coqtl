@@ -70,13 +70,14 @@ Definition ClassGraph2Tree' :=
         from
           element c class ClassEClass
         for
-          i in (allPathsTo m 3 c)  
+          i in (allPathsTo m 3 c)
         to [
           output "at"
             element a' class AttributeEClass :=
               BuildAttribute newId false (getClassName c)
             links [
               reference AttributeTypeEReference :=
+                path <- i;
                 cls <- resolve ClassGraph2Tree m "cl" ClassEClass [[ c ]] i;
                 return BuildAttributeType a' cls
              ];
@@ -85,6 +86,7 @@ Definition ClassGraph2Tree' :=
               BuildClass newId (getClassName c)
             links [
               reference ClassAttributesEReference :=
+                path <- i;
                 cls <- step m c;
                 attrs <- resolveAll ClassGraph2Tree m "at" AttributeEClass
                   (map (fun c:Class => [[ c ]]) cls) (nextPaths m i);
