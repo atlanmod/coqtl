@@ -335,14 +335,12 @@ Proof.
                 destruct ( ClassMetamodel_getAttributeTypeOnLinks c0 (allModelLinks cm)) eqn: attr_type.
                 **  inversion apply_res.
                     rewrite <- H0 in H1. 
-                    destruct H1.
-                    *** done.
-                    *** done.
+                    crush. 
+                    inversion H. 
                 ** crush. 
        -- done.
    + done.
 Qed.
-(*
 
 
 
@@ -350,8 +348,8 @@ Lemma lem_disagree_colrefs:
  (forall (cm : ClassModel) (rm : RelationalModel), rm = execute Class2Relational cm -> (* transformation *)
    forall (a: Attribute) (t2 : Table) (col: Column),
      In (ClassMetamodel_toEObject a) (allModelElements cm) ->
-     getAttributeDerived a = false ->
-     In (RelationalMetamodel_toEObject col) (instantiatePattern (getRules Class2Relational cm) (ClassMetamodel_toEObject a::nil)) ->
+     getAttributeMultiValued a = false ->
+     In (RelationalMetamodel_toEObject col) (optionListToList (instantiatePattern Class2Relational cm (ClassMetamodel_toEObject a::nil))) ->
      getAttributeType a cm = None ->
      getColumnReference col rm = return t2 -> 
      False
@@ -359,7 +357,7 @@ Lemma lem_disagree_colrefs:
 Proof.
   intros cm rm tr attr t2 col Hinc_a_cm rl_attr_col_guard_ca Hinc_col_apply Hattr_type Hcolrefs_rm.
   (* simpl Hinc_col_apply *)
-  unfold instantiatePattern, instantiateRuleOnPattern, executeRuleOnPattern in Hinc_col_apply.
+  unfold instantiatePattern, instantiateRuleOnPattern, matchPattern, setTargetElementId in Hinc_col_apply.
   simpl in Hinc_col_apply.
   rewrite rl_attr_col_guard_ca in Hinc_col_apply.
   simpl in Hinc_col_apply.
@@ -370,66 +368,79 @@ Proof.
   apply rel_invert in Hinc_col_apply.
   
   (* find sp corresponding to col_t2 *)
-  assert (In (RelationalMetamodel_BuildELink ColumnReferenceReference (BuildColumnReference col t2)) (allModelLinks rm)).
+  assert (In (Build_RelationalMetamodel_ELink ColumnReferenceEReference (BuildColumnReference col t2)) (allModelLinks rm)).
   { apply (@lem_getColumnReference cm); auto. }
 
   rewrite tr in H.
   unfold execute in H.
   simpl in H.
-  apply concat_map_exists in H.
+  apply concat_map_option_exists in H.
   destruct H.
   destruct H.
-
-  rename x into sp.
-  rename H into Hinc_sp_cm.
-  rename H0 into H1.
-  destruct sp.
-  - done.
-  - destruct sp.
-    - destruct c.
-      destruct c.
-      - (* class impossible *)
-        unfold applyPhase, applyPattern, matchPhase, matchPattern,applyRuleOnPattern,executeRuleOnPattern,getAllOuputPatternElementLinks in H1.
-        simpl in H1.
-        destruct (getClassAttributes c0 cm) eqn: c1_ca.
-        - simpl in H1.
-          destruct H1.
-          - done.
-          - done.
-        - done.
-      - (* attribute *)
-        unfold applyPhase, applyPattern, matchPhase, matchPattern,applyRuleOnPattern,executeRuleOnPattern in H1.
-        simpl in H1.
-        destruct (getAttributeDerived c0) eqn: c1_ca.
-        - done.
-        - simpl in H1.
-          rewrite c1_ca in H1. simpl in H1.
-          unfold getAllOuputPatternElementLinks in H1.
-          simpl in H1.
-          destruct (getAttributeType c0 cm) eqn:c1_type_ca.
-          - simpl in H1.
-            destruct H1.
-            - apply rel_elink_invert in H.
-              assert (c0 = attr). {
-                inversion H. 
-                rewrite <- Hinc_col_apply in H1.
-                inversion H1.
-                destruct c0, attr.
-                simpl in H3, H4, c1_ca, rl_attr_col_guard_ca.
-                rewrite H3.
-                rewrite H4.
-                rewrite c1_ca.
-                rewrite rl_attr_col_guard_ca.
-                done. 
-              }
-              inversion H0.
-              rewrite H1 in c1_type_ca.
-              rewrite Hattr_type in c1_type_ca.
-              inversion c1_type_ca.
-              done.
-            - done.
-          - done.
+  destruct (applyPattern Class2Relational cm x ) eqn: apply_res.
+  + rename x into sp.
+    rename H into Hinc_sp_cm.
+    rename H0 into H1.
+    destruct sp.
+    - done.
+    - destruct sp.
+      --  destruct c.
+          destruct clec_arg.
+          --- (* class  *) 
+              inversion apply_res.
+              unfold applyOutputPatternReferencesOnPattern, evalOutputBindingExpression, setTargetElementId, optionToList in H0.
+              simpl in H0.
+              destruct (getClassAttributes c cm) eqn: c_ca.
+              * crush.
+                inversion H.
+              * crush.
+          --- (* attribute impossible *)
+              unfold applyPattern, matchPattern in apply_res.
+              simpl in apply_res.
+              destruct (getAttributeMultiValued c) eqn: c1_ca.
+              * done.
+              * simpl in H1.
+                simpl in apply_res.
+                unfold instantiateRuleOnPattern, applyRuleOnPattern in apply_res.
+                simpl in apply_res.
+                rewrite c1_ca in apply_res.
+                simpl in apply_res.
+                unfold applyOutputPatternReferencesOnPattern, evalOutputBindingExpression in apply_res.
+                simpl in apply_res.
+                unfold getAttributeType in apply_res.
+                simpl in apply_res.
+                unfold optionToList in apply_res.
+                simpl in apply_res.
+                destruct ( ClassMetamodel_getAttributeTypeOnLinks c (allModelLinks cm)) eqn: attr_type.
+                **  inversion apply_res.
+                    rewrite <- H0 in H1. 
+                    destruct H1.
+                    *** apply rel_elink_invert in H.
+                        assert (c = attr). {
+                          inversion H.
+                          rewrite <- Hinc_col_apply in H2.
+                          inversion H2.
+                          repeat apply lem_string_app_inv_tail in H4.
+                          destruct c, attr.
+                          crush.
+                        }
+                        rewrite H1 in attr_type.
+                        unfold getAttributeType in Hattr_type.
+                        rewrite Hattr_type in attr_type.
+                        inversion attr_type.
+                        done.
+                    *** crush.
+                ** crush. 
+       -- done.
+   + done.
 Qed.
+
+
+(*
+
+
+
+
 
 Lemma lem_agree_colrefs:
  (forall (cm : ClassModel) (rm : RelationalModel), rm = execute Class2Relational cm -> (* transformation *)
