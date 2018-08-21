@@ -136,8 +136,9 @@ Section CoqTL.
         ((denoteModelClass InElType) -> Rule)
         -> Rule
   | BuildSingleElementRule :
-      forall (InElType: SourceModelClass),
-        ((denoteModelClass InElType) -> (bool * list OutputPatternElement))
+      forall (InElType: SourceModelClass) (A: Type),
+        ((denoteModelClass InElType) -> (bool * list A))
+        -> ((denoteModelClass InElType) -> A -> list OutputPatternElement)
         -> Rule.
   
   Definition Phase : Type := SourceModel -> list (string * Rule).
