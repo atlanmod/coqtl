@@ -582,142 +582,138 @@ destruct (getAttributeType attr cm) eqn: attr_type_ca.
 - done.
 Qed.
 
-(*
 
 Lemma lem_col_table_infer_attr_class:
  (forall (cm : ClassModel) (rm : RelationalModel), rm = execute Class2Relational cm -> (* transformation *)
    forall (attr: Attribute) (col: Column) (cl : Class) (t: Table),
      In (ClassMetamodel_toEObject attr) (allModelElements cm) ->
      In (ClassMetamodel_toEObject cl) (allModelElements cm) -> 
-     getAttributeDerived attr = false ->
+     getAttributeMultiValued attr = false ->
      In (RelationalMetamodel_toEObject col) (allModelElements rm) ->
      In (RelationalMetamodel_toEObject t) (allModelElements rm) -> 
-     In (RelationalMetamodel_toEObject col) (instantiatePattern (getRules Class2Relational cm) (ClassMetamodel_toEObject attr::nil)) ->
-     In (RelationalMetamodel_toEObject t) (instantiatePattern (getRules Class2Relational cm) (ClassMetamodel_toEObject cl::nil)) ->
+     In (RelationalMetamodel_toEObject col) (optionListToList (instantiatePattern Class2Relational cm (ClassMetamodel_toEObject attr::nil))) ->
+     In (RelationalMetamodel_toEObject t) (optionListToList (instantiatePattern Class2Relational cm (ClassMetamodel_toEObject cl::nil))) ->
      getColumnReference col rm = return t -> 
      getAttributeType attr cm = return cl
 ).
 Proof.
-intros cm rm tr attr col cl t.
-intros Hinc_attr_cm Hinc_cl_cm rl_attr_col_guard_ca Hinc_col_rm Hinc_t_rm.
-intros Hcol_cos_attr Ht_cos_cl Hcolref.
-
-(* simplify Hcol_cos_attr *)
-unfold instantiatePattern,instantiateRuleOnPattern,executeRuleOnPattern in Hcol_cos_attr.
-simpl in Hcol_cos_attr.
-rewrite rl_attr_col_guard_ca in Hcol_cos_attr.
-simpl in Hcol_cos_attr.
-rewrite rl_attr_col_guard_ca in Hcol_cos_attr.
-simpl in Hcol_cos_attr.
-
-(* simplify Ht_cos_cl *)
-unfold instantiatePattern,instantiateRuleOnPattern,executeRuleOnPattern in Ht_cos_cl.
-simpl in Ht_cos_cl.
+  intros cm rm tr attr col cl t.
+  intros Hinc_attr_cm Hinc_cl_cm rl_attr_col_guard_ca Hinc_col_rm Hinc_t_rm.
+  intros Hcol_cos_attr Ht_cos_cl Hcolref.
 
 
-destruct Hcol_cos_attr; destruct Ht_cos_cl. 
-- {
-    rename H into Hcol_cos_attr.
-    rename H0 into Ht_cos_cl.
-    remember (getColumnReferenceOnLinks col 
-              (applyPattern (getRules' Class2Relational cm) ([ClassMetamodel_BuildEObject AttributeEClass attr]))) as tx.
-    remember (applyPattern (getRules' Class2Relational cm) ([ClassMetamodel_BuildEObject AttributeEClass attr])) as tls.
-    assert (incl (applyPattern (getRules' Class2Relational cm) ([ClassMetamodel_BuildEObject AttributeEClass attr])) (allModelLinks rm)).
-    { apply (@lem_inc_tp_rm cm rm tr attr). done. } 
-    rename Heqtls into Happly_attr.
-    rename Heqtx into Happly_attr_colref.
-    
-    (* compute apply_attr_colref: links generated associated with attr *)
-    rewrite Happly_attr in Happly_attr_colref.
-    unfold applyPattern in Happly_attr_colref.
-    simpl in Happly_attr_colref.
 
-    rewrite rl_attr_col_guard_ca in Happly_attr_colref.
-    simpl in Happly_attr_colref.
+  (* simplify Hcol_cos_attr *)
+  unfold instantiatePattern,instantiateRuleOnPattern,matchPattern, setTargetElementId in Hcol_cos_attr.
+  simpl in Hcol_cos_attr.
+  rewrite rl_attr_col_guard_ca in Hcol_cos_attr.
+  simpl in Hcol_cos_attr.
+  rewrite rl_attr_col_guard_ca in Hcol_cos_attr.
+  simpl in Hcol_cos_attr.
 
-    unfold applyRuleOnPattern in Happly_attr_colref.
-    unfold executeRuleOnPattern in Happly_attr_colref.
-    simpl in Happly_attr_colref.
+  (* simplify Ht_cos_cl *)
+  unfold instantiatePattern,instantiateRuleOnPattern, matchPattern, setTargetElementId in Ht_cos_cl.
+  simpl in Ht_cos_cl.
 
-    rewrite rl_attr_col_guard_ca in Happly_attr_colref.
-    simpl in Happly_attr_colref.
-    unfold getAllOuputPatternElementLinks in Happly_attr_colref.
-    simpl in Happly_attr_colref.
-    remember Happly_attr_colref as Happly_attr_colref'.
-    clear HeqHapply_attr_colref'.
-    destruct (getAttributeType attr cm ) eqn: attr_type_ca.
-    ****  (* Compute tx: table asscoiated with attr *)
-          unfold getColumnReferenceOnLinks in Happly_attr_colref.
-          simpl in Happly_attr_colref.
-          apply rel_invert in  Hcol_cos_attr.
-          rewrite  Hcol_cos_attr in Happly_attr_colref.
-          simpl in Happly_attr_colref.
-          destruct (beq_Column col col) eqn: g.
-          - { remember (BuildTable (getClassId c) (getClassName c)) as tx2.
-              remember ((([RelationalMetamodel_BuildELink ColumnReferenceReference
-                       (BuildColumnReference
-                          (BuildColumn (getAttributeId attr) (getAttributeName attr))
-                          tx2)]) ++ nil)) as tls'.
-              assert ((applyPattern (getRules' Class2Relational cm) ([ClassMetamodel_BuildEObject AttributeEClass attr])) = tls').
-              {
-                unfold applyPattern .
-                simpl.
-                rewrite rl_attr_col_guard_ca.
-                simpl .
-                unfold applyRuleOnPattern .
-                unfold executeRuleOnPattern .
-                simpl.
-                rewrite rl_attr_col_guard_ca .
-                simpl.
-                unfold getAllOuputPatternElementLinks .
-                simpl .
-                rewrite attr_type_ca.
-                rewrite Heqtls'.
-                rewrite Heqtx2.
-                done.
-              }
-              simpl in Heqtls'.
-              rewrite  Happly_attr_colref' in Happly_attr_colref.
-              rewrite H0 in H.
-              assert (tx2 = t). 
-              { apply (@lem_agree_colrefs cm rm tr attr tx2 t col); auto.
-                - unfold instantiatePattern,instantiateRuleOnPattern,executeRuleOnPattern. 
-                  simpl. rewrite rl_attr_col_guard_ca. simpl. rewrite rl_attr_col_guard_ca. simpl. left. rewrite Hcol_cos_attr. done.
-                - rewrite H0. done.
-              }
-              assert (cl = c).
-              { try apply (@eq_class_table cm rm tr t tx2); auto; unfold instantiatePattern; unfold matchPattern; simpl.
-                - left. done.
-                - left. rewrite Heqtx2. done.
-              }
-              rewrite H2.
-              done.
+
+  destruct Hcol_cos_attr; destruct Ht_cos_cl.
+  -   rename H into Hcol_cos_attr.
+      rename H0 into Ht_cos_cl.
+      remember (RelationalMetamodel_getColumnReferenceOnLinks col 
+                (optionListToList (applyPattern Class2Relational cm ([Build_ClassMetamodel_EObject AttributeEClass attr])))) as tx.
+      remember (optionListToList (applyPattern Class2Relational cm ([Build_ClassMetamodel_EObject AttributeEClass attr]))) as tls.
+      assert (incl (optionListToList (applyPattern Class2Relational cm ([Build_ClassMetamodel_EObject AttributeEClass attr]))) (allModelLinks rm)).
+      { apply (@lem_inc_tp_rm cm rm tr attr). done. } 
+      rename Heqtls into Happly_attr.
+      rename Heqtx into Happly_attr_colref.
+
+      (* compute apply_attr_colref: links generated associated with attr *)
+      rewrite Happly_attr in Happly_attr_colref.
+      unfold applyPattern, matchPattern, matchRuleOnPattern in Happly_attr_colref.
+      simpl in Happly_attr_colref.
+
+      rewrite rl_attr_col_guard_ca in Happly_attr_colref.
+      simpl in Happly_attr_colref.
+
+      unfold applyRuleOnPattern in Happly_attr_colref.
+      unfold instantiateRuleOnPattern in Happly_attr_colref.
+      simpl in Happly_attr_colref.
+
+      rewrite rl_attr_col_guard_ca in Happly_attr_colref.
+      simpl in Happly_attr_colref.
+      unfold applyOutputPatternReferencesOnPattern, evalOutputBindingExpression, setTargetElementId, optionToList in Happly_attr_colref.
+      simpl in Happly_attr_colref.
+      remember Happly_attr_colref as Happly_attr_colref'.
+      clear HeqHapply_attr_colref'.
+      destruct (getAttributeType attr cm ) eqn: attr_type_ca.
+      --    (* Compute tx: table asscoiated with attr *)
+            unfold RelationalMetamodel_getColumnReferenceOnLinks in Happly_attr_colref.
+            simpl in Happly_attr_colref.
+            apply rel_invert in  Hcol_cos_attr.
+            rewrite  Hcol_cos_attr in Happly_attr_colref.
+            simpl in Happly_attr_colref.
+            assert (beq_Column col col).
+            {  apply lem_beq_Column_refl. }
+            rewrite H0 in Happly_attr_colref.
+            remember (setTableId (BuildTable newId (getClassName c))
+                                (String.append (String.append (getClassId c) "__") "0_0")) as tx2.
+            remember ((optionToList
+                              (return RelationalMetamodel_toELinkOfEReference ColumnReferenceEReference
+                                        (BuildColumnReference
+                                           (setColumnId (BuildColumn newId (getAttributeName attr))
+                                              (String.append (String.append (getAttributeId attr) "__") "1_0")) tx2)) ++
+                            nil) ++ nil) as tls'.
+            assert (optionListToList (applyPattern Class2Relational cm ([Build_ClassMetamodel_EObject AttributeEClass attr])) = tls').
+            {
+              unfold applyPattern, matchPattern.
+              simpl.
+              rewrite rl_attr_col_guard_ca.
+              simpl .
+              unfold applyRuleOnPattern .
+              unfold instantiateRuleOnPattern .
+              simpl.
+              rewrite rl_attr_col_guard_ca .
+              simpl.
+              unfold applyOutputPatternReferencesOnPattern, evalOutputBindingExpression, setTargetElementId, optionToList.
+              crush.
             }
-          - destruct col. unfold beq_Column in g. simpl in g. 
-            assert (true = PeanoNat.Nat.eqb n n). { apply beq_nat_refl. }
-            rewrite <- H0 in g.
-            simpl in g.
-            assert (beq_string s s = true). { apply lem_beq_string_id. }
-            rewrite H1 in g.
-            done.                          
-    ****  unfold getColumnReferenceOnLinks in Happly_attr_colref.
-          simpl in Happly_attr_colref.
-          apply rel_invert in  Hcol_cos_attr.
-          
-          simpl in Happly_attr_colref.
-          assert False. {
-            try apply (@lem_disagree_colrefs cm rm tr attr t col); auto.
-            - unfold instantiatePattern,instantiateRuleOnPattern,executeRuleOnPattern. 
-              simpl. rewrite rl_attr_col_guard_ca. simpl. rewrite rl_attr_col_guard_ca. simpl. left. rewrite Hcol_cos_attr. done.
-          }
-          done.
-          
-  }
-- done.
-- done.
-- done.
-
+            simpl in Heqtls'.
+            rewrite  Happly_attr_colref' in Happly_attr_colref.
+            rewrite H1 in H.
+            assert (tx2 = t). 
+            { apply (@lem_agree_colrefs cm rm tr attr tx2 t col); auto.
+              - unfold instantiatePattern,instantiateRuleOnPattern, matchPattern, matchRuleOnPattern, setTargetElementId. 
+                simpl. rewrite rl_attr_col_guard_ca. simpl. rewrite rl_attr_col_guard_ca. simpl. left. rewrite Hcol_cos_attr. done.
+              - rewrite H1. done.
+            }
+            assert (cl = c).
+            { try apply (@eq_class_table cm rm tr t tx2); auto; unfold instantiatePattern; unfold matchPattern; simpl.
+              - left. done.
+              - left. rewrite Heqtx2. unfold setTargetElementId. simpl. unfold setTableId. simpl. done.
+            }
+            rewrite H3.
+            done.
+      --    unfold RelationalMetamodel_getColumnReferenceOnLinks in Happly_attr_colref.
+            simpl in Happly_attr_colref.
+            apply rel_invert in  Hcol_cos_attr.
+            
+            simpl in Happly_attr_colref.
+            assert False. {
+              try apply (@lem_disagree_colrefs cm rm tr attr t col); auto.
+              - unfold instantiatePattern,instantiateRuleOnPattern, matchPattern, setTargetElementId. 
+                simpl. rewrite rl_attr_col_guard_ca. simpl. rewrite rl_attr_col_guard_ca. simpl. left. rewrite Hcol_cos_attr. done.
+            }
+            done.
+  - done.
+  - done.
+  - done.
 Qed.
+
+
+
+(*
+
+
 
 
 
