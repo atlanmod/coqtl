@@ -947,33 +947,13 @@ destruct Hcol_cos_attr; destruct Ht_cos_cl.
 
 Qed.
 
-
-(*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Lemma lem_reach_step:
  (forall (cm : ClassModel) (rm : RelationalModel), rm = execute Class2Relational cm -> (* transformation *)
    forall (t1 t2 : Table) (c1 c2: Class),
      In (ClassMetamodel_toEObject c1) (allModelElements cm) ->
      In (ClassMetamodel_toEObject c2) (allModelElements cm) ->
-     In (RelationalMetamodel_toEObject t1) (instantiatePattern (getRules Class2Relational cm) (ClassMetamodel_toEObject c1::nil)) ->
-     In (RelationalMetamodel_toEObject t2) (instantiatePattern (getRules Class2Relational cm) (ClassMetamodel_toEObject c2::nil)) ->
+     In (RelationalMetamodel_toEObject t1) (optionListToList (instantiatePattern Class2Relational cm (ClassMetamodel_toEObject c1::nil))) ->
+     In (RelationalMetamodel_toEObject t2) (optionListToList (instantiatePattern Class2Relational cm (ClassMetamodel_toEObject c2::nil))) ->
      reachable_table_step rm t1 t2 ->
      reachable_class_step cm c1 c2
  ).
@@ -995,7 +975,23 @@ split.
             decompose [and] H. clear H. rename H0 into Hinc_col_rm. rename H2 into Hinc_col_t1cols. rename H3 into Heq_t2_colRef.
             remember tr as tr'.
             clear Heqtr'.
-            apply tr_surj with (t1:=col) in tr'.
+            (*TODO Compare tr_surj_elements with old tr_surj *)
+            admit.
+
+      ++++  (* getTableColumns t1 rm = l0 and getClassAttributes c1 cm = None, Impossible *)
+            assert False. { apply (@lem_disagree_tableColums cm rm tr c1 t1 t1_cols); auto. }
+            done.
+  +++ done.
+Abort.
+
+
+(*
+
+
+
+
+
+            apply tr_surj_elements with (t1:=col) in tr'.
             - destruct tr' as [sp_attr]. destruct H as [tp_col]. destruct H as [rl_attr_col].
               destruct H as [Hinc_rl]. destruct H as [Hcol_intp]. destruct H as [Hexec_rl_attr_col]. 
               destruct H as [Hattr_insp]. destruct H as [Hinctp_rm].
@@ -1057,11 +1053,18 @@ split.
                     done.
                  } 
             - assumption.
-      ++++  (* getTableColumns t1 rm = l0 and getClassAttributes c1 cm = None, Impossible *)
-            assert False. { apply (@lem_disagree_tableColums cm rm tr c1 t1 t1_cols); auto. }
-            done.
-  +++ done.
-Qed.
+
+
+
+
+
+
+
+
+
+
+
+
 
      
 Lemma lem_reach:
