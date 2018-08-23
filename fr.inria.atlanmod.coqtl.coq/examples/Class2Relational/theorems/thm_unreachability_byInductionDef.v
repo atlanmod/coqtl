@@ -845,11 +845,11 @@ Lemma lem_table_cols_infer_class_attrs:
    forall (cl: Class) (attr: Attribute) (t: Table) (col: Column) (cl_attrs: list Attribute) (t_cols: list Column),
      In (ClassMetamodel_toEObject attr) (allModelElements cm) ->
      In (ClassMetamodel_toEObject cl) (allModelElements cm) -> 
-     getAttributeDerived attr = false ->
+     getAttributeMultiValued attr = false ->
      In (RelationalMetamodel_toEObject col) (allModelElements rm) ->
      In (RelationalMetamodel_toEObject t) (allModelElements rm) -> 
-     In (RelationalMetamodel_toEObject col) (instantiatePattern (getRules Class2Relational cm) (ClassMetamodel_toEObject attr::nil)) ->
-     In (RelationalMetamodel_toEObject t) (instantiatePattern (getRules Class2Relational cm) (ClassMetamodel_toEObject cl::nil)) ->
+     In (RelationalMetamodel_toEObject col) (optionListToList (instantiatePattern Class2Relational cm (ClassMetamodel_toEObject attr::nil))) ->
+     In (RelationalMetamodel_toEObject t) (optionListToList (instantiatePattern Class2Relational cm (ClassMetamodel_toEObject cl::nil))) ->
      (getClassAttributes cl cm) = Some cl_attrs ->
      (getTableColumns t rm) = Some t_cols ->
      In col t_cols -> 
@@ -860,7 +860,7 @@ intros cm rm tr cl attr t col cl_attrs t_cols Hinc_c1_cm Hinc_c2_cm rl_attr_col_
 intros Hcol_cos_attr Ht_cos_cl Hcl_attrs Ht_cols Hcol_inc_t_cols.
 
 (* simplify Hcol_cos_attr *)
-unfold instantiatePattern,instantiateRuleOnPattern,executeRuleOnPattern in Hcol_cos_attr.
+unfold instantiatePattern,instantiateRuleOnPattern,matchPattern, setTargetElementId in Hcol_cos_attr.
 simpl in Hcol_cos_attr.
 rewrite rl_attr_col_guard_ca in Hcol_cos_attr.
 simpl in Hcol_cos_attr.
@@ -868,60 +868,55 @@ rewrite rl_attr_col_guard_ca in Hcol_cos_attr.
 simpl in Hcol_cos_attr.
 
 
-(* simplify Ht_cos_cl *)
-unfold instantiatePattern,instantiateRuleOnPattern,executeRuleOnPattern in Ht_cos_cl.
-simpl in Ht_cos_cl.
+  (* simplify Ht_cos_cl *)
+  unfold instantiatePattern,instantiateRuleOnPattern, matchPattern, setTargetElementId in Ht_cos_cl.
+  simpl in Ht_cos_cl.
 
 destruct Hcol_cos_attr; destruct Ht_cos_cl. 
 - {
     rename H into Hcol_cos_attr.
     rename H0 into Ht_cos_cl.
-    remember (getTableColumnsOnLinks t 
-              (applyPattern (getRules' Class2Relational cm) ([ClassMetamodel_BuildEObject ClassEClass cl]))) as t_cols'.
-    remember (applyPattern (getRules' Class2Relational cm) ([ClassMetamodel_BuildEObject ClassEClass cl])) as tm'.
-
+    remember (RelationalMetamodel_getTableColumnsOnLinks t 
+                (optionListToList (applyPattern Class2Relational cm ([Build_ClassMetamodel_EObject ClassEClass cl])))) as t_cols'.
+    remember (optionListToList (applyPattern Class2Relational cm ([Build_ClassMetamodel_EObject ClassEClass cl]))) as tm'.
     rename Heqt_cols' into Ht_cols'.
     symmetry in Ht_cols'.
 
     apply rel_invert in  Ht_cos_cl.
     apply rel_invert in  Hcol_cos_attr.
 
+
     (* compute apply_attr_colref: links generated associated with attr *)
     rewrite Heqtm' in Ht_cols'.
-    unfold applyPattern in Ht_cols'.
+    unfold applyPattern, matchPattern, matchRuleOnPattern in Ht_cols'.
     simpl in Ht_cols'.
 
-    unfold applyRuleOnPattern in Ht_cols'.
-    unfold executeRuleOnPattern in Ht_cols'.
+
+    unfold applyOutputPatternReferencesOnPattern, evalOutputBindingExpression, setTargetElementId, optionToList in Ht_cols'.
     simpl in Ht_cols'.
 
-    unfold getAllOuputPatternElementLinks in Ht_cols'.
-    simpl in Ht_cols'.
-    remember Ht_cols' as Ht_cols''.
-    clear HeqHt_cols''. 
-    rewrite Hcl_attrs in Ht_cols'.
+    assert (Some t_cols = t_cols'). { 
+      destruct t_cols' eqn: t_cols'_ca.
+       -  rename l into t_cols2.
+         assert ( t_cols = t_cols2). {
+         apply (@lem_agree_tablecolumns cm rm tr cl t_cols t_cols2 t); auto.
+                - unfold instantiatePattern,instantiateRuleOnPattern, matchPattern, matchRuleOnPattern, setTargetElementId. 
+                  simpl.  left. rewrite Ht_cos_cl. done.
+         }
+         rewrite H. done.
+      - rewrite Hcl_attrs in Ht_cols'. simpl in Ht_cols'. rewrite  Ht_cos_cl in Ht_cols'.
+        simpl in Ht_cols'. assert (beq_Table t t = true). { apply lem_beq_Table_refl. }
+        rewrite H in Ht_cols'. done.
+    }
+    rename H into H0.
 
     (* Compute tx: table asscoiated with attr *)
-    unfold getTableColumnsOnLinks in Ht_cols'.
-    simpl in Ht_cols'.
+    rewrite Hcl_attrs in Ht_cols'. simpl in Ht_cols'.
     
     rewrite  Ht_cos_cl in Ht_cols'.
     simpl in Ht_cols'.
     assert (beq_Table t t = true). { apply lem_beq_Table_refl. }
     rewrite H in Ht_cols'.
-
-    assert (Some t_cols = t_cols'). { 
-      destruct t_cols' eqn: t_cols'_ca.
-       - rename l into t_cols2.
-         assert ( t_cols = t_cols2). {
-         apply (@lem_agree_tablecolumns cm rm tr cl t_cols t_cols2 t); auto.
-                - unfold instantiatePattern,instantiateRuleOnPattern,executeRuleOnPattern. 
-                  simpl.  left. rewrite Ht_cos_cl. done.
-         }
-         rewrite H0. done.
-      - done.
-    }
-
     rewrite <- H0 in Ht_cols'.
     inversion Ht_cols'.
     
@@ -934,26 +929,23 @@ destruct Hcol_cos_attr; destruct Ht_cos_cl.
     clear Hcl_attrs.
     induction cl_attrs.
     - done.
-    - unfold singletons in Hcol_inc_t_cols.
-      unfold resolve in Hcol_inc_t_cols.
+    - unfold setColumnId in Hcol_inc_t_cols.
+      unfold resolve, resolveFix, matchPattern in Hcol_inc_t_cols.
       simpl in Hcol_inc_t_cols.
-      destruct (~~ getAttributeDerived a) eqn:a_guard_ca.
+      destruct (~~ getAttributeMultiValued a) eqn:a_guard_ca.
       - simpl.
         destruct Hcol_inc_t_cols.
         + left. inversion H1. destruct a, attr. simpl in H3, H4. 
           simpl in rl_attr_col_guard_ca, a_guard_ca. apply negbTE  in a_guard_ca. 
-          rewrite <- rl_attr_col_guard_ca in a_guard_ca. rewrite H3 H4 a_guard_ca. done. 
+          rewrite <- rl_attr_col_guard_ca in a_guard_ca. repeat apply lem_string_app_inv_tail in H3. crush. 
         + right. apply IHcl_attrs. done.
-
       - simpl in Hcol_inc_t_cols. right. apply IHcl_attrs. done.
-
   }
 - done.
 - done.
 - done.
 
 Qed.
-
 
 
 (*
