@@ -975,105 +975,84 @@ split.
             decompose [and] H. clear H. rename H0 into Hinc_col_rm. rename H2 into Hinc_col_t1cols. rename H3 into Heq_t2_colRef.
             remember tr as tr'.
             clear Heqtr'.
-            (*TODO Compare tr_surj_elements with old tr_surj *)
-            admit.
-
+            apply tr_surj_elements with (t1:=col) in tr'.
+            - destruct tr' as [sp_attr]. destruct H as [tp_col]. 
+              destruct H as [Hattr_insp].
+              destruct H as [Hcol_intp]. 
+              destruct H as [Hinctp_rm].
+              rename H into Hexec_rl_attr_col. 
+              destruct sp_attr eqn:sp_attr_ca.
+              -- inversion Hexec_rl_attr_col.
+              -- rename c into attr_eo. rename l into sp_attr'.
+                 destruct sp_attr' eqn:sp_attr'_ca. 
+                 --- destruct attr_eo eqn:attr_eo_ca.
+                     destruct clec_arg eqn:attr_Etype_ca; rename c into attr.
+                     *  { (* attr is Class, impossible *) 
+                           unfold instantiatePattern, instantiateRuleOnPattern, setTargetElementId in Hexec_rl_attr_col. 
+                           simpl in Hexec_rl_attr_col.
+                           inversion Hexec_rl_attr_col.
+                           rewrite <- H0 in Hcol_intp.
+                           simpl in Hcol_intp.
+                           try destruct Hcol_intp; done.
+                        }
+                     *  { (* attr is Attribute *) 
+                         destruct (getAttributeMultiValued attr) eqn:rl_attr_col_guard_ca.
+                         **  (* getAttributeDerived attr = true *)
+                              unfold instantiatePattern, instantiateRuleOnPattern, matchPattern, setTargetElementId in Hexec_rl_attr_col.
+                              simpl in Hexec_rl_attr_col.
+                              rewrite rl_attr_col_guard_ca in Hexec_rl_attr_col.
+                              simpl in Hexec_rl_attr_col.
+                              done.
+                         **  (* getAttributeDerived attr = false *)
+                              unfold instantiatePattern, instantiateRuleOnPattern, matchPattern, setTargetElementId in Hexec_rl_attr_col.
+                              simpl in Hexec_rl_attr_col.
+                              repeat rewrite rl_attr_col_guard_ca in Hexec_rl_attr_col.
+                              simpl in Hexec_rl_attr_col.
+                              rewrite rl_attr_col_guard_ca in Hexec_rl_attr_col.
+                              simpl in Hexec_rl_attr_col.
+                              inversion Hexec_rl_attr_col.
+                              rewrite <- H0 in Hcol_intp.
+                              simpl in Hcol_intp.
+                              destruct Hcol_intp.
+                              ***  exists attr.
+                                   repeat split.
+                                    *** { (* In (ClassMetamodel_toEObject attr) (allModelElements cm) *)
+                                          unfold incl in Hattr_insp.
+                                          simpl in Hattr_insp.
+                                          pose (Hattr_insp (ClassMetamodel_toEObject attr)) as Hinc_attr.
+                                          apply Hinc_attr.
+                                          left.
+                                          done. 
+                                        }
+                                    *** { (* In attr c1_attrs *)
+                                           apply (@lem_table_cols_infer_class_attrs cm rm tr c1 attr t1 col c1_attrs t1_cols); auto.
+                                          - unfold incl in Hattr_insp. apply Hattr_insp. simpl. left. done. 
+                                          - unfold instantiatePattern,instantiateRuleOnPattern, matchPattern, setTargetElementId. 
+                                            simpl. rewrite rl_attr_col_guard_ca. simpl. rewrite rl_attr_col_guard_ca. simpl. left. done.
+                                        }
+                                    *** { (* getAttributeType attr cm = return c2 *)
+                                          try apply (@lem_col_table_infer_attr_class cm rm tr attr col c2 t2); auto.
+                                          - unfold incl in Hattr_insp. apply Hattr_insp. simpl. left. done. 
+                                          - unfold instantiatePattern,instantiateRuleOnPattern, matchPattern, setTargetElementId. 
+                                            simpl. rewrite rl_attr_col_guard_ca. simpl. rewrite rl_attr_col_guard_ca. simpl. left. done.
+                                        }
+                              *** done.
+                         } 
+                 --- done.
+            - done.
       ++++  (* getTableColumns t1 rm = l0 and getClassAttributes c1 cm = None, Impossible *)
             assert False. { apply (@lem_disagree_tableColums cm rm tr c1 t1 t1_cols); auto. }
             done.
   +++ done.
-Abort.
+Qed.
 
-
-(*
-
-
-
-
-
-            apply tr_surj_elements with (t1:=col) in tr'.
-            - destruct tr' as [sp_attr]. destruct H as [tp_col]. destruct H as [rl_attr_col].
-              destruct H as [Hinc_rl]. destruct H as [Hcol_intp]. destruct H as [Hexec_rl_attr_col]. 
-              destruct H as [Hattr_insp]. destruct H as [Hinctp_rm].
-              rename H into Hmatch_attr.
-              simpl in Hmatch_attr.
-              destruct sp_attr eqn:sp_attr_ca; inversion Hmatch_attr. rename c into attr_eo. rename l into sp_attr'.
-              destruct sp_attr' eqn:sp_attr'_ca; inversion Hmatch_attr.   
-              destruct attr_eo eqn:attr_eo_ca. rename c into attr_Etype. rename c0 into attr.
-              destruct attr_Etype eqn:attr_Etype_ca; simpl in attr_Etype; simpl in Hmatch_attr; clear H0 H1.
-              *  { (* attr is Class, impossible *) 
-                   inversion Hmatch_attr.
-                   rewrite <- H0 in Hexec_rl_attr_col.
-                   unfold instantiateRuleOnPattern in Hexec_rl_attr_col. simpl in Hexec_rl_attr_col.
-                   rewrite <- Hexec_rl_attr_col in Hcol_intp.
-                   simpl in Hcol_intp.
-                   try destruct Hcol_intp; done.
-                 }
-              *  { (* attr is Attribute *) 
-                 destruct (getAttributeDerived attr) eqn:rl_attr_col_guard_ca.
-                     (* getAttributeDerived attr = false *)
-                 **  simpl in Hmatch_attr.
-                     inversion Hmatch_attr.
-                     simpl in Hmatch_attr.
-                     inversion Hmatch_attr.
-                     rewrite <- H0 in Hexec_rl_attr_col.
-                     clear H0.
-                     unfold instantiateRuleOnPattern in Hexec_rl_attr_col. 
-                     unfold executeRuleOnPattern in Hexec_rl_attr_col. 
-                     simpl in Hexec_rl_attr_col. 
-                     rewrite rl_attr_col_guard_ca in Hexec_rl_attr_col. 
-                     simpl in Hexec_rl_attr_col.
-                     rewrite <- Hexec_rl_attr_col in Hcol_intp.
-                     simpl in Hcol_intp.
-                     destruct Hcol_intp as [Hcol_intp|].
-                     simpl in Hcol_intp.
-                     exists attr.
-                     repeat split.
-                      *** { (* In (ClassMetamodel_toEObject attr) (allModelElements cm) *)
-                            unfold incl in Hattr_insp.
-                            simpl in Hattr_insp.
-                            pose (Hattr_insp (ClassMetamodel_toEObject attr)) as Hinc_attr.
-                            apply Hinc_attr.
-                            left.
-                            done. 
-                          }
-                      *** { (* In attr c1_attrs *)
-                             apply (@lem_table_cols_infer_class_attrs cm rm tr c1 attr t1 col c1_attrs t1_cols); auto.
-                            - unfold incl in Hattr_insp. apply Hattr_insp. simpl. left. done. 
-                            - unfold instantiatePattern,instantiateRuleOnPattern,executeRuleOnPattern. 
-                              simpl. rewrite rl_attr_col_guard_ca. simpl. rewrite rl_attr_col_guard_ca. simpl. left. done.
-                          }
-                      *** { (* getAttributeType attr cm = return c2 *)
-                            try apply (@lem_col_table_infer_attr_class cm rm tr attr col c2 t2); auto.
-                            - unfold incl in Hattr_insp. apply Hattr_insp. simpl. left. done. 
-                            - unfold instantiatePattern,instantiateRuleOnPattern,executeRuleOnPattern. 
-                              simpl. rewrite rl_attr_col_guard_ca. simpl. rewrite rl_attr_col_guard_ca. simpl. left. done.
-                          }
-                 ** (* getAttributeDerived attr = true *)
-                    done.
-                 } 
-            - assumption.
-
-
-
-
-
-
-
-
-
-
-
-
-
-     
 Lemma lem_reach:
  (forall (cm : ClassModel) (rm : RelationalModel), rm = execute Class2Relational cm -> (* transformation *)
    forall (t1 t2 : Table) (c1 c2: Class),
      In (ClassMetamodel_toEObject c1) (allModelElements cm) ->
      In (ClassMetamodel_toEObject c2) (allModelElements cm) ->
-     In (RelationalMetamodel_toEObject t1) (instantiatePattern (getRules Class2Relational cm) (ClassMetamodel_toEObject c1::nil)) ->
-     In (RelationalMetamodel_toEObject t2) (instantiatePattern (getRules Class2Relational cm) (ClassMetamodel_toEObject c2::nil)) ->
+     In (RelationalMetamodel_toEObject t1) (optionListToList (instantiatePattern Class2Relational cm (ClassMetamodel_toEObject c1::nil))) ->
+     In (RelationalMetamodel_toEObject t2) (optionListToList (instantiatePattern Class2Relational cm (ClassMetamodel_toEObject c2::nil))) ->
      ReachableTable rm t1 t2 ->
      ReachableClass cm c1 c2
  ).
@@ -1088,62 +1067,63 @@ Proof.
   - intros.
     remember H as tr.
     clear Heqtr.
-    apply tr_surj with (t1:=y) in H.
-    - destruct H as [sp]. destruct H as [tp]. destruct H as [r].
-      destruct H as [Hinsm]. destruct H as [Hintp]. destruct H as [Hexec]. destruct H as [Hinclsp]. destruct H as [incltp].
-      rename H into Hmatch.
-      simpl in Hmatch.
-      try destruct sp eqn:sp_ca; inversion Hmatch. (* try ... inversion Hmatch; elimin impossible case *)
-      try destruct l eqn:l_ca; inversion Hmatch.   (* try ... inversion Hmatch; elimin impossible case *)
-      destruct c eqn:c_ca. 
-      destruct c0 eqn:c0_ca; simpl in Hmatch; simpl in c3.
-      * apply IHHreach_t1_t2 with (c1:=c3) in Hinc_t2_sp2. (* c0 = ClassEClass *)
+    apply tr_surj_elements with (t1:=y) in H.
+    --  destruct H as [sp_attr]. destruct H as [tp_col]. 
+        destruct H as [Hattr_insp].
+        destruct H as [Hcol_intp]. 
+        destruct H as [Hinctp_rm].
+        rename H into Hexec_rl_attr_col. 
+        destruct sp_attr eqn:sp_attr_ca; inversion Hexec_rl_attr_col.
+        destruct l eqn:l_ca; inversion Hexec_rl_attr_col. clear H2.
+        destruct c eqn:c_ca.
+        destruct clec_arg eqn:clec_arg_ca; rename c0 into c3.
+      * (* clec_arg_ca = ClassEClass *)
+        apply IHHreach_t1_t2 with (c1:=c3) in Hinc_t2_sp2. 
         ** (* reachable_table_column_step x y -> reachable_class_step cm c1 c3 *)
            assert (reachable_class_step cm c1 c3). 
            {
             try apply (@lem_reach_step cm rm tr x y); auto.
-            - unfold incl in Hinclsp. apply Hinclsp. simpl. left. done.
-            - inversion Hmatch. rewrite <- H3 in Hexec. 
-              unfold instantiateRuleOnPattern in Hexec. simpl in Hexec.
-              rewrite <- Hexec in Hintp. done.
+            - unfold incl in Hattr_insp. apply Hattr_insp. simpl. left. done.
+            - inversion Hexec_rl_attr_col. rewrite <- H2 in Hcol_intp. 
+              simpl in Hcol_intp.
+              crush.
            }
            apply reachable_class_trans with c3.
            *** exact. 
            *** exact.
-        ** unfold incl in Hinclsp.
-           simpl in Hinclsp.
-           rewrite <- c_ca in Hinclsp.
-           pose (Hinclsp (ClassMetamodel_toEObject c3)) as Hinc.
+        ** unfold incl in Hattr_insp.
+           simpl in Hattr_insp.
+           rewrite <- c_ca in Hattr_insp.
+           pose (Hattr_insp (ClassMetamodel_toEObject c3)) as Hinc.
            apply Hinc.
            left.
            done.
-        ** simpl.
-           left.
-           rewrite <- Hexec in Hintp.
-           simpl in Hintp.
-           inversion Hmatch.
-           rewrite <- H3 in Hintp.
-           simpl in Hintp.
-           destruct Hintp.
-           *** done.
-           *** done.
-      *  simpl in H1, H2, Hmatch.    (* c0 = AttributeEClass, impoosible *)
-         try destruct (getAttributeDerived c3) eqn:derived_ca; inversion Hmatch.
-         rewrite <- H3 in Hexec.
-         unfold instantiateRuleOnPattern in Hexec. 
-         unfold executeRuleOnPattern in Hexec. 
-         simpl in Hexec. 
-         rewrite derived_ca in Hexec.
-         simpl in Hexec.
-         rewrite <- Hexec in Hintp.
-         simpl in Hintp.
-         destruct Hintp; done.
-    - unfold reachable_table_step in H0.
-      destruct H0. destruct H1. 
-      assumption.
+        ** inversion Hexec_rl_attr_col. rewrite <- H2 in Hcol_intp. 
+           simpl in Hcol_intp.
+           crush.
+      *  (* clec_arg_ca = AttributeEClass, impoosible *)   
+         destruct (getAttributeMultiValued c3) eqn:rl_attr_col_guard_ca.
+         **  (* getAttributeDerived attr = true *)
+              unfold instantiatePattern, instantiateRuleOnPattern, matchPattern, setTargetElementId in Hexec_rl_attr_col.
+              simpl in Hexec_rl_attr_col.
+              rewrite rl_attr_col_guard_ca in Hexec_rl_attr_col.
+              simpl in Hexec_rl_attr_col.
+              done.
+         **  (* getAttributeDerived attr = false *)
+              unfold instantiatePattern, instantiateRuleOnPattern, matchPattern, setTargetElementId in Hexec_rl_attr_col.
+              simpl in Hexec_rl_attr_col.
+              repeat rewrite rl_attr_col_guard_ca in Hexec_rl_attr_col.
+              simpl in Hexec_rl_attr_col.
+              rewrite rl_attr_col_guard_ca in Hexec_rl_attr_col.
+              simpl in Hexec_rl_attr_col.
+              inversion Hexec_rl_attr_col.
+              rewrite <- H2 in Hcol_intp.
+              simpl in Hcol_intp.
+              destruct Hcol_intp; done.
+    --  unfold reachable_table_step in H0.
+        destruct H0. destruct H1. 
+        assumption.
 Qed.
-
-
 
 (* try cast x to type t, if succ and results x1, do e1, else do e2 *)
 Notation "x1 <= [[ t ]] x | 'SUCC' e1 'FAIL' e2" :=
@@ -1174,11 +1154,11 @@ intros cm c res.
 unfold ClassModel_fistClass, ClassModel_fistClass' in res.
 destruct cm.
 simpl in res. simpl.
-induction l.
+induction modelElements.
 - done.
 - destruct (ClassMetamodel_instanceOfEClass ClassEClass a) eqn: ca.
   - destruct a.
-    destruct c0.
+    destruct clec_arg.
     - simpl in res.
       inversion res.
       simpl. left.
@@ -1186,12 +1166,9 @@ induction l.
     - done.
   - simpl.
     right.
-    apply IHl.
+    apply IHmodelElements.
     done.
 Qed.
-    
-
-
 
 (* if none of reachable classes from [firstClass] named "Bad"
    then none of reachable tables from [firstTable] (gen from [firstClass]) named "Bad"
@@ -1202,12 +1179,10 @@ Theorem Class2Relational_keeps_full_reachability :
      | Some c1 => 
         (~ (beq_string (getClassName c1) "Bad"))                                                                                                           -> (* pre *)
         (forall (c2 : Class), In (ClassMetamodel_toEObject c2) (allModelElements cm) -> ReachableClass cm c1 c2 -> ~ (beq_string (getClassName c2) "Bad")) -> (* pre *)
-         (forall (t: RelationalMetamodel_EObject) (r : Rule ClassMetamodel RelationalMetamodel),
-           In r (getRules Class2Relational cm) ->
+         (forall (t: RelationalMetamodel_EObject),
            In t (allModelElements rm) ->
-           In t (instantiateRuleOnPattern r (ClassMetamodel_toEObject c1::nil)) ->
-           matchPattern (getRules Class2Relational cm) (ClassMetamodel_toEObject c1::nil) = Some r ->
-           (t1 <= [[TableClass]] t  | 
+           In t (optionListToList (instantiatePattern Class2Relational cm (ClassMetamodel_toEObject c1::nil))) ->
+           (t1 <= [[TableEClass]] t  | 
              SUCC (forall (t2 : Table), In (RelationalMetamodel_toEObject t2) (allModelElements rm) -> ReachableTable rm t1 t2 ->
                     ~ (beq_string (getTableName t2) "Bad"))                                                                                                  (* post *)
              FAIL Trivial)
@@ -1218,16 +1193,13 @@ Theorem Class2Relational_keeps_full_reachability :
 Proof.
   intros cm rm tr .
   destruct (ClassModel_fistClass cm) eqn: first_Class_ca.
-  - intros Hgood_class Hreach_class t rl Hinc_rl Hinc_t Hinc_t_rl Hmatch.
-    destruct (toModelClass TableClass t) as [t1|] eqn: cast_ca.
+  - intros Hgood_class Hreach_class t Hinc_t Hinc_t_rl.
+    destruct (toModelClass TableEClass t) as [t1|] eqn: cast_ca.
      - intros t2 Hinc_t2 Hreach_t_t2.
        simpl in t1.
        (* important here *)
        induction Hreach_t_t2.
        - (* reachable_table_refl *)
-         inversion Hmatch.
-         rewrite <- H0 in Hinc_t_rl.
-         simpl in Hinc_t_rl.
          destruct Hinc_t_rl.
          - unfold RelationalMetamodel_toEObject in H.
            rewrite <- H in cast_ca.
@@ -1239,60 +1211,58 @@ Proof.
            (* get corresponding eobject c of Table z *)
          - remember tr as tr'.
            clear  Heqtr' .
-           apply tr_surj with (t1:=z) in tr'.  
-          + destruct tr' as [sp_z]. destruct H0 as [tp_z]. destruct H0 as [rL_z].
-            destruct H0 as [Hinsm_z]. destruct H0 as [Hintp_z]. destruct H0 as [Hexec_z]. 
-            destruct H0 as [Hinclsp_z]. destruct H0 as [incltp_z].
-            rename H0 into Hmatch_z.
-            simpl in Hmatch_z.
-            try destruct sp_z eqn:sp_ca; inversion Hmatch_z. 
-            try destruct l eqn:l_z_ca; inversion Hmatch_z. 
-            destruct c0 as [c0_z] eqn:c0_z_ca; simpl in Hmatch_z.
-            destruct c0_z eqn:z_ca; simpl in Hmatch_z.
-            (* if c is Class, Important *)
-            *  inversion Hmatch_z.
-               rewrite <- H3 in Hexec_z.
-               rewrite <- Hexec_z in Hintp_z.
-               simpl in Hintp_z.
-               destruct Hintp_z; auto.
-               ** assert (In c0 ([ClassMetamodel_BuildEObject ClassEClass c1])). {
-                     simpl. left. symmetry. assumption.
-                  }
-                  apply Hinclsp_z in H4.
-                  rewrite c0_z_ca in H4.
-                  apply Hreach_class in H4.
-                  - simpl in H.
-                    apply rel_invert in H0.
-                    rewrite <- H0.
-                    done.
-                  - clear H1 H2 Hmatch_z.
-                    try apply (@lem_reach cm rm tr x z c c1); auto.
-                    -  apply (lemma_ClassModel_fistClass_inc); done.
-                    - { inversion Hmatch. rewrite <- H2 in Hinc_t_rl. 
-                        unfold instantiateRuleOnPattern in Hinc_t_rl. simpl in Hinc_t_rl.
-                        destruct (Hinc_t_rl) eqn: Hinc_t_rl_ca.
-                        - { simpl. left. simpl in cast_ca.
-                            rewrite <- e in cast_ca. simpl in cast_ca.
-                            inversion cast_ca. done. }
-                        - done.
+           apply tr_surj_elements with (t1:=z) in tr'.
+           +  destruct tr' as [sp_z]. destruct H0 as [tp_z]. 
+              destruct H0 as [Hinclsp_z].
+              destruct H0 as [Hintp_z]. 
+              destruct H0 as [incltp_z].
+              rename H0 into Hexec_z. 
+              destruct sp_z eqn:sp_z_ca; inversion Hexec_z.
+              destruct l eqn:l_ca; inversion Hexec_z. clear H1 H2.
+              destruct c0 eqn:c0_z_ca.
+              destruct clec_arg eqn:clec_arg_ca.
+
+              (* if c is Class, Important *)
+               * inversion Hexec_z.
+                   rewrite <- H1 in Hintp_z.
+                   simpl in Hintp_z.
+                   destruct Hintp_z; auto.
+                   ** assert (In c0 ([Build_ClassMetamodel_EObject ClassEClass c1])). {
+                         simpl. left. symmetry. assumption.
                       }
-                    - { simpl. left. done. }
-                    - apply (@reachable_table_trans rm x y z H Hreach_t_t2).
-             (* if c is Attribute, Trivial *)
-             * simpl in H1, H2, Hmatch_z.
-               try destruct (getAttributeDerived c1) eqn:derived_ca; inversion Hmatch_z.
-               rewrite <- H3 in Hexec_z.
-               unfold instantiateRuleOnPattern in Hexec_z. 
-               unfold executeRuleOnPattern in Hexec_z. 
-               simpl in Hexec_z. 
-               rewrite derived_ca in Hexec_z.
-               simpl in Hexec_z.
-               rewrite <- Hexec_z in Hintp_z.
-               simpl in Hintp_z.
-               destruct Hintp_z; done.
+                      apply Hinclsp_z in H2.
+                      rewrite c0_z_ca in H2.
+                      apply Hreach_class in H2.
+                      - simpl in H.
+                        apply rel_invert in H0.
+                        rewrite <- H0.
+                        done.
+                      - try apply (@lem_reach cm rm tr x z c c1); auto.
+                        - apply (lemma_ClassModel_fistClass_inc); done.
+                        - crush.
+                        - simpl. left. done.
+                        - apply (@reachable_table_trans rm x y z H Hreach_t_t2). 
+              (* if c is Attribute, Trivial *)
+               * destruct (getAttributeMultiValued c1) eqn:rl_attr_col_guard_ca.
+                 **  (* getAttributeDerived attr = true *)
+                      unfold instantiatePattern, instantiateRuleOnPattern, matchPattern, setTargetElementId in Hexec_z.
+                      simpl in Hexec_z.
+                      rewrite rl_attr_col_guard_ca in Hexec_z.
+                      simpl in Hexec_z.
+                      done.
+                 **  (* getAttributeDerived attr = false *)
+                      unfold instantiatePattern, instantiateRuleOnPattern, matchPattern, setTargetElementId in Hexec_z.
+                      simpl in Hexec_z.
+                      repeat rewrite rl_attr_col_guard_ca in Hexec_z.
+                      simpl in Hexec_z.
+                      rewrite rl_attr_col_guard_ca in Hexec_z.
+                      simpl in Hexec_z.
+                      inversion Hexec_z.
+                      rewrite <- H1 in Hintp_z.
+                      simpl in Hintp_z.
+                      destruct Hintp_z; done.
            + done.
      - done.
   - done.
 Qed.
 
- *)
