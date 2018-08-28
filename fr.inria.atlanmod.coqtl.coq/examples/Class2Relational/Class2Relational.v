@@ -12,41 +12,45 @@ Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
 Require Import examples.Class2Relational.ClassMetamodelPattern.
 
+Open Scope coqtl.
+
 Definition Class2RelationalConcrete :=
   transformation Class2Relational from ClassMetamodel to RelationalMetamodel
     with m as ClassModel := [
 
       rule Class2Table
         from
-          element c class ClassEClass
+          c!ClassEClass
         to [
-          output "tab"
-            element t class TableEClass :=
+          "tab" :
+            t!TableEClass :=
               BuildTable newId (getClassName c)
-            links [
-              reference TableColumnsEReference :=
+            with [
+              !TableColumnsEReference :=
                 attrs <- getClassAttributes c m;
                 cols <- resolveAll Class2Relational m "col" ColumnEClass
                   (map (fun a:Attribute => [[ a ]]) attrs);
                 return BuildTableColumns t cols
-             ]
+            ]
         ];
 
       rule Attribute2Column
         from
-          element a class AttributeEClass 
+          a!AttributeEClass 
             when negb (getAttributeMultiValued a)
         to [
-          output "col"
-            element c class ColumnEClass := 
+          "col" :
+            c!ColumnEClass := 
                BuildColumn newId (getAttributeName a)
-            links [
-              reference ColumnReferenceEReference :=
+            with [
+              !ColumnReferenceEReference :=
                 cl <- getAttributeType a m;
                 tb <- resolve Class2Relational m "tab" TableEClass [[ cl ]];
                 return BuildColumnReference c tb
             ] 
         ]
   ].
+
+Close Scope coqtl.
 
 Definition Class2Relational := parseTransformation Class2RelationalConcrete.
