@@ -12,6 +12,8 @@ Require Import core.CoqTL.
 Require Import examples.ClassGraph2Tree.ClassMetamodel.
 Require Import examples.ClassGraph2Tree.ClassMetamodelPattern.
 
+Open Scope coqtl.
+
 Definition step (m: ClassModel) (c: Class) : option (list Class) :=
   attrs <- getClassAttributes c m;
   return
@@ -61,8 +63,6 @@ Definition allPathsTo (m : ClassModel) (l : nat) (o: Class) : list (list Class) 
             | nil => false
             end
          ) (allPaths m l).
-
-Open Scope coqtl.
 
 Definition ClassGraph2Tree' :=
   transformation ClassGraph2Tree from ClassMetamodel to ClassMetamodel
