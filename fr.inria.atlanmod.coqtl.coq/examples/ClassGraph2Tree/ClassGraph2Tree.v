@@ -12,6 +12,8 @@ Require Import core.CoqTL.
 Require Import examples.ClassGraph2Tree.ClassMetamodel.
 Require Import examples.ClassGraph2Tree.ClassMetamodelPattern.
 
+Open Scope coqtl.
+
 Definition step (m: ClassModel) (c: Class) : option (list Class) :=
   attrs <- getClassAttributes c m;
   return
@@ -68,31 +70,34 @@ Definition ClassGraph2Tree' :=
 
       rule Class2Class
         from
-          element c class ClassEClass
+          c!ClassEClass
         for
           i in (allPathsTo m 3 c)
         to [
-          output "at"
-            element a' class AttributeEClass :=
+          "at" :
+            a'!AttributeEClass :=
               BuildAttribute newId false (getClassName c)
-            links [
-              reference AttributeTypeEReference :=
+            with [
+              !AttributeTypeEReference :=
                 path <- i;
                 cls <- resolve ClassGraph2Tree m "cl" ClassEClass [[ c ]] path;
                 return BuildAttributeType a' cls
              ];
-          output "cl"
-            element c' class ClassEClass :=
+          "cl" :
+            c'!ClassEClass :=
               BuildClass newId (getClassName c)
-            links [
-              reference ClassAttributesEReference :=
+            with [
+              !ClassAttributesEReference :=
                 path <- i;
                 cls <- step m c;
                 attrs <- resolveAll ClassGraph2Tree m "at" AttributeEClass
                   (map (fun c:Class => [[ c ]]) cls) (nextPaths m path);
                 return BuildClassAttributes c' attrs
-            ]
+              ]
+                 
         ]
   ].
+
+Close Scope coqtl.
 
 Definition ClassGraph2Tree := parseTransformation ClassGraph2Tree'.
