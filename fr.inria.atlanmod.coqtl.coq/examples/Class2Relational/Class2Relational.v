@@ -20,13 +20,13 @@ Definition Class2RelationalConcrete :=
 
       rule Class2Table
         from
-          c!ClassEClass
+          c class ClassEClass
         to [
           "tab" :
-            t!TableEClass :=
+            t class TableEClass :=
               BuildTable newId (getClassName c)
             with [
-              !TableColumnsEReference :=
+              ref TableColumnsEReference :=
                 attrs <- getClassAttributes c m;
                 cols <- resolveAll Class2Relational m "col" ColumnEClass
                   (map (fun a:Attribute => [[ a ]]) attrs);
@@ -36,14 +36,14 @@ Definition Class2RelationalConcrete :=
 
       rule Attribute2Column
         from
-          a!AttributeEClass 
+          a class AttributeEClass 
             when negb (getAttributeMultiValued a)
         to [
           "col" :
-            c!ColumnEClass := 
+            c class ColumnEClass := 
                BuildColumn newId (getAttributeName a)
             with [
-              !ColumnReferenceEReference :=
+              ref ColumnReferenceEReference :=
                 cl <- getAttributeType a m;
                 tb <- resolve Class2Relational m "tab" TableEClass [[ cl ]];
                 return BuildColumnReference c tb

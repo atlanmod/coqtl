@@ -20,13 +20,13 @@ Definition Class2RelationalMVConcrete :=
 
       rule Class2Table
         from
-          c!ClassEClass
+          c class ClassEClass
         to [
           "tab" :
-            t!TableEClass :=
+            t class TableEClass :=
               BuildTable newId (getClassName c)
             with [
-              !TableColumnsEReference :=
+              ref TableColumnsEReference :=
                 attrs <- getClassAttributes c m;
                 cols <- (resolveAll Class2Relational m "col" ColumnEClass
                   (map (fun a:Attribute => [[ a ]]) attrs));
@@ -34,20 +34,20 @@ Definition Class2RelationalMVConcrete :=
                 return BuildTableColumns t (key :: cols)
             ]; 
           "key" :
-            k!ColumnEClass :=
+            k class ColumnEClass :=
               BuildColumn newId (getClassName c ++ "id")
         ];
 
       rule SinglevaluedAttribute2Column
         from
-          a!AttributeEClass 
+          a class AttributeEClass 
             when negb (getAttributeMultiValued a)
         to [
           "col" :
-            c!ColumnEClass := 
+            c class ColumnEClass := 
               BuildColumn newId (getAttributeName a)
             with [
-              !ColumnReferenceEReference :=
+              ref ColumnReferenceEReference :=
                 cl <- getAttributeType a m;
                 tb <- resolve Class2Relational m "tab" TableEClass [[ cl ]];
                 return BuildColumnReference c tb
@@ -56,37 +56,37 @@ Definition Class2RelationalMVConcrete :=
       
       rule MultivaluedAttribute2Column
         from
-          a!AttributeEClass 
+          a class AttributeEClass 
             when getAttributeMultiValued a
         to [
           "col" :
-            c!ColumnEClass := 
+            c class ColumnEClass := 
               BuildColumn newId (getAttributeName a)
             with [
-              !ColumnReferenceEReference :=
+              ref ColumnReferenceEReference :=
                 tb <- resolve Class2Relational m "pivot" TableEClass [[ a ]];
                 return BuildColumnReference c tb
             ];
                  
           "pivot" :
-            t!TableEClass := 
+            t class TableEClass := 
               BuildTable newId (getAttributeName a ++ "Pivot")
             with [
-               !TableColumnsEReference :=
+               ref TableColumnsEReference :=
                  psrc <- resolve Class2Relational m "psrc" ColumnEClass [[ a ]];
                  ptrg <- resolve Class2Relational m "ptrg" ColumnEClass [[ a ]];
                  return BuildTableColumns t [psrc; ptrg]
             ];
                  
           "psrc" :
-            c!ColumnEClass := 
+            c class ColumnEClass := 
                BuildColumn newId "key";
                  
           "ptrg" :
-            c!ColumnEClass := 
+            c class ColumnEClass := 
               BuildColumn newId (getAttributeName a)
             with [
-              !ColumnReferenceEReference :=
+              ref ColumnReferenceEReference :=
                 cl <- getAttributeType a m;
                 tb <- resolve Class2Relational m "tab" TableEClass [[ cl ]];
                 return BuildColumnReference c tb
