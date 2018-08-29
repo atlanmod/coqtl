@@ -82,7 +82,7 @@ Definition ClassGraph2Tree' :=
                 path <- i;
                 cls <- resolve ClassGraph2Tree m "cl" ClassEClass [[ c ]] path;
                 return BuildAttributeType a' cls
-             ];
+            ];
           "cl" :
             c' class ClassEClass :=
               BuildClass newId (getClassName c)
@@ -93,10 +93,10 @@ Definition ClassGraph2Tree' :=
                 attrs <- resolveAll ClassGraph2Tree m "at" AttributeEClass
                   (map (fun c:Class => [[ c ]]) cls) (nextPaths m path);
                 return BuildClassAttributes c' attrs
-              ]
-                 
+            ]
         ]
-  ].
+       
+    ].
 
 Close Scope coqtl.
 
