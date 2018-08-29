@@ -70,24 +70,24 @@ Definition ClassGraph2Tree' :=
 
       rule Class2Class
         from
-          c!ClassEClass
+          c class ClassEClass
         for
           i in (allPathsTo m 3 c)
         to [
           "at" :
-            a'!AttributeEClass :=
+            a' class AttributeEClass :=
               BuildAttribute newId false (getClassName c)
             with [
-              !AttributeTypeEReference :=
+              ref AttributeTypeEReference :=
                 path <- i;
                 cls <- resolve ClassGraph2Tree m "cl" ClassEClass [[ c ]] path;
                 return BuildAttributeType a' cls
              ];
           "cl" :
-            c'!ClassEClass :=
+            c' class ClassEClass :=
               BuildClass newId (getClassName c)
             with [
-              !ClassAttributesEReference :=
+              ref ClassAttributesEReference :=
                 path <- i;
                 cls <- step m c;
                 attrs <- resolveAll ClassGraph2Tree m "at" AttributeEClass

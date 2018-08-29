@@ -26,22 +26,22 @@ Notation "'rule' rulename 'from' rbody" :=
     (right associativity, at level 60): coqtl.
 
 (* InputPatternElement *)
-Notation "sid '!' stype 'from' sinstance ',' sbody" :=
+Notation "sid 'class' stype 'from' sinstance ',' sbody" :=
   (BuildMultiElementRule stype (fun sid => sbody))
     (right associativity, at level 60): coqtl.
 
 (* InputPatternElement no guard *)
-Notation "sid '!' stype 'for' forid 'in' forset 'to' outputels" :=
+Notation "sid 'class' stype 'for' forid 'in' forset 'to' outputels" :=
   (BuildSingleElementRule _ stype (fun sid => (true, forset)) (fun sid forid => outputels))
   (right associativity, at level 60): coqtl.
 
 (* InputPatternElement *)
-Notation "sid '!' stype 'when' guard 'for' forid 'in' forset 'to' outputels" :=
+Notation "sid 'class' stype 'when' guard 'for' forid 'in' forset 'to' outputels" :=
   (BuildSingleElementRule _ stype (fun sid => (true, forset)) (fun sid forid => outputels))
     (right associativity, at level 60): coqtl.
 
 (* OutputPatternElement *)
-Notation "elid ':' elname '!' eltype := eldef 'with' refdef" :=
+Notation "elid ':' elname 'class' eltype := eldef 'with' refdef" :=
   (BuildOutputPatternElement eltype elid eldef (fun elname => refdef))
     (right associativity, at level 60,
      elname at next level,
@@ -50,7 +50,7 @@ Notation "elid ':' elname '!' eltype := eldef 'with' refdef" :=
      refdef at next level): coqtl.
 
 (* OutputPatternElement *)
-Notation "elid ':' elname '!' eltype := eldef" :=
+Notation "elid ':' elname 'class' eltype := eldef" :=
   (BuildOutputPatternElement eltype elid eldef (fun elname => nil))
     (right associativity, at level 60,
      elname at next level,
@@ -58,7 +58,7 @@ Notation "elid ':' elname '!' eltype := eldef" :=
      eldef at next level): coqtl.
 
 (* OutputPatternElementReferenceDefinition *)
-Notation "'!' reftype ':=' refends" :=
+Notation "'ref' reftype ':=' refends" :=
   (BuildOutputPatternElementReference _ reftype refends)
     (right associativity, at level 60,
      reftype at next level): coqtl.
