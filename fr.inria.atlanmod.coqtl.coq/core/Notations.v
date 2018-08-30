@@ -33,7 +33,7 @@ Notation "sid 'class' stype 'from' sinstance ',' sbody" :=
 (* InputPatternElement no guard *)
 Notation "sid 'class' stype 'for' forid 'in' forset 'to' outputels" :=
   (BuildSingleElementRule _ stype (fun sid => (true, forset)) (fun sid forid => outputels))
-  (right associativity, at level 60): coqtl.
+    (right associativity, at level 60): coqtl.
 
 (* InputPatternElement *)
 Notation "sid 'class' stype 'when' guard 'for' forid 'in' forset 'to' outputels" :=
