@@ -86,11 +86,11 @@ Instance objectColumn : Object Column :=
 
 (* Equality for Types *)
 (**? We define eq for Eclass on their fist attribute **)
-Definition beq_Table (ta_arg1 : Table) (ta_arg2 : Table) : bool :=
-  beq_string (getTableId ta_arg1) (getTableId ta_arg2).
+Definition beq_Table (t1 : Table) (t2: Table) : bool :=
+  beq_string (getTableId t1) (getTableId t2) && beq_string (getTableName t1) (getTableName t2).
 
-Definition beq_Column (co_arg1 : Column) (co_arg2 : Column) : bool :=
-  beq_string (getColumnId co_arg1) (getColumnId co_arg2).
+Definition beq_Column (c1 : Column) (c2 : Column) : bool :=
+  beq_string (getColumnId c1) (getColumnId c2) && beq_string (getColumnName c1) (getColumnName c2).
 
 		
 (* Meta-types *)

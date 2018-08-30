@@ -1,4 +1,5 @@
 Require Import String List Omega.
+Require Import core.utils.CpdtTactics.
 
 Definition beq_string (s1 : string) (s2 : string) : bool :=
   if string_dec s1 s2
@@ -28,3 +29,11 @@ destruct (string_dec s1 s2) eqn: ca.
   rewrite ca in H.
   congruence.
 Qed. 
+
+
+
+Lemma lem_string_app_inv_tail:
+  forall (s1 s2 s3 : string),
+   String.append s1 s3 = String.append s2 s3 -> s1 = s2.
+Proof.
+Admitted.
