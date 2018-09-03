@@ -19,6 +19,7 @@ Require Import core.utils.tTop.
 Require Import core.Metamodel.
 Require Import core.Model.
 
+
 	
 (* Base types *)
 Inductive StateMachine : Set :=
@@ -32,31 +33,57 @@ Inductive Transition : Set :=
   (* label *) string ->
   (* TransitionID *) string ->
   Transition.
-  
-Inductive AbstractState : Set :=
-  BuildAbstractState :
-  (* name *) string ->
-  (* AbstractStateID *) string ->
-  AbstractState.
-  
+
 Inductive InitialState : Set :=
   BuildInitialState :
-  (* Inheritence Attribute *) AbstractState -> 
+  (* name *) string ->
   (* InitialStateID *) string ->
   InitialState.
   
 Inductive RegularState : Set :=
   BuildRegularState :
-  (* Inheritence Attribute *) AbstractState -> 
+  (* name *) string ->
   (* RegularStateID *) string ->
   RegularState.
   
 Inductive CompositeState : Set :=
   BuildCompositeState :
-  (* Inheritence Attribute *) AbstractState -> 
+  (* name *) string ->
   (* CompositeStateID *) string ->
   CompositeState.
-  
+
+(*TODO*)
+(* AbstractState-types *)
+Inductive AbstractState_EClass : Set :=
+  | InitialStateEClass
+  | RegularStateEClass
+  | CompositeStateEClass
+.
+
+(*TODO*)
+Definition AbstractState_getTypeByEClass (hsec_arg : AbstractState_EClass) : Set :=
+  match hsec_arg with
+    | InitialStateEClass => InitialState
+    | RegularStateEClass => RegularState
+    | CompositeStateEClass => CompositeState
+  end.
+
+(*TODO*)
+Definition AbstractState_getEAttributeTypesByEClass (hsec_arg : AbstractState_EClass) : Set :=
+  match hsec_arg with
+    | InitialStateEClass => 
+    (string * string)
+    | RegularStateEClass => 
+    (string * string)
+    | CompositeStateEClass => 
+    (string * string)
+  end.
+
+(*TODO*)
+Inductive AbstractState : Set :=
+ | BuildAbstractState : 
+    forall (hsec_arg: AbstractState_EClass), (AbstractState_getTypeByEClass hsec_arg) -> AbstractState.
+
 
 Inductive StateMachineTransitions : Set :=
    BuildStateMachineTransitions :
@@ -116,65 +143,58 @@ Definition Transition_getLabel (t : Transition) : string :=
   match t with BuildTransition  label TransitionID  => label end.
 Definition Transition_getTransitionID (t : Transition) : string :=
   match t with BuildTransition  label TransitionID  => TransitionID end.
- 
+
+(*TODO*)
 Definition AbstractState_getName (a : AbstractState) : string :=
-  match a with BuildAbstractState  name AbstractStateID  => name end.
+  match a with 
+| BuildAbstractState InitialStateEClass (BuildInitialState name id) => name
+| BuildAbstractState RegularStateEClass (BuildRegularState name id) => name
+| BuildAbstractState CompositeStateEClass (BuildCompositeState name id) => name
+end.
+(*TODO*)
 Definition AbstractState_getAbstractStateID (a : AbstractState) : string :=
-  match a with BuildAbstractState  name AbstractStateID  => AbstractStateID end.
- 
-Definition InitialState_getAbstractState (i : InitialState) : AbstractState :=
-  match i with BuildInitialState abstractstate InitialStateID  => abstractstate end.
+  match a with 
+| BuildAbstractState InitialStateEClass (BuildInitialState name id) => id
+| BuildAbstractState RegularStateEClass (BuildRegularState name id) => id
+| BuildAbstractState CompositeStateEClass (BuildCompositeState name id) => id
+end.
+
+(*TODO*)
+Definition InitialState_getName (i : InitialState) : string :=
+  match i with BuildInitialState name InitialStateID  => name end.
 Definition InitialState_getInitialStateID (i : InitialState) : string :=
-  match i with BuildInitialState abstractstate InitialStateID  => InitialStateID end.
+  match i with BuildInitialState name InitialStateID  => InitialStateID end.
  
-Definition RegularState_getAbstractState (r : RegularState) : AbstractState :=
-  match r with BuildRegularState abstractstate RegularStateID  => abstractstate end.
+Definition RegularState_getName (r : RegularState) : string :=
+  match r with BuildRegularState name RegularStateID  => name end.
 Definition RegularState_getRegularStateID (r : RegularState) : string :=
-  match r with BuildRegularState abstractstate RegularStateID  => RegularStateID end.
+  match r with BuildRegularState name RegularStateID  => RegularStateID end.
  
-Definition CompositeState_getAbstractState (c : CompositeState) : AbstractState :=
-  match c with BuildCompositeState abstractstate CompositeStateID  => abstractstate end.
+Definition CompositeState_getName (c : CompositeState) : string :=
+  match c with BuildCompositeState name CompositeStateID  => name end.
 Definition CompositeState_getCompositeStateID (c : CompositeState) : string :=
-  match c with BuildCompositeState abstractstate CompositeStateID  => CompositeStateID end.
+  match c with BuildCompositeState name CompositeStateID  => CompositeStateID end.
  
 
-
-		
+(*TODO*)
 (* Meta-types *)
 Inductive HSMMetamodel_EClass : Set :=
   | StateMachineEClass
   | TransitionEClass
   | AbstractStateEClass
-  | InitialStateEClass
-  | RegularStateEClass
-  | CompositeStateEClass
 .
 
+(*TODO*)
 Definition HSMMetamodel_getTypeByEClass (hsec_arg : HSMMetamodel_EClass) : Set :=
   match hsec_arg with
     | StateMachineEClass => StateMachine
     | TransitionEClass => Transition
     | AbstractStateEClass => AbstractState
-    | InitialStateEClass => InitialState
-    | RegularStateEClass => RegularState
-    | CompositeStateEClass => CompositeState
-  end.	
-
-Definition HSMMetamodel_getEAttributeTypesByEClass (hsec_arg : HSMMetamodel_EClass) : Set :=
-  match hsec_arg with
-    | StateMachineEClass => 
-    (string * string)
-    | TransitionEClass => 
-    (string * string)
-    | AbstractStateEClass => 
-    (string * string)
-    | InitialStateEClass => 
-    (AbstractState * string)
-    | RegularStateEClass => 
-    (AbstractState * string)
-    | CompositeStateEClass => 
-    (AbstractState * string)
   end.
+
+Check (fun (c : AbstractState_EClass) => (AbstractState_getEAttributeTypesByEClass c)) .
+
+
 
 Inductive HSMMetamodel_EReference : Set :=
 | StateMachineTransitionsEReference
@@ -212,11 +232,6 @@ Definition HSMMetamodel_getERoleTypesByEReference (hser_arg : HSMMetamodel_ERefe
   end.
 
 (* Generic types *)
-
-
-
-
-
 Inductive HSMMetamodel_EObject : Set :=
  | Build_HSMMetamodel_EObject : 
     forall (hsec_arg: HSMMetamodel_EClass), (HSMMetamodel_getTypeByEClass hsec_arg) -> HSMMetamodel_EObject.
@@ -225,8 +240,14 @@ Inductive HSMMetamodel_ELink : Set :=
  | Build_HSMMetamodel_ELink : 
     forall (hser_arg:HSMMetamodel_EReference), (HSMMetamodel_getTypeByEReference hser_arg) -> HSMMetamodel_ELink.
 
-(* Reflective functions *)
 
+Check Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState InitialStateEClass (BuildInitialState "A" "05")).
+
+
+
+
+
+(* Reflective functions *)
 Lemma HSMMetamodel_eqEClass_dec : 
  forall (hsec_arg1:HSMMetamodel_EClass) (hsec_arg2:HSMMetamodel_EClass), { hsec_arg1 = hsec_arg2 } + { hsec_arg1 <> hsec_arg2 }.
 Proof. repeat decide equality. Defined.
@@ -251,22 +272,24 @@ Definition HSMMetamodel_instanceOfEClass (hsec_arg: HSMMetamodel_EClass) (hseo_a
 Definition HSMMetamodel_instanceOfEReference (hser_arg: HSMMetamodel_EReference) (hsel_arg : HSMMetamodel_ELink): bool :=
   if HSMMetamodel_eqEReference_dec (HSMMetamodel_getEReference hsel_arg) hser_arg then true else false.
 
-(** Helper of building EObject for model **)
-Definition HSMMetamodel_getEObjectFromEAttributeValues (hsec_arg : HSMMetamodel_EClass) : (HSMMetamodel_getEAttributeTypesByEClass hsec_arg) -> HSMMetamodel_EObject :=
-  match hsec_arg with
-    | StateMachineEClass => 
-    (fun (p: (string * string)) => (Build_HSMMetamodel_EObject StateMachineEClass (BuildStateMachine (fst p) (snd p))))
-    | TransitionEClass => 
-    (fun (p: (string * string)) => (Build_HSMMetamodel_EObject TransitionEClass (BuildTransition (fst p) (snd p))))
-    | AbstractStateEClass => 
-    (fun (p: (string * string)) => (Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState (fst p) (snd p))))
-    | InitialStateEClass => 
-    (fun (p: (AbstractState * string)) => (Build_HSMMetamodel_EObject InitialStateEClass (BuildInitialState (fst p) (snd p))))
-    | RegularStateEClass => 
-    (fun (p: (AbstractState * string)) => (Build_HSMMetamodel_EObject RegularStateEClass (BuildRegularState (fst p) (snd p))))
-    | CompositeStateEClass => 
-    (fun (p: (AbstractState * string)) => (Build_HSMMetamodel_EObject CompositeStateEClass (BuildCompositeState (fst p) (snd p))))
-  end.
+
+(*TODO*)
+Lemma AbstractState_eqEClass_dec : 
+ forall (hsec_arg1:AbstractState_EClass) (hsec_arg2:AbstractState_EClass), { hsec_arg1 = hsec_arg2 } + { hsec_arg1 <> hsec_arg2 }.
+Proof. repeat decide equality. Defined.
+
+Definition AbstractState_getEClass (hseo_arg : AbstractState) : AbstractState_EClass :=
+   match hseo_arg with
+  | (BuildAbstractState hseo_arg _) => hseo_arg
+   end.
+
+Definition AbstractState_instanceOfEClass (hsec_arg: AbstractState_EClass) (hseo_arg : AbstractState): bool :=
+  if AbstractState_eqEClass_dec (AbstractState_getEClass hseo_arg) hsec_arg then true else false.
+
+
+
+
+
 
 (** Helper of building ELink for model **)
 Definition HSMMetamodel_getELinkFromERoleValues (hser_arg : HSMMetamodel_EReference) : (HSMMetamodel_getERoleTypesByEReference hser_arg) -> HSMMetamodel_ELink :=
@@ -290,6 +313,17 @@ Proof.
   - exact None.
 Defined.
 
+Definition HSMMetamodel_AbstractState_downcast (t : AbstractState_EClass) (ab_arg : AbstractState) : option (AbstractState_getTypeByEClass t).
+Proof.
+ destruct ab_arg as [arg1 arg2].
+ destruct (AbstractState_eqEClass_dec arg1 t) as [e|] eqn:dec_case.
+ -  rewrite e in arg2.
+    exact (Some arg2).
+ -  exact None.
+Defined.
+
+Compute (HSMMetamodel_AbstractState_downcast InitialStateEClass (BuildAbstractState InitialStateEClass (BuildInitialState "A" "05")) ).
+
 Definition HSMMetamodel_toEReference (hser_arg : HSMMetamodel_EReference) (hsel_arg : HSMMetamodel_ELink) : option (HSMMetamodel_getTypeByEReference hser_arg).
 Proof.
   destruct hsel_arg as [arg1 arg2].
@@ -312,16 +346,18 @@ Definition HSMMetamodel_toEObjectFromAbstractState (ab_arg :AbstractState) : HSM
   (Build_HSMMetamodel_EObject AbstractStateEClass ab_arg).
 Coercion HSMMetamodel_toEObjectFromAbstractState : AbstractState >-> HSMMetamodel_EObject.
 
+
+(*TODO*)
 Definition HSMMetamodel_toEObjectFromInitialState (in_arg :InitialState) : HSMMetamodel_EObject :=
-  (Build_HSMMetamodel_EObject InitialStateEClass in_arg).
+  (Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState InitialStateEClass in_arg)).
 Coercion HSMMetamodel_toEObjectFromInitialState : InitialState >-> HSMMetamodel_EObject.
 
 Definition HSMMetamodel_toEObjectFromRegularState (re_arg :RegularState) : HSMMetamodel_EObject :=
-  (Build_HSMMetamodel_EObject RegularStateEClass re_arg).
+  (Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState RegularStateEClass re_arg)).
 Coercion HSMMetamodel_toEObjectFromRegularState : RegularState >-> HSMMetamodel_EObject.
 
 Definition HSMMetamodel_toEObjectFromCompositeState (co_arg :CompositeState) : HSMMetamodel_EObject :=
-  (Build_HSMMetamodel_EObject CompositeStateEClass co_arg).
+  (Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState CompositeStateEClass co_arg)).
 Coercion HSMMetamodel_toEObjectFromCompositeState : CompositeState >-> HSMMetamodel_EObject.
 
 
@@ -341,7 +377,6 @@ Definition HSMMetamodel_toELinkOfEReference (hser_arg: HSMMetamodel_EReference) 
 
 (* Accessors on model *)
 (* Equality for Types *)
-(*? We currently define eq for Eclass on their fist attribute *)
 Definition beq_StateMachine (st_arg1 : StateMachine) (st_arg2 : StateMachine) : bool :=
 ( beq_string (StateMachine_getName st_arg1) (StateMachine_getName st_arg2) ) && 
 ( beq_string (StateMachine_getStateMachineID st_arg1) (StateMachine_getStateMachineID st_arg2) )
@@ -357,55 +392,26 @@ Definition beq_AbstractState (ab_arg1 : AbstractState) (ab_arg2 : AbstractState)
 ( beq_string (AbstractState_getAbstractStateID ab_arg1) (AbstractState_getAbstractStateID ab_arg2) )
 .
 
+(*TODO*)
 Definition beq_InitialState (in_arg1 : InitialState) (in_arg2 : InitialState) : bool :=
-beq_AbstractState (InitialState_getAbstractState in_arg1) (InitialState_getAbstractState in_arg2) &&
+beq_string (InitialState_getName in_arg1) (InitialState_getName in_arg2) &&
 ( beq_string (InitialState_getInitialStateID in_arg1) (InitialState_getInitialStateID in_arg2) )
 .
 
 Definition beq_RegularState (re_arg1 : RegularState) (re_arg2 : RegularState) : bool :=
-beq_AbstractState (RegularState_getAbstractState re_arg1) (RegularState_getAbstractState re_arg2) &&
+beq_string (RegularState_getName re_arg1) (RegularState_getName re_arg2) &&
 ( beq_string (RegularState_getRegularStateID re_arg1) (RegularState_getRegularStateID re_arg2) )
 .
 
 Definition beq_CompositeState (co_arg1 : CompositeState) (co_arg2 : CompositeState) : bool :=
-beq_AbstractState (CompositeState_getAbstractState co_arg1) (CompositeState_getAbstractState co_arg2) &&
+beq_string (CompositeState_getName co_arg1) (CompositeState_getName co_arg2) &&
 ( beq_string (CompositeState_getCompositeStateID co_arg1) (CompositeState_getCompositeStateID co_arg2) )
 .
 
 
 
-Fixpoint HSMMetamodel_AbstractState_downcastInitialState (ab_arg : AbstractState) (l : list HSMMetamodel_EObject) : option InitialState := 
-  match l with
-	 | Build_HSMMetamodel_EObject InitialStateEClass (BuildInitialState eSuper InitialStateID ) :: l' => 
-		if beq_AbstractState ab_arg eSuper then (Some (BuildInitialState eSuper InitialStateID )) else (HSMMetamodel_AbstractState_downcastInitialState ab_arg l')
-	 | _ :: l' => (HSMMetamodel_AbstractState_downcastInitialState ab_arg l')
-	 | nil => None
-end.
 
-Definition AbstractState_downcastInitialState (ab_arg : AbstractState) (m : HSMModel) : option InitialState :=
-  HSMMetamodel_AbstractState_downcastInitialState ab_arg (@allModelElements _ _ m).
 
-Fixpoint HSMMetamodel_AbstractState_downcastRegularState (ab_arg : AbstractState) (l : list HSMMetamodel_EObject) : option RegularState := 
-  match l with
-	 | Build_HSMMetamodel_EObject RegularStateEClass (BuildRegularState eSuper RegularStateID ) :: l' => 
-		if beq_AbstractState ab_arg eSuper then (Some (BuildRegularState eSuper RegularStateID )) else (HSMMetamodel_AbstractState_downcastRegularState ab_arg l')
-	 | _ :: l' => (HSMMetamodel_AbstractState_downcastRegularState ab_arg l')
-	 | nil => None
-end.
-
-Definition AbstractState_downcastRegularState (ab_arg : AbstractState) (m : HSMModel) : option RegularState :=
-  HSMMetamodel_AbstractState_downcastRegularState ab_arg (@allModelElements _ _ m).
-
-Fixpoint HSMMetamodel_AbstractState_downcastCompositeState (ab_arg : AbstractState) (l : list HSMMetamodel_EObject) : option CompositeState := 
-  match l with
-	 | Build_HSMMetamodel_EObject CompositeStateEClass (BuildCompositeState eSuper CompositeStateID ) :: l' => 
-		if beq_AbstractState ab_arg eSuper then (Some (BuildCompositeState eSuper CompositeStateID )) else (HSMMetamodel_AbstractState_downcastCompositeState ab_arg l')
-	 | _ :: l' => (HSMMetamodel_AbstractState_downcastCompositeState ab_arg l')
-	 | nil => None
-end.
-
-Definition AbstractState_downcastCompositeState (ab_arg : AbstractState) (m : HSMModel) : option CompositeState :=
-  HSMMetamodel_AbstractState_downcastCompositeState ab_arg (@allModelElements _ _ m).
 
 
 
@@ -503,13 +509,7 @@ Definition HSMMetamodel_defaultInstanceOfEClass (hsec_arg: HSMMetamodel_EClass) 
   | TransitionEClass => 
   (BuildTransition "" "")
   | AbstractStateEClass => 
-  (BuildAbstractState "" "")
-  | InitialStateEClass => 
-  (BuildInitialState (BuildAbstractState "" "") "")
-  | RegularStateEClass => 
-  (BuildRegularState (BuildAbstractState "" "") "")
-  | CompositeStateEClass => 
-  (BuildCompositeState (BuildAbstractState "" "") "")
+  (BuildAbstractState InitialStateEClass (BuildInitialState "" ""))
   end.
 
 (* Typeclass Instance *)
@@ -542,3 +542,54 @@ Proof.
   exact H1.
   apply HSMMetamodel_eqEClass_dec.
 Qed.
+
+
+
+
+(* 
+
+
+(*TODO*)
+Definition HSMMetamodel_getEAttributeTypesByEClass (hsec_arg : HSMMetamodel_EClass) : Type :=
+  match hsec_arg with
+    | StateMachineEClass => 
+    (string * string)
+    | TransitionEClass => 
+    (string * string)
+    | AbstractStateEClass => 
+    (AbstractState_EClass) 
+  end.
+
+Compute (HSMMetamodel_getEAttributeTypesByEClass AbstractStateEClass).
+
+(*TODO*)
+Definition AbstractState_getEObjectFromEAttributeValues (hsec_arg : AbstractState_EClass) : (AbstractState_getEAttributeTypesByEClass hsec_arg) -> AbstractState :=
+  match hsec_arg with
+    | InitialStateEClass => 
+    (fun (x: (string * string)) => (BuildAbstractState InitialStateEClass (BuildInitialState (fst x) (snd x)))) 
+    | RegularStateEClass => 
+    (fun (x: (string * string)) => (BuildAbstractState RegularStateEClass (BuildRegularState (fst x) (snd x)))) 
+    | CompositeStateEClass => 
+    (fun (x: (string * string)) => (BuildAbstractState CompositeStateEClass (BuildCompositeState (fst x) (snd x)))) 
+  end.
+
+(** Helper of building EObject for model **)
+Definition HSMMetamodel_getEObjectFromEAttributeValues (hsec_arg : HSMMetamodel_EClass) : (HSMMetamodel_getEAttributeTypesByEClass hsec_arg) -> HSMMetamodel_EObject :=
+  match hsec_arg with
+    | StateMachineEClass => 
+    (fun (p: (string * string)) => (Build_HSMMetamodel_EObject StateMachineEClass (BuildStateMachine (fst p) (snd p))))
+    | TransitionEClass => 
+    (fun (p: (string * string)) => (Build_HSMMetamodel_EObject TransitionEClass (BuildTransition (fst p) (snd p))))
+    | AbstractStateEClass => 
+    (fun (p: AbstractState_EClass * Set)=> 
+ match p with
+  | InitialStateEClass => (Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState InitialStateEClass (BuildInitialState (fst (AbstractState_getEAttributeTypesByEClass p)) (snd(AbstractState_getEAttributeTypesByEClass p)))))
+  | RegularStateEClass => (Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState RegularStateEClass (BuildRegularState (fst (AbstractState_getEAttributeTypesByEClass p)) (snd(AbstractState_getEAttributeTypesByEClass p)))))
+  | CompositeStateEClass => (Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState CompositeStateEClass (BuildCompositeState (fst (AbstractState_getEAttributeTypesByEClass p)) (snd(AbstractState_getEAttributeTypesByEClass p)))))
+  end)
+end
+
+
+(*TODO*)
+
+. *)
