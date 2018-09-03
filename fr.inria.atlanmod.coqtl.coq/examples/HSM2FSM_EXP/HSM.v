@@ -544,12 +544,6 @@ Proof.
 Qed.
 
 
-
-
-(* 
-
-
-(*TODO*)
 Definition HSMMetamodel_getEAttributeTypesByEClass (hsec_arg : HSMMetamodel_EClass) : Type :=
   match hsec_arg with
     | StateMachineEClass => 
@@ -557,7 +551,7 @@ Definition HSMMetamodel_getEAttributeTypesByEClass (hsec_arg : HSMMetamodel_ECla
     | TransitionEClass => 
     (string * string)
     | AbstractStateEClass => 
-    (AbstractState_EClass) 
+    (AbstractState_EClass * AbstractState) 
   end.
 
 Compute (HSMMetamodel_getEAttributeTypesByEClass AbstractStateEClass).
@@ -581,15 +575,18 @@ Definition HSMMetamodel_getEObjectFromEAttributeValues (hsec_arg : HSMMetamodel_
     | TransitionEClass => 
     (fun (p: (string * string)) => (Build_HSMMetamodel_EObject TransitionEClass (BuildTransition (fst p) (snd p))))
     | AbstractStateEClass => 
-    (fun (p: AbstractState_EClass * Set)=> 
- match p with
-  | InitialStateEClass => (Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState InitialStateEClass (BuildInitialState (fst (AbstractState_getEAttributeTypesByEClass p)) (snd(AbstractState_getEAttributeTypesByEClass p)))))
+    (fun (p: AbstractState_EClass * AbstractState)=> (Build_HSMMetamodel_EObject AbstractStateEClass (snd p)))
+end.
+
+
+(* 
+
+
+ match (fst p) with
+  | InitialStateEClass => (Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState InitialStateEClass (BuildInitialState (fst (AbstractState_getEAttributeTypesByEClass (fst p))) (snd(AbstractState_getEAttributeTypesByEClass p)))))
   | RegularStateEClass => (Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState RegularStateEClass (BuildRegularState (fst (AbstractState_getEAttributeTypesByEClass p)) (snd(AbstractState_getEAttributeTypesByEClass p)))))
   | CompositeStateEClass => (Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState CompositeStateEClass (BuildCompositeState (fst (AbstractState_getEAttributeTypesByEClass p)) (snd(AbstractState_getEAttributeTypesByEClass p)))))
   end)
-end
 
 
-(*TODO*)
-
-. *)
+ *)
