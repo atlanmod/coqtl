@@ -34,6 +34,6 @@ examples/HSM2FSM/FSM.v
 examples/HSM2FSM/HSM2FSM.v
 examples/HSM2FSM/HSMModel.v
 
--R "examples/HSM2HSM_rec" examples.HSM2FSM_rec
-examples/HSM2HSM_rec/HSM.v
+-R "examples/HSM2HSM_EXP" examples.HSM2HSM_EXP
+examples/HSM2HSM_EXP/HSM.v
 
