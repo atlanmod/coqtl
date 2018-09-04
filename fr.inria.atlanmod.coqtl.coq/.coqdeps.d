@@ -16,10 +16,10 @@ core/utils/tTop.vo core/utils/tTop.glob core/utils/tTop.v.beautified: core/utils
 core/utils/tTop.vio: core/utils/tTop.v core/utils/tArith.vio core/utils/tList.vio core/utils/tTuple.vio core/utils/tConcat.vio core/utils/tNotation.vio core/utils/tString.vio core/utils/tPrint.vio
 core/utils/CpdtTactics.vo core/utils/CpdtTactics.glob core/utils/CpdtTactics.v.beautified: core/utils/CpdtTactics.v
 core/utils/CpdtTactics.vio: core/utils/CpdtTactics.v
-core/Metamodel.vo core/Metamodel.glob core/Metamodel.v.beautified: core/Metamodel.v core/Model.vo
-core/Metamodel.vio: core/Metamodel.v core/Model.vio
 core/Model.vo core/Model.glob core/Model.v.beautified: core/Model.v
 core/Model.vio: core/Model.v
+core/Metamodel.vo core/Metamodel.glob core/Metamodel.v.beautified: core/Metamodel.v core/Model.vo
+core/Metamodel.vio: core/Metamodel.v core/Model.vio
 core/Engine.vo core/Engine.glob core/Engine.v.beautified: core/Engine.v core/utils/tTop.vo core/Model.vo
 core/Engine.vio: core/Engine.v core/utils/tTop.vio core/Model.vio
 core/CoqTL.vo core/CoqTL.glob core/CoqTL.v.beautified: core/CoqTL.v core/Metamodel.vo core/Model.vo core/Engine.vo core/utils/tTop.vo core/utils/CpdtTactics.vo
@@ -50,3 +50,9 @@ examples/HSM2FSM/HSM2FSM.vo examples/HSM2FSM/HSM2FSM.glob examples/HSM2FSM/HSM2F
 examples/HSM2FSM/HSM2FSM.vio: examples/HSM2FSM/HSM2FSM.v core/utils/tTop.vio core/Notations.vio core/CoqTL.vio examples/HSM2FSM/HSM.vio examples/HSM2FSM/FSM.vio
 examples/HSM2FSM/HSMModel.vo examples/HSM2FSM/HSMModel.glob examples/HSM2FSM/HSMModel.v.beautified: examples/HSM2FSM/HSMModel.v core/Model.vo examples/HSM2FSM/HSM.vo
 examples/HSM2FSM/HSMModel.vio: examples/HSM2FSM/HSMModel.v core/Model.vio examples/HSM2FSM/HSM.vio
+examples/HSM2FSM_EXP/HSMr.vo examples/HSM2FSM_EXP/HSMr.glob examples/HSM2FSM_EXP/HSMr.v.beautified: examples/HSM2FSM_EXP/HSMr.v core/utils/tTop.vo core/Metamodel.vo core/Model.vo
+examples/HSM2FSM_EXP/HSMr.vio: examples/HSM2FSM_EXP/HSMr.v core/utils/tTop.vio core/Metamodel.vio core/Model.vio
+examples/HSM2FSM_EXP/HSMr2FSMr.vo examples/HSM2FSM_EXP/HSMr2FSMr.glob examples/HSM2FSM_EXP/HSMr2FSMr.v.beautified: examples/HSM2FSM_EXP/HSMr2FSMr.v core/utils/tTop.vo core/Notations.vo core/CoqTL.vo examples/HSM2FSM_EXP/HSMr.vo
+examples/HSM2FSM_EXP/HSMr2FSMr.vio: examples/HSM2FSM_EXP/HSMr2FSMr.v core/utils/tTop.vio core/Notations.vio core/CoqTL.vio examples/HSM2FSM_EXP/HSMr.vio
+examples/HSM2FSM_EXP/HSMrModel.vo examples/HSM2FSM_EXP/HSMrModel.glob examples/HSM2FSM_EXP/HSMrModel.v.beautified: examples/HSM2FSM_EXP/HSMrModel.v core/Model.vo examples/HSM2FSM_EXP/HSMr.vo
+examples/HSM2FSM_EXP/HSMrModel.vio: examples/HSM2FSM_EXP/HSMrModel.v core/Model.vio examples/HSM2FSM_EXP/HSMr.vio

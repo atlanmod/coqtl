@@ -44,7 +44,7 @@ CAMLFLAGS         := $(COQMF_CAMLFLAGS)
 HASNATDYNLINK     := $(COQMF_HASNATDYNLINK)
 
 Makefile.conf: _CoqProject
-	C:\Coq\bin\coq_makefile.exe -f _CoqProject -o Makefile
+	C:\coq\bin\coq_makefile.exe -f _CoqProject -o Makefile
 
 # This file can be created by the user to hook into double colon rules or
 # add any other Makefile code he may need

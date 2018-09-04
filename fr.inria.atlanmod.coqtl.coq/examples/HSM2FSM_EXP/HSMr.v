@@ -387,10 +387,6 @@ Definition beq_Transition (tr_arg1 : Transition) (tr_arg2 : Transition) : bool :
 ( beq_string (Transition_getTransitionID tr_arg1) (Transition_getTransitionID tr_arg2) )
 .
 
-Definition beq_AbstractState (ab_arg1 : AbstractState) (ab_arg2 : AbstractState) : bool :=
-( beq_string (AbstractState_getName ab_arg1) (AbstractState_getName ab_arg2) ) && 
-( beq_string (AbstractState_getAbstractStateID ab_arg1) (AbstractState_getAbstractStateID ab_arg2) )
-.
 
 (*TODO*)
 Definition beq_InitialState (in_arg1 : InitialState) (in_arg2 : InitialState) : bool :=
@@ -408,8 +404,13 @@ beq_string (CompositeState_getName co_arg1) (CompositeState_getName co_arg2) &&
 ( beq_string (CompositeState_getCompositeStateID co_arg1) (CompositeState_getCompositeStateID co_arg2) )
 .
 
-
-
+Definition beq_AbstractState (ab_arg1 : AbstractState) (ab_arg2 : AbstractState) : bool :=
+  match ab_arg1, ab_arg2 with
+    | BuildAbstractState InitialStateEClass e1, BuildAbstractState InitialStateEClass e2 => beq_InitialState e1 e2
+    | BuildAbstractState RegularStateEClass e1, BuildAbstractState RegularStateEClass e2 => beq_RegularState e1 e2
+    | BuildAbstractState CompositeStateEClass e1, BuildAbstractState CompositeStateEClass e2 => beq_CompositeState e1 e2
+    | _,_ => false
+  end.
 
 
 
