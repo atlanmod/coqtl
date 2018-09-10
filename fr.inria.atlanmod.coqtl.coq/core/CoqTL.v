@@ -218,10 +218,14 @@ Section CoqTL.
   Inductive ForExpressionA : Type :=
     BuildForExpressionA :
       nat ->
+      Type ->
       ForExpressionA.
 
   Definition ForExpressionA_getRule (x : ForExpressionA) : nat :=
-    match x with BuildForExpressionA y => y end.
+    match x with BuildForExpressionA y _ => y end.
+
+  Definition ForExpressionA_getType (x : ForExpressionA) : Type :=
+    match x with BuildForExpressionA _ y => y end.
   
   Inductive RuleA : Type := 
     BuildRuleA :
@@ -241,7 +245,20 @@ Section CoqTL.
     match x with BuildRuleA _ _ y _ _ => y end.
 
   Definition RuleA_getOutputPattern (x : RuleA) : list OutputPatternElementA :=
-    match x with BuildRuleA _ _ _ _ y => y end.  
+    match x with BuildRuleA _ _ _ _ y => y end.
+
+  Definition RuleA_getForExpression (x : RuleA) : ForExpressionA :=
+    match x with BuildRuleA _ _ _ y _ => y end.
+  
+  (*Fixpoint RuleA_getForType (r : RuleA) : Type :=
+    match r with
+    | BuildMultiElementRuleA s f =>
+      e' <- toModelClass s e;
+        evalForExpressionTypeFix (f e') ts sm els
+    | @BuildSingleElementRule _ T _ _, t::nil, e::nil =>
+         return T
+    | _, _, _ => None
+    end.*)
   
   Inductive TransformationA : Type := 
     BuildTransformationA :
@@ -281,8 +298,14 @@ Section CoqTL.
     | BuildSingleElementRule iet f g => iet::nil
     end.
 
+  Fixpoint parseRuleForType (r: Rule) : Type :=
+    match r with
+    | BuildMultiElementRule iet f => parseRuleForType (f (bottomModelClass iet))
+    | @BuildSingleElementRule iet ft f g => ft
+    end.
+
   Definition parseRuleDeclaration (tr: Transformation) (n: nat) (r: (string * Rule)) : RuleA :=
-    (BuildRuleA (fst r) (parseRuleTypes (snd r)) (BuildGuardExpressionA n) (BuildForExpressionA n) (parseRuleOutput tr n (snd r))).
+    (BuildRuleA (fst r) (parseRuleTypes (snd r)) (BuildGuardExpressionA n) (BuildForExpressionA n (parseRuleForType (snd r))) (parseRuleOutput tr n (snd r))).
   
   Definition parseTransformation (tr: Transformation) : TransformationA :=
     BuildTransformationA 
@@ -352,11 +375,32 @@ Section CoqTL.
       return (fst (f e'))
     | _, _, _ => None
     end.
-
+  
   Definition evalGuardExpression (o : GuardExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
     r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (GuardExpressionA_getRule o));
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
-          evalGuardExpressionFix (snd r) (RuleA_getInTypes ra) sm sp. 
+      evalGuardExpressionFix (snd r) (RuleA_getInTypes ra) sm sp.
+  
+  Fixpoint evalForExpressionFix (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) :
+    option (list (parseRuleForType r)).
+  Proof.
+    induction r, intypes, el.
+    - 
+    
+    match r, intypes, el with
+    | BuildMultiElementRule s f, t::ts, e::els =>
+      e' <- toModelClass s e;
+        evalForExpressionFix (f e') ts sm els
+    | BuildSingleElementRule s f g, t::nil, e::nil =>
+      e' <- toModelClass s e;
+         return (snd (f e'))
+    | _, _, _ => None
+    end.
+
+  Definition evalForExpression (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list A) :=
+    r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o));
+      ra <- (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule o));
+      evalForExpressionFix (snd r) (RuleA_getInTypes ra) sm sp. 
 
   (** * Engine **)
 
@@ -373,8 +417,9 @@ Section CoqTL.
 
   Definition newId := ""%string.
 
+  (*TODO*)
   Definition setTargetElementId (te: TargetModelElement) (ope: OutputPatternElementA) (sp: list SourceModelElement) : TargetModelElement :=
-    if (beq_string (getId te) "") then
+    if (beq_string (getId te) newId) then
       match (OutputPatternElementA_getOutputPatternElementExpression ope) with
         BuildOutputPatternElementExpressionA a b => 
       setId te  ((getSourcePatternId sp) ++
@@ -435,6 +480,7 @@ Section CoqTL.
 
   (** ** Resolution **)
 
+  (*TODO*)
   Definition resolveFix {A: Type} (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) (iter: A) : option (denoteModelClass type) :=
       ope <- find (fun oel => beq_string (OutputPatternElementA_getName oel) name)
           (concat (map RuleA_getOutputPattern (matchPattern tr sm sp)));
