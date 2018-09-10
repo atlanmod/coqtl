@@ -373,7 +373,7 @@ Section CoqTL.
 
   Definition newId := ""%string.
 
-  Definition setTargetElementId (te: TargetModelElement) (r: RuleA) (ope: OutputPatternElementA) (sp: list SourceModelElement) : TargetModelElement :=
+  Definition setTargetElementId (te: TargetModelElement) (ope: OutputPatternElementA) (sp: list SourceModelElement) : TargetModelElement :=
     if (beq_string (getId te) "") then
       match (OutputPatternElementA_getOutputPatternElementExpression ope) with
         BuildOutputPatternElementExpressionA a b => 
@@ -393,7 +393,7 @@ Section CoqTL.
              (fun ope: OutputPatternElementA =>
                 te <- (evalOutputPatternElementExpression
                         tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope));
-              return (setTargetElementId te r ope sp))
+              return (setTargetElementId te ope sp))
              (RuleA_getOutputPattern r))
       else
         None.
@@ -409,20 +409,24 @@ Section CoqTL.
   Definition matchRuleOnPattern (r: RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
     evalGuardExpression (RuleA_getGuard r) tr sm sp.
 
-  Definition matchPattern (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option RuleA :=
-    find (fun (r:RuleA) =>
+  Definition matchPattern (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : list RuleA :=
+    filter (fun (r:RuleA) =>
             match matchRuleOnPattern r tr sm sp with
             | (Some true) => true
             | _ => false end) (TransformationA_getRules tr).
   
   Definition instantiatePattern (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
-    r <- matchPattern tr sm sp;
-     instantiateRuleOnPattern r tr sm sp.
+    match matchPattern tr sm sp with
+    | nil => None
+    | l => Some (concat (optionList2List (map (fun r => instantiateRuleOnPattern r tr sm sp) l)))
+    end.
 
   Definition applyPattern (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
-    r <- matchPattern tr sm sp;
-      tes <- instantiateRuleOnPattern r tr sm sp;
-        applyRuleOnPattern r tr sm sp tes.
+    match matchPattern tr sm sp with
+    | nil => None
+    | l => Some (concat (optionList2List (map (fun r => tes <- instantiateRuleOnPattern r tr sm sp;
+                                                      applyRuleOnPattern r tr sm sp tes
+                                             ) l))) end.
 
   Definition transformPattern (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (ModelFragment TargetModelElement TargetModelLink) :=
       tes <- instantiatePattern tr sm sp;
@@ -431,14 +435,14 @@ Section CoqTL.
 
   (** ** Resolution **)
 
-  Definition resolveFix (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
-    r <- matchPattern tr sm sp;
-      ope <- find (fun oel => beq_string (OutputPatternElementA_getName oel) name) (RuleA_getOutputPattern r);
+  Definition resolveFix {A: Type} (l: list RuleA) (tr: TransformationA) (sm : SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) (iter: A) : option (denoteModelClass type) :=
+      ope <- find (fun oel => beq_string (OutputPatternElementA_getName oel) name)
+          (concat (map RuleA_getOutputPattern (matchPattern tr sm sp)));
       te <- evalOutputPatternElementExpression tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope);
-      toModelClass type (setTargetElementId te r ope sp).
+      toModelClass type (setTargetElementId te ope sp).
 
   Definition resolve {A: Type} (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) (iter: A): option (denoteModelClass type) :=
-    resolveFix (TransformationA_getRules (parsePhase tr)) (parsePhase tr) sm name type sp.
+    resolveFix (TransformationA_getRules (parsePhase tr)) (parsePhase tr) sm name type sp iter.
     
   Definition resolveAll (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) {A: Type} (iters: list A) : option (list (denoteModelClass type)) :=
     Some (optionList2List (zipWith (resolve tr sm name type) sps iters)).
@@ -472,7 +476,7 @@ Section CoqTL.
   
   (** * Typeclass instantiation **)
   
-  Theorem match_incl :
+(*  Theorem match_incl :
         forall (tr: TransformationA) (sm : SourceModel) (sp : list SourceModelElement) (r: RuleA),
           matchPattern tr sm sp = Some r -> In r (TransformationA_getRules tr).
   Proof.
@@ -888,7 +892,7 @@ Section CoqTL.
       match_in := match_incl;
       match_functional := match_functional;
     }.
-  
+*)  
 End CoqTL.
 
 
