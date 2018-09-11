@@ -401,17 +401,30 @@ Proof.
 intros.
 unfold TransformationA_getTransformation, ForExpressionA_getRule in H.
 simpl in H. *)
-  
- Definition evalForExpression (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getType o)).
+
+ Definition ForExpressionA_getRule2 (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option Rule :=
+  p <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o));
+    return snd p.
+
+ Inductive Error : Set :=.
+
+ Definition parseRuleForType2 (or : option Rule) : Type :=
+  match or with
+    | None => Error
+    | Some r => parseRuleForType r
+  end.
+
+ Definition evalForExpression (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (parseRuleForType2 (ForExpressionA_getRule2 o tr sm sp))).
   Proof.
     destruct (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o)) eqn:nth_r.
     - destruct (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule o)) eqn:nth_ra.
       + remember (evalForExpressionFix (snd p) (RuleA_getInTypes r) sm sp) as ret.
-        unfold parseRuleForType in ret.
+        unfold parseRuleForType2, ForExpressionA_getRule2.
+        rewrite nth_r.
         exact (ret). 
       + exact None.
     - exact None.
-                                                                                                          
+  Defined.
 
 
   (** * Engine **)
