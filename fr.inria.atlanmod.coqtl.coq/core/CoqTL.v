@@ -375,7 +375,29 @@ Section CoqTL.
       return (fst (f e'))
     | _, _, _ => None
     end.
-  
+
+
+Lemma parseForRule:
+  forall (r: Rule) (InElType : SourceModelClass) (r0 : denoteModelClass InElType -> Rule) (d : denoteModelClass InElType),
+    r = BuildMultiElementRule InElType r0 ->
+      parseRuleForType r = parseRuleForType (r0 d).
+Proof.
+intros.
+unfold parseRuleForType.
+simpl.
+induction (r0 d).
+- unfold parseRuleForType.
+  crush.
+- crush.
+Admitted.
+
+
+
+(* (bottomModelClass InElType) *)
+
+
+(* exact (evalForExpressionFix (r0 d) l sm l0). *)
+
   Definition evalGuardExpression (o : GuardExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
     r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (GuardExpressionA_getRule o));
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
@@ -383,24 +405,53 @@ Section CoqTL.
   
   Fixpoint evalForExpressionFix (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) :
     option (list (parseRuleForType r)).
-  Proof.
-    induction r, intypes, el.
-    - 
+ Proof.
+    destruct r eqn:r_ca; destruct intypes eqn: intypes_ca; destruct el eqn: el_ca.
+    - exact None.
+    - exact None.
+    - exact None.
+    - destruct l eqn:intypes_l_ca; destruct l0 eqn:el_l0_ca.
+      -- exact None.
+      -- exact None.
+      -- exact None.
+      -- destruct (toModelClass InElType s0) eqn:toModel_ca.
+         --- assert (parseRuleForType r = parseRuleForType (r0 d)).
+             { apply parseForRule. exact r_ca. }
+             rewrite r_ca in H.
+             rewrite H.
+             exact (evalForExpressionFix (r0 d) l sm l0). 
+         --- exact None.
+    - exact None.
+    - exact None.
+    - exact None.
+    - destruct l0 eqn:intypes_l0_ca; destruct l1 eqn:el_l1_ca.
+      -- destruct (toModelClass InElType s0) eqn:toModel_ca.
+         --- unfold parseRuleForType. 
+             exact (Some (snd (p d))).
+         --- exact None.
+      -- exact None.
+      -- exact None.
+      -- exact None.
+  Defined.
+
+Definition evalForExpression (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getType o)) :=
+    r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o));
+      ra <- (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule o));
+      evalForExpressionFix (snd r) (RuleA_getInTypes ra) sm sp. 
+
+
+
     
-    match r, intypes, el with
+  match r, intypes, el with
     | BuildMultiElementRule s f, t::ts, e::els =>
       e' <- toModelClass s e;
-        evalForExpressionFix (f e') ts sm els
+        evalForExpressionFix (f (bottomModelClass s)) ts sm els
     | BuildSingleElementRule s f g, t::nil, e::nil =>
       e' <- toModelClass s e;
          return (snd (f e'))
     | _, _, _ => None
     end.
 
-  Definition evalForExpression (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list A) :=
-    r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o));
-      ra <- (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule o));
-      evalForExpressionFix (snd r) (RuleA_getInTypes ra) sm sp. 
 
   (** * Engine **)
 
