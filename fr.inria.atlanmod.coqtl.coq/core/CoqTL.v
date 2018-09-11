@@ -401,25 +401,21 @@ Proof.
 intros.
 unfold TransformationA_getTransformation, ForExpressionA_getRule in H.
 simpl in H. *)
-
- Definition ForExpressionA_getRule2 (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option Rule :=
-  p <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o));
-    return snd p.
-
+  
  Inductive Error : Set :=.
 
- Definition parseRuleForType2 (or : option Rule) : Type :=
-  match or with
-    | None => Error
-    | Some r => parseRuleForType r
-  end.
+ Definition ForExpressionA_getType2 (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : Type :=
+   match (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o)) with
+   | None => Error
+   | Some r => parseRuleForType (snd r)
+   end.
 
- Definition evalForExpression (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (parseRuleForType2 (ForExpressionA_getRule2 o tr sm sp))).
+ Definition evalForExpression (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getType2 o tr sm sp)).
   Proof.
     destruct (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o)) eqn:nth_r.
     - destruct (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule o)) eqn:nth_ra.
       + remember (evalForExpressionFix (snd p) (RuleA_getInTypes r) sm sp) as ret.
-        unfold parseRuleForType2, ForExpressionA_getRule2.
+        unfold ForExpressionA_getType2.
         rewrite nth_r.
         exact (ret). 
       + exact None.
