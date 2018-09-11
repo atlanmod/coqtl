@@ -393,26 +393,25 @@ Section CoqTL.
     | _, _, _ => None
     end.
 
-Lemma test:
+(*Lemma test:
  forall (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (r: Rule) (s: string),
  (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o)) = Some (s, r) ->
   (ForExpressionA_getType o) = (parseRuleForType r).
 Proof.
 intros.
 unfold TransformationA_getTransformation, ForExpressionA_getRule in H.
-simpl in H.
-
-
-
-  Definition evalForExpression (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getType o)) :=
-    r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o));
-      ra <- (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule o));
-      evalForExpressionFix (snd r) (RuleA_getInTypes ra) sm sp. 
-
-
-
-    
+simpl in H. *)
   
+ Definition evalForExpression (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getType o)).
+  Proof.
+    destruct (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o)) eqn:nth_r.
+    - destruct (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule o)) eqn:nth_ra.
+      + remember (evalForExpressionFix (snd p) (RuleA_getInTypes r) sm sp) as ret.
+        unfold parseRuleForType in ret.
+        exact (ret). 
+      + exact None.
+    - exact None.
+                                                                                                          
 
 
   (** * Engine **)
