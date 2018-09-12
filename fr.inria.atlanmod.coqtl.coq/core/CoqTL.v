@@ -448,19 +448,22 @@ simpl in H. *)
                       NilZero.string_of_uint (Unsigned.to_lu b))%string
             end
     else te.
+
   
   Definition instantiateRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     pre <- evalGuardExpressionPre r sp;
       m <- evalGuardExpression (RuleA_getGuard r) tr sm sp;
       if m then 
         return 
-        optionList2List
-          (map
-             (fun ope: OutputPatternElementA =>
-                te <- (evalOutputPatternElementExpression
-                        tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope));
-              return (setTargetElementId te ope sp))
-             (RuleA_getOutputPattern r))
+        ( flat_map 
+            (fun forel =>  optionList2List
+                          (map
+                             (fun ope: OutputPatternElementA =>
+                                te <- (evalOutputPatternElementExpression
+                                        tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope));
+                              return (setTargetElementId te ope sp))
+                             (RuleA_getOutputPattern r)))
+            nil )
       else
         None.
 
