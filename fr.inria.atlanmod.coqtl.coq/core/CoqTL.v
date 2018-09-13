@@ -182,6 +182,13 @@ Section CoqTL.
       nat ->
       OutputPatternElementExpressionA.
 
+  Lemma OutputPatternElementExpressionA_dec : 
+    forall (x1: OutputPatternElementExpressionA) (x2: OutputPatternElementExpressionA), { x1 = x2 } + { x1 <> x2 }.
+  Proof. repeat decide equality. Defined.
+
+  Definition OutputPatternElementExpressionA_equals (x1: OutputPatternElementExpressionA) (x2: OutputPatternElementExpressionA) : bool :=
+    if OutputPatternElementExpressionA_dec x1 x2 then true else false.
+
   Definition OutputPatternElementExpressionA_getRule (x : OutputPatternElementExpressionA) : nat :=
     match x with BuildOutputPatternElementExpressionA y _ => y end.
 
@@ -271,6 +278,14 @@ Section CoqTL.
 
   Definition TransformationA_getRules (x : TransformationA) : list RuleA :=
     match x with BuildTransformationA y _ => y end.
+
+  Definition OutputPatternElementExpressionA_getRuleA (x : OutputPatternElementExpressionA) (tr: TransformationA) : option RuleA :=
+    find (fun r:RuleA =>
+            match find (OutputPatternElementExpressionA_equals x) (map OutputPatternElementA_getOutputPatternElementExpression (RuleA_getOutputPattern r)) with
+            | Some _ => true
+            | None => false
+            end)
+         (TransformationA_getRules tr).
 
   (** * Parser **)
   
@@ -414,13 +429,10 @@ Section CoqTL.
    This is for type checking of involved dependent types.
    To ensure we can soundly do this, we check the equality of these two before we continue. *)
   Definition evalOutputPatternElementExpression (o : OutputPatternElementExpressionA)  (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) 
-             (fe: ForExpressionA) (fet: (ForExpressionA_getType2 fe tr sm)) : option TargetModelElement :=
-    if beq_nat (OutputPatternElementExpressionA_getRule o) (ForExpressionA_getRule fe) then  
+             (fet: (ForExpressionA_getType2 (OutputPatternElementExpressionA_getForExpression o) tr sm)) : option TargetModelElement :=
       r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule fe));
         ra <- (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule fe));
-        evalOutputPatternElementExpressionFix o tr (snd r) (RuleA_getInTypes ra) sm sp fe fet
-    else 
-      None.
+        evalOutputPatternElementExpressionFix o tr (snd r) (RuleA_getInTypes ra) sm sp fe fet.
 
   (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
   Fixpoint evalOutputBindingExpressionFix (o : OutputBindingExpressionA) (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) (te: TargetModelElement) : option TargetModelLink :=
