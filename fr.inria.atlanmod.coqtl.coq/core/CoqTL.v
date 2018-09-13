@@ -387,12 +387,18 @@ Fixpoint evalOutputPatternElementExpressionFix (o : OutputPatternElementExpressi
     | _, _, _ => None
     end.
 
-
+(* Notice the body of this function using ForExpression to get corresponding rule instead of OutpatternElementExpr . 
+   This is for type checking of involved dependent types.
+   To ensure we can soundly do this, we check the equality of these two before we continue. *)
   Definition evalOutputPatternElementExpression (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (o : OutputPatternElementExpressionA) 
   (fe: ForExpressionA) (fet: (ForExpressionA_getType2 fe tr sm)) : option TargetModelElement :=
-  r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputPatternElementExpressionA_getRule o));
-    ra <- (nth_error (TransformationA_getRules tr) (OutputPatternElementExpressionA_getRule o));
-  evalOutputPatternElementExpressionFix o tr (snd r) (RuleA_getInTypes ra) sm sp fe fet. 
+ if beq_nat (OutputPatternElementExpressionA_getRule o) (ForExpressionA_getRule fe) then  
+  r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule fe));
+    ra <- (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule fe));
+  evalOutputPatternElementExpressionFix o tr (snd r) (RuleA_getInTypes ra) sm sp fe fet
+ else 
+  None
+. 
 
 
   (* Before evaluate guard, pre-check the intypes of rule and source elems length are equal. immediate stop eval if not. *)
