@@ -316,92 +316,7 @@ Section CoqTL.
 
   (** * Expression Evaluation **)
 
-  (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
-  Fixpoint evalOutputBindingExpressionFix (o : OutputBindingExpressionA) (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) (te: TargetModelElement) : option TargetModelLink :=
-    match r, intypes, el with
-    | BuildMultiElementRule s f, t::ts, e::els =>
-      e' <- toModelClass s e;
-        evalOutputBindingExpressionFix o (f e') ts sm els te
-    | BuildSingleElementRule s f g, t::nil, e::nil =>
-      e' <- toModelClass s e;
-        ope <- (nth_error (g e' None) (OutputBindingExpressionA_getOutputPatternElement o));
-        te' <- toModelClass (getOutputPatternElementType ope) te;
-        oper <- (nth_error ((getOutputPatternElementBindings ope) te') (OutputBindingExpressionA_getOutputBinding o));
-        (OutputPatternElementReferenceLink oper)
-    | _, _, _ => None
-    end.
-  
-
-
-  Definition evalOutputBindingExpression (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) (o : OutputBindingExpressionA) : option (TargetModelLink) :=
-  r <- (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (OutputBindingExpressionA_getRule o));
-    ra <- (nth_error (TransformationA_getRules tr) (OutputBindingExpressionA_getRule o));
-  evalOutputBindingExpressionFix o (snd r) (RuleA_getInTypes ra) sm sp te. 
-
-   Inductive Error : Set :=.
-
-
-   Definition ForExpressionA_getType2 (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) : Type :=
-   match (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o)) with
-   | None => Error
-   | Some r => parseRuleForType (snd r)
-   end.
-
-
-
-
-Definition evalOutputPatternElementExpressionSingle (o : OutputPatternElementExpressionA) (tr: TransformationA) (r : Rule) (intypes: list SourceModelClass) 
-(sm: SourceModel) (el: list SourceModelElement) (fe: ForExpressionA) (fet: (ForExpressionA_getType2 fe tr sm)) : option TargetModelElement.
-Proof.
-destruct (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule fe)) eqn: find_r_ca.
-- destruct(snd p) eqn: r_ca.
-  -- exact None.
-  -- destruct intypes eqn: i_ca.
-    --- exact None.
-    --- destruct el eqn: el_ca.
-      ---- exact None.
-      ---- destruct l0 eqn: l0_ca.
-        + destruct l1 eqn:l1_ca.
-          ++ destruct (toModelClass InElType s0) eqn: m_ca.
-            +++ unfold ForExpressionA_getType2 in fet. 
-                rewrite  find_r_ca in fet. rewrite r_ca in fet. simpl in fet.
-                pose (l d (Some fet)).
-                destruct (nth_error l2 (OutputPatternElementExpressionA_getOutputPatternElement o)) eqn: f_ca.
-                * exact (Some (getOutputPatternElementTargetModelElement o0)).
-                * exact None.
-            +++ exact None.
-          ++ exact None.
-        + exact None.
-- exact None.
-Defined.
-
-  (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
-Fixpoint evalOutputPatternElementExpressionFix (o : OutputPatternElementExpressionA) (tr: TransformationA) (r : Rule) (intypes: list SourceModelClass) 
-(sm: SourceModel) (el: list SourceModelElement) (fe: ForExpressionA) (fet: (ForExpressionA_getType2 fe tr sm)) : option TargetModelElement :=
-    match r, intypes, el with
-    | BuildMultiElementRule s f, t::ts, e::els =>
-      e' <- toModelClass s e;
-        evalOutputPatternElementExpressionFix o tr (f e') ts sm els fe fet 
-    | BuildSingleElementRule s f g, t::nil, e::nil =>
-      evalOutputPatternElementExpressionSingle o tr r intypes sm el fe fet
-    | _, _, _ => None
-    end.
-
-(* Notice the body of this function using ForExpression to get corresponding rule instead of OutpatternElementExpr . 
-   This is for type checking of involved dependent types.
-   To ensure we can soundly do this, we check the equality of these two before we continue. *)
-  Definition evalOutputPatternElementExpression (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (o : OutputPatternElementExpressionA) 
-  (fe: ForExpressionA) (fet: (ForExpressionA_getType2 fe tr sm)) : option TargetModelElement :=
- if beq_nat (OutputPatternElementExpressionA_getRule o) (ForExpressionA_getRule fe) then  
-  r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule fe));
-    ra <- (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule fe));
-  evalOutputPatternElementExpressionFix o tr (snd r) (RuleA_getInTypes ra) sm sp fe fet
- else 
-  None
-. 
-
-
-  (* Before evaluate guard, pre-check the intypes of rule and source elems length are equal. immediate stop eval if not. *)
+    (* Before evaluate guard, pre-check the intypes of rule and source elems length are equal. immediate stop eval if not. *)
   Definition evalGuardExpressionPre (r: RuleA) (sp: list SourceModelElement) : option bool :=
     let lenInTypes := (length (RuleA_getInTypes r)) in
       let lenSp := (length sp) in
@@ -422,25 +337,31 @@ Fixpoint evalOutputPatternElementExpressionFix (o : OutputPatternElementExpressi
     | _, _, _ => None
     end.
 
-
   Definition evalGuardExpression (o : GuardExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
     r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (GuardExpressionA_getRule o));
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
       evalGuardExpressionFix (snd r) (RuleA_getInTypes ra) sm sp.
-  
+
   Fixpoint evalForExpressionFix (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) :
     option (list (parseRuleForType r)) :=
-   match r, intypes, el with
+    match r, intypes, el with
     | BuildMultiElementRule s f, t::ts, e::els =>
-        evalForExpressionFix (f (bottomModelClass s)) ts sm els
+      evalForExpressionFix (f (bottomModelClass s)) ts sm els
     | BuildSingleElementRule s f g, t::nil, e::nil =>
       e' <- toModelClass s e;
-         return (snd (f e'))
-    | _, _, _ => None
+    return (snd (f e'))
+         | _, _, _ => None
     end.
 
+  Inductive Error : Set :=.
+  
+  Definition ForExpressionA_getType2 (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) : Type :=
+    match (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o)) with
+    | None => Error
+    | Some r => parseRuleForType (snd r)
+    end.
 
- Definition evalForExpression (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getType2 o tr sm)).
+  Definition evalForExpression (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getType2 o tr sm)).
   Proof.
     destruct (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o)) eqn:nth_r.
     - destruct (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule o)) eqn:nth_ra.
@@ -452,6 +373,74 @@ Fixpoint evalOutputPatternElementExpressionFix (o : OutputPatternElementExpressi
     - exact None.
   Defined.
 
+  Definition evalOutputPatternElementExpressionSingle (o : OutputPatternElementExpressionA) (tr: TransformationA) (r : Rule) (intypes: list SourceModelClass) 
+             (sm: SourceModel) (el: list SourceModelElement) (fe: ForExpressionA) (fet: (ForExpressionA_getType2 fe tr sm)) : option TargetModelElement.
+  Proof.
+    destruct (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule fe)) eqn: find_r_ca.
+    - destruct(snd p) eqn: r_ca.
+      -- exact None.
+      -- destruct intypes eqn: i_ca.
+         --- exact None.
+         --- destruct el eqn: el_ca.
+             ---- exact None.
+             ---- destruct l0 eqn: l0_ca.
+      + destruct l1 eqn:l1_ca.
+        ++ destruct (toModelClass InElType s0) eqn: m_ca.
+           +++ unfold ForExpressionA_getType2 in fet. 
+               rewrite  find_r_ca in fet. rewrite r_ca in fet. simpl in fet.
+               pose (l d (Some fet)).
+               destruct (nth_error l2 (OutputPatternElementExpressionA_getOutputPatternElement o)) eqn: f_ca.
+        * exact (Some (getOutputPatternElementTargetModelElement o0)).
+        * exact None.
+          +++ exact None.
+          ++ exact None.
+      + exact None.
+    - exact None.
+  Defined.
+  
+  (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
+  Fixpoint evalOutputPatternElementExpressionFix (o : OutputPatternElementExpressionA) (tr: TransformationA) (r : Rule) (intypes: list SourceModelClass) 
+           (sm: SourceModel) (el: list SourceModelElement) (fe: ForExpressionA) (fet: (ForExpressionA_getType2 fe tr sm)) : option TargetModelElement :=
+    match r, intypes, el with
+    | BuildMultiElementRule s f, t::ts, e::els =>
+      e' <- toModelClass s e;
+        evalOutputPatternElementExpressionFix o tr (f e') ts sm els fe fet 
+    | BuildSingleElementRule s f g, t::nil, e::nil =>
+      evalOutputPatternElementExpressionSingle o tr r intypes sm el fe fet
+    | _, _, _ => None
+    end.
+
+  (* Notice the body of this function using ForExpression to get corresponding rule instead of OutpatternElementExpr . 
+   This is for type checking of involved dependent types.
+   To ensure we can soundly do this, we check the equality of these two before we continue. *)
+  Definition evalOutputPatternElementExpression (o : OutputPatternElementExpressionA)  (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) 
+             (fe: ForExpressionA) (fet: (ForExpressionA_getType2 fe tr sm)) : option TargetModelElement :=
+    if beq_nat (OutputPatternElementExpressionA_getRule o) (ForExpressionA_getRule fe) then  
+      r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule fe));
+        ra <- (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule fe));
+        evalOutputPatternElementExpressionFix o tr (snd r) (RuleA_getInTypes ra) sm sp fe fet
+    else 
+      None.
+
+  (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
+  Fixpoint evalOutputBindingExpressionFix (o : OutputBindingExpressionA) (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) (te: TargetModelElement) : option TargetModelLink :=
+    match r, intypes, el with
+    | BuildMultiElementRule s f, t::ts, e::els =>
+      e' <- toModelClass s e;
+        evalOutputBindingExpressionFix o (f e') ts sm els te
+    | BuildSingleElementRule s f g, t::nil, e::nil =>
+      e' <- toModelClass s e;
+        ope <- (nth_error (g e' None) (OutputBindingExpressionA_getOutputPatternElement o));
+        te' <- toModelClass (getOutputPatternElementType ope) te;
+        oper <- (nth_error ((getOutputPatternElementBindings ope) te') (OutputBindingExpressionA_getOutputBinding o));
+        (OutputPatternElementReferenceLink oper)
+    | _, _, _ => None
+    end.
+  
+  Definition evalOutputBindingExpression (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) (o : OutputBindingExpressionA) : option TargetModelLink :=
+    r <- (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (OutputBindingExpressionA_getRule o));
+      ra <- (nth_error (TransformationA_getRules tr) (OutputBindingExpressionA_getRule o));
+      evalOutputBindingExpressionFix o (snd r) (RuleA_getInTypes ra) sm sp te. 
 
   (** * Engine **)
 
