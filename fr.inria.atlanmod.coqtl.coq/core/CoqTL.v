@@ -429,7 +429,7 @@ Section CoqTL.
    This is for type checking of involved dependent types.
    To ensure we can soundly do this, we check the equality of these two before we continue. *)
   Definition evalOutputPatternElementExpression (o : OutputPatternElementExpressionA)  (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) 
-             (fet: (ForExpressionA_getType2 (OutputPatternElementExpressionA_getForExpression o) tr sm)) : option TargetModelElement :=
+             (fet: (ForExpressionA_getType2 (RuleA_getForExpression (OutputPatternElementExpressionA_getRuleA o tr)) tr sm)) : option TargetModelElement :=
       r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule fe));
         ra <- (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule fe));
         evalOutputPatternElementExpressionFix o tr (snd r) (RuleA_getInTypes ra) sm sp fe fet.
