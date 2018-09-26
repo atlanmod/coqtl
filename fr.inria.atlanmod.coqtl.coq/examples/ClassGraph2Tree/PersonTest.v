@@ -19,32 +19,6 @@ match (TransformationA_getRules tr) with
 end.
 
 
-
-Inductive T : Type :=
-  | BuildT
-  | EmptyT.
-
-Inductive Er (x: nat) : Set := .
-
-
-Definition t (x: nat) : option (Er x) := None.
-
-Definition dummy : option nat := Some 1.
-
-Definition tst :=
- o <- dummy;
- match dummy return option (Er o) with
-  | Some x => t o
-  | _ => None
- end.
-  
-
-
-
- 
-
-
-
 Definition sp := (Build_ClassMetamodel_EObject ClassEClass (BuildClass "0" "Person")) :: nil.
 
 
