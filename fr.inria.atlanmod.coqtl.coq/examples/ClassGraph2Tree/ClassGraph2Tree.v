@@ -66,26 +66,7 @@ Definition allPathsTo (m : ClassModel) (l : nat) (o: Class) : list (list Class) 
 
 
 
-Definition path_type_transfer (id: nat) (tr: TransformationA ClassMetamodel ClassMetamodel) (sm: ClassModel) (name: string) (sp: list ClassMetamodel_EObject) 
-   : option (matchPattern_getForSectionType tr sm name sp).
-Proof.
-destruct (find_OutputPatternElementA tr sm sp name) eqn: find_res.
-- remember (OutputPatternElementA_getOutputPatternElementExpression o) as ope.
-  destruct (nth_error (TransformationA_getRules tr) (OutputPatternElementExpressionA_getRule ope)) eqn: ra.
-  -- pose (RuleA_getForExpression r) as fe.
-     pose (evalForExpression fe tr sm sp) as fe_res.
-     destruct fe_res eqn: fe_res_ca.
-     --- pose (nth_error l id) as ret.
-         destruct ret eqn: ret_ca.
-         * unfold matchPattern_getForSectionType. rewrite find_res.
-           pose (ForExpressionA_type_transfer fe ope tr sm f) as fexpr.
-           rewrite Heqope in fexpr.
-           exact fexpr.
-         * exact None.
-     --- exact None.
-  -- exact None.
-- exact None.
-Defined.
+
 
 
 Fixpoint eq_Class (c1 c2: Class): bool :=
@@ -111,22 +92,7 @@ Fixpoint index (l : list Class) (ll : list (list Class)) : option nat :=
      end
   end.
 
-Fixpoint resolveAllIter (tr: Phase ClassMetamodel ClassMetamodel) (sm:ClassModel) (name: string) 
-  (type: ClassMetamodel_EClass) (sps: list Class) (iters: list (list Class)) (forSection : list (list Class))
-   : (list (Metamodel.denoteModelClass type)).
-Proof.
-destruct sps eqn: sps_ca.
-- exact ( nil).
-- destruct iters eqn: iters_ca.
-  -- exact ( nil).
-  -- destruct (index l0 forSection) eqn: id_ca.
-     + destruct (path_type_transfer n (parsePhase tr) sm name [[ c ]]) eqn: iter_type.
-       ++ destruct (resolveIter tr sm name type [[ c ]] m) eqn:it_ca.
-          +++ exact ( (d :: (resolveAllIter tr sm name type l l1 forSection))).
-          +++ exact (resolveAllIter tr sm name type l l1 forSection).
-       ++ exact (resolveAllIter tr sm name type l l1 forSection).
-     + exact (resolveAllIter tr sm name type l l1 forSection).
-Defined.
+
 
 Definition t (n : nat) : string :=  String (ascii_of_nat n) EmptyString .
 
