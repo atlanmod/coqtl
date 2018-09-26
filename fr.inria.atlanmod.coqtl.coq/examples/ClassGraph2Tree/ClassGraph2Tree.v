@@ -1,4 +1,4 @@
-Require Import String.
+Require Import String Coq.Strings.Ascii.
 Require Import List.
 Require Import Multiset.
 Require Import ListSet.
@@ -128,6 +128,7 @@ destruct sps eqn: sps_ca.
      + exact (resolveAllIter tr sm name type l l1 forSection).
 Defined.
 
+Definition t (n : nat) : string :=  String (ascii_of_nat n) EmptyString .
 
 (* id <- index path (allPathsTo m 3 c);  should be id <- index path (getForSection (matchPattern tr m [[c]])); *)
 Definition ClassGraph2Tree' :=
@@ -137,30 +138,20 @@ Definition ClassGraph2Tree' :=
       rule Class2Class
         from
           c class ClassEClass
+        when 
+          true
         for
-          i in (allPathsTo m 3 c)
+          i in (1 :: 2 :: nil)
         to [
           "at" :
-            a' class AttributeEClass :=
-              BuildAttribute newId false (getClassName c)
-            with [
-              ref AttributeTypeEReference :=
-                path <- i;
-                id <- index path (allPathsTo m 3 c); 
-                path' <- path_type_transfer id (parsePhase ClassGraph2Tree) m "cl" [[ c ]];
-                cls <- resolveIter ClassGraph2Tree m "cl" ClassEClass [[ c ]] path';
-                return BuildAttributeType a' cls
-            ];
+            a' class AttributeEClass := 
+              match i with
+              | None => BuildAttribute newId false (getClassName c)
+              | Some n => BuildAttribute newId false ((getClassName c) ++ t n)
+              end;
           "cl" :
             c' class ClassEClass :=
               BuildClass newId (getClassName c)
-            with [
-              ref ClassAttributesEReference :=
-                path <- i;
-                cls <- step m c;
-                let attrs := resolveAllIter ClassGraph2Tree m "at" AttributeEClass cls (nextPaths m path) (allPathsTo m 3 c) in
-                  return BuildClassAttributes c' attrs
-            ]
         ]
        
     ].
