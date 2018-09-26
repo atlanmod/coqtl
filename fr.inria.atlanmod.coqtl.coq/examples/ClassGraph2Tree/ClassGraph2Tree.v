@@ -1,4 +1,4 @@
-Require Import String Coq.Strings.Ascii.
+Require Import String.
 Require Import List.
 Require Import Multiset.
 Require Import ListSet.
@@ -88,11 +88,16 @@ destruct (find_OutputPatternElementA tr sm sp name) eqn: find_res.
 Defined.
 
 
+Fixpoint eq_Class (c1 c2: Class): bool :=
+  match c1, c2 with 
+   | BuildClass a1 a2, BuildClass b1 b2 => beq_string a1 b1 && beq_string a2 b2
+  end.
+
 
 Fixpoint eq_list (l1 l2: list Class): bool :=
   match l1, l2 with 
    | nil, nil => true
-   | a::l1', b::l2' => beq_Class a b && eq_list l1' l2'
+   | a::l1', b::l2' => eq_Class a b && eq_list l1' l2'
    | _, _ => false
   end.
 
@@ -123,8 +128,6 @@ destruct sps eqn: sps_ca.
      + exact (resolveAllIter tr sm name type l l1 forSection).
 Defined.
 
-Definition t (n : nat) : string :=  String (ascii_of_nat n) EmptyString .
-
 
 (* id <- index path (allPathsTo m 3 c);  should be id <- index path (getForSection (matchPattern tr m [[c]])); *)
 Definition ClassGraph2Tree' :=
@@ -134,20 +137,30 @@ Definition ClassGraph2Tree' :=
       rule Class2Class
         from
           c class ClassEClass
-        when 
-          true
         for
-          i in (1 :: 2 :: nil)
+          i in (allPathsTo m 3 c)
         to [
           "at" :
-            a' class AttributeEClass := 
-              match i with
-              | None => BuildAttribute newId false (getClassName c)
-              | Some n => BuildAttribute newId false ((getClassName c) ++ t n)
-              end;
+            a' class AttributeEClass :=
+              BuildAttribute newId false (getClassName c)
+            with [
+              ref AttributeTypeEReference :=
+                path <- i;
+                id <- index path (allPathsTo m 3 c); 
+                path' <- path_type_transfer id (parsePhase ClassGraph2Tree) m "cl" [[ c ]];
+                cls <- resolveIter ClassGraph2Tree m "cl" ClassEClass [[ c ]] path';
+                return BuildAttributeType a' cls
+            ];
           "cl" :
             c' class ClassEClass :=
               BuildClass newId (getClassName c)
+            with [
+              ref ClassAttributesEReference :=
+                path <- i;
+                cls <- step m c;
+                let attrs := resolveAllIter ClassGraph2Tree m "at" AttributeEClass cls (nextPaths m path) (allPathsTo m 3 c) in
+                  return BuildClassAttributes c' attrs
+            ]
         ]
        
     ].

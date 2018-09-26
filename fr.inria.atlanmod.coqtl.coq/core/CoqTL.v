@@ -357,7 +357,6 @@ Section CoqTL.
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
       evalGuardExpressionFix (snd r) (RuleA_getInTypes ra) sm sp.
 
-(* TODO the multiElem part is buggy , it should be (f e') like in evaluation guard *)
   Fixpoint evalForExpressionFix (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) :
     option (list (parseRule_ForSectionType r)) :=
     match r, intypes, el with
@@ -365,8 +364,8 @@ Section CoqTL.
       evalForExpressionFix (f (bottomModelClass s)) ts sm els
     | BuildSingleElementRule s f g, t::nil, e::nil =>
       e' <- toModelClass s e;
-        return (snd (f e'))
-    | _, _, _ => None
+    return (snd (f e'))
+         | _, _, _ => None
     end.
 
   Inductive Error : Set :=.
@@ -416,9 +415,9 @@ Section CoqTL.
 
 
   Definition evalOutputPatternElementExpressionWithIterSingle (o : OutputPatternElementExpressionA) (tr: TransformationA) (r : Rule) (intypes: list SourceModelClass) 
-             (sm: SourceModel) (el: list SourceModelElement) (fe: ForExpressionA) (fet: ForExpressionA_getForSectionType fe tr sm) : option TargetModelElement.
+             (sm: SourceModel) (el: list SourceModelElement) (fet: OutputPatternElementExpressionA_getForSectionType o tr sm) : option TargetModelElement.
   Proof.
-    destruct (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule fe)) eqn: find_r_ca.
+    destruct (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputPatternElementExpressionA_getRule o)) eqn: find_r_ca.
     - destruct(snd p) eqn: r_ca.
       -- exact None.
       -- destruct intypes eqn: i_ca.
@@ -428,7 +427,7 @@ Section CoqTL.
              ---- destruct l0 eqn: l0_ca.
                   + destruct l1 eqn:l1_ca.
                     ++ destruct (toModelClass InElType s0) eqn: m_ca.
-                       +++ unfold ForExpressionA_getForSectionType in fet. 
+                       +++ unfold OutputPatternElementExpressionA_getForSectionType in fet. 
                            rewrite  find_r_ca in fet. rewrite r_ca in fet. simpl in fet.
                            pose (l d (Some fet)).
                            destruct (nth_error l2 (OutputPatternElementExpressionA_getOutputPatternElement o)) eqn: f_ca.
@@ -442,13 +441,13 @@ Section CoqTL.
   
   (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
   Fixpoint evalOutputPatternElementExpressionWithIterFix (o : OutputPatternElementExpressionA) (tr: TransformationA) (r : Rule) (intypes: list SourceModelClass) 
-           (sm: SourceModel) (el: list SourceModelElement) (fe: ForExpressionA) (fet: ForExpressionA_getForSectionType fe tr sm) : option TargetModelElement :=
+           (sm: SourceModel) (el: list SourceModelElement) (fet: (OutputPatternElementExpressionA_getForSectionType o tr sm)) : option TargetModelElement :=
     match r, intypes, el with
     | BuildMultiElementRule s f, t::ts, e::els =>
       e' <- toModelClass s e;
-        evalOutputPatternElementExpressionWithIterFix o tr (f e') ts sm els fe fet 
+        evalOutputPatternElementExpressionWithIterFix o tr (f e') ts sm els fet 
     | BuildSingleElementRule s f g, t::nil, e::nil =>
-      evalOutputPatternElementExpressionWithIterSingle o tr r intypes sm el fe fet
+      evalOutputPatternElementExpressionWithIterSingle o tr r intypes sm el fet
     | _, _, _ => None
     end.
 
@@ -456,10 +455,10 @@ Section CoqTL.
    This is for type checking of involved dependent types.
    To ensure we can soundly do this, we check the equality of these two before we continue. *)
   Definition evalOutputPatternElementExpressionWithIter (o : OutputPatternElementExpressionA)  (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) 
-             (fe: ForExpressionA) (fet: ForExpressionA_getForSectionType fe tr sm) : option TargetModelElement :=
+             (fet: OutputPatternElementExpressionA_getForSectionType o tr sm) : option TargetModelElement :=
       r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputPatternElementExpressionA_getRule o));
         ra <- (nth_error (TransformationA_getRules tr) (OutputPatternElementExpressionA_getRule o));
-        evalOutputPatternElementExpressionWithIterFix o tr (snd r) (RuleA_getInTypes ra) sm sp fe fet.
+        evalOutputPatternElementExpressionWithIterFix o tr (snd r) (RuleA_getInTypes ra) sm sp fet.
 
   (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
   Fixpoint evalOutputBindingExpressionFix (o : OutputBindingExpressionA) (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) (te: TargetModelElement) : option TargetModelLink :=
@@ -590,8 +589,11 @@ Section CoqTL.
                        (RuleA_getOutputPattern r))
          | lst => return ( flat_map (fun fe => optionList2List
                                                     (map (fun ope: OutputPatternElementA =>
-                                                            te <- (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm sp (RuleA_getForExpression r) fe );
-                                                                            return (setTargetElementId te ope sp))
+                                                            match (ForExpressionA_type_transfer (RuleA_getForExpression r) (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm fe) with
+                                                            | Some tfe => te <- (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm sp tfe);
+                                                                            return (setTargetElementId te ope sp)
+                                                            | None => None
+                                                            end)
                                                          (RuleA_getOutputPattern r)))
                                      lst)
         end
