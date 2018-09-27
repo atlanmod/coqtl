@@ -48,13 +48,8 @@ Inductive AttributeType : Set :=
    AttributeType.
 
 
-(* Inheritence *)
-
-
-
-
-Inductive ClassMetamodel_InheritReference : Set :=
-.
+(* Inheritance *)
+Inductive ClassMetamodel_InheritReference : Set :=.
 
 (* Accessors *)
 Definition getClassId (c : Class) : string :=

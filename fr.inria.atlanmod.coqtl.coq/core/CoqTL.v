@@ -323,11 +323,11 @@ Section CoqTL.
         end.
 
   (* the expression is checked against the types in the concrete transformation, may cause problems in theorems *)
-  Fixpoint evalGuardExpressionFix (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) : option bool :=
+  Fixpoint evalGuardExpressionFix (r : Rule) (intypes: list SourceModelClass) (el: list SourceModelElement) : option bool :=
     match r, intypes, el with
     | BuildMultiElementRule s f, t::ts, e::els =>
       e' <- toModelClass s e;
-        evalGuardExpressionFix (f e') ts sm els
+        evalGuardExpressionFix (f e') ts els
     | BuildSingleElementRule s f g, t::nil, e::nil =>
       e' <- toModelClass s e;
       return (fst (f e'))
@@ -337,7 +337,7 @@ Section CoqTL.
   Definition evalGuardExpression (o : GuardExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
     r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (GuardExpressionA_getRule o));
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
-      evalGuardExpressionFix (snd r) (RuleA_getInTypes ra) sm sp.
+      evalGuardExpressionFix (snd r) (RuleA_getInTypes ra) sp.
 
   Fixpoint Rule_getForSectionType (r: Rule) : Type :=
     match r with
@@ -345,31 +345,29 @@ Section CoqTL.
     | @BuildSingleElementRule iet ft f g => ft
     end.
   
-  (* TODO the multiElem part is buggy , it should be (f e') like in evaluation guard *)
-  Fixpoint evalForExpressionFix (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) :
-    option (list (Rule_getForSectionType r)) :=
-    match r, intypes, el with
-    | BuildMultiElementRule s f, t::ts, e::els =>
-      evalForExpressionFix (f (bottomModelClass s)) ts sm els
-    | BuildSingleElementRule s f g, t::nil, e::nil =>
-      e' <- toModelClass s e;
-        return (snd (f e'))
-    | _, _, _ => None
-    end.
-
-  Inductive Error : Set :=.
-  
   Definition ForExpressionA_getForSectionType (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) : Type :=
     match (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o)) with
     | None => Error
     | Some r => Rule_getForSectionType (snd r)
     end.
-
+  
+  (* TODO the multiElem part is buggy , it should be (f e') like in evaluation guard *)
+  Fixpoint evalForExpressionFix (r : Rule) (intypes: list SourceModelClass) (el: list SourceModelElement) :
+    option (list (Rule_getForSectionType r)) :=
+    match r, intypes, el with
+    | BuildMultiElementRule s f, t::ts, e::els =>
+      evalForExpressionFix (f (bottomModelClass s)) ts els
+    | BuildSingleElementRule s f g, t::nil, e::nil =>
+      e' <- toModelClass s e;
+        return (snd (f e'))
+    | _, _, _ => None
+    end.
+  
   Definition evalForExpression (fe : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getForSectionType fe tr sm)).
   Proof.
     destruct (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule fe)) eqn:nth_r.
     - destruct (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule fe)) eqn:nth_ra.
-      + remember (evalForExpressionFix (snd p) (RuleA_getInTypes r) sm sp) as ret.
+      + remember (evalForExpressionFix (snd p) (RuleA_getInTypes r) sp) as ret.
         unfold ForExpressionA_getForSectionType.
         rewrite nth_r.
         exact (ret). 

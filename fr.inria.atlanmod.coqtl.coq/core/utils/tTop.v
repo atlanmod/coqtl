@@ -7,4 +7,4 @@ Require Export core.utils.tNotation.
 Require Export core.utils.tString.
 Require Export core.utils.tPrint.
 
-
+Inductive Error : Set :=.
