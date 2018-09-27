@@ -339,28 +339,35 @@ Section CoqTL.
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
       evalGuardExpressionFix (snd r) (RuleA_getInTypes ra) sp.
 
-  Fixpoint Rule_getForSectionType (r: Rule) : Type :=
-    match r with
-    | BuildMultiElementRule iet f => Rule_getForSectionType (f (bottomModelClass iet))
-    | @BuildSingleElementRule iet ft f g => ft
+  Fixpoint Rule_getForSectionType (r: Rule) (sp: list SourceModelElement) : Type :=
+    match r, sp with
+    | BuildMultiElementRule s f , e::els => 
+       match  toModelClass s e with 
+         | Some e' => Rule_getForSectionType (f e') els
+         | None => Error
+       end
+    | @BuildSingleElementRule iet ft f g, e::nil => ft
+    | _, _ => Error
     end.
   
-  Definition ForExpressionA_getForSectionType (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) : Type :=
+  Definition ForExpressionA_getForSectionType (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel)  (sp: list SourceModelElement)  : Type :=
     match (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o)) with
     | None => Error
-    | Some r => Rule_getForSectionType (snd r)
+    | Some r => Rule_getForSectionType (snd r) sp
     end.
      
-  Fixpoint evalForExpressionFix (r : Rule) (intypes: list SourceModelClass) (el: list SourceModelElement) :
-    option (list (Rule_getForSectionType r)) := 
-    match r, intypes, el with
-    | BuildMultiElementRule s f, t::ts, e::els =>
-      e' <- toModelClass s e;
-        evalForExpressionFix (f e') ts els
-    | BuildSingleElementRule s f g, t::nil, e::nil =>
+  Fixpoint evalForExpressionFix (r : Rule) (sp: list SourceModelElement) {struct sp} :
+    option (list (Rule_getForSectionType r sp)) :=
+    match r, sp with
+    | BuildMultiElementRule s f, e::els =>
+      match  toModelClass s e with 
+         | Some e' => evalForExpressionFix (f e') els 
+         | None => None
+       end
+    | BuildSingleElementRule s f g, e::nil =>
       e' <- toModelClass s e;
         return (snd (f e'))
-    | _, _, _ => None
+    | _, _ => None
     end.
   
   Definition evalForExpression (fe : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getForSectionType fe tr sm)).
