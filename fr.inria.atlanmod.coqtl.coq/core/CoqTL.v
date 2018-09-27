@@ -225,14 +225,10 @@ Section CoqTL.
   Inductive ForExpressionA : Type :=
     BuildForExpressionA :
       nat ->
-      Type ->
       ForExpressionA.
 
   Definition ForExpressionA_getRule (x : ForExpressionA) : nat :=
-    match x with BuildForExpressionA y _ => y end.
-
-  Definition ForExpressionA_getType (x : ForExpressionA) : Type :=
-    match x with BuildForExpressionA _ y => y end.
+    match x with BuildForExpressionA y => y end.
   
   Inductive RuleA : Type := 
     BuildRuleA :
@@ -256,16 +252,6 @@ Section CoqTL.
 
   Definition RuleA_getForExpression (x : RuleA) : ForExpressionA :=
     match x with BuildRuleA _ _ _ y _ => y end.
-  
-  (*Fixpoint RuleA_getForType (r : RuleA) : Type :=
-    match r with
-    | BuildMultiElementRuleA s f =>
-      e' <- toModelClass s e;
-        evalForExpressionTypeFix (f e') ts sm els
-    | @BuildSingleElementRule _ T _ _, t::nil, e::nil =>
-         return T
-    | _, _, _ => None
-    end.*)
   
   Inductive TransformationA : Type := 
     BuildTransformationA :
@@ -313,14 +299,8 @@ Section CoqTL.
     | BuildSingleElementRule iet f g => iet::nil
     end.
 
-  Fixpoint parseRule_ForSectionType (r: Rule) : Type :=
-    match r with
-    | BuildMultiElementRule iet f => parseRule_ForSectionType (f (bottomModelClass iet))
-    | @BuildSingleElementRule iet ft f g => ft
-    end.
-
   Definition parseRuleDeclaration (tr: Transformation) (n: nat) (r: (string * Rule)) : RuleA :=
-    (BuildRuleA (fst r) (parseRuleTypes (snd r)) (BuildGuardExpressionA n) (BuildForExpressionA n (parseRule_ForSectionType (snd r))) (parseRuleOutput tr n (snd r))).
+    (BuildRuleA (fst r) (parseRuleTypes (snd r)) (BuildGuardExpressionA n) (BuildForExpressionA n)) (parseRuleOutput tr n (snd r)).
   
   Definition parseTransformation (tr: Transformation) : TransformationA :=
     BuildTransformationA 
@@ -330,8 +310,10 @@ Section CoqTL.
     parseTransformation (fun t: Phase => tr).
 
   (** * Expression Evaluation **)
+  (* API for the expression language evaluator (Gallina) *)
 
-    (* Before evaluate guard, pre-check the intypes of rule and source elems length are equal. immediate stop eval if not. *)
+  (* TODO: move to the engine part *)
+  (* Before evaluate guard, pre-check the intypes of rule and source elems length are equal. immediate stop eval if not. *)
   Definition evalGuardExpressionPre (r: RuleA) (sp: list SourceModelElement) : option bool :=
     let lenInTypes := (length (RuleA_getInTypes r)) in
       let lenSp := (length sp) in
@@ -357,9 +339,15 @@ Section CoqTL.
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
       evalGuardExpressionFix (snd r) (RuleA_getInTypes ra) sm sp.
 
-(* TODO the multiElem part is buggy , it should be (f e') like in evaluation guard *)
+  Fixpoint Rule_getForSectionType (r: Rule) : Type :=
+    match r with
+    | BuildMultiElementRule iet f => Rule_getForSectionType (f (bottomModelClass iet))
+    | @BuildSingleElementRule iet ft f g => ft
+    end.
+  
+  (* TODO the multiElem part is buggy , it should be (f e') like in evaluation guard *)
   Fixpoint evalForExpressionFix (r : Rule) (intypes: list SourceModelClass) (sm: SourceModel) (el: list SourceModelElement) :
-    option (list (parseRule_ForSectionType r)) :=
+    option (list (Rule_getForSectionType r)) :=
     match r, intypes, el with
     | BuildMultiElementRule s f, t::ts, e::els =>
       evalForExpressionFix (f (bottomModelClass s)) ts sm els
@@ -374,14 +362,13 @@ Section CoqTL.
   Definition ForExpressionA_getForSectionType (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel) : Type :=
     match (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o)) with
     | None => Error
-    | Some r => parseRule_ForSectionType (snd r)
+    | Some r => Rule_getForSectionType (snd r)
     end.
-
 
   Definition OutputPatternElementExpressionA_getForSectionType (o : OutputPatternElementExpressionA) (tr: TransformationA) (sm: SourceModel) : Type :=
     match (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputPatternElementExpressionA_getRule o)) with
     | None => Error
-    | Some r => parseRule_ForSectionType (snd r)
+    | Some r => Rule_getForSectionType (snd r)
     end.
 
   Definition evalForExpression (fe : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getForSectionType fe tr sm)).
@@ -484,7 +471,7 @@ Section CoqTL.
   Definition OutputBindingExpressionA_getForSectionType (o : OutputBindingExpressionA) (tr: TransformationA) (sm: SourceModel) : Type :=
     match (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputBindingExpressionA_getRule o)) with
     | None => Error
-    | Some r => parseRule_ForSectionType (snd r)
+    | Some r => Rule_getForSectionType (snd r)
     end.
 
   Definition evalOutputBindingExpressionWithIterFixSingle (o : OutputBindingExpressionA) (tr: TransformationA) (r : Rule) (intypes: list SourceModelClass) 
