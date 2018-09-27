@@ -365,12 +365,6 @@ Section CoqTL.
     | Some r => Rule_getForSectionType (snd r)
     end.
 
-  Definition OutputPatternElementExpressionA_getForSectionType (o : OutputPatternElementExpressionA) (tr: TransformationA) (sm: SourceModel) : Type :=
-    match (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputPatternElementExpressionA_getRule o)) with
-    | None => Error
-    | Some r => Rule_getForSectionType (snd r)
-    end.
-
   Definition evalForExpression (fe : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getForSectionType fe tr sm)).
   Proof.
     destruct (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule fe)) eqn:nth_r.
@@ -554,8 +548,6 @@ Section CoqTL.
             end
     else te.
 
-
-
   Definition instantiateRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement):=
     pre <- evalGuardExpressionPre r sp;
       m <- evalGuardExpression (RuleA_getGuard r) tr sm sp;
@@ -575,13 +567,6 @@ Section CoqTL.
         end
       else
         None.
-
-
-
-
-
-
-
 
   Definition applyOutputPatternReferencesOnPattern (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) : list TargetModelLink :=
   optionList2List (map (evalOutputBindingExpression tr sm sp te) (map OutputPatternElementReferenceA_getOutputBindingExpression l)).
@@ -643,12 +628,6 @@ Section CoqTL.
   Definition find_OutputPatternElementA (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (name: string): option OutputPatternElementA :=
     find (fun oel => beq_string (OutputPatternElementA_getName oel) name)
               (concat (map RuleA_getOutputPattern (matchPattern tr sm sp))).
-
-  Definition matchPattern_getForSectionType (tr: TransformationA) (sm: SourceModel) (name: string) (sp: list SourceModelElement) : Type :=
-    match find_OutputPatternElementA tr sm sp name with
-    | None => Error
-    | Some o => OutputPatternElementExpressionA_getForSectionType (OutputPatternElementA_getOutputPatternElementExpression o) tr sm
-    end.
 
 
 
