@@ -350,13 +350,13 @@ Section CoqTL.
     | None => Error
     | Some r => Rule_getForSectionType (snd r)
     end.
-  
-  (* TODO the multiElem part is buggy , it should be (f e') like in evaluation guard *)
+     
   Fixpoint evalForExpressionFix (r : Rule) (intypes: list SourceModelClass) (el: list SourceModelElement) :
-    option (list (Rule_getForSectionType r)) :=
+    option (list (Rule_getForSectionType r)) := 
     match r, intypes, el with
     | BuildMultiElementRule s f, t::ts, e::els =>
-      evalForExpressionFix (f (bottomModelClass s)) ts els
+      e' <- toModelClass s e;
+        evalForExpressionFix (f e') ts els
     | BuildSingleElementRule s f g, t::nil, e::nil =>
       e' <- toModelClass s e;
         return (snd (f e'))
