@@ -25,8 +25,6 @@
     | _, _ => None
     end.
 
-
-
 Inductive listf : Type :=
     | BuildNext: forall t:SourceModelClass, (denoteModelClass t-> listf) -> listf
     | BuildLast: forall t:Type, (nat -> t) -> listf.

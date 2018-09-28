@@ -339,15 +339,22 @@ Section CoqTL.
       ra <- (nth_error (TransformationA_getRules tr) (GuardExpressionA_getRule o));
       evalGuardExpressionFix (snd r) (RuleA_getInTypes ra) sp.
 
-  Fixpoint Rule_getForSectionType (r: Rule) (sp: list SourceModelElement) : Type :=
+  Fixpoint Rule_getSingleElementRule (r: Rule) (sp: list SourceModelElement) : option (Rule * SourceModelElement) :=
     match r, sp with
-    | BuildMultiElementRule s f , e::els => 
-       match  toModelClass s e with 
-         | Some e' => Rule_getForSectionType (f e') els
-         | None => Error
-       end
-    | @BuildSingleElementRule iet ft f g, e::nil => ft
-    | _, _ => Error
+    | BuildMultiElementRule s f, e::els => 
+      match toModelClass s e with
+      | Some e' => Rule_getSingleElementRule (f e') els
+      | None => None
+      end
+    | BuildSingleElementRule s f g as bser, e::nil =>
+      Some (bser, e)
+    | _, _ => None
+    end.
+  
+  Definition Rule_getForSectionType (r: Rule) (sp: list SourceModelElement) : Type :=
+    match Rule_getSingleElementRule r sp with
+    | Some (@BuildSingleElementRule iet ft f g, e) => ft
+    | _ => Error
     end.
   
   Definition ForExpressionA_getForSectionType (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel)  (sp: list SourceModelElement)  : Type :=
@@ -356,19 +363,21 @@ Section CoqTL.
     | Some r => Rule_getForSectionType (snd r) sp
     end.
      
-  Fixpoint evalForExpressionFix (r : Rule) (sp: list SourceModelElement) {struct sp} :
-    option (list (Rule_getForSectionType r sp)) :=
-    match r, sp with
-    | BuildMultiElementRule s f, e::els =>
-      match  toModelClass s e with 
-         | Some e' => evalForExpressionFix (f e') els 
-         | None => None
-       end
-    | BuildSingleElementRule s f g, e::nil =>
-      e' <- toModelClass s e;
-        return (snd (f e'))
-    | _, _ => None
-    end.
+  Definition evalForExpressionFix (r : Rule) (sp: list SourceModelElement) :
+    option (list (Rule_getForSectionType r sp)).
+  Proof.
+    destruct (Rule_getSingleElementRule r sp) eqn:rc.
+    2: { exact None. }
+    1: { destruct (fst p) eqn:m.
+         2: { destruct (toModelClass InElType (snd p)) eqn: ser.
+              2: { exact None. }
+              1: { unfold Rule_getForSectionType.
+                   rewrite rc.
+                   rewrite surjective_pairing with (p:=p).
+                   rewrite m.
+                   exact (return (snd (p0 d))). }}
+         1: { exact None. }}
+  Defined.
   
   Definition evalForExpression (fe : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getForSectionType fe tr sm)).
   Proof.
