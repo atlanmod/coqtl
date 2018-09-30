@@ -25,29 +25,30 @@
     | _, _ => None
     end.
 
-Inductive listf : Type :=
-    | BuildNext: forall t:SourceModelClass, (denoteModelClass t-> listf) -> listf
-    | BuildLast: forall t:Type, (nat -> t) -> listf.
+Definition t (n : nat) : string :=  String (ascii_of_nat n) EmptyString .
 
-  Fixpoint getListType (l: listf) (n: list SourceModelElement) : Type :=
-    match l, n with
-    | BuildNext T l1,  e::els=> 
-       match  toModelClass T e with 
-         | Some e' => getListType (l1 e') els
-         | None => Error
-       end
-    | @BuildLast T t, _ => T
-    | _, _ => nat
-    end.
+(* id <- index path (allPathsTo m 3 c);  should be id <- index path (getForSection (matchPattern tr m [[c]])); *)
+Definition ClassGraph2Tree' :=
+  transformation ClassGraph2Tree from ClassMetamodel to ClassMetamodel
+    with m as ClassModel := [
 
-  (*Compute (BuildNext (BuildNext (BuildLast (fun n => 5)))).*)
-
-  Fixpoint evalListF (l : listf) (n: list SourceModelElement) : option (getListType l n) :=
-    match l, n with
-    | BuildNext T l', e::els => 
-       match  toModelClass T e with 
-         | Some e' => evalListF (l' e') els
-         | None => None
-       end
-    | _, _ => None
-    end.
+      rule Class2Class
+        from
+          c class ClassEClass
+        when 
+          true
+        for
+          i in (1 :: 2 :: nil)
+        to [
+          "at" :
+            a' class AttributeEClass := 
+              match i with
+              | None => BuildAttribute newId false (getClassName c)
+              | Some n => BuildAttribute newId false ((getClassName c) ++ t n)
+              end;
+          "cl" :
+            c' class ClassEClass :=
+              BuildClass newId (getClassName c)
+        ]
+       
+    ].

@@ -1,4 +1,4 @@
-Require Import String Coq.Strings.Ascii.
+Require Import String.
 Require Import List.
 Require Import Multiset.
 Require Import ListSet.
@@ -67,7 +67,6 @@ Definition allPathsTo (m : ClassModel) (l : nat) (o: Class) : list (list Class) 
 
 
 
-
 Fixpoint eq_Class (c1 c2: Class): bool :=
   match c1, c2 with 
    | BuildClass a1 a2, BuildClass b1 b2 => beq_string a1 b1 && beq_string a2 b2
@@ -92,10 +91,24 @@ Fixpoint index (l : list Class) (ll : list (list Class)) : option nat :=
   end.
 
 
+Fixpoint resolveAllIter (tr: TransformationA ClassMetamodel ClassMetamodel) (sm:ClassModel) (name: string) 
+  (type: ClassMetamodel_EClass) (sps: list Class) (iters: list (list Class)) (forSection : list (list Class))
+   : (list (Metamodel.denoteModelClass type)).
+Proof.
+destruct sps eqn: sps_ca.
+- exact ( nil).
+- destruct iters eqn: iters_ca.
+  -- exact ( nil).
+  -- destruct (index l0 forSection) eqn: id_ca.
+     + destruct (resolveIter tr sm name type [[ c ]] n) eqn:it_ca.
+       ++ exact ( (d :: (resolveAllIter tr sm name type l l1 forSection))).
+       ++ exact (resolveAllIter tr sm name type l l1 forSection).
+     + exact (resolveAllIter tr sm name type l l1 forSection).
+Defined.
 
-Definition t (n : nat) : string :=  String (ascii_of_nat n) EmptyString .
-
-(* id <- index path (allPathsTo m 3 c);  should be id <- index path (getForSection (matchPattern tr m [[c]])); *)
+(* id <- index path (allPathsTo m 3 c);  should be id <- index path (getForSection (matchPattern tr m [[c]])); 
+   The problem now is that find_OutputPatternElementA did not return any result
+ *)
 Definition ClassGraph2Tree' :=
   transformation ClassGraph2Tree from ClassMetamodel to ClassMetamodel
     with m as ClassModel := [
@@ -103,20 +116,29 @@ Definition ClassGraph2Tree' :=
       rule Class2Class
         from
           c class ClassEClass
-        when 
-          true
         for
-          i in (1 :: 2 :: nil)
+          i in (allPathsTo m 3 c)
         to [
           "at" :
-            a' class AttributeEClass := 
-              match i with
-              | None => BuildAttribute newId false (getClassName c)
-              | Some n => BuildAttribute newId false ((getClassName c) ++ t n)
-              end;
+            a' class AttributeEClass :=
+              BuildAttribute newId false (getClassName c)
+            with [
+              ref AttributeTypeEReference :=
+                path <- i;
+                path_id <- index path (allPathsTo m 3 c); 
+                cls <- resolveIter (parsePhase ClassGraph2Tree) m "cl" ClassEClass [[ c ]] path_id;
+                return BuildAttributeType a' cls
+            ];
           "cl" :
             c' class ClassEClass :=
               BuildClass newId (getClassName c)
+            with [
+              ref ClassAttributesEReference :=
+                path <- i;
+                cls <- step m c;
+                let attrs := resolveAllIter (parsePhase ClassGraph2Tree) m "at" AttributeEClass cls (nextPaths m path) (allPathsTo m 3 c) in
+                  return BuildClassAttributes c' attrs
+            ]
         ]
        
     ].
