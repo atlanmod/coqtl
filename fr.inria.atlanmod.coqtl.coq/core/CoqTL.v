@@ -374,12 +374,7 @@ Section CoqTL.
     | Some r => Rule_getForSectionType (snd r) sp
     end.
 
-  Lemma surjective_pairing' :
-  forall (A B:Type) (p:A * B), p = pair (fst p) (snd p).
-  Proof.
-    destruct p; reflexivity.
-  Defined.
-  
+
   Definition evalForExpression' (r : Rule) (sp: list SourceModelElement) :
     option (list (Rule_getForSectionType r sp)).
   Proof.
@@ -390,7 +385,7 @@ Section CoqTL.
               2: { exact None. }
               1: { unfold Rule_getForSectionType.
                    rewrite rc.
-                   rewrite surjective_pairing' with (p:=p).
+                   rewrite surjective_pairing_transparent with (p:=p).
                    rewrite m.
                    exact (return (snd (p0 d))). }}
          1: { exact None. }}
@@ -440,7 +435,7 @@ Section CoqTL.
         destruct (Rule_getSingleElementRule (snd p) sp) eqn: rc_ca.
         2 : { exact None. }
         1 : { destruct (fst p0) eqn:r_ca.
-              2: { rewrite surjective_pairing' with (p:=p0) in fet. 
+              2: { rewrite surjective_pairing_transparent with (p:=p0) in fet. 
                    rewrite r_ca in fet.
                    destruct (toModelClass InElType (snd p0)) eqn: m_ca.
                    2 : { exact None. } 
@@ -495,7 +490,7 @@ Section CoqTL.
           destruct (Rule_getSingleElementRule (snd p) sp) eqn: rc_ca.
           2 : { exact None. }
           1 : { destruct (fst p0) eqn:r_ca.
-                2: { rewrite surjective_pairing with (p:=p0) in fet. 
+                2: { rewrite surjective_pairing_transparent with (p:=p0) in fet. 
                      rewrite r_ca in fet.
                      destruct (toModelClass InElType (snd p0)) eqn: m_ca.
                      2 : { exact None. } 
@@ -548,21 +543,28 @@ Section CoqTL.
             end
     else te.
 
-  Definition instantiateRuleOnPattern' (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (ope: OutputPatternElementA) 
-    (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) : option (TargetModelElement).
+  Definition ForExpressionA_getForSectionType2OutputPatternElementExpressionA 
+    (f : ForExpressionA) (o : OutputPatternElementExpressionA) (tr: TransformationA) (sp: list SourceModelElement) 
+    (sm: SourceModel)  (fe: ForExpressionA_getForSectionType f tr sm sp) 
+      : option (OutputPatternElementExpressionA_getForSectionType o tr sm sp).
   Proof.
-    unfold ForExpressionA_getForSectionType in fe.
-    remember (OutputPatternElementA_getOutputPatternElementExpression ope) as opee.
-    destruct (beq_nat (OutputPatternElementExpressionA_getRule opee)
-             (ForExpressionA_getRule (RuleA_getForExpression r))) eqn: ca.
-    2: { exact None. }
-    1: { apply beq_nat_true in ca.
-        rewrite <- ca in fe.
-        destruct (evalOutputPatternElementExpressionWithIter opee tr sm sp fe) eqn: eval_ca.
-        - exact (Some (setTargetElementId t ope sp)).
-        - exact None.
-       }
+    destruct (beq_nat (OutputPatternElementExpressionA_getRule o)
+                      (ForExpressionA_getRule f)) eqn: ca.
+    - unfold ForExpressionA_getForSectionType in fe.
+      symmetry in ca.
+      apply beq_nat_eq in ca.
+      rewrite <- ca in fe.
+      exact (Some fe).
+    - exact None.
   Defined.
+
+  Definition instantiateRuleOnPattern' (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (ope: OutputPatternElementA) 
+    (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) : option (TargetModelElement) :=
+   let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
+   tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA (RuleA_getForExpression r) opee tr sp sm fe;
+   tme <- (evalOutputPatternElementExpressionWithIter opee tr sm sp tfe);
+   return (setTargetElementId tme ope sp).
+
 
   Definition instantiateRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     pre <- evalGuardExpressionPre r sp;
@@ -576,30 +578,48 @@ Section CoqTL.
       else
         None.
 
- Definition applyOutputPatternReferencesOnPattern (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) : list TargetModelLink :=
+  Definition applyOutputPatternReferencesOnPattern (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) : list TargetModelLink :=
   optionList2List (map (evalOutputBindingExpression tr sm sp te) (map OutputPatternElementReferenceA_getOutputBindingExpression l)).
 
-(*   Fixpoint applyOutputPatternReferencesOnPatternIter (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) 
+
+  Definition ForExpressionA_getForSectionType2OutputBindingExpressionA_getForSectionType 
+    (f : ForExpressionA) (o : OutputBindingExpressionA) (tr: TransformationA) (sp: list SourceModelElement) 
+    (sm: SourceModel)  (fe: ForExpressionA_getForSectionType f tr sm sp) 
+      : option (OutputBindingExpressionA_getForSectionType o tr sm sp).
+  Proof.
+    destruct (beq_nat (OutputBindingExpressionA_getRule o)
+                         (ForExpressionA_getRule f)) eqn: ca.
+    - unfold ForExpressionA_getForSectionType in fe.
+      symmetry in ca. 
+      apply beq_nat_eq in ca.
+      rewrite <- ca in fe.
+      exact (Some fe).
+    - exact None.
+  Defined.
+
+  Fixpoint applyOutputPatternReferencesOnPatternIter (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) 
+   (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) (orefs: list OutputPatternElementReferenceA) (te: TargetModelElement) 
      : list TargetModelLink :=
-    match l with
+    match orefs with
      | nil => nil
-     | oref :: orefs => let bind := OutputPatternElementReferenceA_getOutputBindingExpression oref in
-                          match (evalOutputBindingExpressionWithIter tr sm sp te bind fe) with
-                          | None => applyOutputPatternReferencesOnPatternIter r tr sm sp fe orefs te 
-                          | Some res => res :: applyOutputPatternReferencesOnPatternIter r tr sm sp fe orefs te 
-                          end
-    end. *)
+     | oref :: orefs' => let bind := OutputPatternElementReferenceA_getOutputBindingExpression oref in
+                            match (ForExpressionA_getForSectionType2OutputBindingExpressionA_getForSectionType (RuleA_getForExpression r) bind tr sp sm fe) with
+                            | Some tfe => match (evalOutputBindingExpressionWithIter tr sm sp te bind tfe) with
+                                          | None => applyOutputPatternReferencesOnPatternIter r tr sm sp fe orefs' te 
+                                          | Some res => res :: applyOutputPatternReferencesOnPatternIter r tr sm sp fe orefs' te 
+                                          end
+                            | None => applyOutputPatternReferencesOnPatternIter r tr sm sp fe orefs' te
+                            end
+    end. 
 
 
   Definition applyRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (tes: list TargetModelElement): option (list TargetModelLink) :=
-    None.
-
-(* match (optionListToList (evalForExpression (RuleA_getForExpression r) tr sm sp)) with
+    match (optionListToList (evalForExpression (RuleA_getForExpression r) tr sm sp)) with
      | nil => return (concat (zipWith (applyOutputPatternReferencesOnPattern tr sm sp) 
                              (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) tes))
      | lst => let orefs := (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) in
                 return concat (flat_map (fun fe => (zipWith (applyOutputPatternReferencesOnPatternIter r tr sm sp fe) orefs tes)) lst)
-    end.  *)
+    end.
 
 
 
@@ -655,26 +675,21 @@ Section CoqTL.
     Some (optionList2List (map (resolve tr sm name type) sps)).
 
 
-  Definition resolveIterFix (tr: TransformationA) (sm : SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
-    (fe: ForExpressionA) (fet: ForExpressionA_getForSectionType fe tr sm sp) : option (denoteModelClass type).
-  Proof.
-(*    - destruct (find_OutputPatternElementA tr sm sp name) eqn: find_ca.
-     -- destruct (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression o) tr sm sp fet) eqn: te.
-        --- exact (toModelClass type (setTargetElementId t o sp)).
-        --- exact None. *)
-     -- exact None.
-  Defined. 
-
 
   Definition resolveIter (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
     (iter : nat) : option (denoteModelClass type) :=
-out <- (find_OutputPatternElementA tr sm sp name);
-r_num <- Some (OutputPatternElementExpressionA_getRule (OutputPatternElementA_getOutputPatternElementExpression out));
-ra <- (nth_error (TransformationA_getRules tr) r_num);
-fe <- Some (RuleA_getForExpression ra);
-fe_res <- (evalForExpression fe tr sm sp);
-fet <- nth_error fe_res iter;
-  resolveIterFix tr sm name type sp fe fet.
+  ope <- (find_OutputPatternElementA tr sm sp name);
+  r <- Some (OutputPatternElementExpressionA_getRule (OutputPatternElementA_getOutputPatternElementExpression ope));
+  ra <- (nth_error (TransformationA_getRules tr) r);
+  fe <- Some (RuleA_getForExpression ra);
+  fe_res <- (evalForExpression fe tr sm sp);
+  fet <- nth_error fe_res iter;
+  let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
+   tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA fe opee tr sp sm fet;
+   te<- (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm sp tfe);
+   (toModelClass type (setTargetElementId te ope sp)).
+
+
 
   (** ** Rule scheduling **)
     

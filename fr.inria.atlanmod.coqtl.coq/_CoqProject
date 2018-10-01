@@ -6,6 +6,7 @@ core/utils/tTuple.v
 core/utils/tString.v
 core/utils/tPrint.v
 core/utils/tNotation.v
+core/utils/tPair.v
 core/utils/tTop.v
 core/utils/CpdtTactics.v
 

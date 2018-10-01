@@ -6,5 +6,6 @@ Require Export core.utils.tConcat.
 Require Export core.utils.tNotation.
 Require Export core.utils.tString.
 Require Export core.utils.tPrint.
+Require Export core.utils.tPair.
 
 Inductive Error : Set :=.

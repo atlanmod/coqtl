@@ -12,8 +12,10 @@ core/utils/tPrint.vo core/utils/tPrint.glob core/utils/tPrint.v.beautified: core
 core/utils/tPrint.vio: core/utils/tPrint.v
 core/utils/tNotation.vo core/utils/tNotation.glob core/utils/tNotation.v.beautified: core/utils/tNotation.v
 core/utils/tNotation.vio: core/utils/tNotation.v
-core/utils/tTop.vo core/utils/tTop.glob core/utils/tTop.v.beautified: core/utils/tTop.v core/utils/tArith.vo core/utils/tList.vo core/utils/tTuple.vo core/utils/tConcat.vo core/utils/tNotation.vo core/utils/tString.vo core/utils/tPrint.vo
-core/utils/tTop.vio: core/utils/tTop.v core/utils/tArith.vio core/utils/tList.vio core/utils/tTuple.vio core/utils/tConcat.vio core/utils/tNotation.vio core/utils/tString.vio core/utils/tPrint.vio
+core/utils/tPair.vo core/utils/tPair.glob core/utils/tPair.v.beautified: core/utils/tPair.v
+core/utils/tPair.vio: core/utils/tPair.v
+core/utils/tTop.vo core/utils/tTop.glob core/utils/tTop.v.beautified: core/utils/tTop.v core/utils/tArith.vo core/utils/tList.vo core/utils/tTuple.vo core/utils/tConcat.vo core/utils/tNotation.vo core/utils/tString.vo core/utils/tPrint.vo core/utils/tPair.vo
+core/utils/tTop.vio: core/utils/tTop.v core/utils/tArith.vio core/utils/tList.vio core/utils/tTuple.vio core/utils/tConcat.vio core/utils/tNotation.vio core/utils/tString.vio core/utils/tPrint.vio core/utils/tPair.vio
 core/utils/CpdtTactics.vo core/utils/CpdtTactics.glob core/utils/CpdtTactics.v.beautified: core/utils/CpdtTactics.v
 core/utils/CpdtTactics.vio: core/utils/CpdtTactics.v
 core/Metamodel.vo core/Metamodel.glob core/Metamodel.v.beautified: core/Metamodel.v core/Model.vo
