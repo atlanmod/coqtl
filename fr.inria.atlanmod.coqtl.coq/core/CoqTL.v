@@ -450,7 +450,7 @@ Section CoqTL.
   Defined.
 
   Definition evalOutputPatternElementExpressionWithIter (o : OutputPatternElementExpressionA)  (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) 
-             (fet: OutputPatternElementExpressionA_getForSectionType o tr sm sp) : option TargetModelElement :=
+         (fet: OutputPatternElementExpressionA_getForSectionType o tr sm sp) : option TargetModelElement :=
       r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputPatternElementExpressionA_getRule o));
         evalOutputPatternElementExpressionWithIter' o tr (snd r) sm sp fet.
 
@@ -542,45 +542,58 @@ Section CoqTL.
             end
     else te.
 
+  Definition instantiateRuleOnPattern' (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (ope: OutputPatternElementA) 
+    (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) : option (TargetModelElement).
+  Proof.
+    unfold ForExpressionA_getForSectionType in fe.
+    remember (OutputPatternElementA_getOutputPatternElementExpression ope) as opee.
+    destruct (beq_nat (OutputPatternElementExpressionA_getRule opee)
+             (ForExpressionA_getRule (RuleA_getForExpression r))) eqn: ca.
+    2: { exact None. }
+    1: { apply beq_nat_true in ca.
+        rewrite <- ca in fe.
+        destruct (evalOutputPatternElementExpressionWithIter opee tr sm sp fe) eqn: eval_ca.
+        - exact (Some (setTargetElementId t ope sp)).
+        - exact None.
+       }
+  Defined.
+
   Definition instantiateRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     pre <- evalGuardExpressionPre r sp;
       m <- evalGuardExpression (RuleA_getGuard r) tr sm sp;
       if m then 
         match (optionListToList (evalForExpression (RuleA_getForExpression r) tr sm sp)) with
          | nil => Some nil
-         | lst => return (
-           flat_map (
-               fun fe => optionList2List (map (fun ope: OutputPatternElementA =>
-                           te <- (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm sp fe );
-                         return (setTargetElementId te ope sp))
-                        (RuleA_getOutputPattern r)))
-                    lst)
+         | lst => return (optionList2List (flat_map (fun ope => map (instantiateRuleOnPattern' r tr sm sp ope) lst)
+                                                    (RuleA_getOutputPattern r)))
         end
       else
         None.
 
-  Definition applyOutputPatternReferencesOnPattern (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) : list TargetModelLink :=
+ Definition applyOutputPatternReferencesOnPattern (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) : list TargetModelLink :=
   optionList2List (map (evalOutputBindingExpression tr sm sp te) (map OutputPatternElementReferenceA_getOutputBindingExpression l)).
 
-  Fixpoint applyOutputPatternReferencesOnPatternIter (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) 
+(*   Fixpoint applyOutputPatternReferencesOnPatternIter (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) 
      : list TargetModelLink :=
     match l with
      | nil => nil
      | oref :: orefs => let bind := OutputPatternElementReferenceA_getOutputBindingExpression oref in
-                          match (evalOutputBindingExpressionWithIter tr sm sp te bind (RuleA_getForExpression r) fe) with
+                          match (evalOutputBindingExpressionWithIter tr sm sp te bind fe) with
                           | None => applyOutputPatternReferencesOnPatternIter r tr sm sp fe orefs te 
                           | Some res => res :: applyOutputPatternReferencesOnPatternIter r tr sm sp fe orefs te 
                           end
-    end.
+    end. *)
 
 
   Definition applyRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (tes: list TargetModelElement): option (list TargetModelLink) :=
-    match (optionListToList (evalForExpression (RuleA_getForExpression r) tr sm sp)) with
+    None.
+
+(* match (optionListToList (evalForExpression (RuleA_getForExpression r) tr sm sp)) with
      | nil => return (concat (zipWith (applyOutputPatternReferencesOnPattern tr sm sp) 
                              (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) tes))
      | lst => let orefs := (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) in
                 return concat (flat_map (fun fe => (zipWith (applyOutputPatternReferencesOnPatternIter r tr sm sp fe) orefs tes)) lst)
-    end.
+    end.  *)
 
 
 
@@ -639,10 +652,10 @@ Section CoqTL.
   Definition resolveIterFix (tr: TransformationA) (sm : SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
     (fe: ForExpressionA) (fet: ForExpressionA_getForSectionType fe tr sm sp) : option (denoteModelClass type).
   Proof.
-   - destruct (find_OutputPatternElementA tr sm sp name) eqn: find_ca.
-     -- destruct (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression o) tr sm sp fe fet) eqn: te.
+(*    - destruct (find_OutputPatternElementA tr sm sp name) eqn: find_ca.
+     -- destruct (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression o) tr sm sp fet) eqn: te.
         --- exact (toModelClass type (setTargetElementId t o sp)).
-        --- exact None.
+        --- exact None. *)
      -- exact None.
   Defined. 
 
