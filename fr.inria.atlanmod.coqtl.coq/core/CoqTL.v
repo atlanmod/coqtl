@@ -373,7 +373,13 @@ Section CoqTL.
     | None => Error
     | Some r => Rule_getForSectionType (snd r) sp
     end.
-     
+
+  Lemma surjective_pairing' :
+  forall (A B:Type) (p:A * B), p = pair (fst p) (snd p).
+  Proof.
+    destruct p; reflexivity.
+  Defined.
+  
   Definition evalForExpression' (r : Rule) (sp: list SourceModelElement) :
     option (list (Rule_getForSectionType r sp)).
   Proof.
@@ -384,7 +390,7 @@ Section CoqTL.
               2: { exact None. }
               1: { unfold Rule_getForSectionType.
                    rewrite rc.
-                   rewrite surjective_pairing with (p:=p).
+                   rewrite surjective_pairing' with (p:=p).
                    rewrite m.
                    exact (return (snd (p0 d))). }}
          1: { exact None. }}
@@ -434,7 +440,7 @@ Section CoqTL.
         destruct (Rule_getSingleElementRule (snd p) sp) eqn: rc_ca.
         2 : { exact None. }
         1 : { destruct (fst p0) eqn:r_ca.
-              2: { rewrite surjective_pairing with (p:=p0) in fet. 
+              2: { rewrite surjective_pairing' with (p:=p0) in fet. 
                    rewrite r_ca in fet.
                    destruct (toModelClass InElType (snd p0)) eqn: m_ca.
                    2 : { exact None. } 
