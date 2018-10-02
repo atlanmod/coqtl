@@ -597,28 +597,24 @@ Section CoqTL.
     - exact None.
   Defined.
 
-  Fixpoint applyOutputPatternReferencesOnPatternIter (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) 
+  Definition applyOutputPatternReferencesOnPatternIter (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) 
    (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) (orefs: list OutputPatternElementReferenceA) (te: TargetModelElement) 
-     : list TargetModelLink :=
-    match orefs with
-     | nil => nil
-     | oref :: orefs' => let bind := OutputPatternElementReferenceA_getOutputBindingExpression oref in
-                            match (ForExpressionA_getForSectionType2OutputBindingExpressionA_getForSectionType (RuleA_getForExpression r) bind tr sp sm fe) with
-                            | Some tfe => match (evalOutputBindingExpressionWithIter tr sm sp te bind tfe) with
-                                          | None => applyOutputPatternReferencesOnPatternIter r tr sm sp fe orefs' te 
-                                          | Some res => res :: applyOutputPatternReferencesOnPatternIter r tr sm sp fe orefs' te 
-                                          end
-                            | None => applyOutputPatternReferencesOnPatternIter r tr sm sp fe orefs' te
-                            end
-    end. 
+     : list (option TargetModelLink) :=
+    let binds := (map OutputPatternElementReferenceA_getOutputBindingExpression orefs) in
+map (fun bind => match (ForExpressionA_getForSectionType2OutputBindingExpressionA_getForSectionType (RuleA_getForExpression r) bind tr sp sm fe) with
+      | Some tfe => (evalOutputBindingExpressionWithIter tr sm sp te bind tfe)
+      | None => None
+     end) binds
+     .
 
 
-  Definition applyRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (tes: list TargetModelElement): option (list TargetModelLink) :=
+
+
+  Definition applyRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (tes: list TargetModelElement): (list TargetModelLink) :=
     match (optionListToList (evalForExpression (RuleA_getForExpression r) tr sm sp)) with
-     | nil => return (concat (zipWith (applyOutputPatternReferencesOnPattern tr sm sp) 
-                             (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) tes))
-     | lst => let orefs := (map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) in
-                return concat (flat_map (fun fe => (zipWith (applyOutputPatternReferencesOnPatternIter r tr sm sp fe) orefs tes)) lst)
+     | nil =>  nil
+     | fets => let orefs :=  (flat_map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) in
+              optionList2List (concat (flat_map (fun te => (map (fun fe => applyOutputPatternReferencesOnPatternIter r tr sm sp fe orefs te) fets)) tes))
     end.
 
 
@@ -645,7 +641,7 @@ Section CoqTL.
     match matchPattern tr sm sp with
     | nil => None
     | l => Some (concat (optionList2List (map (fun r => tes <- instantiateRuleOnPattern r tr sm sp;
-                                                      applyRuleOnPattern r tr sm sp tes
+                                                      return applyRuleOnPattern r tr sm sp tes
                                              ) l))) end.
 
   Definition transformPattern (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option (ModelFragment TargetModelElement TargetModelLink) :=
