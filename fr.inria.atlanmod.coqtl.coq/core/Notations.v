@@ -40,7 +40,7 @@ Notation "sid 'class' stype 'when' guard 'for' forid 'in' forset 'to' outputels"
   (BuildSingleElementRule _ stype (fun sid => (guard, forset)) (fun sid forid => outputels))
     (right associativity, at level 60): coqtl.
 
-(* InputPatternElement no guard *)
+(* (* InputPatternElement no guard *)
 Notation "sid 'class' stype 'to' outputels" :=
   (BuildSingleElementRule _ stype (fun sid => (true, 0::nil)) (fun sid forid => outputels))
     (right associativity, at level 60): coqtl.
@@ -48,7 +48,7 @@ Notation "sid 'class' stype 'to' outputels" :=
 (* InputPatternElement *)
 Notation "sid 'class' stype 'when' guard 'to' outputels" :=
   (BuildSingleElementRule _ stype (fun sid => (guard, 0::nil)) (fun sid forid => outputels))
-    (right associativity, at level 60): coqtl.
+    (right associativity, at level 60): coqtl. *)
 
 (* OutputPatternElement *)
 Notation "elid ':' elname 'class' eltype := eldef 'with' refdef" :=

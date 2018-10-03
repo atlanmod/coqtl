@@ -146,6 +146,8 @@ Section CoqTL.
 
   Definition Transformation : Type := Phase -> Phase.
 
+
+
   (** * Abstract Syntax **)
 
   Inductive OutputBindingExpressionA : Type :=
@@ -368,6 +370,7 @@ Section CoqTL.
     | _ => Error
     end.
   
+
   Definition ForExpressionA_getForSectionType (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel)  (sp: list SourceModelElement)  : Type :=
     match (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (ForExpressionA_getRule o)) with
     | None => Error
@@ -598,14 +601,12 @@ Section CoqTL.
   Defined.
 
   Definition applyOutputPatternReferencesOnPatternIter (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) 
-   (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) (orefs: list OutputPatternElementReferenceA) (te: TargetModelElement) 
-     : list (option TargetModelLink) :=
-    let binds := (map OutputPatternElementReferenceA_getOutputBindingExpression orefs) in
-map (fun bind => match (ForExpressionA_getForSectionType2OutputBindingExpressionA_getForSectionType (RuleA_getForExpression r) bind tr sp sm fe) with
-      | Some tfe => (evalOutputBindingExpressionWithIter tr sm sp te bind tfe)
-      | None => None
-     end) binds
-     .
+   (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) (oref: OutputPatternElementReferenceA) (te: TargetModelElement) 
+     : (option TargetModelLink) :=
+bind <- Some (OutputPatternElementReferenceA_getOutputBindingExpression oref);
+tfe <- (ForExpressionA_getForSectionType2OutputBindingExpressionA_getForSectionType (RuleA_getForExpression r) bind tr sp sm fe);
+(evalOutputBindingExpressionWithIter tr sm sp te bind tfe).
+
 
 
 
@@ -614,7 +615,9 @@ map (fun bind => match (ForExpressionA_getForSectionType2OutputBindingExpression
     match (optionListToList (evalForExpression (RuleA_getForExpression r) tr sm sp)) with
      | nil =>  nil
      | fets => let orefs :=  (flat_map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) in
-              optionList2List (concat (flat_map (fun te => (map (fun fe => applyOutputPatternReferencesOnPatternIter r tr sm sp fe orefs te) fets)) tes))
+
+optionList2List (concat (flat_map (fun fe => map (fun oref => map (fun te => applyOutputPatternReferencesOnPatternIter r tr sm sp fe oref te) tes) orefs ) fets))
+
     end.
 
 

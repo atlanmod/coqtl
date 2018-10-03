@@ -126,7 +126,8 @@ Definition ClassGraph2Tree' :=
               ref AttributeTypeEReference :=
                 path <- i;
                 path_id <- index path (allPathsTo m 3 c); 
-                cls <- resolveIter (parsePhase ClassGraph2Tree) m "cl" ClassEClass [[ c ]] path_id;
+rt <- find_OutputPatternElementA (parsePhase ClassGraph2Tree) m [[ c ]] "cl";
+(*                 cls <- resolveIter (parsePhase ClassGraph2Tree) m "cl" ClassEClass [[ c ]] path_id; *)
                 return BuildAttributeType a' cls
             ];
           "cl" :
