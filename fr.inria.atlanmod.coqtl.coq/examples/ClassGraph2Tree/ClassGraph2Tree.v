@@ -3,6 +3,9 @@ Require Import List.
 Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
+Require Import DecimalNat.
+Require Import DecimalString.
+
 
 Require Import core.utils.tTop.
 Require Import core.Notations.
@@ -117,29 +120,30 @@ Definition ClassGraph2Tree' :=
         from
           c class ClassEClass
         for
-          i in (allPathsTo m 3 c)
+          i in (allPathsTo m 1 c)
         to [
-          "at" :
+          "att" :
             a' class AttributeEClass :=
-              BuildAttribute newId false (getClassName c)
+ let xm := matchPattern (parsePhase ClassGraph2Tree) m [[ c ]] in
+
+              BuildAttribute newId false ((getClassName c) ++ NilZero.string_of_uint (Unsigned.to_lu (length xm)))
             with [
               ref AttributeTypeEReference :=
-                path <- i;
-                path_id <- index path (allPathsTo m 3 c); 
-rt <- find_OutputPatternElementA (parsePhase ClassGraph2Tree) m [[ c ]] "cl";
+
+(* rt <- resolve ClassGraph2Tree m "cl" ClassEClass [[ c ]]; *)
 (*                 cls <- resolveIter (parsePhase ClassGraph2Tree) m "cl" ClassEClass [[ c ]] path_id; *)
-                return BuildAttributeType a' cls
+                return BuildAttributeType a' c
             ];
-          "cl" :
+          "class" :
             c' class ClassEClass :=
               BuildClass newId (getClassName c)
-            with [
+(*             with [
               ref ClassAttributesEReference :=
                 path <- i;
                 cls <- step m c;
-                let attrs := resolveAllIter (parsePhase ClassGraph2Tree) m "at" AttributeEClass cls (nextPaths m path) (allPathsTo m 3 c) in
+                let attrs := resolveAllIter (parsePhase ClassGraph2Tree) m "att" AttributeEClass cls (nextPaths m path) (allPathsTo m 3 c) in
                   return BuildClassAttributes c' attrs
-            ]
+            ] *)
         ]
        
     ].
