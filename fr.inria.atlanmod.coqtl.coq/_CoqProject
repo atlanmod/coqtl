@@ -24,3 +24,8 @@ examples/ClassGraph2Tree/ClassMetamodel.v
 examples/ClassGraph2Tree/ClassMetamodelPattern.v
 examples/ClassGraph2Tree/ClassGraph2Tree.v
 examples/ClassGraph2Tree/PersonModel.v
+
+-R "examples/Graph2Tree" examples.Graph2Tree
+examples/Graph2Tree/GraphMetamodel.v
+examples/Graph2Tree/Graph2Tree.v
+examples/Graph2Tree/GraphModel.v
