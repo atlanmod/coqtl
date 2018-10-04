@@ -18,6 +18,7 @@ Require Import Coq.Logic.Eqdep_dec.
 Require Import core.utils.tTop.
 Require Import core.Metamodel.
 Require Import core.Model.
+Require Import core.Object.
 
 (* Base types *)
 Inductive Node : Set :=
@@ -34,6 +35,8 @@ Inductive NodeEdges : Set :=
    NodeEdges.
 
 
+
+
 (* Inheritence *)
 
 
@@ -47,6 +50,14 @@ Definition getNodeId (n : Node) : string :=
 Definition getNodeName (n : Node) : string :=
   match n with BuildNode id name  => name end.
  
+Definition setNodeId (n : Node) (s : string) : Node :=
+  BuildNode s (getNodeName n).
+
+Instance objectAttribute : Object Node :=
+  {
+    getId := getNodeId;
+    setId := setNodeId;
+  }.
 
 (* Equality for Types *)
 (**? We define eq for Eclass on their fist attribute **)
@@ -183,11 +194,27 @@ end.
 Definition getNodeEdges (no_arg : Node) (m : GraphModel) : option (list Node) :=
   GraphMetamodel_getNodeEdgesOnLinks no_arg (@allModelLinks _ _ m).
 
+Definition GraphMetamodel_allInstances (grec_arg: GraphMetamodel_EClass) (m: GraphModel): list (GraphMetamodel_getTypeByEClass grec_arg) :=
+  optionList2List (map (GraphMetamodel_toEClass grec_arg)  (filter (GraphMetamodel_instanceOfEClass grec_arg) (@allModelElements _ _ m))).
 
 Definition GraphMetamodel_defaultInstanceOfEClass (grec_arg: GraphMetamodel_EClass) : (GraphMetamodel_getTypeByEClass grec_arg) :=
   match grec_arg with
   | NodeEClass => (BuildNode "" "")
   end.
+
+Definition GraphMetamodel_getId (a : GraphMetamodel_EObject) : string.
+Proof.
+  destruct a.
+  destruct grec_arg.
+  * simpl in g. exact (getNodeId g).
+Defined.
+
+Definition GraphMetamodel_setId (a : GraphMetamodel_EObject) (s: string) : GraphMetamodel_EObject.
+Proof.
+  destruct a.
+  destruct grec_arg.
+  * simpl in g. exact (setNodeId g s).
+Defined.
 
 (* Typeclass Instance *)
 Instance GraphMetamodel : Metamodel GraphMetamodel_EObject GraphMetamodel_ELink GraphMetamodel_EClass GraphMetamodel_EReference :=
@@ -207,6 +234,9 @@ Instance GraphMetamodel : Metamodel GraphMetamodel_EObject GraphMetamodel_ELink 
     (* Constructors *)
     BuildModelElement := Build_GraphMetamodel_EObject;
     BuildModelLink := Build_GraphMetamodel_ELink;
+
+    getId := GraphMetamodel_getId;
+    setId := GraphMetamodel_setId;
   }.
   
 (* Useful lemmas *)
