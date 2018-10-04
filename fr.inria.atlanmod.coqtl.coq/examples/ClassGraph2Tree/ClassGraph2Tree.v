@@ -124,26 +124,24 @@ Definition ClassGraph2Tree' :=
         to [
           "att" :
             a' class AttributeEClass :=
- let xm := matchPattern (parsePhase ClassGraph2Tree) m [[ c ]] in
-
-              BuildAttribute newId false ((getClassName c) ++ NilZero.string_of_uint (Unsigned.to_lu (length xm)))
+              BuildAttribute newId false (getClassName c)
             with [
               ref AttributeTypeEReference :=
-
-(* rt <- resolve ClassGraph2Tree m "cl" ClassEClass [[ c ]]; *)
-(*                 cls <- resolveIter (parsePhase ClassGraph2Tree) m "cl" ClassEClass [[ c ]] path_id; *)
-                return BuildAttributeType a' c
+                path <- i;
+                path_id <- index path (allPathsTo m 1 c); 
+                cls <- resolveIter (parsePhase ClassGraph2Tree) m "cl" ClassEClass [[ c ]] path_id;
+                return BuildAttributeType a' cls
             ];
-          "class" :
+          "cl" :
             c' class ClassEClass :=
               BuildClass newId (getClassName c)
-(*             with [
+            with [
               ref ClassAttributesEReference :=
                 path <- i;
                 cls <- step m c;
-                let attrs := resolveAllIter (parsePhase ClassGraph2Tree) m "att" AttributeEClass cls (nextPaths m path) (allPathsTo m 3 c) in
+                let attrs := resolveAllIter (parsePhase ClassGraph2Tree) m "att" AttributeEClass cls (nextPaths m path) (allPathsTo m 1 c) in
                   return BuildClassAttributes c' attrs
-            ] *)
+            ] 
         ]
        
     ].
