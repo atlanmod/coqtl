@@ -1,4 +1,4 @@
-Require Import String.
+(* Require Import String.
 Require Import List.
 Require Import Multiset.
 Require Import ListSet.
@@ -13,7 +13,7 @@ Require Import core.Model.
 Require Import core.CoqTL.
 
 Require Import examples.Graph2Tree.GraphMetamodel.
-
+Require Import examples.Graph2Tree.GraphMetamodelPattern.
 
 Open Scope coqtl.
 
@@ -28,14 +28,14 @@ Open Scope coqtl.
               end
        ) attrs). *)
 
-(* Definition nextPaths (m: ClassModel) (p: list Class) : list (list Class) :=
+Definition nextPaths (m: GraphModel) (p: list Node) : list (list Node) :=
   match p with
   | c :: p' =>
-    match getClassAttributes c m with
+    match getNodeEdges c m with
     | Some attrs =>
       map
         (fun a =>
-           match getAttributeType a m with
+           match getNodeEdges a m with
            | Some cls => cls :: p
            | None => nil
            end
@@ -44,22 +44,24 @@ Open Scope coqtl.
     | None => nil
     end
   | nil => nil
-  end. *)
+  end.
 
-(* Fixpoint allPathsFix (m: ClassModel) (l : nat) (p: list Class) :  list (list Class) :=
+Fixpoint allPathsFix (m: GraphModel) (l : nat) (p: list Node) :  list (list Node) :=
   match l with
   | S l' => p :: concat (map (allPathsFix m l') (nextPaths m p))
   | 0 => [ p ]
   end.
- *)
+ 
 
 Definition rootNode (m : GraphModel) : Node :=
   hd (GraphMetamodel_defaultInstanceOfEClass NodeEClass)
      (GraphMetamodel_allInstances NodeEClass m).
 
-Definition allPaths (m : ClassModel) (l : nat) : list (list Class) :=
+Definition allPaths (m : GraphModel) (l : nat) : list (list Node) :=
   allPathsFix m l [ rootClass m ].
 
+
+(*
 Definition allPathsTo (m : ClassModel) (l : nat) (o: Class) : list (list Class) :=
   filter (fun p =>
             match p with
@@ -94,7 +96,7 @@ Fixpoint index (l : list Class) (ll : list (list Class)) : option nat :=
      end
   end.
 
-
+(*
 Fixpoint resolveAllIter (tr: TransformationA ClassMetamodel ClassMetamodel) (sm:ClassModel) (name: string) 
   (type: ClassMetamodel_EClass) (sps: list Class) (iters: list (list Class)) (forSection : list (list Class))
    : (list (Metamodel.denoteModelClass type)).
@@ -152,4 +154,4 @@ Definition ClassGraph2Tree' :=
 
 Close Scope coqtl.
 
-Definition ClassGraph2Tree := parseTransformation ClassGraph2Tree'. *)
+Definition ClassGraph2Tree := parseTransformation ClassGraph2Tree'. *) *)
