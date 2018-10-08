@@ -1,4 +1,4 @@
-(* Require Import String.
+Require Import String.
 Require Import List.
 Require Import Multiset.
 Require Import ListSet.
@@ -14,8 +14,71 @@ Require Import core.CoqTL.
 
 Require Import examples.Graph2Tree.GraphMetamodel.
 Require Import examples.Graph2Tree.GraphMetamodelPattern.
-
+Require Import examples.Graph2Tree.GraphModel.
 Open Scope coqtl.
+
+
+Definition rootNode (m : GraphModel) : Node :=
+  hd (GraphMetamodel_defaultInstanceOfEClass NodeEClass)
+     (GraphMetamodel_allInstances NodeEClass m).
+
+Definition last' (l: list Node) : option Node := hd_error (rev l).
+
+
+
+Fixpoint allPathsFix (m: GraphModel) (l : nat) (path: list Node) :  list (list Node) :=
+  match l with
+  | S l' => 
+    match (last' path) with
+    | None => [ path ]
+    | Some leaf =>
+      match getNodeEdges leaf m with
+      | None => [ path ]
+      | Some children =>
+       (concat  (map (fun child: Node => 
+                        allPathsFix m l' (path ++ [child]) ) children))
+      end
+    end
+  | 0 => [ path ]
+  end.
+
+Fixpoint allPathsFix' (m: GraphModel) (l : nat) (path: list Node) :  list (list Node) :=
+  match l with
+  | S l' => 
+    match (last' path) with
+    | None => [ path ]
+    | Some leaf =>
+      match getNodeEdges leaf m with
+      | None => [ path ]
+      | Some children =>
+              (concat  (map (fun child: Node => 
+                        allPathsFix' m l' (path ++ [child]) ) children)) ++
+              (concat  (map (fun child: Node => 
+                        allPathsFix' m l' ([child]) ) children))
+      end
+    end
+  | 0 => [ path ]
+  end.
+
+Definition allPaths (m : GraphModel) (l : nat) : list (list Node) :=
+  allPathsFix' m l [ rootNode m ].
+
+
+Definition allPathsStartWith (m : GraphModel) (l : nat) (o: Node) : list (list Node) :=
+  filter (fun p =>
+            match p with
+            | h :: t => beq_Node h o
+            | nil => false
+            end
+         ) (allPaths m l).
+
+Compute (allPaths PersonModel 2).
+
+
+
+
+
+
 
 (* Definition step (m: ClassModel) (c: Class) : option (list Class) :=
   attrs <- getClassAttributes c m;
@@ -26,49 +89,16 @@ Open Scope coqtl.
               | Some cls => [ cls ]
               | None => nil
               end
-       ) attrs). *)
+       ) attrs). 
 
-Definition nextPaths (m: GraphModel) (p: list Node) : list (list Node) :=
-  match p with
-  | c :: p' =>
-    match getNodeEdges c m with
-    | Some attrs =>
-      map
-        (fun a =>
-           match getNodeEdges a m with
-           | Some cls => cls :: p
-           | None => nil
-           end
-        )
-        attrs
-    | None => nil
-    end
-  | nil => nil
-  end.
 
-Fixpoint allPathsFix (m: GraphModel) (l : nat) (p: list Node) :  list (list Node) :=
-  match l with
-  | S l' => p :: concat (map (allPathsFix m l') (nextPaths m p))
-  | 0 => [ p ]
-  end.
  
 
-Definition rootNode (m : GraphModel) : Node :=
-  hd (GraphMetamodel_defaultInstanceOfEClass NodeEClass)
-     (GraphMetamodel_allInstances NodeEClass m).
-
-Definition allPaths (m : GraphModel) (l : nat) : list (list Node) :=
-  allPathsFix m l [ rootClass m ].
 
 
-(*
-Definition allPathsTo (m : ClassModel) (l : nat) (o: Class) : list (list Class) :=
-  filter (fun p =>
-            match p with
-            | h :: t => beq_Class h o
-            | nil => false
-            end
-         ) (allPaths m l).
+
+
+
 
 
 
@@ -96,7 +126,7 @@ Fixpoint index (l : list Class) (ll : list (list Class)) : option nat :=
      end
   end.
 
-(*
+
 Fixpoint resolveAllIter (tr: TransformationA ClassMetamodel ClassMetamodel) (sm:ClassModel) (name: string) 
   (type: ClassMetamodel_EClass) (sps: list Class) (iters: list (list Class)) (forSection : list (list Class))
    : (list (Metamodel.denoteModelClass type)).
@@ -154,4 +184,4 @@ Definition ClassGraph2Tree' :=
 
 Close Scope coqtl.
 
-Definition ClassGraph2Tree := parseTransformation ClassGraph2Tree'. *) *)
+Definition ClassGraph2Tree := parseTransformation ClassGraph2Tree'. *)
