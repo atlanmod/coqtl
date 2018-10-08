@@ -371,7 +371,7 @@ Section CoqTL.
     end.
   
 
-  Definition ForExpressionA_getForSectionTypeInInstantiation (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel)  (sp: list SourceModelElement)  : Type :=
+  Definition ForExpressionA_getForSectionType (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel)  (sp: list SourceModelElement)  : Type :=
     match (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (ForExpressionA_getRule o)) with
     | None => Error
     | Some r => Rule_getForSectionType (snd r) sp
@@ -394,36 +394,20 @@ Section CoqTL.
          1: { exact None. }}
   Defined.
   
-  Definition evalForExpressionOfTransformationInInstantiation (fe : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getForSectionTypeInInstantiation fe tr sm sp)).
+  Definition evalForExpressionOfTransformation (fe : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) 
+    : option (list (ForExpressionA_getForSectionType fe tr sm sp)).
   Proof.
     destruct (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (ForExpressionA_getRule fe)) eqn:nth_r.
     - destruct (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule fe)) eqn:nth_ra.
       + remember (evalForExpressionofRule (snd p) sp) as ret.
-        unfold ForExpressionA_getForSectionTypeInInstantiation.
+        unfold ForExpressionA_getForSectionType.
         rewrite nth_r.
         exact (ret). 
       + exact None.
     - exact None.
   Defined.
 
-  Definition ForExpressionA_getForSectionTypeInApply (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel)  (sp: list SourceModelElement)  : Type :=
-    match (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (ForExpressionA_getRule o)) with
-    | None => Error
-    | Some r => Rule_getForSectionType (snd r) sp
-    end.
 
-
-Definition evalForExpressionOfTransformationInApply (fe : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list (ForExpressionA_getForSectionTypeInApply fe tr sm sp)).
-  Proof.
-    destruct (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (ForExpressionA_getRule fe)) eqn:nth_r.
-    - destruct (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule fe)) eqn:nth_ra.
-      + remember (evalForExpressionofRule (snd p) sp) as ret.
-        unfold ForExpressionA_getForSectionTypeInApply.
-        rewrite nth_r.
-        exact (ret). 
-      + exact None.
-    - exact None.
-  Defined.
 
   Definition evalOutputPatternElementExpression' (o : OutputPatternElementExpressionA) (tr: TransformationA) (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option TargetModelElement :=
     match Rule_getSingleElementRule r sp with
@@ -567,12 +551,12 @@ Definition evalForExpressionOfTransformationInApply (fe : ForExpressionA) (tr: T
 
   Definition ForExpressionA_getForSectionType2OutputPatternElementExpressionA 
     (f : ForExpressionA) (o : OutputPatternElementExpressionA) (tr: TransformationA) (sp: list SourceModelElement) 
-    (sm: SourceModel)  (fe: ForExpressionA_getForSectionTypeInInstantiation f tr sm sp) 
+    (sm: SourceModel)  (fe: ForExpressionA_getForSectionType f tr sm sp) 
       : option (OutputPatternElementExpressionA_getForSectionType o tr sm sp).
   Proof.
     destruct (beq_nat (OutputPatternElementExpressionA_getRule o)
                       (ForExpressionA_getRule f)) eqn: ca.
-    - unfold ForExpressionA_getForSectionTypeInInstantiation in fe.
+    - unfold ForExpressionA_getForSectionType in fe.
       symmetry in ca.
       apply beq_nat_eq in ca.
       rewrite <- ca in fe.
@@ -581,7 +565,7 @@ Definition evalForExpressionOfTransformationInApply (fe : ForExpressionA) (tr: T
   Defined.
 
   Definition instantiateRuleOnPattern' (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (ope: OutputPatternElementA) 
-    (fe: ForExpressionA_getForSectionTypeInInstantiation (RuleA_getForExpression r) tr sm sp) : option (TargetModelElement) :=
+    (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) : option (TargetModelElement) :=
    let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
    tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA (RuleA_getForExpression r) opee tr sp sm fe;
    tme <- (evalOutputPatternElementExpressionWithIter opee tr sm sp tfe);
@@ -593,7 +577,7 @@ Definition evalForExpressionOfTransformationInApply (fe : ForExpressionA) (tr: T
     pre <- evalGuardExpressionPre r sp;
       m <- evalGuardExpression (RuleA_getGuard r) tr sm sp;
       if m then 
-        match (optionListToList (evalForExpressionOfTransformationInInstantiation (RuleA_getForExpression r) tr sm sp)) with
+        match (optionListToList (evalForExpressionOfTransformation (RuleA_getForExpression r) tr sm sp)) with
          | nil => Some nil
          | lst => return (optionList2List (flat_map (fun ope => map (instantiateRuleOnPattern' r tr sm sp ope) lst)
                                                     (RuleA_getOutputPattern r)))
@@ -601,18 +585,15 @@ Definition evalForExpressionOfTransformationInApply (fe : ForExpressionA) (tr: T
       else
         None.
 
-  Definition applyOutputPatternReferencesOnPattern (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (l: list OutputPatternElementReferenceA) (te: TargetModelElement) : list TargetModelLink :=
-  optionList2List (map (evalOutputBindingExpression tr sm sp te) (map OutputPatternElementReferenceA_getOutputBindingExpression l)).
-
 
   Definition ForExpressionA_getForSectionType22OutputBindingExpressionA_getForSectionType 
     (f : ForExpressionA) (o : OutputBindingExpressionA) (tr: TransformationA) (sp: list SourceModelElement) 
-    (sm: SourceModel)  (fe: ForExpressionA_getForSectionTypeInApply f tr sm sp) 
+    (sm: SourceModel)  (fe: ForExpressionA_getForSectionType f tr sm sp) 
       : option (OutputBindingExpressionA_getForSectionType o tr sm sp).
   Proof.
     destruct (beq_nat (OutputBindingExpressionA_getRule o)
                          (ForExpressionA_getRule f)) eqn: ca.
-    - unfold ForExpressionA_getForSectionTypeInApply in fe.
+    - unfold ForExpressionA_getForSectionType in fe.
       symmetry in ca. 
       apply beq_nat_eq in ca.
       rewrite <- ca in fe.
@@ -621,28 +602,21 @@ Definition evalForExpressionOfTransformationInApply (fe : ForExpressionA) (tr: T
   Defined.
 
   Definition applyOutputPatternReferencesOnPatternIter (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (oref: OutputPatternElementReferenceA)
-   (te: TargetModelElement) (fe: ForExpressionA_getForSectionTypeInApply (RuleA_getForExpression r) tr sm sp)   
+   (te: TargetModelElement) (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp)   
      : (option TargetModelLink) :=
-bind <- Some (OutputPatternElementReferenceA_getOutputBindingExpression oref);
-tfe <- (ForExpressionA_getForSectionType22OutputBindingExpressionA_getForSectionType (RuleA_getForExpression r) bind tr sp sm fe);
-(evalOutputBindingExpressionWithIter tr sm sp bind te tfe).
+    bind <- Some (OutputPatternElementReferenceA_getOutputBindingExpression oref);
+    tfe <- (ForExpressionA_getForSectionType22OutputBindingExpressionA_getForSectionType (RuleA_getForExpression r) bind tr sp sm fe);
+    (evalOutputBindingExpressionWithIter tr sm sp bind te tfe).
 
 
 
 
 
   Definition applyRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (tes: list TargetModelElement): (list TargetModelLink) :=
-    match (optionListToList (evalForExpressionOfTransformationInApply (RuleA_getForExpression r) tr sm sp)) with
+    match (optionListToList (evalForExpressionOfTransformation (RuleA_getForExpression r) tr sm sp)) with
      | nil =>  nil
      | fets => let orefs :=  (flat_map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) in
-optionList2List (concat (map (fun oref => zipWith (applyOutputPatternReferencesOnPatternIter r tr sm sp oref) tes fets) orefs))
-
-
-
-
-
-(* optionList2List (concat (flat_map (fun fe => map (fun oref => map (fun te => applyOutputPatternReferencesOnPatternIter r tr sm sp fe oref te) tes) orefs ) fets)) *)
-
+        optionList2List (concat (map (fun oref => zipWith (applyOutputPatternReferencesOnPatternIter r tr sm sp oref) tes fets) orefs))
     end.
 
 
@@ -707,7 +681,7 @@ optionList2List (concat (map (fun oref => zipWith (applyOutputPatternReferencesO
   r <- Some (OutputPatternElementExpressionA_getRule (OutputPatternElementA_getOutputPatternElementExpression ope));
   ra <- (nth_error (TransformationA_getRules tr) r);
   fe <- Some (RuleA_getForExpression ra);
-  fe_res <- (evalForExpressionOfTransformationInInstantiation fe tr sm sp);
+  fe_res <- (evalForExpressionOfTransformation fe tr sm sp);
   fet <- nth_error fe_res iter;
   let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
    tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA fe opee tr sp sm fet;
