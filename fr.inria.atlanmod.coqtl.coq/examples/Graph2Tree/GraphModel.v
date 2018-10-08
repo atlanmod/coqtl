@@ -4,7 +4,7 @@ Require Import core.Model.
 
 Require Import examples.Graph2Tree.GraphMetamodel.
 
-Definition PersonModel : Model GraphMetamodel_EObject GraphMetamodel_ELink :=
+Definition testGraphModel : Model GraphMetamodel_EObject GraphMetamodel_ELink :=
   (Build_Model
      (
       (Build_GraphMetamodel_EObject NodeEClass (BuildNode "0" "A")) 

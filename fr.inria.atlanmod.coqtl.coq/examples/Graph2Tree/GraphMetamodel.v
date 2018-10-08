@@ -60,9 +60,9 @@ Instance objectAttribute : Object Node :=
   }.
 
 (* Equality for Types *)
-(**? We define eq for Eclass on their fist attribute **)
 Definition beq_Node (no_arg1 : Node) (no_arg2 : Node) : bool :=
-  beq_string (getNodeId no_arg1) (getNodeId no_arg2).
+  beq_string (getNodeId no_arg1) (getNodeId no_arg2) && 
+  beq_string (getNodeName no_arg1) (getNodeName no_arg2).
 
 		
 (* Meta-types *)

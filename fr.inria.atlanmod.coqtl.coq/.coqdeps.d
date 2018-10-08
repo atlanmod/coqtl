@@ -30,19 +30,13 @@ core/Notations.vo core/Notations.glob core/Notations.v.beautified: core/Notation
 core/Notations.vio: core/Notations.v core/CoqTL.vio
 core/Object.vo core/Object.glob core/Object.v.beautified: core/Object.v
 core/Object.vio: core/Object.v
-examples/ClassGraph2Tree/ClassMetamodel.vo examples/ClassGraph2Tree/ClassMetamodel.glob examples/ClassGraph2Tree/ClassMetamodel.v.beautified: examples/ClassGraph2Tree/ClassMetamodel.v core/utils/tTop.vo core/Metamodel.vo core/Model.vo core/Object.vo
-examples/ClassGraph2Tree/ClassMetamodel.vio: examples/ClassGraph2Tree/ClassMetamodel.v core/utils/tTop.vio core/Metamodel.vio core/Model.vio core/Object.vio
-examples/ClassGraph2Tree/ClassMetamodelPattern.vo examples/ClassGraph2Tree/ClassMetamodelPattern.glob examples/ClassGraph2Tree/ClassMetamodelPattern.v.beautified: examples/ClassGraph2Tree/ClassMetamodelPattern.v examples/ClassGraph2Tree/ClassMetamodel.vo
-examples/ClassGraph2Tree/ClassMetamodelPattern.vio: examples/ClassGraph2Tree/ClassMetamodelPattern.v examples/ClassGraph2Tree/ClassMetamodel.vio
-examples/ClassGraph2Tree/ClassGraph2Tree.vo examples/ClassGraph2Tree/ClassGraph2Tree.glob examples/ClassGraph2Tree/ClassGraph2Tree.v.beautified: examples/ClassGraph2Tree/ClassGraph2Tree.v core/utils/tTop.vo core/Notations.vo core/Model.vo core/CoqTL.vo examples/ClassGraph2Tree/ClassMetamodel.vo examples/ClassGraph2Tree/ClassMetamodelPattern.vo
-examples/ClassGraph2Tree/ClassGraph2Tree.vio: examples/ClassGraph2Tree/ClassGraph2Tree.v core/utils/tTop.vio core/Notations.vio core/Model.vio core/CoqTL.vio examples/ClassGraph2Tree/ClassMetamodel.vio examples/ClassGraph2Tree/ClassMetamodelPattern.vio
-examples/ClassGraph2Tree/PersonModel.vo examples/ClassGraph2Tree/PersonModel.glob examples/ClassGraph2Tree/PersonModel.v.beautified: examples/ClassGraph2Tree/PersonModel.v core/Model.vo examples/ClassGraph2Tree/ClassMetamodel.vo
-examples/ClassGraph2Tree/PersonModel.vio: examples/ClassGraph2Tree/PersonModel.v core/Model.vio examples/ClassGraph2Tree/ClassMetamodel.vio
 examples/Graph2Tree/GraphMetamodel.vo examples/Graph2Tree/GraphMetamodel.glob examples/Graph2Tree/GraphMetamodel.v.beautified: examples/Graph2Tree/GraphMetamodel.v core/utils/tTop.vo core/Metamodel.vo core/Model.vo core/Object.vo
 examples/Graph2Tree/GraphMetamodel.vio: examples/Graph2Tree/GraphMetamodel.v core/utils/tTop.vio core/Metamodel.vio core/Model.vio core/Object.vio
 examples/Graph2Tree/GraphMetamodelPattern.vo examples/Graph2Tree/GraphMetamodelPattern.glob examples/Graph2Tree/GraphMetamodelPattern.v.beautified: examples/Graph2Tree/GraphMetamodelPattern.v examples/Graph2Tree/GraphMetamodel.vo
 examples/Graph2Tree/GraphMetamodelPattern.vio: examples/Graph2Tree/GraphMetamodelPattern.v examples/Graph2Tree/GraphMetamodel.vio
-examples/Graph2Tree/Graph2Tree.vo examples/Graph2Tree/Graph2Tree.glob examples/Graph2Tree/Graph2Tree.v.beautified: examples/Graph2Tree/Graph2Tree.v core/utils/tTop.vo core/Notations.vo core/Model.vo core/CoqTL.vo examples/Graph2Tree/GraphMetamodel.vo examples/Graph2Tree/GraphMetamodelPattern.vo
-examples/Graph2Tree/Graph2Tree.vio: examples/Graph2Tree/Graph2Tree.v core/utils/tTop.vio core/Notations.vio core/Model.vio core/CoqTL.vio examples/Graph2Tree/GraphMetamodel.vio examples/Graph2Tree/GraphMetamodelPattern.vio
 examples/Graph2Tree/GraphModel.vo examples/Graph2Tree/GraphModel.glob examples/Graph2Tree/GraphModel.v.beautified: examples/Graph2Tree/GraphModel.v core/Model.vo examples/Graph2Tree/GraphMetamodel.vo
 examples/Graph2Tree/GraphModel.vio: examples/Graph2Tree/GraphModel.v core/Model.vio examples/Graph2Tree/GraphMetamodel.vio
+examples/Graph2Tree/GraphModel2.vo examples/Graph2Tree/GraphModel2.glob examples/Graph2Tree/GraphModel2.v.beautified: examples/Graph2Tree/GraphModel2.v core/Model.vo examples/Graph2Tree/GraphMetamodel.vo
+examples/Graph2Tree/GraphModel2.vio: examples/Graph2Tree/GraphModel2.v core/Model.vio examples/Graph2Tree/GraphMetamodel.vio
+examples/Graph2Tree/Graph2Tree.vo examples/Graph2Tree/Graph2Tree.glob examples/Graph2Tree/Graph2Tree.v.beautified: examples/Graph2Tree/Graph2Tree.v core/utils/tTop.vo core/Notations.vo core/Model.vo core/CoqTL.vo examples/Graph2Tree/GraphMetamodel.vo examples/Graph2Tree/GraphMetamodelPattern.vo examples/Graph2Tree/GraphModel.vo examples/Graph2Tree/GraphModel2.vo
+examples/Graph2Tree/Graph2Tree.vio: examples/Graph2Tree/Graph2Tree.v core/utils/tTop.vio core/Notations.vio core/Model.vio core/CoqTL.vio examples/Graph2Tree/GraphMetamodel.vio examples/Graph2Tree/GraphMetamodelPattern.vio examples/Graph2Tree/GraphModel.vio examples/Graph2Tree/GraphModel2.vio
