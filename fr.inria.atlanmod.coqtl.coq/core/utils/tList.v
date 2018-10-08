@@ -86,3 +86,15 @@ Fixpoint zipWith {A : Type} {B : Type} {C : Type} (f: A -> B -> C) (la: list A) 
   | nil, _ => nil
   | _, nil => nil
   end.
+
+
+(* range 2 = 0 1 2 *)
+Fixpoint range (b: nat): list nat :=
+match b with
+| 0 => 0 :: nil
+| S b' => range b' ++ (b :: nil)
+end.
+
+
+
+

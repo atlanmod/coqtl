@@ -536,18 +536,19 @@ Section CoqTL.
     | _ => "_"
     end.
 
-(*   Definition newId := ""%string.
+  Definition newId := ""%string.
 
   (*TODO*)
-  Definition setTargetElementId (te: TargetModelElement) (ope: OutputPatternElementA) (sp: list SourceModelElement) : TargetModelElement :=
+  Definition setTargetElementId (te: TargetModelElement) (ope: OutputPatternElementA) (sp: list SourceModelElement) (iter_id: nat): TargetModelElement :=
     if (beq_string (getId te) newId) then
       match (OutputPatternElementA_getOutputPatternElementExpression ope) with
         BuildOutputPatternElementExpressionA a b => 
       setId te  ((getSourcePatternId sp) ++
                       NilZero.string_of_uint (Unsigned.to_lu a) ++ "_" ++
-                      NilZero.string_of_uint (Unsigned.to_lu b))%string
+                      NilZero.string_of_uint (Unsigned.to_lu b) ++ "_" ++
+                      NilZero.string_of_uint (Unsigned.to_lu iter_id))%string
             end
-    else te. *)
+    else te. 
 
   Definition ForExpressionA_getForSectionType2OutputPatternElementExpressionA 
     (f : ForExpressionA) (o : OutputPatternElementExpressionA) (tr: TransformationA) (sp: list SourceModelElement) 
@@ -565,12 +566,11 @@ Section CoqTL.
   Defined.
 
   Definition instantiateRuleOnPattern' (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (ope: OutputPatternElementA) 
-    (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) : option (TargetModelElement) :=
+    (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) (fe_index: nat): option (TargetModelElement) :=
    let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
    tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA (RuleA_getForExpression r) opee tr sp sm fe;
    tme <- (evalOutputPatternElementExpressionWithIter opee tr sm sp tfe);
-   return tme.
-(*    return (setTargetElementId tme ope sp). *)
+   return (setTargetElementId tme ope sp fe_index). 
 
 
   Definition instantiateRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
@@ -579,7 +579,7 @@ Section CoqTL.
       if m then 
         match (optionListToList (evalForExpressionOfTransformation (RuleA_getForExpression r) tr sm sp)) with
          | nil => Some nil
-         | lst => return (optionList2List (flat_map (fun ope => map (instantiateRuleOnPattern' r tr sm sp ope) lst)
+         | fets => return (optionList2List (flat_map (fun ope => (zipWith (instantiateRuleOnPattern' r tr sm sp ope) fets (range ((length fets)-1) )))
                                                     (RuleA_getOutputPattern r)))
         end
       else
@@ -686,8 +686,7 @@ Section CoqTL.
   let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
    tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA fe opee tr sp sm fet;
    te<- (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm sp tfe);
-(toModelClass type te).
-(*    (toModelClass type (setTargetElementId te ope sp)). *)
+   (toModelClass type (setTargetElementId te ope sp iter)). 
 
 
 
@@ -696,14 +695,9 @@ Section CoqTL.
   Definition maxArity (tr: TransformationA) : nat :=
     max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))).
 
-  (* Fold-left alternative
-     
-     Definition maxArity (tr: TransformationA) : nat :=
-     fold_left max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))) 0. *)
-                                                     
   Definition allTuples (tr: TransformationA) (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (allModelElements sm) (maxArity tr).
-  
+
   Definition execute (tr: TransformationA) (sm : SourceModel) : TargetModel :=
     Build_Model
       (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))

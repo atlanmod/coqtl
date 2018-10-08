@@ -132,14 +132,7 @@ Definition Graph2Tree' :=
         to [
           "n" :
             n' class NodeEClass :=
-              match i with
-              | None => BuildNode "Error" "Error"
-              | Some path => 
-                match index path (allPathsTo m 2 n) with
-                 | None => BuildNode "Error" "Error"
-                 | Some num => BuildNode ((getNodeId n) ++ "__" ++ (natToString num)) (getNodeName n)
-                end
-              end
+              BuildNode newId (getNodeName n)
             with [
               ref NodeEdgesEReference :=
                 pth <- i; 
