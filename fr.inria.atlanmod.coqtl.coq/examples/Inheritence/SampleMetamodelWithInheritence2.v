@@ -27,8 +27,11 @@ Inductive Person : Set :=
   (* name *) string ->
   Person.
 
+(* Problem of store information of base class in the sub class *)
 Inductive VIPAccount : Set :=
   BuildVIPAccount :
+  (* id *) string ->
+  (* credit *) string -> 
   (* durationd *) nat ->
   VIPAccount.
 
@@ -44,8 +47,7 @@ Inductive Account : Set :=
  | BuildAccount : 
     forall (hsec_arg: Account_Class), 
     (Account_getTypeByClass hsec_arg) -> 
-    (* id *) string ->
-    (* credit *) string -> Account.
+    Account.
 
 Inductive PersonAccounts : Set :=
    BuildPersonAccounts :
@@ -93,7 +95,7 @@ Inductive BankMetamodel_Link : Set :=
 Definition BankModel : Model BankMetamodel_Object BankMetamodel_Link :=
   (Build_Model
      (     (Build_BankMetamodel_Object PersonClass (BuildPerson "0" "Zheng"))
-        :: (Build_BankMetamodel_Object AccountClass (BuildAccount VIPAccountClass (BuildVIPAccount 1) "010" "28976"))
+        :: (Build_BankMetamodel_Object AccountClass (BuildAccount VIPAccountClass (BuildVIPAccount "010" "28976" 1)))
         :: nil)
      (nil)
   ).
@@ -110,8 +112,15 @@ Coercion BankMetamodel_toObjectFromAccount : Account >-> BankMetamodel_Object.
 Definition BankMetamodel_toEObject (cleo_arg : BankMetamodel_Object) : BankMetamodel_Object := cleo_arg.
 
 
+Definition BankMetamodel_toAccountFromVIPAccount (cl_arg :VIPAccount) : Account :=
+  (BuildAccount VIPAccountClass cl_arg).
+Coercion BankMetamodel_toAccountFromVIPAccount : VIPAccount >-> Account.
 
+(* test Coercion *)
 
+Definition testCoercion (a : Account) : nat := 1.
+Definition ZhengVIPAccount := (BuildVIPAccount "010" "28976" 1).
 
+Compute (testCoercion ZhengVIPAccount).
 
 

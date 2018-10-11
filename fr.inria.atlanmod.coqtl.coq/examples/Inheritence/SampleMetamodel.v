@@ -110,6 +110,15 @@ Definition BankMetamodel_toEObject (cleo_arg : BankMetamodel_Object) : BankMetam
 
 
 
+(* test Coercion *)
+
+Definition testCoercion (a : BankMetamodel_Object) : nat := 1.
+Definition Zheng := (BuildPerson "0" "Zheng").
+
+Compute (testCoercion Zheng).
+
+
+
 
 
 
