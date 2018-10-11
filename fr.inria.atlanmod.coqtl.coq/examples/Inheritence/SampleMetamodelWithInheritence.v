@@ -35,7 +35,7 @@ Inductive Account : Set :=
   
 Inductive VIPAccount : Set :=
   BuildVIPAccount :
-  (* id *) Account ->
+  (* Parent Account *) Account ->
   (* durationd *) nat ->
   VIPAccount.
 
@@ -86,7 +86,7 @@ Inductive BankMetamodel_Link : Set :=
  | Build_BankMetamodel_Link : 
     forall (cler_arg:BankMetamodel_Reference), (BankMetamodel_getTypeByReference cler_arg) -> BankMetamodel_Link.
 
-(* Problem being redundent information, and consistency, and coercion *)
+(* Good thing: ID, Problem being redundent information, and consistency *)
 Definition BankModel : Model BankMetamodel_Object BankMetamodel_Link :=
   (Build_Model
      (     (Build_BankMetamodel_Object PersonClass (BuildPerson "0" "Zheng"))
@@ -117,8 +117,18 @@ Coercion BankMetamodel_toObjectFromAccount : Account >-> BankMetamodel_Object.
 Definition BankMetamodel_toEObject (cleo_arg : BankMetamodel_Object) : BankMetamodel_Object := cleo_arg.
 
 
+Definition getAccount (a : VIPAccount) : Account :=
+  match a with
+  | BuildVIPAccount x _ => x
+  end.
 
+Coercion getAccount : VIPAccount >-> Account.
 
+(* test Coercion *)
 
+Definition testCoercion (a : Account) : nat := 1.
+Definition ZhengVIPAccount := (BuildVIPAccount (BuildAccount "010" "28976") 1).
+
+Compute (testCoercion ZhengVIPAccount).
 
 
