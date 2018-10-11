@@ -57,25 +57,26 @@ Definition allPathsTo (m : GraphModel) (l : nat) (o: Node) : list (list Node) :=
 
 
 Fixpoint resolveAllIter (tr': Phase GraphMetamodel GraphMetamodel) (sm:GraphModel) (name: string) 
-  (type: GraphMetamodel_EClass) (sps: list Node) (path: (list Node)) (depth: nat)
+  (type: GraphMetamodel_EClass) (sps: list Node) (iters: list (list Node))
    : option (list (Metamodel.denoteModelClass type)) :=
-    let tr := (parsePhase tr') in
-      match sps with 
-      | sp :: sps' =>
-        let extendedPath := path ++ [sp] in
-          match index (list Node) (list_eq_dec GraphMetamodel_Node_dec) extendedPath (allPathsTo sm depth sp) with
+   let tr := (parsePhase tr') in
+      match sps, iters with 
+      | sp :: sps', iter::iters' =>
+          match index (list Node) (list_eq_dec GraphMetamodel_Node_dec) iter (allPathsTo sm 2 sp) with
            | Some nb => 
             match (resolveIter tr sm name type [[ sp ]] nb) with
-             | Some res => l <- (resolveAllIter tr' sm name type sps' path depth);
-                            return (res :: l)
-             | None => (resolveAllIter tr' sm name type sps' path depth)
+             | Some res => 
+                match  (resolveAllIter tr' sm name type sps' iters' ) with
+                | Some l => Some ( res :: l)
+                | None => Some (res :: nil)
+                end
+             | None => (resolveAllIter tr' sm name type sps' iters' )
             end
-           | None => (resolveAllIter tr' sm name type sps' path depth)
+           | None => (resolveAllIter tr' sm name type sps' iters' )
           end
-      | nil  => Some nil
+      | nil, _  => None
+      | _ , nil => None
       end.
-
-
 
 
 Definition Graph2Tree' :=
@@ -95,7 +96,8 @@ Definition Graph2Tree' :=
               ref NodeEdgesEReference :=
                 pth <- i; 
                 children <- getNodeEdges n m;
-                children' <- (resolveAllIter Graph2Tree m "n" NodeEClass children pth 2);
+                iters <- Some (map (app pth) (singletons children));
+                children' <- (resolveAllIter Graph2Tree m "n" NodeEClass children iters);
                 return BuildNodeEdges n' children'
             ]
         ]

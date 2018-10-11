@@ -689,7 +689,6 @@ Section CoqTL.
    (toModelClass type (setTargetElementId te ope sp iter)). 
 
 
-
   (** ** Rule scheduling **)
     
   Definition maxArity (tr: TransformationA) : nat :=
