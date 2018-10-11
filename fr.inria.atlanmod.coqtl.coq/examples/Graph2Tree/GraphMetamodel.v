@@ -112,6 +112,10 @@ Inductive GraphMetamodel_ELink : Set :=
     forall (grer_arg:GraphMetamodel_EReference), (GraphMetamodel_getTypeByEReference grer_arg) -> GraphMetamodel_ELink.
 
 (* Reflective functions *)
+(*TODO*)
+Lemma GraphMetamodel_Node_dec : 
+ forall (grec_arg1: Node) (grec_arg2:Node), { grec_arg1 = grec_arg2 } + { grec_arg1 <> grec_arg2 }.
+Proof. repeat decide equality. Defined.
 
 Lemma GraphMetamodel_eqEClass_dec : 
  forall (grec_arg1:GraphMetamodel_EClass) (grec_arg2:GraphMetamodel_EClass), { grec_arg1 = grec_arg2 } + { grec_arg1 <> grec_arg2 }.

@@ -26,24 +26,6 @@ Definition rootNode (m : GraphModel) : Node :=
 
 Definition last' (l: list Node) : option Node := hd_error (rev l).
 
-
-
-(* Fixpoint allPathsFix (m: GraphModel) (l : nat) (path: list Node) :  list (list Node) :=
-  match l with
-  | S l' => 
-    match (last' path) with
-    | None => [ path ]
-    | Some leaf =>
-      match getNodeEdges leaf m with
-      | None => [ path ]
-      | Some children =>
-       (concat  (map (fun child: Node => 
-                        allPathsFix m l' (path ++ [child]) ) children))
-      end
-    end
-  | 0 => [ path ]
-  end. *)
-
 Fixpoint allPathsFix' (m: GraphModel) (l : nat) (path: list Node) :  list (list Node) :=
   match l with
   | S l' => 
@@ -73,49 +55,25 @@ Definition allPathsTo (m : GraphModel) (l : nat) (o: Node) : list (list Node) :=
             end
          ) (allPaths m l).
 
-(* Compute (allPaths testGraphModel2 2).
 
-Compute (allPathsTo testGraphModel2 2 (BuildNode "2" "B")).
- *)
-
-Fixpoint eq_list (l1 l2: list Node): bool :=
-  match l1, l2 with 
-   | nil, nil => true
-   | a::l1', b::l2' => beq_Node a b && eq_list l1' l2'
-   | _, _ => false
-  end.
-
-Fixpoint index (l : list Node) (ll : list (list Node)) : option nat :=
-  match ll with
-   | nil => None
-   | a :: lll => if eq_list l a then Some 0 else 
-     match (index l lll) with
-      | None => None
-      | Some n => Some (1 + n)
-     end
-  end.
-
-
-
-
-
-
-Fixpoint resolveAllIter (tr: TransformationA GraphMetamodel GraphMetamodel) (sm:GraphModel) (name: string) 
+Fixpoint resolveAllIter (tr': Phase GraphMetamodel GraphMetamodel) (sm:GraphModel) (name: string) 
   (type: GraphMetamodel_EClass) (sps: list Node) (path: (list Node)) (depth: nat)
-   : (list (Metamodel.denoteModelClass type)) :=
-    match sps with 
-    | sp :: sps' =>
-      let extendedPath := path ++ [sp] in
-        match index extendedPath (allPathsTo sm depth sp) with
-         | Some nb => 
-          match (resolveIter tr sm name type [[ sp ]] nb) with
-           | Some res => res :: (resolveAllIter tr sm name type sps' path depth)
-           | None => (resolveAllIter tr sm name type sps' path depth)
+   : option (list (Metamodel.denoteModelClass type)) :=
+    let tr := (parsePhase tr') in
+      match sps with 
+      | sp :: sps' =>
+        let extendedPath := path ++ [sp] in
+          match index (list Node) (list_eq_dec GraphMetamodel_Node_dec) extendedPath (allPathsTo sm depth sp) with
+           | Some nb => 
+            match (resolveIter tr sm name type [[ sp ]] nb) with
+             | Some res => l <- (resolveAllIter tr' sm name type sps' path depth);
+                            return (res :: l)
+             | None => (resolveAllIter tr' sm name type sps' path depth)
+            end
+           | None => (resolveAllIter tr' sm name type sps' path depth)
           end
-         | None => (resolveAllIter tr sm name type sps' path depth)
-        end
-    | nil  => nil
-    end.
+      | nil  => Some nil
+      end.
 
 
 
@@ -137,14 +95,10 @@ Definition Graph2Tree' :=
               ref NodeEdgesEReference :=
                 pth <- i; 
                 children <- getNodeEdges n m;
-                let children' := (resolveAllIter (parsePhase Graph2Tree) m "n" NodeEClass children pth 2) in
-                  match length children' with 
-                  | 0 => None
-                  | S len' => return BuildNodeEdges n' children'
-                  end 
+                children' <- (resolveAllIter Graph2Tree m "n" NodeEClass children pth 2);
+                return BuildNodeEdges n' children'
             ]
         ]
-
     ].
 
 

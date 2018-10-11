@@ -106,4 +106,16 @@ Fixpoint zip {X Y : Type} (lx : list X) (ly : list Y)
   | x :: tx, y :: ty => (x, y) :: (combine tx ty)
   end.
 
+Fixpoint index (A: Type) (t: forall (x y : A), {x = y}+{x <> y}) (a : A) (l : list A) : option nat :=
+  match l with
+   | nil => None
+   | e :: l' => 
+    if t e a then Some 0 else 
+     match (index A t a l') with
+      | None => None
+      | Some n => Some (1 + n)
+     end
+  end.
+
+
 
