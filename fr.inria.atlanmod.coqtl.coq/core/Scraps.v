@@ -3,6 +3,27 @@
 
   Require Import List.
   
+
+
+  Definition forType (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : Type := 
+  match  ope <- (find_OutputPatternElementA tr sm sp name);
+         r <- Some (OutputPatternElementExpressionA_getRule (OutputPatternElementA_getOutputPatternElementExpression ope));
+         (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) r) with
+  | None => Error
+  | Some r' => Rule_getForSectionType (snd r') sp
+  end.
+
+  Definition resolveIter2 (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
+    (fet : forType tr sm name type sp) : option (denoteModelClass type) := 
+None
+  .
+
+Definition sp := (Build_GraphMetamodel_EObject NodeEClass (BuildNode "1" "A"))::nil.
+
+Compute (forType Graph2Tree testGraphModel2 "n" NodeEClass sp).
+Compute (resolveIter2 Graph2Tree testGraphModel2 "n" NodeEClass sp ((BuildNode "1" "A")::nil)).
+
+
   Definition tr (t: Type) : Set := nat.
 
   Inductive listf : Type :=

@@ -282,6 +282,10 @@ Section CoqTL.
             end)
          (TransformationA_getRules tr).
 
+  (*TODO*)
+  (* Definition OutputPatternElementA_getRuleA (x : OutputPatternElementA) (tr: TransformationA) : option RuleA := None. *)
+
+
   (** * Parser **)
   
   Definition parseOutputPatternElementReference (tr: Transformation) (r ope oper: nat) (o: OutputPatternElementReference) : OutputPatternElementReferenceA :=   
@@ -655,6 +659,9 @@ Section CoqTL.
 
   Definition resolveAll (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) : option (list (denoteModelClass type)) :=
     Some (optionList2List (map (resolve tr sm name type) sps)).
+
+
+
 
   Definition resolveIter (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
     (iter : nat) : option (denoteModelClass type) :=
