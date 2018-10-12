@@ -370,13 +370,11 @@ Section CoqTL.
     | _ => Error
     end.
   
-
   Definition ForExpressionA_getForSectionType (o : ForExpressionA) (tr: TransformationA) (sm: SourceModel)  (sp: list SourceModelElement)  : Type :=
     match (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (ForExpressionA_getRule o)) with
     | None => Error
     | Some r => Rule_getForSectionType (snd r) sp
     end.
-
 
   Definition evalForExpressionofRule (r : Rule) (sp: list SourceModelElement) :
     option (list (Rule_getForSectionType r sp)).
@@ -406,8 +404,6 @@ Section CoqTL.
       + exact None.
     - exact None.
   Defined.
-
-
 
   Definition evalOutputPatternElementExpression' (o : OutputPatternElementExpressionA) (tr: TransformationA) (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option TargetModelElement :=
     match Rule_getSingleElementRule r sp with
@@ -548,7 +544,7 @@ Section CoqTL.
                       NilZero.string_of_uint (Unsigned.to_lu b) ++ "_" ++
                       NilZero.string_of_uint (Unsigned.to_lu iter_id))%string
             end
-    else te. 
+    else te.
 
   Definition ForExpressionA_getForSectionType2OutputPatternElementExpressionA 
     (f : ForExpressionA) (o : OutputPatternElementExpressionA) (tr: TransformationA) (sp: list SourceModelElement) 
@@ -572,7 +568,6 @@ Section CoqTL.
    tme <- (evalOutputPatternElementExpressionWithIter opee tr sm sp tfe);
    return (setTargetElementId tme ope sp fe_index). 
 
-
   Definition instantiateRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     pre <- evalGuardExpressionPre r sp;
       m <- evalGuardExpression (RuleA_getGuard r) tr sm sp;
@@ -584,7 +579,6 @@ Section CoqTL.
         end
       else
         None.
-
 
   Definition ForExpressionA_getForSectionType22OutputBindingExpressionA_getForSectionType 
     (f : ForExpressionA) (o : OutputBindingExpressionA) (tr: TransformationA) (sp: list SourceModelElement) 
@@ -608,20 +602,12 @@ Section CoqTL.
     tfe <- (ForExpressionA_getForSectionType22OutputBindingExpressionA_getForSectionType (RuleA_getForExpression r) bind tr sp sm fe);
     (evalOutputBindingExpressionWithIter tr sm sp bind te tfe).
 
-
-
-
-
   Definition applyRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (tes: list TargetModelElement): (list TargetModelLink) :=
     match (optionListToList (evalForExpressionOfTransformation (RuleA_getForExpression r) tr sm sp)) with
      | nil =>  nil
      | fets => let orefs :=  (flat_map OutputPatternElementA_getOutputPatternElementReferences (RuleA_getOutputPattern r)) in
         optionList2List (concat (map (fun oref => zipWith (applyOutputPatternReferencesOnPatternIter r tr sm sp oref) tes fets) orefs))
     end.
-
-
-
-
 
   (** ** Rule matching **)
   Definition matchRuleOnPattern (r: RuleA) (tr: TransformationA) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
@@ -657,9 +643,6 @@ Section CoqTL.
     find (fun oel => beq_string (OutputPatternElementA_getName oel) name)
               (concat (map RuleA_getOutputPattern (matchPattern tr sm sp))).
 
-
-
-
   Definition resolveFix (tr: TransformationA) (sm : SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
       ope <- find (fun oel => beq_string (OutputPatternElementA_getName oel) name)
           (concat (map RuleA_getOutputPattern (matchPattern tr sm sp)));
@@ -673,8 +656,6 @@ Section CoqTL.
   Definition resolveAll (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) : option (list (denoteModelClass type)) :=
     Some (optionList2List (map (resolve tr sm name type) sps)).
 
-
-
   Definition resolveIter (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
     (iter : nat) : option (denoteModelClass type) :=
   ope <- (find_OutputPatternElementA tr sm sp name);
@@ -687,7 +668,6 @@ Section CoqTL.
    tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA fe opee tr sp sm fet;
    te<- (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm sp tfe);
    (toModelClass type (setTargetElementId te ope sp iter)). 
-
 
   (** ** Rule scheduling **)
     
