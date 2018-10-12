@@ -376,7 +376,7 @@ Section CoqTL.
     | Some r => Rule_getForSectionType (snd r) sp
     end.
 
-  Definition evalForExpressionofRule (r : Rule) (sp: list SourceModelElement) :
+  Definition evalForExpressionOfRule (r : Rule) (sp: list SourceModelElement) :
     option (list (Rule_getForSectionType r sp)).
   Proof.
     destruct (Rule_getSingleElementRule r sp) eqn:rc.
@@ -397,7 +397,7 @@ Section CoqTL.
   Proof.
     destruct (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (ForExpressionA_getRule fe)) eqn:nth_r.
     - destruct (nth_error (TransformationA_getRules tr) (ForExpressionA_getRule fe)) eqn:nth_ra.
-      + remember (evalForExpressionofRule (snd p) sp) as ret.
+      + remember (evalForExpressionOfRule (snd p) sp) as ret.
         unfold ForExpressionA_getForSectionType.
         rewrite nth_r.
         exact (ret). 
@@ -546,7 +546,7 @@ Section CoqTL.
             end
     else te.
 
-  Definition ForExpressionA_getForSectionType2OutputPatternElementExpressionA 
+  Definition ForExpressionA_getForSectionType2OutputPatternElementExpressionA_getForSectionType
     (f : ForExpressionA) (o : OutputPatternElementExpressionA) (tr: TransformationA) (sp: list SourceModelElement) 
     (sm: SourceModel)  (fe: ForExpressionA_getForSectionType f tr sm sp) 
       : option (OutputPatternElementExpressionA_getForSectionType o tr sm sp).
@@ -564,7 +564,7 @@ Section CoqTL.
   Definition instantiateRuleOnPattern' (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (ope: OutputPatternElementA) 
     (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp) (fe_index: nat): option (TargetModelElement) :=
    let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
-   tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA (RuleA_getForExpression r) opee tr sp sm fe;
+   tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA_getForSectionType (RuleA_getForExpression r) opee tr sp sm fe;
    tme <- (evalOutputPatternElementExpressionWithIter opee tr sm sp tfe);
    return (setTargetElementId tme ope sp fe_index). 
 
@@ -580,7 +580,7 @@ Section CoqTL.
       else
         None.
 
-  Definition ForExpressionA_getForSectionType22OutputBindingExpressionA_getForSectionType 
+  Definition ForExpressionA_getForSectionType2OutputBindingExpressionA_getForSectionType 
     (f : ForExpressionA) (o : OutputBindingExpressionA) (tr: TransformationA) (sp: list SourceModelElement) 
     (sm: SourceModel)  (fe: ForExpressionA_getForSectionType f tr sm sp) 
       : option (OutputBindingExpressionA_getForSectionType o tr sm sp).
@@ -599,7 +599,7 @@ Section CoqTL.
    (te: TargetModelElement) (fe: ForExpressionA_getForSectionType (RuleA_getForExpression r) tr sm sp)   
      : (option TargetModelLink) :=
     bind <- Some (OutputPatternElementReferenceA_getOutputBindingExpression oref);
-    tfe <- (ForExpressionA_getForSectionType22OutputBindingExpressionA_getForSectionType (RuleA_getForExpression r) bind tr sp sm fe);
+    tfe <- (ForExpressionA_getForSectionType2OutputBindingExpressionA_getForSectionType (RuleA_getForExpression r) bind tr sp sm fe);
     (evalOutputBindingExpressionWithIter tr sm sp bind te tfe).
 
   Definition applyRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (tes: list TargetModelElement): (list TargetModelLink) :=
@@ -665,7 +665,7 @@ Section CoqTL.
   fe_res <- (evalForExpressionOfTransformation fe tr sm sp);
   fet <- nth_error fe_res iter;
   let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
-   tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA fe opee tr sp sm fet;
+   tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA_getForSectionType fe opee tr sp sm fet;
    te<- (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm sp tfe);
    (toModelClass type (setTargetElementId te ope sp iter)). 
 
