@@ -538,16 +538,23 @@ Section CoqTL.
 
   Definition newId := ""%string.
 
-  (*TODO*)
-  Definition setTargetElementId (te: TargetModelElement) (ope: OutputPatternElementA) (sp: list SourceModelElement) (iter_id: nat): TargetModelElement :=
+  Definition setTargetElementId (te: TargetModelElement) (ope: OutputPatternElementA) (sp: list SourceModelElement) (iter_id: option nat): TargetModelElement :=
     if (beq_string (getId te) newId) then
       match (OutputPatternElementA_getOutputPatternElementExpression ope) with
         BuildOutputPatternElementExpressionA a b => 
-      setId te  ((getSourcePatternId sp) ++
-                      NilZero.string_of_uint (Unsigned.to_lu a) ++ "_" ++
-                      NilZero.string_of_uint (Unsigned.to_lu b) ++ "_" ++
-                      NilZero.string_of_uint (Unsigned.to_lu iter_id))%string
-            end
+          match iter_id with
+           | Some n => 
+              (setId te  ((getSourcePatternId sp) ++
+                              NilZero.string_of_uint (Unsigned.to_lu a) ++ "_" ++
+                              NilZero.string_of_uint (Unsigned.to_lu b) ++ "_" ++
+                              NilZero.string_of_uint (Unsigned.to_lu n))%string)
+           | None =>
+              (setId te  ((getSourcePatternId sp) ++
+                              NilZero.string_of_uint (Unsigned.to_lu a) ++ "_" ++
+                              NilZero.string_of_uint (Unsigned.to_lu b) ++ "_" ++
+                              "Empty_Iter_ID"))
+          end
+      end
     else te.
 
   Definition ForExpressionA_getForSectionType2OutputPatternElementExpressionA_getForSectionType
@@ -570,7 +577,7 @@ Section CoqTL.
    let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
    tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA_getForSectionType (RuleA_getForExpression r) opee tr sp sm fe;
    tme <- (evalOutputPatternElementExpressionWithIter opee tr sm sp tfe);
-   return (setTargetElementId tme ope sp fe_index). 
+   return (setTargetElementId tme ope sp (Some fe_index)). 
 
   Definition instantiateRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     pre <- evalGuardExpressionPre r sp;
@@ -651,8 +658,7 @@ Section CoqTL.
       ope <- find (fun oel => beq_string (OutputPatternElementA_getName oel) name)
           (concat (map RuleA_getOutputPattern (matchPattern tr sm sp)));
       te <- evalOutputPatternElementExpression tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope);
-      toModelClass type te.
-(*       toModelClass type (setTargetElementId te ope sp). *)
+      toModelClass type (setTargetElementId te ope sp None).
 
   Definition resolve (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
     resolveFix (parsePhase tr) sm name type sp.
@@ -661,7 +667,52 @@ Section CoqTL.
     Some (optionList2List (map (resolve tr sm name type) sps)).
 
 
+  Definition SourcePattern_getForSectionType (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : Type := 
+  match  ope <- (find_OutputPatternElementA tr sm sp name);
+         r <- Some (OutputPatternElementExpressionA_getRule (OutputPatternElementA_getOutputPatternElementExpression ope));
+         (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) r) with
+  | None => Error
+  | Some r' => Rule_getForSectionType (snd r') sp
+  end.
 
+  Definition SourcePattern_getForSectionType2 (tr2: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : Type := 
+  let tr := parsePhase tr2 in
+  match  ope <- (find_OutputPatternElementA tr sm sp name);
+         r <- Some (OutputPatternElementExpressionA_getRule (OutputPatternElementA_getOutputPatternElementExpression ope));
+         (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) r) with
+  | None => Error
+  | Some r' => Rule_getForSectionType (snd r') sp
+  end.
+
+  Definition resolveIter3 (tr2: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
+    (fet : SourcePattern_getForSectionType2 tr2 sm name type sp) : option (denoteModelClass type) := 
+  None. 
+
+  Definition SourcePattern_getForSectionType2OutputPatternElementExpressionA_getForSectionType 
+      (o : OutputPatternElementExpressionA) (tr: TransformationA) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
+      (sm: SourceModel)  (fe: SourcePattern_getForSectionType tr sm name type sp) 
+        : option (OutputPatternElementExpressionA_getForSectionType o tr sm sp).
+    Proof.
+      unfold SourcePattern_getForSectionType in fe.
+      destruct (find_OutputPatternElementA tr sm sp name) eqn: ope_ca.
+      - destruct (beq_nat (OutputPatternElementExpressionA_getRule (OutputPatternElementA_getOutputPatternElementExpression o0))
+                          (OutputPatternElementExpressionA_getRule o)) eqn: ca.
+        -- symmetry in ca. 
+           apply beq_nat_eq in ca.
+           rewrite ca in fe.
+           exact (Some fe).
+        -- exact None.
+      - exact None. 
+    Defined.
+
+  Definition resolveIter2 (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
+    (fet : SourcePattern_getForSectionType tr sm name type sp) : option (denoteModelClass type) := 
+  ope <- (find_OutputPatternElementA tr sm sp name);
+  let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
+   tfe <- SourcePattern_getForSectionType2OutputPatternElementExpressionA_getForSectionType opee tr name type sp sm fet;
+   te<- (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm sp tfe);
+   (toModelClass type (setTargetElementId te ope sp None)). 
+  
 
   Definition resolveIter (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
     (iter : nat) : option (denoteModelClass type) :=
@@ -674,7 +725,7 @@ Section CoqTL.
   let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
    tfe <- ForExpressionA_getForSectionType2OutputPatternElementExpressionA_getForSectionType fe opee tr sp sm fet;
    te<- (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm sp tfe);
-   (toModelClass type (setTargetElementId te ope sp iter)). 
+   (toModelClass type (setTargetElementId te ope sp (Some iter))). 
 
   (** ** Rule scheduling **)
     
