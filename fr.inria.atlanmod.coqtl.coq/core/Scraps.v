@@ -4,23 +4,35 @@
   Require Import List.
   
 
+Fixpoint resolveAllIter (sm: GraphModel) (sps: list Node) (iters: list (list Node))
+   : option (list Node) :=
+      match sps, iters with 
+      | sp :: sps', iter::iters' =>
+            match (resolveIter2 Graph2Tree sm "n" NodeEClass [[sp]] iter) with
+             | Some res => 
+                match  (resolveAllIter sm sps' iters' ) with
+                | Some l => Some ( res :: l)
+                | None => Some (res :: nil)
+                end
+             | None => (resolveAllIter sm  sps' iters' )
+            end
+      | nil, _  => None
+      | _ , nil => None
+      end.
 
-  Definition forType (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : Type := 
-  match  ope <- (find_OutputPatternElementA tr sm sp name);
-         r <- Some (OutputPatternElementExpressionA_getRule (OutputPatternElementA_getOutputPatternElementExpression ope));
-         (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) r) with
-  | None => Error
-  | Some r' => Rule_getForSectionType (snd r') sp
-  end.
 
-  Definition resolveIter2 (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
-    (fet : forType tr sm name type sp) : option (denoteModelClass type) := 
-None
-  .
+Compute (resolveAllIter testGraphModel2 ((BuildNode "1" "A")::nil) (((BuildNode "1" "A")::(BuildNode "2" "B")::nil) :: nil)  ).
+
+Compute (SourcePattern_getForSectionType Graph2Tree (Build_Model nil nil) "n" NodeEClass sp).
+
+
 
 Definition sp := (Build_GraphMetamodel_EObject NodeEClass (BuildNode "1" "A"))::nil.
 
-Compute (forType Graph2Tree testGraphModel2 "n" NodeEClass sp).
+
+Definition test (tr: TransformationA  GraphMetamodel GraphMetamodel)(sp1: Node) (l : list Node) (m: GraphModel) := (resolveIter2 Graph2Tree m "n" NodeEClass [[ sp1 ]] l).
+
+Compute (SourcePattern_getForSectionType Graph2Tree testGraphModel2 "n" NodeEClass sp).
 Compute (resolveIter2 Graph2Tree testGraphModel2 "n" NodeEClass sp ((BuildNode "1" "A")::nil)).
 
 
