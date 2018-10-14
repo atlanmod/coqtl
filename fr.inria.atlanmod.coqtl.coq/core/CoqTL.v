@@ -675,19 +675,6 @@ Section CoqTL.
   | Some r' => Rule_getForSectionType (snd r') sp
   end.
 
-  Definition SourcePattern_getForSectionType2 (tr2: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : Type := 
-  let tr := parsePhase tr2 in
-  match  ope <- (find_OutputPatternElementA tr sm sp name);
-         r <- Some (OutputPatternElementExpressionA_getRule (OutputPatternElementA_getOutputPatternElementExpression ope));
-         (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) r) with
-  | None => Error
-  | Some r' => Rule_getForSectionType (snd r') sp
-  end.
-
-  Definition resolveIter3 (tr2: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
-    (fet : SourcePattern_getForSectionType2 tr2 sm name type sp) : option (denoteModelClass type) := 
-  None. 
-
   Definition SourcePattern_getForSectionType2OutputPatternElementExpressionA_getForSectionType 
       (o : OutputPatternElementExpressionA) (tr: TransformationA) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
       (sm: SourceModel)  (fe: SourcePattern_getForSectionType tr sm name type sp) 
@@ -728,7 +715,7 @@ Section CoqTL.
    (toModelClass type (setTargetElementId te ope sp (Some iter))). 
 
   (** ** Rule scheduling **)
-    
+
   Definition maxArity (tr: TransformationA) : nat :=
     max (map (length (A:=SourceModelClass)) (map RuleA_getInTypes (TransformationA_getRules tr))).
 
