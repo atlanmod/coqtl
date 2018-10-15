@@ -5,10 +5,11 @@ Require Import List.
 (** * Notations **)
 
 (* Module *)
-Notation "'transformation' tname 'from' sinstance 'to' tinstance 'with' m 'as' smodel ':=' transformationbody" :=
-  (fun (tname: Phase sinstance tinstance)  (m:smodel) => transformationbody )
+Notation "'transformation' tname 'decreases' v 'from' sinstance 'to' tinstance 'with' m 'as' smodel ':=' transformationbody" :=
+  (fix tname (v: nat) (p: Phase sinstance tinstance) (m:smodel) {struct v} :=  transformationbody)
     (right associativity,
      tname at next level,
+     v at next level,
      sinstance at next level,
      tinstance at next level,
      m at next level,
