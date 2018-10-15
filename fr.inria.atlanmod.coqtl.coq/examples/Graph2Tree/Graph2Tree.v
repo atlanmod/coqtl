@@ -62,7 +62,7 @@ Fixpoint resolveAllIter (tr': Phase GraphMetamodel GraphMetamodel) (sm:GraphMode
    let tr := (parsePhase tr') in
       match sps, iters with 
       | sp :: sps', iter::iters' =>
-          match index (list Node) (list_eq_dec GraphMetamodel_Node_dec) iter (allPathsTo sm 2 sp) with
+          match index (list_eq_dec GraphMetamodel_Node_dec) iter (allPathsTo sm 2 sp) with
            | Some nb => 
             match (resolveIter tr sm name type [[ sp ]] nb) with
              | Some res => 
@@ -111,3 +111,7 @@ Close Scope coqtl.
 Definition Graph2Tree := parseTransformation Graph2Tree'. 
 
 
+Definition sp := (Build_GraphMetamodel_EObject NodeEClass (BuildNode "1" "A"))::nil.
+
+
+Definition test (tr: TransformationA  GraphMetamodel GraphMetamodel)(sp1: Node) (l : list Node) (m: GraphModel) := (resolveIter2 Graph2Tree m "n" NodeEClass [[ sp1 ]] l).
