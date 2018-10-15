@@ -1,4 +1,56 @@
+Require Import List.
+Require Import String.
 
+
+
+Fixpoint fx (n: nat) : nat :=
+  match n with
+  | S n =>
+    let
+      a := (map fx (1::nil)) in 
+    fx n
+  | _ => 0
+  end.
+
+Print fx.
+
+
+Definition fx' :=
+  fix fx (n : nat) : nat := match n with
+                          | 0 => 0
+                          | S n0 => let a := map fx (1 :: nil) in fx n0
+                          end.
+
+
+
+Definition out_type (n : nat) : Type :=
+  match n with
+  | 0 => nat
+  | S n => string
+  end.
+
+Fixpoint for_type (n : nat) : Type :=
+  match n with
+  | 0 => nat
+  | S (S n) => for_type n
+  | _ => string
+  end.
+
+Definition rule (n : nat) (f: for_type n) : option (out_type n) :=
+  match n, f with
+    | 0, 0 => Some 0
+    | 0, S n => Some 1
+    | S 0, "0"%string => Some "2"%string
+    | S 0, _ => Some "3"%string
+    | _, _ => None
+  end.
+
+Definition resolve (n : nat) (f: for_type n) : option (out_type n) :=
+  rule n f.
+
+Compute resolve 0 0.
+
+  
   
 
   Require Import List.
