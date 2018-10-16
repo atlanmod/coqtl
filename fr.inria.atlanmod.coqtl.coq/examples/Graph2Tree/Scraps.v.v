@@ -1,3 +1,33 @@
+
+
+Definition tp (n: nat) : Type := 
+match n with
+| 0 => bool
+| S n' => nat
+end.
+
+Definition compute (n: nat) (p : tp n) : nat := 1.
+
+Fixpoint rec (n :nat) : nat :=
+ match n with
+  | 0 => 0
+  | S n' => match (rec n') with
+      | 0 => compute 0 true
+      | S n'' => compute (S n'') 1
+      end
+ end.
+
+
+
+
+
+
+
+
+
+
+
+
 Definition test1 ( n : nat): option nat := 
 match n with
 | 0 => None
