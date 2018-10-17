@@ -56,20 +56,6 @@ Definition allPathsTo (m : GraphModel) (l : nat) (o: Node) : list (list Node) :=
             end
          ) (allPaths m l).
 
-
-Fixpoint indexIters (sm:GraphModel) (sps: list Node) (iters: list (list Node)) : list nat :=
-  match sps, iters with 
-  | sp :: sps', iter::iters' =>
-    match index (list_eq_dec GraphMetamodel_Node_dec) iter (allPathsTo sm 2 sp) with
-    | Some nb => nb :: indexIters sm sps' iters'
-    | None => indexIters sm sps' iters'
-    end
-  | nil, _  => nil
-  | _ , nil => nil
-  end.
-
-
-
 Definition Graph2Tree' :=
   transformation Graph2Tree from GraphMetamodel to GraphMetamodel uses Graph2TreeIterator
     with m as GraphModel := [
@@ -87,7 +73,10 @@ Definition Graph2Tree' :=
                 pth <- i; 
                 children <- getNodeEdges n m;
                 iters <- Some (map (app pth) (singletons children));
-                return BuildNodeEdges n' nil
+                children' <- resolveAllWithIter (parsePhase Graph2Tree) m "n" NodeEClass 
+                               (map (fun n: Node => [[ n ]]) children) 
+                               (map (fun it: list Node => Graph2TreeIterator_toEObjectOfEClass ListNodeClass it) iters);
+                return BuildNodeEdges n' children'
 
             ]
         ]
