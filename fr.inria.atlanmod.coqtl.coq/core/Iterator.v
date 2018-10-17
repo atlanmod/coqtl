@@ -15,6 +15,7 @@ Class Iterator (IteratorElement: Type) (IteratorClass: Type) :=
     
     (* Decidability of equality *)
     eqIteratorClass_dec: forall (c1:IteratorClass) (c2:IteratorClass), { c1 = c2 } + { c1 <> c2 };
+    eqIteratorElement_dec: forall (c1:IteratorElement) (c2:IteratorElement), { c1 = c2 } + { c1 <> c2 };
 
     (* Constructors *)
     BuildIteratorElement: forall (r: IteratorClass), (denoteIteratorClass r) -> IteratorElement;

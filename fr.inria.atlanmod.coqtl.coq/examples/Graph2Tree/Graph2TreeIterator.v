@@ -19,7 +19,7 @@ Require Import core.utils.tTop.
 Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Iterator.
-
+Require Import core.utils.CpdtTactics.
 
 Require Import examples.Graph2Tree.GraphMetamodel.
 
@@ -43,6 +43,35 @@ Inductive Graph2TreeIterator_Object : Set :=
 Lemma Graph2TreeIterator_eqClass_dec : 
  forall (grec_arg1:Graph2TreeIterator_Class) (grec_arg2:Graph2TreeIterator_Class), { grec_arg1 = grec_arg2 } + { grec_arg1 <> grec_arg2 }.
 Proof. repeat decide equality. Defined.
+
+
+Lemma Graph2TreeIterator_Object_invert : 
+  forall (grec_arg: Graph2TreeIterator_Class) (t1 t2: Graph2TreeIterator_getTypeByClass grec_arg), Build_Graph2TreeIterator_Object grec_arg t1 = Build_Graph2TreeIterator_Object grec_arg t2 -> t1 = t2.
+  Proof.
+    intros.
+    inversion H.
+    apply inj_pair2_eq_dec in H1.
+    exact H1.
+    apply Graph2TreeIterator_eqClass_dec.
+  Defined.
+
+Lemma Graph2TreeIterator_eqObject_dec : 
+ forall (grec_arg1:Graph2TreeIterator_Object) (grec_arg2:Graph2TreeIterator_Object), { grec_arg1 = grec_arg2 } + { grec_arg1 <> grec_arg2 }.
+  Proof. 
+  intros.
+  destruct grec_arg1 eqn: arg1_ca.
+  destruct grec_arg2 eqn: arg2_ca.
+  destruct (Graph2TreeIterator_eqClass_dec grec_arg grec_arg0).
+  - destruct grec_arg0.
+    destruct grec_arg.
+    simpl in g.
+    simpl in g0.
+    destruct (list_eq_dec GraphMetamodel_Node_dec g g0).
+    -- left. crush.
+    -- right. crush. apply n. apply Graph2TreeIterator_Object_invert in H. exact H.
+  - right.
+    crush.
+  Defined.
 
 
 Definition Graph2TreeIterator_getClass (greo_arg : Graph2TreeIterator_Object) : Graph2TreeIterator_Class :=
@@ -75,6 +104,7 @@ Instance Graph2TreeIterator : Iterator Graph2TreeIterator_Object Graph2TreeItera
     toIteratorClass := Graph2TreeIterator_toEClass;
     toIteratorElement := Graph2TreeIterator_toEObjectOfEClass;
     eqIteratorClass_dec := Graph2TreeIterator_eqClass_dec;
+    eqIteratorElement_dec := Graph2TreeIterator_eqObject_dec;
     BuildIteratorElement := Build_Graph2TreeIterator_Object;
   }.
 
