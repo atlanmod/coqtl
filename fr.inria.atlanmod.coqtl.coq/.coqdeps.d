@@ -24,8 +24,8 @@ core/Model.vo core/Model.glob core/Model.v.beautified: core/Model.v
 core/Model.vio: core/Model.v
 core/Engine.vo core/Engine.glob core/Engine.v.beautified: core/Engine.v core/utils/tTop.vo core/Model.vo
 core/Engine.vio: core/Engine.v core/utils/tTop.vio core/Model.vio
-core/CoqTL.vo core/CoqTL.glob core/CoqTL.v.beautified: core/CoqTL.v core/Metamodel.vo core/Model.vo core/Engine.vo core/utils/tTop.vo core/utils/tArith.vo core/utils/CpdtTactics.vo
-core/CoqTL.vio: core/CoqTL.v core/Metamodel.vio core/Model.vio core/Engine.vio core/utils/tTop.vio core/utils/tArith.vio core/utils/CpdtTactics.vio
+core/CoqTL.vo core/CoqTL.glob core/CoqTL.v.beautified: core/CoqTL.v core/Metamodel.vo core/Model.vo core/Engine.vo core/Iterator.vo core/utils/tTop.vo core/utils/tArith.vo core/utils/CpdtTactics.vo
+core/CoqTL.vio: core/CoqTL.v core/Metamodel.vio core/Model.vio core/Engine.vio core/Iterator.vio core/utils/tTop.vio core/utils/tArith.vio core/utils/CpdtTactics.vio
 core/Notations.vo core/Notations.glob core/Notations.v.beautified: core/Notations.v core/CoqTL.vo
 core/Notations.vio: core/Notations.v core/CoqTL.vio
 core/Object.vo core/Object.glob core/Object.v.beautified: core/Object.v

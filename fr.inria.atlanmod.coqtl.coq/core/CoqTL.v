@@ -9,6 +9,7 @@ Require Import DecimalString.
 Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Engine.
+Require Import core.Iterator.
 Require Import core.utils.tTop.
 Require Import core.utils.tArith.
 Require Import core.utils.CpdtTactics.
@@ -21,12 +22,12 @@ Section CoqTL.
   Variables (SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type)
             (smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference)
             (TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type)
-            (tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference).
-  
+            (tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference)
+            (IterElement IterClass : Type)
+            (iterator: Iterator IterElement IterClass).
   Definition SourceModel := Model SourceModelElement SourceModelLink.
   Definition TargetModel := Model TargetModelElement TargetModelLink.
-  
-  About SourceModel.
+
 
   (** * Concrete Syntax
 
@@ -137,9 +138,9 @@ Section CoqTL.
         ((denoteModelClass InElType) -> Rule)
         -> Rule
   | BuildSingleElementRule :
-      forall (InElType: SourceModelClass) (A: Type),
-        ((denoteModelClass InElType) -> (bool * list A))
-        -> ((denoteModelClass InElType) -> option A -> list OutputPatternElement)
+      forall (InElType: SourceModelClass) (itType: IterClass),
+        ((denoteModelClass InElType) -> (bool * list (denoteIteratorClass itType)))
+        -> ((denoteModelClass InElType) -> option (denoteIteratorClass itType) -> list OutputPatternElement)
         -> Rule.
   
   Definition Phase : Type := SourceModel -> list (string * Rule).
@@ -303,13 +304,13 @@ Section CoqTL.
   Fixpoint parseRuleOutput (tr: Transformation) (n: nat) (r: Rule) : list OutputPatternElementA :=
     match r with
     | BuildMultiElementRule iet f => parseRuleOutput tr n (f (bottomModelClass iet)) 
-    | BuildSingleElementRule iet f g => mapWithIndex (parseOutputPatternElement tr n) 0 (g (bottomModelClass iet) None) 
+    | BuildSingleElementRule iet iterType f g => mapWithIndex (parseOutputPatternElement tr n) 0 (g (bottomModelClass iet) None) 
     end.    
   
   Fixpoint parseRuleTypes (r: Rule) : list SourceModelClass :=
     match r with
     | BuildMultiElementRule iet f => (cons iet (parseRuleTypes (f (bottomModelClass iet))))
-    | BuildSingleElementRule iet f g => iet::nil
+    | BuildSingleElementRule iet iterType f g => iet::nil
     end.
 
   Definition parseRuleDeclaration (tr: Transformation) (n: nat) (r: (string * Rule)) : RuleA :=
@@ -332,7 +333,7 @@ Section CoqTL.
       | Some e' => Rule_getSingleElementRule (f e') els
       | None => None
       end
-    | BuildSingleElementRule s f g as bser, e::nil =>
+    | BuildSingleElementRule s iterType f g as bser, e::nil =>
       match toModelClass s e with
       | Some e' => Some (bser, e)
       | None => None
@@ -357,7 +358,7 @@ Section CoqTL.
     | BuildMultiElementRule s f, t::ts, e::els =>
       e' <- toModelClass s e;
         evalGuardExpressionFix (f e') ts els
-    | BuildSingleElementRule s f g, t::nil, e::nil =>
+    | BuildSingleElementRule s iterType f g, t::nil, e::nil =>
       e' <- toModelClass s e;
       return (fst (f e'))
     | _, _, _ => None
@@ -370,7 +371,7 @@ Section CoqTL.
   
   Definition Rule_getForSectionType (r: Rule) (sp: list SourceModelElement) : Type :=
     match Rule_getSingleElementRule r sp with
-    | Some (@BuildSingleElementRule iet ft f g, e) => ft
+    | Some (BuildSingleElementRule iet ft f g, e) => (denoteIteratorClass ft)
     | _ => Error
     end.
   
