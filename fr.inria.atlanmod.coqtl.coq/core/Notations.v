@@ -1,4 +1,5 @@
 Require Import core.CoqTL.
+Require Import core.DefaultIterator.
 Require Import String.
 Require Import List.
 
@@ -41,15 +42,15 @@ Notation "sid 'class' stype 'when' guard 'for' forid 'of' 'class' ftype 'in' for
   (BuildSingleElementRule _ _ stype ftype (fun sid => (guard, forset)) (fun sid forid => outputels))
     (right associativity, at level 60): coqtl.
 
-(* (* InputPatternElement no guard *)
-Notation "sid 'class' stype 'to' outputels" :=
-  (BuildSingleElementRule _ stype (fun sid => (true, 0::nil)) (fun sid forid => outputels))
+(* TODO InputPatternElement no FOR, guard *)
+Notation "sid 'class' stype 'to2' outputels" :=
+  (BuildSingleElementRule _ _ stype NatClass (fun sid => (true, 0::nil)) (fun sid forid => outputels))
     (right associativity, at level 60): coqtl.
 
-(* InputPatternElement *)
-Notation "sid 'class' stype 'when' guard 'to' outputels" :=
-  (BuildSingleElementRule _ stype (fun sid => (guard, 0::nil)) (fun sid forid => outputels))
-    (right associativity, at level 60): coqtl. *)
+(* TODO InputPatternElement no FOR *)
+Notation "sid 'class' stype 'when2' guard 'to2' outputels" :=
+  (BuildSingleElementRule _ _ stype NatClass (fun sid => (guard, 0::nil)) (fun sid forid => outputels))
+    (right associativity, at level 60): coqtl. 
 
 (* OutputPatternElement *)
 Notation "elid ':' elname 'class' eltype := eldef 'with' refdef" :=

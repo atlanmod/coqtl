@@ -67,3 +67,18 @@ Fixpoint max (l : list nat) : nat :=
   | a::nil => a
   | a::m => let b:= max m in if ble_nat a b then b else a
   end.
+
+Lemma succ_inj_defined : forall n m,
+  S n = S m -> n = m.
+Proof.
+  intros n m H. inversion H. reflexivity.
+Defined.
+
+Lemma beq_nat_false_defined : forall n m,
+  beq_nat n m = false -> n <> m.
+Proof.
+  intro n. induction n.
+ - intros m H. destruct m. simpl in H. inversion H. unfold not. intros H1. inversion H1.
+ - intros m H. destruct m. unfold not. intro H1. inversion H1. unfold not. intro H1.
+    simpl in H. apply IHn in H. unfold not in H. apply succ_inj_defined in H1. apply H. apply H1.
+Defined.
