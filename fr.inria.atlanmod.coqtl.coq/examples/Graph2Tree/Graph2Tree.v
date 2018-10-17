@@ -16,6 +16,7 @@ Require Import examples.Graph2Tree.GraphMetamodel.
 Require Import examples.Graph2Tree.GraphMetamodelPattern.
 Require Import examples.Graph2Tree.GraphModel.
 Require Import examples.Graph2Tree.GraphModel2.
+Require Import examples.Graph2Tree.Graph2TreeIterator.
 
 Open Scope coqtl.
 
@@ -70,13 +71,13 @@ Fixpoint indexIters (sm:GraphModel) (sps: list Node) (iters: list (list Node)) :
 
 
 Definition Graph2Tree' :=
-  transformation Graph2Tree decreases v from GraphMetamodel to GraphMetamodel
+  transformation Graph2Tree from GraphMetamodel to GraphMetamodel uses Graph2TreeIterator
     with m as GraphModel := [
       rule Node2Node
         from
           n class NodeEClass
         for
-          i in (allPathsTo m 2 n)
+          i in (allPathsTo m 2 n) itclass ListNodeClass
         to [
           "n" :
             n' class NodeEClass :=
@@ -86,11 +87,7 @@ Definition Graph2Tree' :=
                 pth <- i; 
                 children <- getNodeEdges n m;
                 iters <- Some (map (app pth) (singletons children));
-                match v with
-                  | 0 => None
-                  | S v' => children' <- (resolveAllIter (parseTransformation (Graph2Tree v')) m "n" NodeEClass (map (fun sp: Node => [[ sp ]] ) children) ((indexIters m children iters)));
-                                  return BuildNodeEdges n' children'
-                end
+                return BuildNodeEdges n' nil
 
             ]
         ]
@@ -100,7 +97,5 @@ Definition Graph2Tree' :=
 Close Scope coqtl.
 
 
-Definition Graph2Tree := parseTransformation (Graph2Tree' 2). 
+Definition Graph2Tree := parseTransformation (Graph2Tree'). 
 
-
-(* Definition test (tr: TransformationA  GraphMetamodel GraphMetamodel)(sp1: Node) (l : list Node) (m: GraphModel) := (resolveIter2 Graph2Tree m "n" NodeEClass [[ sp1 ]] l). *)
