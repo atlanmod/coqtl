@@ -32,12 +32,12 @@ Notation "sid 'class' stype 'from' sinstance ',' sbody" :=
     (right associativity, at level 60): coqtl.
 
 (* InputPatternElement no guard *)
-Notation "sid 'class' stype 'for' forid 'in' forset 'itclass' ftype 'to' outputels" :=
+Notation "sid 'class' stype 'for' forid 'of' 'class' ftype 'in' forset 'to' outputels" :=
   (BuildSingleElementRule _ _ stype ftype (fun sid => (true, forset)) (fun sid forid => outputels))
     (right associativity, at level 60): coqtl.
 
 (* InputPatternElement *)
-Notation "sid 'class' stype 'when' guard 'for' forid 'in' forset 'itclass' ftype 'to' outputels" :=
+Notation "sid 'class' stype 'when' guard 'for' forid 'of' 'class' ftype 'in' forset 'to' outputels" :=
   (BuildSingleElementRule _ _ stype ftype (fun sid => (guard, forset)) (fun sid forid => outputels))
     (right associativity, at level 60): coqtl.
 

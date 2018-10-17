@@ -63,7 +63,7 @@ Definition Graph2Tree' :=
         from
           n class NodeEClass
         for
-          i in (allPathsTo m 2 n) itclass ListNodeClass
+          i of class ListNodeClass in (allPathsTo m 2 n)
         to [
           "n" :
             n' class NodeEClass :=
