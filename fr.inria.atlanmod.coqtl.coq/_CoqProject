@@ -18,7 +18,7 @@ core/CoqTL.v
 core/Notations.v
 core/Object.v
 core/Iterator.v
-
+core/DefaultIterator.v
 
 
 -R "examples/Graph2Tree" examples.Graph2Tree
@@ -28,3 +28,4 @@ examples/Graph2Tree/GraphModel.v
 examples/Graph2Tree/GraphModel2.v
 examples/Graph2Tree/Graph2TreeIterator.v
 examples/Graph2Tree/Graph2Tree.v
+examples/Graph2Tree/Graph2TreeNoIter.v
