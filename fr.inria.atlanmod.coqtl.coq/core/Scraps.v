@@ -1,6 +1,32 @@
 Require Import List.
 Require Import String.
+Require Import  Coq.Bool.Bool.
 
+Class Eq A :=
+  {
+    eqb: A -> A -> bool;
+  }.
+
+Class Ord A `{Eq A} : Type :=
+  {
+    le : A -> A -> bool
+  }.
+
+Instance eqbool0 : Eq bool :=
+  {
+    eqb := Bool.eqb 
+  }.
+
+Instance eqNat : Eq nat :=
+  {
+    eqb := Nat.eqb
+  }.
+
+Instance natOrd : Ord nat :=  {
+le := Nat.leb
+}.
+
+Check (natOrd).
 
 
 Fixpoint fx (n: nat) : nat :=
