@@ -1,4 +1,6 @@
 Require Import core.CoqTL.
+Require Import core.Metamodel.
+Require Import core.Iterator.
 Require Import core.DefaultIterator.
 Require Import String.
 Require Import List.
@@ -6,14 +8,12 @@ Require Import List.
 (** * Notations **)
 
 (* Module *)
-Notation "'transformation' tname 'from1' sinstance1 'from2' sinstance2 'to1' tinstance1 'to2' tinstance2 'uses' itinstance 'with' m 'as' smodel ':=' transformationbody" :=
-  (fun (tname: Phase sinstance1 sinstance2 tinstance1 tinstance2 itinstance) (m:smodel) =>  transformationbody)
+Notation "'transformation' tname 'from' smm 'to' tmm 'uses' itinstance 'with' m 'as' smodel ':=' transformationbody" :=
+  (fun (tname: Phase (@getModelLink _ _ _ _ _ _ _ _ _ smm) (@getTyping_Elem _ _ _ _ _ _ _ _ _ smm) (@getTyping_Elem _ _ _ _ _ _ _ _ _ tmm) (@getTyping_Link _ _ _ _ _ _ _ _ _ tmm) (@getIterTyping_Elem _ _ _ _ _ itinstance)) (m:smodel) =>  transformationbody)
     (right associativity,
      tname at next level,
-     sinstance1 at next level,
-     sinstance2 at next level,
-     tinstance1 at next level,
-     tinstance2 at next level,
+     smm at next level,
+     tmm at next level,
      itinstance at next level,
      m at next level,
      smodel at next level,

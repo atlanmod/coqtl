@@ -4,6 +4,8 @@ Require Export core.Decidability.
 
 Class Iterator 
   (IteratorElement: Type) (IteratorClass: Type) 
-`{Typing IteratorElement IteratorClass} 
+`{Typing_Elem: Typing IteratorElement IteratorClass} 
 `{Decidability IteratorElement}
-`{Decidability IteratorClass} := {}.
+`{Decidability IteratorClass} := {
+getIterTyping_Elem := Typing_Elem;
+}.

@@ -11,6 +11,8 @@ Require Import core.utils.tTop.
 Require Import core.Notations.
 Require Import core.Model.
 Require Import core.CoqTL.
+Require Import core.Metamodel.
+Require Import core.Iterator.
 
 Require Import examples.Graph2Tree.GraphMetamodel.
 Require Import examples.Graph2Tree.GraphMetamodelPattern.
@@ -86,16 +88,11 @@ Definition allPathsTo (m : GraphModel) (l : nat) (o: Node) : list (list Node) :=
 
 Check Graph2Tree'.  *)
 
-
-
-
 Definition Graph2Tree' :=
   transformation Graph2Tree 
-    from1 GraphMetamodel_ELink 
-    from2 GraphMetamodel_Typing_Elem 
-    to1 GraphMetamodel_Typing_Elem 
-    to2 GraphMetamodel_Typing_Link 
-    uses Graph2TreeIterator_Typing
+    from GraphMetamodel
+    to GraphMetamodel
+    uses Graph2TreeIterator
     with m as GraphModel := [
       rule Node2Node
         from
