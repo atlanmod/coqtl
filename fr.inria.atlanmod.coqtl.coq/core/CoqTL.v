@@ -20,27 +20,33 @@ Set Implicit Arguments.
 Section CoqTL.
 
   Variables  
-(SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type)
-(smm_tp_elem : Typing SourceModelElement SourceModelClass)
-(smm_tp_link : Typing SourceModelLink SourceModelReference)
-(dec_smm_class : Decidability SourceModelClass) 
-(dec_smm_ref : Decidability SourceModelReference)
-(obj_smm_elem : Object SourceModelElement)
-(smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference)
+    (SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type)
+    (TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type)
+    (IteratorElement IteratorClass : Type)
 
-(TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type)
-(tmm_tp_elem : Typing TargetModelElement TargetModelClass)
-(tmm_tp_link : Typing TargetModelLink TargetModelReference)
-(dec_tmm_class : Decidability TargetModelClass) 
-(dec_tmm_ref : Decidability TargetModelReference)
-(obj_tmm_elem : Object TargetModelElement)
-(tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference)
+    (smm_tp_elem : Typing SourceModelElement SourceModelClass)
+    
+    (dec_smm_class : Decidability SourceModelClass) 
+    (dec_smm_ref : Decidability SourceModelReference)
+    (obj_smm_elem : Object SourceModelElement)
 
-(IteratorElement IteratorClass : Type)
-(iter_tp_elem : Typing IteratorElement IteratorClass)
-(dec_iter_class : Decidability IteratorClass)
-(dec_iter_elem : Decidability IteratorElement)
-(iterator: Iterator IteratorElement IteratorClass).
+    (tmm_tp_elem : Typing TargetModelElement TargetModelClass)
+    (tmm_tp_link : Typing TargetModelLink TargetModelReference)
+    (dec_tmm_class : Decidability TargetModelClass) 
+    (dec_tmm_ref : Decidability TargetModelReference)
+    (obj_tmm_elem : Object TargetModelElement)
+    (tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference)
+
+    (iter_tp_elem : Typing IteratorElement IteratorClass)
+    (dec_iter_class : Decidability IteratorClass)
+    (dec_iter_elem : Decidability IteratorElement)
+    (iterator: Iterator IteratorElement IteratorClass).
+
+
+  
+  Definition TargetMetamodel := Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference.
+
+  
   Definition SourceModel := Model SourceModelElement SourceModelLink.
   Definition TargetModel := Model TargetModelElement TargetModelLink.
 
@@ -642,9 +648,6 @@ Section CoqTL.
       (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
       (concat (optionList2List (map (applyPattern tr sm) (allTuples tr sm)))).
 
-  Definition Dummy (c: SourceModelReference) (a: SourceModelLink)  := toSubElement c a.
-
-Check Dummy.
 
   (* One-phase alternative
 
@@ -1076,10 +1079,7 @@ Check Dummy.
 *)  
 End CoqTL.
 
-
-
 (* Set Implicit Arguments Inference *)
-
 Arguments Phase : default implicits.
 Arguments BuildSingleElementRule : default implicits.
 Arguments BuildMultiElementRule : default implicits.
@@ -1088,4 +1088,5 @@ Arguments BuildOutputPatternElementReference : default implicits.
 Arguments resolve : default implicits.
 Arguments execute : default implicits.
 Arguments getOutputPatternElementTargetModelElement : default implicits.
-Arguments Dummy : default implicits. 
+Arguments resolveWithIter : default implicits.
+Arguments resolveAllWithIter : default implicits.
