@@ -57,7 +57,7 @@ Definition allPathsTo (m : GraphModel) (l : nat) (o: Node) : list (list Node) :=
          ) (allPaths m l).
 
 
-Definition Graph2Tree' :=
+(* Definition Graph2Tree' :=
   (fun (Graph2Tree: Phase GraphMetamodel_ELink GraphMetamodel_Typing_Elem GraphMetamodel_Typing_Elem GraphMetamodel_Typing_Link Graph2TreeIterator_Typing) (m:GraphModel) =>  
   [ ( ""%string,
     (BuildSingleElementRule GraphMetamodel_Typing_Elem Graph2TreeIterator_Typing
@@ -84,25 +84,34 @@ Definition Graph2Tree' :=
 
   ).
 
-Check Graph2Tree'. 
+Check Graph2Tree'.  *)
 
 
 
-(* 
+
 Definition Graph2Tree' :=
-  transformation Graph2Tree  from GraphMetamodel_Typing_Elem to1 GraphMetamodel_Typing_Elem to2 GraphMetamodel_Typing_Link uses Graph2TreeIterator_Typing
+  transformation Graph2Tree 
+    from1 GraphMetamodel_ELink 
+    from2 GraphMetamodel_Typing_Elem 
+    to1 GraphMetamodel_Typing_Elem 
+    to2 GraphMetamodel_Typing_Link 
+    uses Graph2TreeIterator_Typing
     with m as GraphModel := [
       rule Node2Node
         from
           n class NodeEClass
         for
           i of class ListNodeClass in (allPathsTo m 2 n)
+        uses
+          GraphMetamodel_Typing_Elem
+        with
+          Graph2TreeIterator_Typing
         to [
           "n"%string :
-            n' class NodeEClass :=
+            n' class NodeEClass uses GraphMetamodel_Typing_Elem :=
               BuildNode newId (getNodeName n)
             with [
-              ref NodeEdgesEReference :=
+              ref NodeEdgesEReference uses GraphMetamodel_Typing_Link :=
                 pth <- i; 
                 children <- getNodeEdges n m;
                 iters <- Some (map (app pth) (singletons children));
@@ -115,7 +124,7 @@ Definition Graph2Tree' :=
         ]
     ].
 
-*)
+
 Close Scope coqtl.
 
 

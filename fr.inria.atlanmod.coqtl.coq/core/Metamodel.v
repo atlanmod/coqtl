@@ -6,6 +6,9 @@ Require Export core.Object.
 Class Metamodel 
   (ModelElement: Type) (ModelLink: Type) 
   (ModelClass: Type) (ModelReference: Type) 
-`{Typing ModelElement ModelClass} `{Typing ModelLink ModelReference}
+`{Typing_Elem: Typing ModelElement ModelClass} `{Typing ModelLink ModelReference}
 `{Decidability ModelClass} `{Decidability ModelReference}
-`{Object ModelElement} := {}.
+`{Object ModelElement} := {
+
+}.
+
