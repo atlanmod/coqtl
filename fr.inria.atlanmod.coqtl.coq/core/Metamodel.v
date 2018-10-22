@@ -1,33 +1,11 @@
-(** * Metamodel **)
-Require Import core.Model.
-Require Import String.
+(** * Metamodel Class **)
+Require Export core.Typing.
+Require Export core.Decidability.
+Require Export core.Object.
 
-
-Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=
-  {
-    (* Denotation *)
-    denoteModelClass: ModelClass -> Set;
-    denoteModelReference: ModelReference -> Set;
-
-    (* Downcasting *)
-    toModelClass: forall (t:ModelClass), ModelElement -> option (denoteModelClass t);
-    toModelReference: forall (t:ModelReference), ModelLink -> option (denoteModelReference t);
-
-    (* Default object of that class *)
-    bottomModelClass: forall (c:ModelClass), (denoteModelClass c);
-
-    (* Upcasting *)
-    toModelElement: forall (t: ModelClass), (denoteModelClass t) -> ModelElement;
-    toModelLink: forall (t: ModelReference), (denoteModelReference t) -> ModelLink;
-    
-    (* Decidability of equality *)
-    eqModelClass_dec: forall (c1:ModelClass) (c2:ModelClass), { c1 = c2 } + { c1 <> c2 };
-    eqModelReference_dec: forall (c1:ModelReference) (c2:ModelReference), { c1 = c2 } + { c1 <> c2 };
-
-    (* Constructors *)
-    BuildModelElement: forall (r: ModelClass), (denoteModelClass r) -> ModelElement;
-    BuildModelLink:  forall (r: ModelReference), (denoteModelReference r) -> ModelLink;
-
-    getId: ModelElement -> string;
-    setId: ModelElement -> string -> ModelElement;
-  }.
+Class Metamodel 
+  (ModelElement: Type) (ModelLink: Type) 
+  (ModelClass: Type) (ModelReference: Type) 
+`{Typing ModelElement ModelClass} `{Typing ModelLink ModelReference}
+`{Decidability ModelClass} `{Decidability ModelReference}
+`{Object ModelElement} := {}.

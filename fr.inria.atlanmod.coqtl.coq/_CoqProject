@@ -11,15 +11,16 @@ core/utils/tTop.v
 core/utils/CpdtTactics.v
 
 -R core core
-core/Metamodel.v
+core/Object.v
 core/Model.v
+core/Typing.v
+core/Decidability.v
+core/Metamodel.v
+core/Iterator.v
+core/DefaultIterator.v
 core/Engine.v
 core/CoqTL.v
 core/Notations.v
-core/Object.v
-core/Iterator.v
-core/DefaultIterator.v
-
 
 -R "examples/Graph2Tree" examples.Graph2Tree
 examples/Graph2Tree/GraphMetamodel.v

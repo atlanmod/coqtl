@@ -1,23 +1,9 @@
-(** * Metamodel **)
-Require Import String.
+(** * Iterator Class **)
+Require Export core.Typing.
+Require Export core.Decidability.
 
-
-Class Iterator (IteratorElement: Type) (IteratorClass: Type) :=
-  {
-    (* Denotation *)
-    denoteIteratorClass: IteratorClass -> Set;
-
-    (* Downcasting *)
-    toIteratorClass: forall (t:IteratorClass), IteratorElement -> option (denoteIteratorClass t);
-
-    (* Upcasting *)
-    toIteratorElement: forall (t: IteratorClass), (denoteIteratorClass t) -> IteratorElement;
-    
-    (* Decidability of equality *)
-    eqIteratorClass_dec: forall (c1:IteratorClass) (c2:IteratorClass), { c1 = c2 } + { c1 <> c2 };
-    eqIteratorElement_dec: forall (c1:IteratorElement) (c2:IteratorElement), { c1 = c2 } + { c1 <> c2 };
-
-    (* Constructors *)
-    BuildIteratorElement: forall (r: IteratorClass), (denoteIteratorClass r) -> IteratorElement;
-
-  }.
+Class Iterator 
+  (IteratorElement: Type) (IteratorClass: Type) 
+`{Typing IteratorElement IteratorClass} 
+`{Decidability IteratorElement}
+`{Decidability IteratorClass} := {}.
