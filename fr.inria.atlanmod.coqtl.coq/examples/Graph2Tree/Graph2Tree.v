@@ -56,8 +56,12 @@ Definition allPathsTo (m : GraphModel) (l : nat) (o: Node) : list (list Node) :=
             end
          ) (allPaths m l).
 
+Check Phase.
+
+Check Phase nat GraphMetamodel_Typing_Elem GraphMetamodel_Typing_Elem GraphMetamodel_Typing_Link Graph2TreeIterator_Typing.
+
 Definition Graph2Tree' :=
-  transformation Graph2Tree from GraphMetamodel to GraphMetamodel uses Graph2TreeIterator
+  transformation Graph2Tree from1 nat from2 GraphMetamodel_Typing_Elem to1 GraphMetamodel_Typing_Elem to2 GraphMetamodel_Typing_Link uses Graph2TreeIterator_Typing
     with m as GraphModel := [
       rule Node2Node
         from
@@ -65,7 +69,7 @@ Definition Graph2Tree' :=
         for
           i of class ListNodeClass in (allPathsTo m 2 n)
         to [
-          "n" :
+          "n"%string :
             n' class NodeEClass :=
               BuildNode newId (getNodeName n)
             with [
@@ -73,7 +77,7 @@ Definition Graph2Tree' :=
                 pth <- i; 
                 children <- getNodeEdges n m;
                 iters <- Some (map (app pth) (singletons children));
-                children' <- resolveAllWithIter (parsePhase Graph2Tree) m "n" NodeEClass 
+                children' <- resolveAllWithIter (parsePhase Graph2Tree) m "n"%string NodeEClass 
                                (map (fun n: Node => [[ n ]]) children) 
                                (map (fun it: list Node => Graph2TreeIterator_toEObjectOfEClass ListNodeClass it) iters);
                 return BuildNodeEdges n' children'

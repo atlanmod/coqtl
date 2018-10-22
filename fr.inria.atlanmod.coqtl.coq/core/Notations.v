@@ -6,12 +6,14 @@ Require Import List.
 (** * Notations **)
 
 (* Module *)
-Notation "'transformation' tname 'from' sinstance 'to' tinstance 'uses' itinstance 'with' m 'as' smodel ':=' transformationbody" :=
-  (fun (tname: Phase sinstance tinstance itinstance) (m:smodel) =>  transformationbody)
+Notation "'transformation' tname 'from1' sinstance1 'from2' sinstance2 'to1' tinstance1 'to2' tinstance2 'uses' itinstance 'with' m 'as' smodel ':=' transformationbody" :=
+  (fun (tname: Phase sinstance1 sinstance2 tinstance1 tinstance2 itinstance) (m:smodel) =>  transformationbody)
     (right associativity,
      tname at next level,
-     sinstance at next level,
-     tinstance at next level,
+     sinstance1 at next level,
+     sinstance2 at next level,
+     tinstance1 at next level,
+     tinstance2 at next level,
      itinstance at next level,
      m at next level,
      smodel at next level,
