@@ -16,8 +16,6 @@ Require Import Coq.Logic.Eqdep_dec.
 
 (* CoqTL libraries *)
 Require Import core.utils.tTop.
-Require Import core.Metamodel.
-Require Import core.Model.
 Require Import core.Iterator.
 Require Import core.utils.CpdtTactics.
 
@@ -96,15 +94,30 @@ Defined.
 Definition Graph2TreeIterator_toEObjectOfEClass (grec_arg: Graph2TreeIterator_Class) (t: Graph2TreeIterator_getTypeByClass grec_arg) : Graph2TreeIterator_Object :=
   (Build_Graph2TreeIterator_Object grec_arg t).
 
+Definition Graph2TreeIterator_defaultInstancesOfClass (grec_arg: Graph2TreeIterator_Class) : (Graph2TreeIterator_getTypeByClass grec_arg) :=
+  match grec_arg with
+  | ListNodeClass => nil
+  end.
+
+Instance Graph2TreeIterator_Typing : Typing Graph2TreeIterator_Object Graph2TreeIterator_Class :=
+{
+    denoteClass := Graph2TreeIterator_getTypeByClass;
+    toSubElement := Graph2TreeIterator_toEClass;
+    toTopElement := Graph2TreeIterator_toEObjectOfEClass;
+    DefaultElements := Graph2TreeIterator_defaultInstancesOfClass;
+}.
+
+Instance Default_Class_Decidability : Decidability Graph2TreeIterator_Class :=
+{
+  eq_dec := Graph2TreeIterator_eqClass_dec;
+}.
+
+Instance Default_Object_Decidability : Decidability Graph2TreeIterator_Object :=
+{
+  eq_dec := Graph2TreeIterator_eqObject_dec;
+}.
+
 
 (* Typeclass Instance *)
-Instance Graph2TreeIterator : Iterator Graph2TreeIterator_Object Graph2TreeIterator_Class :=
-  {
-    denoteIteratorClass := Graph2TreeIterator_getTypeByClass;
-    toIteratorClass := Graph2TreeIterator_toEClass;
-    toIteratorElement := Graph2TreeIterator_toEObjectOfEClass;
-    eqIteratorClass_dec := Graph2TreeIterator_eqClass_dec;
-    eqIteratorElement_dec := Graph2TreeIterator_eqObject_dec;
-    BuildIteratorElement := Build_Graph2TreeIterator_Object;
-  }.
+Instance Graph2TreeIterator : Iterator Graph2TreeIterator_Object Graph2TreeIterator_Class := {}.
 

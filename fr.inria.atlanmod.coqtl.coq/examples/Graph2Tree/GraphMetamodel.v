@@ -206,6 +206,11 @@ Definition GraphMetamodel_defaultInstanceOfEClass (grec_arg: GraphMetamodel_ECla
   | NodeEClass => (BuildNode "" "")
   end.
 
+Definition GraphMetamodel_defaultInstanceOfEReference (grec_arg: GraphMetamodel_EReference) : (GraphMetamodel_getTypeByEReference grec_arg) :=
+  match grec_arg with
+  | NodeEdgesEReference => BuildNodeEdges (BuildNode "" "") nil
+  end.
+
 Definition GraphMetamodel_getId (a : GraphMetamodel_EObject) : string.
 Proof.
   destruct a.
@@ -220,29 +225,42 @@ Proof.
   * simpl in g. exact (setNodeId g s).
 Defined.
 
+Instance GraphMetamodel_Typing_Elem : Typing GraphMetamodel_EObject GraphMetamodel_EClass :=
+{
+  denoteClass := GraphMetamodel_getTypeByEClass;
+  toSubElement := GraphMetamodel_toEClass;
+  toTopElement := GraphMetamodel_toEObjectOfEClass;
+  DefaultElements := GraphMetamodel_defaultInstanceOfEClass;
+}.
+
+Instance GraphMetamodel_Typing_Link : Typing GraphMetamodel_ELink GraphMetamodel_EReference :=
+{
+  denoteClass := GraphMetamodel_getTypeByEReference;
+  toSubElement := GraphMetamodel_toEReference;
+  toTopElement := GraphMetamodel_toELinkOfEReference;
+  DefaultElements := GraphMetamodel_defaultInstanceOfEReference;
+}.
+
+Instance GraphMetamodel_Dec_Class : Decidability GraphMetamodel_EClass :=
+{
+  eq_dec := GraphMetamodel_eqEClass_dec
+}.
+
+Instance GraphMetamodel_Dec_Reference : Decidability GraphMetamodel_EReference :=
+{
+  eq_dec := GraphMetamodel_eqEReference_dec
+}.
+
+Instance GraphMetamodel_Object_Elem : Object GraphMetamodel_EObject:=
+{
+  getId := GraphMetamodel_getId;
+  setId := GraphMetamodel_setId;
+}.
+
 (* Typeclass Instance *)
 Instance GraphMetamodel : Metamodel GraphMetamodel_EObject GraphMetamodel_ELink GraphMetamodel_EClass GraphMetamodel_EReference :=
-  {
-    denoteModelClass := GraphMetamodel_getTypeByEClass;
-    denoteModelReference := GraphMetamodel_getTypeByEReference;
-    toModelClass := GraphMetamodel_toEClass;
-    toModelReference := GraphMetamodel_toEReference;
-    toModelElement := GraphMetamodel_toEObjectOfEClass;
-    toModelLink := GraphMetamodel_toELinkOfEReference;
-    bottomModelClass := GraphMetamodel_defaultInstanceOfEClass;
+  {}.
 
-    (* Theorems *)
-    eqModelClass_dec := GraphMetamodel_eqEClass_dec;
-    eqModelReference_dec := GraphMetamodel_eqEReference_dec;
-
-    (* Constructors *)
-    BuildModelElement := Build_GraphMetamodel_EObject;
-    BuildModelLink := Build_GraphMetamodel_ELink;
-
-    getId := GraphMetamodel_getId;
-    setId := GraphMetamodel_setId;
-  }.
-  
 (* Useful lemmas *)
 Lemma Graph_invert : 
   forall (grec_arg: GraphMetamodel_EClass) (t1 t2: GraphMetamodel_getTypeByEClass grec_arg), Build_GraphMetamodel_EObject grec_arg t1 = Build_GraphMetamodel_EObject grec_arg t2 -> t1 = t2.

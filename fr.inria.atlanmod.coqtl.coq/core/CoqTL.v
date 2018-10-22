@@ -19,12 +19,28 @@ Set Implicit Arguments.
 
 Section CoqTL.
 
-  Variables (SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type)
-            (smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference)
-            (TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type)
-            (tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference)
-            (IteratorElement IteratorClass : Type)
-            (iterator: Iterator IteratorElement IteratorClass).
+  Variables  
+(SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type)
+(smm_tp_elem : Typing SourceModelElement SourceModelClass)
+(smm_tp_link : Typing SourceModelLink SourceModelReference)
+(dec_smm_class : Decidability SourceModelClass) 
+(dec_smm_ref : Decidability SourceModelReference)
+(obj_smm_elem : Object SourceModelElement)
+(smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference)
+
+(TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type)
+(tmm_tp_elem : Typing TargetModelElement TargetModelClass)
+(tmm_tp_link : Typing TargetModelLink TargetModelReference)
+(dec_tmm_class : Decidability TargetModelClass) 
+(dec_tmm_ref : Decidability TargetModelReference)
+(obj_tmm_elem : Object TargetModelElement)
+(tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference)
+
+(IteratorElement IteratorClass : Type)
+(iter_tp_elem : Typing IteratorElement IteratorClass)
+(dec_iter_class : Decidability IteratorClass)
+(dec_iter_elem : Decidability IteratorElement)
+(iterator: Iterator IteratorElement IteratorClass).
   Definition SourceModel := Model SourceModelElement SourceModelLink.
   Definition TargetModel := Model TargetModelElement TargetModelLink.
 
@@ -60,7 +76,7 @@ Section CoqTL.
    *)
   Inductive OutputPatternElementReference : Type :=
   | BuildOutputPatternElementReference : forall (OutRefs: TargetModelReference),
-      (option (denoteModelReference OutRefs))
+      (option (denoteClass OutRefs))
       -> OutputPatternElementReference.
 
   Definition OutputPatternElementReferenceType (o :  OutputPatternElementReference) : TargetModelReference :=
@@ -70,7 +86,7 @@ Section CoqTL.
     match o with
       (BuildOutputPatternElementReference type link) =>
       ml <- link;
-      return toModelLink type ml
+      return toTopElement type ml
     end.
 
   Fixpoint getOutputPatternElementReferenceTargetModelLinks (l : list OutputPatternElementReference) : list TargetModelLink :=
@@ -79,7 +95,7 @@ Section CoqTL.
     | ope :: opel => match ope with
                     | BuildOutputPatternElementReference OutRefs x =>
                       match x with
-                      | Some x => BuildModelLink OutRefs x :: getOutputPatternElementReferenceTargetModelLinks opel
+                      | Some x => toTopElement OutRefs x :: getOutputPatternElementReferenceTargetModelLinks opel
                       | None => getOutputPatternElementReferenceTargetModelLinks opel
                       end
                     end
@@ -96,8 +112,8 @@ Section CoqTL.
   Inductive OutputPatternElement : Type :=
   | BuildOutputPatternElement : forall (OutElType: TargetModelClass),
       string
-      -> (denoteModelClass OutElType)
-      -> ((denoteModelClass OutElType) -> list OutputPatternElementReference)
+      -> (denoteClass OutElType)
+      -> ((denoteClass OutElType) -> list OutputPatternElementReference)
       -> OutputPatternElement.
 
   Definition getOutputPatternElementName (o :  OutputPatternElement) : string :=
@@ -106,26 +122,26 @@ Section CoqTL.
   Definition getOutputPatternElementType (o :  OutputPatternElement) : TargetModelClass :=
     match o with BuildOutputPatternElement type name el refs => type end.
 
-  Definition getOutputPatternElementBindings (o :  OutputPatternElement) : ((denoteModelClass (getOutputPatternElementType o)) -> list OutputPatternElementReference) :=
+  Definition getOutputPatternElementBindings (o :  OutputPatternElement) : ((denoteClass (getOutputPatternElementType o)) -> list OutputPatternElementReference) :=
     match o with BuildOutputPatternElement type name el refs => refs end.
 
   Definition getOutputPatternElementElementType (o :  OutputPatternElement) : Set :=
-    match o with BuildOutputPatternElement type name el refs => denoteModelClass type end.
+    match o with BuildOutputPatternElement type name el refs => denoteClass type end.
 
   Definition getOutputPatternElementElement (o :  OutputPatternElement) : getOutputPatternElementElementType o :=
     match o with BuildOutputPatternElement type name el refs => el end.
 
   Definition getOutputPatternElementTargetModelElement (o :  OutputPatternElement) : TargetModelElement :=
-    match o with BuildOutputPatternElement OutElType x x0 x1 => toModelElement OutElType x0 end.
+    match o with BuildOutputPatternElement OutElType x x0 x1 => toTopElement OutElType x0 end.
 
   Definition getOutputPatternElementTargetModelLinks (o :  OutputPatternElement): list TargetModelLink :=
     match o with BuildOutputPatternElement type name el refs => getOutputPatternElementReferenceTargetModelLinks (refs el) end.
 
-  Definition getOutputPatternElementElementByType (o :  OutputPatternElement) (type: TargetModelClass) : option (denoteModelClass type).
+  Definition getOutputPatternElementElementByType (o :  OutputPatternElement) (type: TargetModelClass) : option (denoteClass type).
   Proof.
     remember o as ope.
     destruct o.
-    remember (eqModelClass_dec type OutElType) as equal.
+    remember (eq_dec type OutElType) as equal.
     destruct equal.
     - rewrite e.
       exact (Some d).
@@ -135,12 +151,12 @@ Section CoqTL.
   Inductive Rule: Type :=
   | BuildMultiElementRule :
       forall (InElType: SourceModelClass),
-        ((denoteModelClass InElType) -> Rule)
+        ((denoteClass InElType) -> Rule)
         -> Rule
   | BuildSingleElementRule :
       forall (InElType: SourceModelClass) (itType: IteratorClass),
-        ((denoteModelClass InElType) -> (bool * list (denoteIteratorClass itType)))
-        -> ((denoteModelClass InElType) -> option (denoteIteratorClass itType) -> list OutputPatternElement)
+        ((denoteClass InElType) -> (bool * list (denoteClass itType)))
+        -> ((denoteClass InElType) -> option (denoteClass itType) -> list OutputPatternElement)
         -> Rule.
 
   Definition Phase : Type := SourceModel -> list (string * Rule).
@@ -302,24 +318,24 @@ Section CoqTL.
   Definition parseOutputPatternElement (tr: Transformation) (r ope: nat) (o: OutputPatternElement) : OutputPatternElementA :=   
     match o with
     | BuildOutputPatternElement t n _ f =>
-      BuildOutputPatternElementA n t (BuildOutputPatternElementExpressionA r ope) (mapWithIndex (parseOutputPatternElementReference tr r ope) 0 (f (bottomModelClass t)))
+      BuildOutputPatternElementA n t (BuildOutputPatternElementExpressionA r ope) (mapWithIndex (parseOutputPatternElementReference tr r ope) 0 (f (DefaultElements t)))
     end.
 
   Fixpoint parseRuleOutput (tr: Transformation) (n: nat) (r: Rule) : list OutputPatternElementA :=
     match r with
-    | BuildMultiElementRule iet f => parseRuleOutput tr n (f (bottomModelClass iet)) 
-    | BuildSingleElementRule iet iterType f g => mapWithIndex (parseOutputPatternElement tr n) 0 (g (bottomModelClass iet) None) 
+    | BuildMultiElementRule iet f => parseRuleOutput tr n (f (DefaultElements iet)) 
+    | BuildSingleElementRule iet iterType f g => mapWithIndex (parseOutputPatternElement tr n) 0 (g (DefaultElements iet) None) 
     end.    
   
   Fixpoint parseRuleInElTypes (r: Rule) : list SourceModelClass :=
     match r with
-    | BuildMultiElementRule iet f => (cons iet (parseRuleInElTypes (f (bottomModelClass iet))))
+    | BuildMultiElementRule iet f => (cons iet (parseRuleInElTypes (f (DefaultElements iet))))
     | BuildSingleElementRule iet iterType f g => iet::nil
     end.
 
   Fixpoint parseRuleForExpression (r: Rule) : IteratorClass :=
     match r with
-    | BuildMultiElementRule iet f => (parseRuleForExpression (f (bottomModelClass iet)))
+    | BuildMultiElementRule iet f => (parseRuleForExpression (f (DefaultElements iet)))
     | BuildSingleElementRule iet iterType f g => iterType
     end.
 
@@ -341,18 +357,18 @@ Section CoqTL.
   Fixpoint Rule_getSingleElementRule (r: Rule) (sp: list SourceModelElement) : option (Rule * SourceModelElement) :=
     match r, sp with
     | BuildMultiElementRule s f, e::els => 
-      match toModelClass s e with
+      match toSubElement s e with
       | Some e' => Rule_getSingleElementRule (f e') els
       | None => None
       end
     | BuildSingleElementRule s iterType f g as bser, e::nil =>
-      match toModelClass s e with
+      match toSubElement s e with
       | Some e' => Some (bser, e)
       | None => None
       end
     | _, _ => None
     end.
-  
+
   (* TODO: move to the engine part *)
   (* Before evaluate guard, pre-check the intypes of rule and source elems length are equal. immediate stop eval if not. *)
   Definition evalGuardExpressionPre (r: RuleA) (sp: list SourceModelElement) : option bool :=
@@ -368,10 +384,10 @@ Section CoqTL.
   Fixpoint evalGuardExpressionFix (r : Rule) (intypes: list SourceModelClass) (el: list SourceModelElement) : option bool :=
     match r, intypes, el with
     | BuildMultiElementRule s f, t::ts, e::els =>
-      e' <- toModelClass s e;
+      e' <- toSubElement s e;
         evalGuardExpressionFix (f e') ts els
     | BuildSingleElementRule s iterType f g, t::nil, e::nil =>
-      e' <- toModelClass s e;
+      e' <- toSubElement s e;
       return (fst (f e'))
     | _, _, _ => None
     end.
@@ -387,9 +403,9 @@ Section CoqTL.
     destruct (Rule_getSingleElementRule r sp) eqn:rc.
     2: { exact None. }
     1: { destruct (fst p) eqn:m.
-         2: { destruct (toModelClass InElType (snd p)) eqn: ser.
+         2: { destruct (toSubElement InElType (snd p)) eqn: ser.
               2: { exact None. }
-              1: { exact (return (map (toIteratorElement itType) (snd (p0 d)))). }}
+              1: { exact (return (map (toTopElement itType) (snd (p0 d)))). }}
          1: { exact None. }}
   Defined.
 
@@ -402,7 +418,7 @@ Section CoqTL.
   Definition evalOutputPatternElementExpression' (o : OutputPatternElementExpressionA) (tr: TransformationA) (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option TargetModelElement :=
     match Rule_getSingleElementRule r sp with
     | Some (@BuildSingleElementRule s ft f g, e) =>
-      e' <- toModelClass s e;
+      e' <- toSubElement s e;
         ope <- (nth_error (g e' None) (OutputPatternElementExpressionA_getOutputPatternElement o));
         return (getOutputPatternElementTargetModelElement ope)
     | _ => None
@@ -419,8 +435,8 @@ Section CoqTL.
     r_single <- (Rule_getSingleElementRule (snd r) sp);
     match (fst r_single) with
     | BuildSingleElementRule InElType iterType f g =>
-        inelem <- (toModelClass InElType (snd r_single));
-        it <- (toIteratorClass iterType fet);
+        inelem <- (toSubElement InElType (snd r_single));
+        it <- (toSubElement iterType fet);
         opes <- Some (g inelem (Some it));
         ope <- nth_error opes (OutputPatternElementExpressionA_getOutputPatternElement o);
         (return (getOutputPatternElementTargetModelElement ope))
@@ -432,9 +448,9 @@ Section CoqTL.
    (te: TargetModelElement) : option TargetModelLink :=
     match Rule_getSingleElementRule r sp with
     | Some (@BuildSingleElementRule s ft f g, e) =>
-        e' <- toModelClass s e;
+        e' <- toSubElement s e;
         ope <- (nth_error (g e' None) (OutputBindingExpressionA_getOutputPatternElement o));
-        te' <- toModelClass (getOutputPatternElementType ope) te;
+        te' <- toSubElement (getOutputPatternElementType ope) te;
         oper <- (nth_error ((getOutputPatternElementBindings ope) te') (OutputBindingExpressionA_getOutputBinding o));
         (OutputPatternElementReferenceLink oper)
     | _ => None
@@ -451,11 +467,11 @@ Section CoqTL.
     r_single <- (Rule_getSingleElementRule (snd r) sp);
     match (fst r_single) with
     | BuildSingleElementRule InElType iterType f g =>
-        inelem <- (toModelClass InElType (snd r_single));
-        it <- (toIteratorClass iterType fet);
+        inelem <- (toSubElement InElType (snd r_single));
+        it <- (toSubElement iterType fet);
         opes <- Some (g inelem (Some it));
         ope <- nth_error opes (OutputBindingExpressionA_getOutputPatternElement o);
-        te' <- (toModelClass (getOutputPatternElementType ope) te);
+        te' <- (toSubElement (getOutputPatternElementType ope) te);
         ref <- (nth_error ((getOutputPatternElementBindings ope) te') (OutputBindingExpressionA_getOutputBinding o));
         (OutputPatternElementReferenceLink ref)
     | _ => None
@@ -561,41 +577,41 @@ Section CoqTL.
     find (fun oel => beq_string (OutputPatternElementA_getName oel) name)
               (concat (map RuleA_getOutputPattern (matchPattern tr sm sp))).
 
-  Definition resolveFix (tr: TransformationA) (sm : SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
+  Definition resolveFix (tr: TransformationA) (sm : SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteClass type) :=
       ope <- find (fun oel => beq_string (OutputPatternElementA_getName oel) name)
           (concat (map RuleA_getOutputPattern (matchPattern tr sm sp)));
       te <- evalOutputPatternElementExpression tr sm sp (OutputPatternElementA_getOutputPatternElementExpression ope);
-      toModelClass type (setTargetElementId te ope sp None).
+      toSubElement type (setTargetElementId te ope sp None).
 
-  Definition resolve (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
+  Definition resolve (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteClass type) :=
     resolveFix (parsePhase tr) sm name type sp.
 
-  Definition resolveAll (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) : option (list (denoteModelClass type)) :=
+  Definition resolveAll (tr: Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) : option (list (denoteClass type)) :=
     Some (optionList2List (map (resolve tr sm name type) sps)).
 
   Definition resolveWithIter (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
-    (iter : IteratorElement) : option (denoteModelClass type) := 
+    (iter : IteratorElement) : option (denoteClass type) := 
     ope <- (find_OutputPatternElementA tr sm sp name);
     r_num <- Some (OutputPatternElementExpressionA_getRule (OutputPatternElementA_getOutputPatternElementExpression ope));
     ra <- (nth_error (TransformationA_getRules tr) r_num);
     forSection <- Some (RuleA_getForExpression ra);
     iters <- (evalForExpressionOfTransformation forSection tr sm sp);
-    match index eqIteratorElement_dec iter iters with
+    match index eq_dec iter iters with
     | None => None
     | Some id => let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
          te<- (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm sp iter);
-         (toModelClass type (setTargetElementId te ope sp (Some id))) 
+         (toSubElement type (setTargetElementId te ope sp (Some id))) 
     end.
 
   Definition resolveAllWithIter (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) 
-    (iters : list IteratorElement) : option (list ((denoteModelClass type))) :=
+    (iters : list IteratorElement) : option (list ((denoteClass type))) :=
         match (length (optionList2List (zipWith (resolveWithIter tr sm name type) sps iters))) with
         | 0 => None
         | S n => Some (optionList2List (zipWith (resolveWithIter tr sm name type) sps iters))
         end.
 
   Definition resolveWithIterNum (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
-    (iter : nat) : option (denoteModelClass type) :=
+    (iter : nat) : option (denoteClass type) :=
     ope <- (find_OutputPatternElementA tr sm sp name);
     r <- Some (OutputPatternElementExpressionA_getRule (OutputPatternElementA_getOutputPatternElementExpression ope));
     ra <- (nth_error (TransformationA_getRules tr) r);
@@ -604,10 +620,10 @@ Section CoqTL.
     fet <- nth_error fe_res iter;
     let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
      te<- (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm sp fet);
-     (toModelClass type (setTargetElementId te ope sp (Some iter))).  
+     (toSubElement type (setTargetElementId te ope sp (Some iter))).  
 
   Definition resolveAllWithIterNum (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) 
-    (iters : list nat) : option (list ((denoteModelClass type))) :=
+    (iters : list nat) : option (list ((denoteClass type))) :=
         match (length (optionList2List (zipWith (resolveWithIterNum tr sm name type) sps iters))) with
         | 0 => None
         | S n => Some (optionList2List (zipWith (resolveWithIterNum tr sm name type) sps iters))
@@ -625,6 +641,10 @@ Section CoqTL.
     Build_Model
       (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
       (concat (optionList2List (map (applyPattern tr sm) (allTuples tr sm)))).
+
+  Definition Dummy (c: SourceModelReference) (a: SourceModelLink)  := toSubElement c a.
+
+Check Dummy.
 
   (* One-phase alternative
 
@@ -1068,3 +1088,4 @@ Arguments BuildOutputPatternElementReference : default implicits.
 Arguments resolve : default implicits.
 Arguments execute : default implicits.
 Arguments getOutputPatternElementTargetModelElement : default implicits.
+Arguments Dummy : default implicits. 

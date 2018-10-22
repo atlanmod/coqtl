@@ -9,8 +9,6 @@ Require Import Coq.Logic.Eqdep_dec.
 
 (* CoqTL libraries *)
 Require Import core.utils.tTop.
-Require Import core.Metamodel.
-Require Import core.Model.
 Require Import core.Iterator.
 Require Import core.utils.CpdtTactics.
 
@@ -48,8 +46,6 @@ Lemma DefaultIterator_Object_invert :
   Defined.
 
 
-
-(* TODO: This lemma used non-Defined lemma beq_nat_false, which might cause problem during computation*)
 Lemma DefaultIterator_eqObject_dec : 
  forall (grec_arg1:DefaultIterator_Object) (grec_arg2:DefaultIterator_Object), { grec_arg1 = grec_arg2 } + { grec_arg1 <> grec_arg2 }.
   Proof. 
@@ -87,19 +83,34 @@ Proof.
   - exact None.
 Defined.
 
+Definition DefaultIterator_defaultInstancesOfClass (clec_arg: DefaultIterator_Class) : (DefaultIterator_getTypeByClass clec_arg) :=
+  match clec_arg with
+  | NatClass => 0
+  end.
 
 Definition DefaultIterator_toEObjectOfEClass (grec_arg: DefaultIterator_Class) (t: DefaultIterator_getTypeByClass grec_arg) : DefaultIterator_Object :=
   (Build_DefaultIterator_Object grec_arg t).
 
+Instance DefaultTyping : Typing DefaultIterator_Object DefaultIterator_Class :=
+{
+    denoteClass := DefaultIterator_getTypeByClass;
+    toSubElement := DefaultIterator_toEClass;
+    toTopElement := DefaultIterator_toEObjectOfEClass;
+    DefaultElements := DefaultIterator_defaultInstancesOfClass;
+}.
 
-(* Typeclass Instance *)
+Instance Default_Class_Decidability : Decidability DefaultIterator_Class :=
+{
+  eq_dec := DefaultIterator_eqClass_dec;
+}.
+
+Instance Default_Object_Decidability : Decidability DefaultIterator_Object :=
+{
+  eq_dec := DefaultIterator_eqObject_dec;
+}.
+
 Instance DefaultIterator : Iterator DefaultIterator_Object DefaultIterator_Class :=
   {
-    denoteIteratorClass := DefaultIterator_getTypeByClass;
-    toIteratorClass := DefaultIterator_toEClass;
-    toIteratorElement := DefaultIterator_toEObjectOfEClass;
-    eqIteratorClass_dec := DefaultIterator_eqClass_dec;
-    eqIteratorElement_dec := DefaultIterator_eqObject_dec;
-    BuildIteratorElement := Build_DefaultIterator_Object;
+
   }.
 
