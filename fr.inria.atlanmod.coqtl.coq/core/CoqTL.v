@@ -24,20 +24,20 @@ Section CoqTL.
     (TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type)
     (IteratorElement IteratorClass : Type)
 
-    (smm_tp_elem : Typing SourceModelElement SourceModelClass)
+    (smm_tp_elem : Reflective SourceModelElement SourceModelClass)
     
     (dec_smm_class : Decidability SourceModelClass) 
     (dec_smm_ref : Decidability SourceModelReference)
     (obj_smm_elem : Object SourceModelElement)
 
-    (tmm_tp_elem : Typing TargetModelElement TargetModelClass)
-    (tmm_tp_link : Typing TargetModelLink TargetModelReference)
+    (tmm_tp_elem : Reflective TargetModelElement TargetModelClass)
+    (tmm_tp_link : Reflective TargetModelLink TargetModelReference)
     (dec_tmm_class : Decidability TargetModelClass) 
     (dec_tmm_ref : Decidability TargetModelReference)
     (obj_tmm_elem : Object TargetModelElement)
     (tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference)
 
-    (iter_tp_elem : Typing IteratorElement IteratorClass)
+    (iter_tp_elem : Reflective IteratorElement IteratorClass)
     (dec_iter_class : Decidability IteratorClass)
     (dec_iter_elem : Decidability IteratorElement)
     (iterator: Iterator IteratorElement IteratorClass).

@@ -60,19 +60,19 @@ Definition allPathsTo (m : GraphModel) (l : nat) (o: Node) : list (list Node) :=
 
 
 (* Definition Graph2Tree' :=
-  (fun (Graph2Tree: Phase GraphMetamodel_ELink GraphMetamodel_Typing_Elem GraphMetamodel_Typing_Elem GraphMetamodel_Typing_Link Graph2TreeIterator_Typing) (m:GraphModel) =>  
+  (fun (Graph2Tree: Phase GraphMetamodel_ELink GraphMetamodel_Reflective_Elem GraphMetamodel_Reflective_Elem GraphMetamodel_Reflective_Link Graph2TreeIterator_Reflective) (m:GraphModel) =>  
   [ ( ""%string,
-    (BuildSingleElementRule GraphMetamodel_Typing_Elem Graph2TreeIterator_Typing
+    (BuildSingleElementRule GraphMetamodel_Reflective_Elem Graph2TreeIterator_Reflective
       NodeEClass ListNodeClass 
       (fun n => (true, (allPathsTo m 2 n)))
       (fun n i => [
         (BuildOutputPatternElement 
-            GraphMetamodel_Typing_Elem 
+            GraphMetamodel_Reflective_Elem 
             NodeEClass 
             "n"%string 
             (BuildNode newId (getNodeName n))
             (fun n' => [
-              BuildOutputPatternElementReference GraphMetamodel_Typing_Link NodeEdgesEReference 
+              BuildOutputPatternElementReference GraphMetamodel_Reflective_Link NodeEdgesEReference 
               (pth <- i; 
                 children <- getNodeEdges n m;
                 iters <- Some (map (app pth) (singletons children));
@@ -100,15 +100,15 @@ Definition Graph2Tree' :=
         for
           i of class ListNodeClass in (allPathsTo m 2 n)
         uses
-          GraphMetamodel_Typing_Elem
+          GraphMetamodel_Reflective_Elem
         with
-          Graph2TreeIterator_Typing
+          Graph2TreeIterator_Reflective
         to [
           "n"%string :
-            n' class NodeEClass uses GraphMetamodel_Typing_Elem :=
+            n' class NodeEClass uses GraphMetamodel_Reflective_Elem :=
               BuildNode newId (getNodeName n)
             with [
-              ref NodeEdgesEReference uses GraphMetamodel_Typing_Link :=
+              ref NodeEdgesEReference uses GraphMetamodel_Reflective_Link :=
                 pth <- i; 
                 children <- getNodeEdges n m;
                 iters <- Some (map (app pth) (singletons children));

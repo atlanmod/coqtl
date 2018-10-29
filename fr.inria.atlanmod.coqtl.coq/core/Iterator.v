@@ -1,11 +1,11 @@
 (** * Iterator Class **)
-Require Export core.Typing.
+Require Export core.Reflective.
 Require Export core.Decidability.
 
 Class Iterator 
   (IteratorElement: Type) (IteratorClass: Type) 
-`{Typing_Elem: Typing IteratorElement IteratorClass} 
+`{Reflective_Elem: Reflective IteratorElement IteratorClass} 
 `{Decidability IteratorElement}
 `{Decidability IteratorClass} := {
-getIterTyping_Elem := Typing_Elem;
+getIterReflective_Elem := Reflective_Elem;
 }.

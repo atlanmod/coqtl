@@ -91,7 +91,7 @@ Definition DefaultIterator_defaultInstancesOfClass (clec_arg: DefaultIterator_Cl
 Definition DefaultIterator_toEObjectOfEClass (grec_arg: DefaultIterator_Class) (t: DefaultIterator_getTypeByClass grec_arg) : DefaultIterator_Object :=
   (Build_DefaultIterator_Object grec_arg t).
 
-Instance DefaultTyping : Typing DefaultIterator_Object DefaultIterator_Class :=
+Instance DefaultReflective : Reflective DefaultIterator_Object DefaultIterator_Class :=
 {
     denoteClass := DefaultIterator_getTypeByClass;
     toSubElement := DefaultIterator_toEClass;

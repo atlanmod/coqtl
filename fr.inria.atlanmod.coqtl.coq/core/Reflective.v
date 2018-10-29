@@ -1,6 +1,6 @@
-(** * Typing Class **)
+(** * Reflective Class **)
 
-Class Typing (Element: Type) (Class: Type) :=
+Class Reflective (Element: Type) (Class: Type) :=
   {
     (* Denotation to concrete type *)
     denoteClass: Class -> Set;

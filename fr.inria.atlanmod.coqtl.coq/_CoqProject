@@ -13,7 +13,7 @@ core/utils/CpdtTactics.v
 -R core core
 core/Object.v
 core/Model.v
-core/Typing.v
+core/Reflective.v
 core/Decidability.v
 core/Metamodel.v
 core/Iterator.v

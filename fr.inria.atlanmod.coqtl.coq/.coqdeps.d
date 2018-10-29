@@ -22,14 +22,14 @@ core/Object.vo core/Object.glob core/Object.v.beautified: core/Object.v
 core/Object.vio: core/Object.v
 core/Model.vo core/Model.glob core/Model.v.beautified: core/Model.v
 core/Model.vio: core/Model.v
-core/Typing.vo core/Typing.glob core/Typing.v.beautified: core/Typing.v
-core/Typing.vio: core/Typing.v
+core/Reflective.vo core/Reflective.glob core/Reflective.v.beautified: core/Reflective.v
+core/Reflective.vio: core/Reflective.v
 core/Decidability.vo core/Decidability.glob core/Decidability.v.beautified: core/Decidability.v
 core/Decidability.vio: core/Decidability.v
-core/Metamodel.vo core/Metamodel.glob core/Metamodel.v.beautified: core/Metamodel.v core/Typing.vo core/Decidability.vo core/Object.vo
-core/Metamodel.vio: core/Metamodel.v core/Typing.vio core/Decidability.vio core/Object.vio
-core/Iterator.vo core/Iterator.glob core/Iterator.v.beautified: core/Iterator.v core/Typing.vo core/Decidability.vo
-core/Iterator.vio: core/Iterator.v core/Typing.vio core/Decidability.vio
+core/Metamodel.vo core/Metamodel.glob core/Metamodel.v.beautified: core/Metamodel.v core/Reflective.vo core/Decidability.vo core/Object.vo
+core/Metamodel.vio: core/Metamodel.v core/Reflective.vio core/Decidability.vio core/Object.vio
+core/Iterator.vo core/Iterator.glob core/Iterator.v.beautified: core/Iterator.v core/Reflective.vo core/Decidability.vo
+core/Iterator.vio: core/Iterator.v core/Reflective.vio core/Decidability.vio
 core/DefaultIterator.vo core/DefaultIterator.glob core/DefaultIterator.v.beautified: core/DefaultIterator.v core/utils/tTop.vo core/Iterator.vo core/utils/CpdtTactics.vo
 core/DefaultIterator.vio: core/DefaultIterator.v core/utils/tTop.vio core/Iterator.vio core/utils/CpdtTactics.vio
 core/Engine.vo core/Engine.glob core/Engine.v.beautified: core/Engine.v core/utils/tTop.vo core/Model.vo

@@ -99,7 +99,7 @@ Definition Graph2TreeIterator_defaultInstancesOfClass (grec_arg: Graph2TreeItera
   | ListNodeClass => nil
   end.
 
-Instance Graph2TreeIterator_Typing : Typing Graph2TreeIterator_Object Graph2TreeIterator_Class :=
+Instance Graph2TreeIterator_Reflective : Reflective Graph2TreeIterator_Object Graph2TreeIterator_Class :=
 {
     denoteClass := Graph2TreeIterator_getTypeByClass;
     toSubElement := Graph2TreeIterator_toEClass;

@@ -225,7 +225,7 @@ Proof.
   * simpl in g. exact (setNodeId g s).
 Defined.
 
-Instance GraphMetamodel_Typing_Elem : Typing GraphMetamodel_EObject GraphMetamodel_EClass :=
+Instance GraphMetamodel_Reflective_Elem : Reflective GraphMetamodel_EObject GraphMetamodel_EClass :=
 {
   denoteClass := GraphMetamodel_getTypeByEClass;
   toSubElement := GraphMetamodel_toEClass;
@@ -233,7 +233,7 @@ Instance GraphMetamodel_Typing_Elem : Typing GraphMetamodel_EObject GraphMetamod
   DefaultElements := GraphMetamodel_defaultInstanceOfEClass;
 }.
 
-Instance GraphMetamodel_Typing_Link : Typing GraphMetamodel_ELink GraphMetamodel_EReference :=
+Instance GraphMetamodel_Reflective_Link : Reflective GraphMetamodel_ELink GraphMetamodel_EReference :=
 {
   denoteClass := GraphMetamodel_getTypeByEReference;
   toSubElement := GraphMetamodel_toEReference;
