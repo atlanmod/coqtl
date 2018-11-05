@@ -68,7 +68,7 @@ Fixpoint indexIters (sm:GraphModel) (sps: list Node) (iters: list (list Node)) :
   end.
 
 
-
+(*
 Definition Graph2Tree' :=
   transformation Graph2Tree decreases v from GraphMetamodel to GraphMetamodel
     with m as GraphModel := [
@@ -95,6 +95,33 @@ Definition Graph2Tree' :=
             ]
         ]
     ].
+*)
+
+Definition Graph2Tree' :=
+  transformation Graph2Tree decreases v from GraphMetamodel to GraphMetamodel
+    with m as GraphModel := [
+      rule Node2Node
+        from
+          n class NodeEClass
+        for
+          i in (allPathsTo m 2 n)
+        to [
+          "n" :
+            n' class NodeEClass :=
+              BuildNode newId (getNodeName n)
+            with [
+              ref NodeEdgesEReference :=
+                pth <- i; 
+                children <- getNodeEdges n m;
+                iters <- Some (map (app pth) (singletons children));
+                child <- nth_error children 0;
+                iter <- nth_error iters 0;
+                res <- resolveIter2 (parseTransformation (Graph2Tree 0)) m "n" NodeEClass [[child]] iter;
+                return BuildNodeEdges n' res :: nil
+            ]
+        ]
+    ].
+
 
 
 Close Scope coqtl.
