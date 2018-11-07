@@ -37,11 +37,8 @@ Section CoqTL.
     (obj_tmm_elem : Object TargetModelElement)
     (tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference)
 
-    (iter_tp_elem : Reflective IteratorElement IteratorClass)
     (dec_iter_class : Decidability IteratorClass)
-    (dec_iter_elem : Decidability IteratorElement)
-    (iterator: Iterator IteratorElement IteratorClass).
-
+    (dec_iter_elem : Decidability IteratorElement).
 
   
   Definition TargetMetamodel := Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference.
@@ -161,8 +158,8 @@ Section CoqTL.
         -> Rule
   | BuildSingleElementRule :
       forall (InElType: SourceModelClass) (itType: IteratorClass),
-        ((denoteClass InElType) -> (bool * list (denoteClass itType)))
-        -> ((denoteClass InElType) -> option (denoteClass itType) -> list OutputPatternElement)
+        ((denoteClass InElType) -> (bool * list IteratorElement))
+        -> ((denoteClass InElType) -> option (IteratorElement) -> list OutputPatternElement)
         -> Rule.
 
   Definition Phase : Type := SourceModel -> list (string * Rule).
@@ -411,7 +408,7 @@ Section CoqTL.
     1: { destruct (fst p) eqn:m.
          2: { destruct (toSubElement InElType (snd p)) eqn: ser.
               2: { exact None. }
-              1: { exact (return (map (toTopElement itType) (snd (p0 d)))). }}
+              1: { exact (return (snd (p0 d))). }}
          1: { exact None. }}
   Defined.
 
@@ -442,8 +439,7 @@ Section CoqTL.
     match (fst r_single) with
     | BuildSingleElementRule InElType iterType f g =>
         inelem <- (toSubElement InElType (snd r_single));
-        it <- (toSubElement iterType fet);
-        opes <- Some (g inelem (Some it));
+        opes <- Some (g inelem (Some fet));
         ope <- nth_error opes (OutputPatternElementExpressionA_getOutputPatternElement o);
         (return (getOutputPatternElementTargetModelElement ope))
     | _ => None
@@ -474,8 +470,7 @@ Section CoqTL.
     match (fst r_single) with
     | BuildSingleElementRule InElType iterType f g =>
         inelem <- (toSubElement InElType (snd r_single));
-        it <- (toSubElement iterType fet);
-        opes <- Some (g inelem (Some it));
+        opes <- Some (g inelem (Some fet));
         ope <- nth_error opes (OutputBindingExpressionA_getOutputPatternElement o);
         te' <- (toSubElement (getOutputPatternElementType ope) te);
         ref <- (nth_error ((getOutputPatternElementBindings ope) te') (OutputBindingExpressionA_getOutputBinding o));

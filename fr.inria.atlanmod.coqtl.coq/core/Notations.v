@@ -9,7 +9,7 @@ Require Import List.
 
 (* Module *)
 Notation "'transformation' tname 'from' smm 'to' tmm 'uses' itinstance 'with' m 'as' smodel ':=' transformationbody" :=
-  (fun (tname: Phase (@getModelLink _ _ _ _ _ _ _ _ _ smm) (@getReflective_Elem _ _ _ _ _ _ _ _ _ smm) (@getReflective_Elem _ _ _ _ _ _ _ _ _ tmm) (@getReflective_Link _ _ _ _ _ _ _ _ _ tmm) (@getIterReflective_Elem _ _ _ _ _ itinstance)) (m:smodel) =>  transformationbody)
+  (fun (tname: Phase (@getModelLink _ _ _ _ _ _ _ _ _ smm) Decidability _ (@getReflective_Elem _ _ _ _ _ _ _ _ _ smm) (@getReflective_Elem _ _ _ _ _ _ _ _ _ tmm) (@getReflective_Link _ _ _ _ _ _ _ _ _ tmm)) (m:smodel) =>  transformationbody)
     (right associativity,
      tname at next level,
      smm at next level,

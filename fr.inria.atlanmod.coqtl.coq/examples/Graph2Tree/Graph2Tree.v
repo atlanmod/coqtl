@@ -50,14 +50,14 @@ Definition allPaths (m : GraphModel) (l : nat) : list (list Node) :=
   allPathsFix' m l [ rootNode m ].
 
 
-Definition allPathsTo (m : GraphModel) (l : nat) (o: Node) : list (list Node) :=
-  filter (fun p =>
+Definition allPathsTo (m : GraphModel) (l : nat) (o: Node) : list (Graph2TreeIterator_Object) :=
+  map (Graph2TreeIterator_toEObjectOfEClass ListNodeClass)
+          (filter (fun p =>
             match (last' p) with
              | Some lastNode => beq_Node lastNode o
              | None => false
             end
-         ) (allPaths m l).
-
+         ) (allPaths m l)).
 
 (* Definition Graph2Tree' :=
   (fun (Graph2Tree: Phase GraphMetamodel_ELink GraphMetamodel_Reflective_Elem GraphMetamodel_Reflective_Elem GraphMetamodel_Reflective_Link Graph2TreeIterator_Reflective) (m:GraphModel) =>  
@@ -108,8 +108,8 @@ Definition Graph2Tree' :=
             n' class NodeEClass uses GraphMetamodel_Reflective_Elem :=
               BuildNode newId (getNodeName n)
             with [
-              ref NodeEdgesEReference uses GraphMetamodel_Reflective_Link :=
-                pth <- i; 
+                ref NodeEdgesEReference uses GraphMetamodel_Reflective_Link :=
+                pth <- (Graph2TreeIterator_toEClass ListNodeClass i); 
                 children <- getNodeEdges n m;
                 iters <- Some (map (app pth) (singletons children));
                 children' <- resolveAllWithIter _ _ _ (parsePhase Graph2Tree) m "n"%string NodeEClass 
