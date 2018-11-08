@@ -1,6 +1,71 @@
 Require Import List.
 Require Import String.
-Require Import  Coq.Bool.Bool.
+Require Import core.utils.tTop.
+Require Import Coq.Bool.Bool.
+
+Require Import Coq.Classes.Equivalence.
+Require Import Coq.Classes.EquivDec.
+Require Import Coq.Logic.Decidable.
+
+Class EqDec_eq (A : Type) :=
+  eq_dec : forall (x y : A), {x = y} + {x <> y}.
+
+Instance EqDec_Nat' : EqDec_eq (list nat).
+Proof.
+  unfold EqDec_eq.
+  repeat decide equality.
+Defined.
+
+Instance EqDec_Nat'' : EqDec_eq (list nat).
+Proof.
+  unfold EqDec_eq.
+  repeat decide equality.
+Defined.
+
+Compute (eq_dec (3::3::nil) (3::3::nil)).
+
+Print EqDec_Nat'.
+
+Definition size {A : Type} (eqa: EqDec_eq A) (l : A) := 0.
+
+Compute (size EqDec_Nat' (3::3::nil)).
+
+Inductive Iter : Type :=
+  BuildIter : forall (s : string), Type -> Iter.
+
+
+
+Class Refl (Element: Type) (Class: Type) :=
+  {
+    (* Denotation to concrete type *)
+    denoteClass: Class -> Set;
+
+    (* Downcasting from Root Class *)
+    toSubElement: forall (c: Class), Element -> option (denoteClass c);
+
+    (* Upcasting to Element of Top Class *)
+    toTopElement: forall (c: Class), (denoteClass c) -> Element;
+
+    (* Default object of each class *)
+    DefaultElements: forall (c: Class), (denoteClass c);
+  }.
+
+
+
+
+
+
+
+Instance EqDec_Nat `(@EqDec (list nat) eq eq_equivalence) : EqDec_eq (list nat).
+Proof. assumption. Qed.
+
+
+
+
+
+
+
+
 
 Class Eq A :=
   {
