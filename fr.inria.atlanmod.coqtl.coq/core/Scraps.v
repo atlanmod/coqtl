@@ -22,7 +22,9 @@ Proof.
   repeat decide equality.
 Defined.
 
-Compute (eq_dec (3::3::nil) (3::3::nil)).
+
+
+Compute (@eq_dec _ _ (3::3::nil) (3::3::nil)).
 
 Print EqDec_Nat'.
 
@@ -32,6 +34,10 @@ Compute (size EqDec_Nat' (3::3::nil)).
 
 Inductive Iter : Type :=
   BuildIter : forall (s : string), Type -> Iter.
+
+
+
+
 
 
 

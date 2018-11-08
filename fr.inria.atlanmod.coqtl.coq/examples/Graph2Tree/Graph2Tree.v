@@ -92,31 +92,25 @@ Definition Graph2Tree' :=
   transformation Graph2Tree 
     from GraphMetamodel
     to GraphMetamodel
-    uses Graph2TreeIterator
     with m as GraphModel := [
       rule Node2Node
         from
           n class NodeEClass
         for
-          i of class ListNodeClass in (allPathsTo m 2 n)
-        uses
-          GraphMetamodel_Reflective_Elem
-        with
-          Graph2TreeIterator_Reflective
+          pth in (allPathsTo m 2 n)
         to [
           "n"%string :
-            n' class NodeEClass uses GraphMetamodel_Reflective_Elem :=
+            n' class NodeEClass :=
               BuildNode newId (getNodeName n)
             with [
-                ref NodeEdgesEReference uses GraphMetamodel_Reflective_Link :=
-                pth <- (Graph2TreeIterator_toEClass ListNodeClass i); 
+                ref NodeEdgesEReference :=
+                pth <- (i : list Node) ; 
                 children <- getNodeEdges n m;
                 iters <- Some (map (app pth) (singletons children));
                 children' <- resolveAllWithIter _ _ _ (parsePhase Graph2Tree) m "n"%string NodeEClass 
                                (map (fun n: Node => [[ n ]]) children) 
                                (map (fun it: list Node => Graph2TreeIterator_toEObjectOfEClass ListNodeClass it) iters);
                 return BuildNodeEdges n' children'
-
             ] 
         ]
     ].
