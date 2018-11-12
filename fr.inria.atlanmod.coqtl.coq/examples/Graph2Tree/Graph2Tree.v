@@ -11,8 +11,6 @@ Require Import core.utils.tTop.
 Require Import core.Notations.
 Require Import core.Model.
 Require Import core.CoqTL.
-Require Import core.Metamodel.
-Require Import core.Iterator.
 
 Require Import examples.Graph2Tree.GraphMetamodel.
 Require Import examples.Graph2Tree.GraphMetamodelPattern.
@@ -51,7 +49,7 @@ Definition allPaths (m : GraphModel) (l : nat) : list (list Node) :=
 
 
 Definition allPathsTo (m : GraphModel) (l : nat) (o: Node) : list (Graph2TreeIterator_Object) :=
-  map (Graph2TreeIterator_toEObjectOfEClass ListNodeClass)
+  map (Build_Graph2TreeIterator_Object ListNodeClass)
           (filter (fun p =>
             match (last' p) with
              | Some lastNode => beq_Node lastNode o
@@ -59,59 +57,30 @@ Definition allPathsTo (m : GraphModel) (l : nat) (o: Node) : list (Graph2TreeIte
             end
          ) (allPaths m l)).
 
-(* Definition Graph2Tree' :=
-  (fun (Graph2Tree: Phase GraphMetamodel_ELink GraphMetamodel_Reflective_Elem GraphMetamodel_Reflective_Elem GraphMetamodel_Reflective_Link Graph2TreeIterator_Reflective) (m:GraphModel) =>  
-  [ ( ""%string,
-    (BuildSingleElementRule GraphMetamodel_Reflective_Elem Graph2TreeIterator_Reflective
-      NodeEClass ListNodeClass 
-      (fun n => (true, (allPathsTo m 2 n)))
-      (fun n i => [
-        (BuildOutputPatternElement 
-            GraphMetamodel_Reflective_Elem 
-            NodeEClass 
-            "n"%string 
-            (BuildNode newId (getNodeName n))
-            (fun n' => [
-              BuildOutputPatternElementReference GraphMetamodel_Reflective_Link NodeEdgesEReference 
-              (pth <- i; 
-                children <- getNodeEdges n m;
-                iters <- Some (map (app pth) (singletons children));
-                children' <- resolveAllWithIter _ _ _ (parsePhase Graph2Tree) m "n"%string NodeEClass 
-                               (map (fun n: Node => [[ n ]]) children) 
-                               (map (fun it: list Node => Graph2TreeIterator_toEObjectOfEClass ListNodeClass it) iters);
-                return BuildNodeEdges n' children')
-            ]))
-      ])))
-  ]
-
-  ).
-
-Check Graph2Tree'.  *)
-
 Definition Graph2Tree' :=
-  transformation Graph2Tree 
-    from GraphMetamodel
-    to GraphMetamodel
+  transformation Graph2Tree from GraphMetamodel to GraphMetamodel uses Graph2TreeIterator_Object
     with m as GraphModel := [
       rule Node2Node
         from
           n class NodeEClass
         for
-          pth in (allPathsTo m 2 n)
+          i in (allPathsTo m 2 n)
         to [
-          "n"%string :
+          "n" :
             n' class NodeEClass :=
               BuildNode newId (getNodeName n)
             with [
-                ref NodeEdgesEReference :=
-                pth <- (i : list Node) ; 
+              ref NodeEdgesEReference :=
+                pth1 <- i;
+                pth <- Graph2TreeIterator_toEClass ListNodeClass pth1; 
                 children <- getNodeEdges n m;
                 iters <- Some (map (app pth) (singletons children));
-                children' <- resolveAllWithIter _ _ _ (parsePhase Graph2Tree) m "n"%string NodeEClass 
+                children' <- resolveAllWithIter Graph2TreeIterator (parsePhase Graph2Tree) m "n"%string NodeEClass 
                                (map (fun n: Node => [[ n ]]) children) 
-                               (map (fun it: list Node => Graph2TreeIterator_toEObjectOfEClass ListNodeClass it) iters);
+                               (map (fun it: list Node => Build_Graph2TreeIterator_Object ListNodeClass it) iters);
                 return BuildNodeEdges n' children'
-            ] 
+
+            ]
         ]
     ].
 

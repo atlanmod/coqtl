@@ -1,11 +1,10 @@
-(** * Iterator Class **)
-Require Export core.Reflective.
-Require Export core.Decidability.
+(** * Metamodel **)
+Require Import String.
 
-Class Iterator 
-  (IteratorElement: Type) (IteratorClass: Type) 
-`{Reflective_Elem: Reflective IteratorElement IteratorClass} 
-`{Decidability IteratorElement}
-`{Decidability IteratorClass} := {
-getIterReflective_Elem := Reflective_Elem;
-}.
+
+Class Iterator (IteratorElement: Type) :=
+  {
+    (* Decidability of equality *)
+    eqIteratorElement_dec: forall (c1:IteratorElement) (c2:IteratorElement), { c1 = c2 } + { c1 <> c2 };
+
+  }.

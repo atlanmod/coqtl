@@ -1,19 +1,16 @@
 Require Import core.CoqTL.
-Require Import core.Metamodel.
-Require Import core.Iterator.
-Require Import core.DefaultIterator.
 Require Import String.
 Require Import List.
 
 (** * Notations **)
 
 (* Module *)
-Notation "'transformation' tname 'from' smm 'to' tmm 'uses' itinstance 'with' m 'as' smodel ':=' transformationbody" :=
-  (fun (tname: Phase (@getModelLink _ _ _ _ _ _ _ _ _ smm) Decidability _ (@getReflective_Elem _ _ _ _ _ _ _ _ _ smm) (@getReflective_Elem _ _ _ _ _ _ _ _ _ tmm) (@getReflective_Link _ _ _ _ _ _ _ _ _ tmm)) (m:smodel) =>  transformationbody)
+Notation "'transformation' tname 'from' sinstance 'to' tinstance 'uses' itinstance 'with' m 'as' smodel ':=' transformationbody" :=
+  (fun (tname: Phase sinstance tinstance itinstance) (m:smodel) =>  transformationbody)
     (right associativity,
      tname at next level,
-     smm at next level,
-     tmm at next level,
+     sinstance at next level,
+     tinstance at next level,
      itinstance at next level,
      m at next level,
      smodel at next level,
@@ -35,16 +32,17 @@ Notation "sid 'class' stype 'from' sinstance ',' sbody" :=
     (right associativity, at level 60): coqtl.
 
 (* InputPatternElement no guard *)
-Notation "sid 'class' stype 'for' forid 'of' 'class' ftype 'in' forset 'uses' A 'with' B 'to' outputels" :=
-  (BuildSingleElementRule A B stype ftype (fun sid => (true, forset)) (fun sid forid => outputels))
+Notation "sid 'class' stype 'for' forid 'in' forset 'to' outputels" :=
+  (BuildSingleElementRule _ stype  (fun sid => (true, forset)) (fun sid forid => outputels))
     (right associativity, at level 60): coqtl.
 
 (* InputPatternElement *)
-Notation "sid 'class' stype 'when' guard 'for' forid 'of' 'class' ftype 'in' forset 'uses' A 'with' B  'to' outputels" :=
-  (BuildSingleElementRule A B stype ftype (fun sid => (guard, forset)) (fun sid forid => outputels))
+Notation "sid 'class' stype 'when' guard 'for' forid 'in' forset 'to' outputels" :=
+  (BuildSingleElementRule _ stype  (fun sid => (guard, forset)) (fun sid forid => outputels))
     (right associativity, at level 60): coqtl.
 
-(* (* TODO InputPatternElement no FOR, guard *)
+(*
+(* TODO InputPatternElement no FOR, guard *)
 Notation "sid 'class' stype 'to2' outputels" :=
   (BuildSingleElementRule _ _ stype NatClass (fun sid => (true, 0::nil)) (fun sid forid => outputels))
     (right associativity, at level 60): coqtl.
@@ -52,11 +50,11 @@ Notation "sid 'class' stype 'to2' outputels" :=
 (* TODO InputPatternElement no FOR *)
 Notation "sid 'class' stype 'when2' guard 'to2' outputels" :=
   (BuildSingleElementRule _ _ stype NatClass (fun sid => (guard, 0::nil)) (fun sid forid => outputels))
-    (right associativity, at level 60): coqtl.  *)
+    (right associativity, at level 60): coqtl. *)
 
 (* OutputPatternElement *)
-Notation "elid ':' elname 'class' eltype 'uses' tp_elem := eldef 'with' refdef" :=
-  (BuildOutputPatternElement tp_elem eltype elid eldef (fun elname => refdef))
+Notation "elid ':' elname 'class' eltype := eldef 'with' refdef" :=
+  (BuildOutputPatternElement eltype elid eldef (fun elname => refdef))
     (right associativity, at level 60,
      elname at next level,
      eltype at next level,
@@ -64,15 +62,15 @@ Notation "elid ':' elname 'class' eltype 'uses' tp_elem := eldef 'with' refdef" 
      refdef at next level): coqtl.
 
 (* OutputPatternElement *)
-Notation "elid ':' elname 'class' eltype 'uses' tp_elem := eldef" :=
-  (BuildOutputPatternElement tp_elem eltype elid eldef (fun elname => nil))
+Notation "elid ':' elname 'class' eltype := eldef" :=
+  (BuildOutputPatternElement eltype elid eldef (fun elname => nil))
     (right associativity, at level 60,
      elname at next level,
      eltype at next level,
      eldef at next level): coqtl.
 
 (* OutputPatternElementReferenceDefinition *)
-Notation "'ref' reftype 'uses' tp_link ':=' refends" :=
-  (BuildOutputPatternElementReference tp_link reftype refends)
+Notation "'ref' reftype ':=' refends" :=
+  (BuildOutputPatternElementReference _ reftype refends)
     (right associativity, at level 60,
      reftype at next level): coqtl.

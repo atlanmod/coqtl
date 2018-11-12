@@ -1,17 +1,33 @@
-(** * Metamodel Class **)
-Require Export core.Reflective.
-Require Export core.Decidability.
-Require Export core.Object.
+(** * Metamodel **)
+Require Import core.Model.
+Require Import String.
 
-Class Metamodel 
-  (ModelElement: Type) (ModelLink: Type) 
-  (ModelClass: Type) (ModelReference: Type) 
-`{Reflective_Elem: Reflective ModelElement ModelClass} `{Reflective_Link : Reflective ModelLink ModelReference}
-`{Decidability ModelClass} `{Decidability ModelReference}
-`{Object ModelElement} := {
 
-getReflective_Elem := Reflective_Elem;
-getReflective_Link := Reflective_Link;
-getModelLink := ModelLink;
-}.
+Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=
+  {
+    (* Denotation *)
+    denoteModelClass: ModelClass -> Set;
+    denoteModelReference: ModelReference -> Set;
 
+    (* Downcasting *)
+    toModelClass: forall (t:ModelClass), ModelElement -> option (denoteModelClass t);
+    toModelReference: forall (t:ModelReference), ModelLink -> option (denoteModelReference t);
+
+    (* Default object of that class *)
+    bottomModelClass: forall (c:ModelClass), (denoteModelClass c);
+
+    (* Upcasting *)
+    toModelElement: forall (t: ModelClass), (denoteModelClass t) -> ModelElement;
+    toModelLink: forall (t: ModelReference), (denoteModelReference t) -> ModelLink;
+    
+    (* Decidability of equality *)
+    eqModelClass_dec: forall (c1:ModelClass) (c2:ModelClass), { c1 = c2 } + { c1 <> c2 };
+    eqModelReference_dec: forall (c1:ModelReference) (c2:ModelReference), { c1 = c2 } + { c1 <> c2 };
+
+    (* Constructors *)
+    BuildModelElement: forall (r: ModelClass), (denoteModelClass r) -> ModelElement;
+    BuildModelLink:  forall (r: ModelReference), (denoteModelReference r) -> ModelLink;
+
+    getId: ModelElement -> string;
+    setId: ModelElement -> string -> ModelElement;
+  }.
