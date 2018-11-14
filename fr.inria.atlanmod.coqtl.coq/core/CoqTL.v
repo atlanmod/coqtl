@@ -9,7 +9,7 @@ Require Import DecimalString.
 Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Engine.
-Require Import core.Iterator.
+Require Import core.EqDec.
 Require Import core.utils.tTop.
 Require Import core.utils.tArith.
 Require Import core.utils.CpdtTactics.
@@ -23,8 +23,8 @@ Section CoqTL.
             (smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference)
             (TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type)
             (tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference)
-            (IteratorElement : Type)
-            (iterator: Iterator IteratorElement).
+            (DataType : Type)
+            (datatype: EqDec DataType).
   Definition SourceModel := Model SourceModelElement SourceModelLink.
   Definition TargetModel := Model TargetModelElement TargetModelLink.
 
@@ -139,8 +139,8 @@ Section CoqTL.
         -> Rule
   | BuildSingleElementRule :
       forall (InElType: SourceModelClass),
-        ((denoteModelClass InElType) -> (bool * list IteratorElement))
-        -> ((denoteModelClass InElType) -> option (IteratorElement) -> list OutputPatternElement)
+        ((denoteModelClass InElType) -> (bool * list DataType))
+        -> ((denoteModelClass InElType) -> option (DataType) -> list OutputPatternElement)
         -> Rule.
 
   Definition Phase : Type := SourceModel -> list (string * Rule).
@@ -374,7 +374,7 @@ Section CoqTL.
       evalGuardExpressionFix (snd r) (RuleA_getInTypes ra) sp.
 
   Definition evalForExpressionOfRule (r : Rule) (sp: list SourceModelElement) :
-    option (list IteratorElement).
+    option (list DataType).
   Proof.
     destruct (Rule_getSingleElementRule r sp) eqn:rc.
     2: { exact None. }
@@ -386,7 +386,7 @@ Section CoqTL.
   Defined.
 
   Definition evalForExpressionOfTransformation (fe : ForExpressionA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) 
-    : option (list IteratorElement) :=
+    : option (list DataType) :=
      r <- (nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (ForExpressionA_getRuleNum fe));
      (evalForExpressionOfRule (snd r) sp).
 
@@ -406,7 +406,7 @@ Section CoqTL.
     evalOutputPatternElementExpression' o tr (snd r) sm sp.
 
   Definition evalOutputPatternElementExpressionWithIter (o : OutputPatternElementExpressionA)  (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) 
-         (fet: IteratorElement) : option TargetModelElement :=
+         (fet: DataType) : option TargetModelElement :=
     r <- nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (OutputPatternElementExpressionA_getRule o);
     r_single <- (Rule_getSingleElementRule (snd r) sp);
     match (fst r_single) with
@@ -437,7 +437,7 @@ Section CoqTL.
 
 
   Definition evalOutputBindingExpressionWithIter (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (o : OutputBindingExpressionA) (te: TargetModelElement)  
-    (fet: IteratorElement) : option TargetModelLink :=
+    (fet: DataType) : option TargetModelLink :=
     r <- nth_error ((TransformationA_getTransformation tr) ((TransformationA_getTransformation tr) (fun c:SourceModel => nil)) sm) (OutputBindingExpressionA_getRule o);
     r_single <- (Rule_getSingleElementRule (snd r) sp);
     match (fst r_single) with
@@ -487,7 +487,7 @@ Section CoqTL.
 
 
   Definition instantiateRuleOnPattern' (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (ope: OutputPatternElementA) 
-    (fe: IteratorElement) (fe_index: nat): option (TargetModelElement) :=
+    (fe: DataType) (fe_index: nat): option (TargetModelElement) :=
    let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
    tme <- (evalOutputPatternElementExpressionWithIter opee tr sm sp fe);
    return (setTargetElementId tme ope sp (Some fe_index)). 
@@ -505,7 +505,7 @@ Section CoqTL.
         None.
 
   Definition applyOutputPatternReferencesOnPatternIter (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (oref: OutputPatternElementReferenceA)
-   (te: TargetModelElement) (fe: IteratorElement)   
+   (te: TargetModelElement) (fe: DataType)   
      : (option TargetModelLink) :=
     bind <- Some (OutputPatternElementReferenceA_getOutputBindingExpression oref);
     (evalOutputBindingExpressionWithIter tr sm sp bind te fe).
@@ -564,13 +564,13 @@ Section CoqTL.
     Some (optionList2List (map (resolve tr sm name type) sps)).
 
   Definition resolveWithIter (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sp: list SourceModelElement) 
-    (iter : IteratorElement) : option (denoteModelClass type) := 
+    (iter : DataType) : option (denoteModelClass type) := 
     ope <- (find_OutputPatternElementA tr sm sp name);
     r_num <- Some (OutputPatternElementExpressionA_getRule (OutputPatternElementA_getOutputPatternElementExpression ope));
     ra <- (nth_error (TransformationA_getRules tr) r_num);
     forSection <- Some (RuleA_getForExpression ra);
     iters <- (evalForExpressionOfTransformation forSection tr sm sp);
-    match index eqIteratorElement_dec iter iters with
+    match index eqDec iter iters with
     | None => None
     | Some id => let  opee := (OutputPatternElementA_getOutputPatternElementExpression ope) in 
          te<- (evalOutputPatternElementExpressionWithIter (OutputPatternElementA_getOutputPatternElementExpression ope) tr sm sp iter);
@@ -578,7 +578,7 @@ Section CoqTL.
     end.
 
   Definition resolveAllWithIter (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) 
-    (iters : list IteratorElement) : option (list ((denoteModelClass type))) :=
+    (iters : list DataType) : option (list ((denoteModelClass type))) :=
         match (length (optionList2List (zipWith (resolveWithIter tr sm name type) sps iters))) with
         | 0 => None
         | S n => Some (optionList2List (zipWith (resolveWithIter tr sm name type) sps iters))

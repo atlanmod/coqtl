@@ -24,14 +24,14 @@ core/Model.vo core/Model.glob core/Model.v.beautified: core/Model.v
 core/Model.vio: core/Model.v
 core/Engine.vo core/Engine.glob core/Engine.v.beautified: core/Engine.v core/utils/tTop.vo core/Model.vo
 core/Engine.vio: core/Engine.v core/utils/tTop.vio core/Model.vio
-core/CoqTL.vo core/CoqTL.glob core/CoqTL.v.beautified: core/CoqTL.v core/Metamodel.vo core/Model.vo core/Engine.vo core/Iterator.vo core/utils/tTop.vo core/utils/tArith.vo core/utils/CpdtTactics.vo
-core/CoqTL.vio: core/CoqTL.v core/Metamodel.vio core/Model.vio core/Engine.vio core/Iterator.vio core/utils/tTop.vio core/utils/tArith.vio core/utils/CpdtTactics.vio
+core/CoqTL.vo core/CoqTL.glob core/CoqTL.v.beautified: core/CoqTL.v core/Metamodel.vo core/Model.vo core/Engine.vo core/EqDec.vo core/utils/tTop.vo core/utils/tArith.vo core/utils/CpdtTactics.vo
+core/CoqTL.vio: core/CoqTL.v core/Metamodel.vio core/Model.vio core/Engine.vio core/EqDec.vio core/utils/tTop.vio core/utils/tArith.vio core/utils/CpdtTactics.vio
 core/Notations.vo core/Notations.glob core/Notations.v.beautified: core/Notations.v core/CoqTL.vo
 core/Notations.vio: core/Notations.v core/CoqTL.vio
 core/Object.vo core/Object.glob core/Object.v.beautified: core/Object.v
 core/Object.vio: core/Object.v
-core/Iterator.vo core/Iterator.glob core/Iterator.v.beautified: core/Iterator.v
-core/Iterator.vio: core/Iterator.v
+core/EqDec.vo core/EqDec.glob core/EqDec.v.beautified: core/EqDec.v
+core/EqDec.vio: core/EqDec.v
 examples/Graph2Tree/GraphMetamodel.vo examples/Graph2Tree/GraphMetamodel.glob examples/Graph2Tree/GraphMetamodel.v.beautified: examples/Graph2Tree/GraphMetamodel.v core/utils/tTop.vo core/Metamodel.vo core/Model.vo core/Object.vo
 examples/Graph2Tree/GraphMetamodel.vio: examples/Graph2Tree/GraphMetamodel.v core/utils/tTop.vio core/Metamodel.vio core/Model.vio core/Object.vio
 examples/Graph2Tree/GraphMetamodelPattern.vo examples/Graph2Tree/GraphMetamodelPattern.glob examples/Graph2Tree/GraphMetamodelPattern.v.beautified: examples/Graph2Tree/GraphMetamodelPattern.v examples/Graph2Tree/GraphMetamodel.vo
@@ -40,7 +40,7 @@ examples/Graph2Tree/GraphModel.vo examples/Graph2Tree/GraphModel.glob examples/G
 examples/Graph2Tree/GraphModel.vio: examples/Graph2Tree/GraphModel.v core/Model.vio examples/Graph2Tree/GraphMetamodel.vio
 examples/Graph2Tree/GraphModel2.vo examples/Graph2Tree/GraphModel2.glob examples/Graph2Tree/GraphModel2.v.beautified: examples/Graph2Tree/GraphModel2.v core/Model.vo examples/Graph2Tree/GraphMetamodel.vo
 examples/Graph2Tree/GraphModel2.vio: examples/Graph2Tree/GraphModel2.v core/Model.vio examples/Graph2Tree/GraphMetamodel.vio
-examples/Graph2Tree/Graph2TreeIterator.vo examples/Graph2Tree/Graph2TreeIterator.glob examples/Graph2Tree/Graph2TreeIterator.v.beautified: examples/Graph2Tree/Graph2TreeIterator.v core/utils/tTop.vo core/Metamodel.vo core/Model.vo core/Iterator.vo core/utils/CpdtTactics.vo examples/Graph2Tree/GraphMetamodel.vo
-examples/Graph2Tree/Graph2TreeIterator.vio: examples/Graph2Tree/Graph2TreeIterator.v core/utils/tTop.vio core/Metamodel.vio core/Model.vio core/Iterator.vio core/utils/CpdtTactics.vio examples/Graph2Tree/GraphMetamodel.vio
-examples/Graph2Tree/Graph2Tree.vo examples/Graph2Tree/Graph2Tree.glob examples/Graph2Tree/Graph2Tree.v.beautified: examples/Graph2Tree/Graph2Tree.v core/utils/tTop.vo core/Notations.vo core/Model.vo core/CoqTL.vo examples/Graph2Tree/GraphMetamodel.vo examples/Graph2Tree/GraphMetamodelPattern.vo examples/Graph2Tree/GraphModel.vo examples/Graph2Tree/GraphModel2.vo examples/Graph2Tree/Graph2TreeIterator.vo
-examples/Graph2Tree/Graph2Tree.vio: examples/Graph2Tree/Graph2Tree.v core/utils/tTop.vio core/Notations.vio core/Model.vio core/CoqTL.vio examples/Graph2Tree/GraphMetamodel.vio examples/Graph2Tree/GraphMetamodelPattern.vio examples/Graph2Tree/GraphModel.vio examples/Graph2Tree/GraphModel2.vio examples/Graph2Tree/Graph2TreeIterator.vio
+examples/Graph2Tree/ListNodeDataType.vo examples/Graph2Tree/ListNodeDataType.glob examples/Graph2Tree/ListNodeDataType.v.beautified: examples/Graph2Tree/ListNodeDataType.v core/utils/tTop.vo core/Metamodel.vo core/Model.vo core/EqDec.vo core/utils/CpdtTactics.vo examples/Graph2Tree/GraphMetamodel.vo
+examples/Graph2Tree/ListNodeDataType.vio: examples/Graph2Tree/ListNodeDataType.v core/utils/tTop.vio core/Metamodel.vio core/Model.vio core/EqDec.vio core/utils/CpdtTactics.vio examples/Graph2Tree/GraphMetamodel.vio
+examples/Graph2Tree/Graph2Tree.vo examples/Graph2Tree/Graph2Tree.glob examples/Graph2Tree/Graph2Tree.v.beautified: examples/Graph2Tree/Graph2Tree.v core/utils/tTop.vo core/Notations.vo core/Model.vo core/CoqTL.vo examples/Graph2Tree/GraphMetamodel.vo examples/Graph2Tree/GraphMetamodelPattern.vo examples/Graph2Tree/GraphModel.vo examples/Graph2Tree/GraphModel2.vo examples/Graph2Tree/ListNodeDataType.vo
+examples/Graph2Tree/Graph2Tree.vio: examples/Graph2Tree/Graph2Tree.v core/utils/tTop.vio core/Notations.vio core/Model.vio core/CoqTL.vio examples/Graph2Tree/GraphMetamodel.vio examples/Graph2Tree/GraphMetamodelPattern.vio examples/Graph2Tree/GraphModel.vio examples/Graph2Tree/GraphModel2.vio examples/Graph2Tree/ListNodeDataType.vio

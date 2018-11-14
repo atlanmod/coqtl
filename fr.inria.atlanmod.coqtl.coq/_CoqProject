@@ -17,7 +17,7 @@ core/Engine.v
 core/CoqTL.v
 core/Notations.v
 core/Object.v
-core/Iterator.v
+core/EqDec.v
 
 
 
@@ -26,5 +26,5 @@ examples/Graph2Tree/GraphMetamodel.v
 examples/Graph2Tree/GraphMetamodelPattern.v
 examples/Graph2Tree/GraphModel.v
 examples/Graph2Tree/GraphModel2.v
-examples/Graph2Tree/Graph2TreeIterator.v
+examples/Graph2Tree/ListNodeDataType.v
 examples/Graph2Tree/Graph2Tree.v
