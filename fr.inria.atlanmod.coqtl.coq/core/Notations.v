@@ -5,13 +5,12 @@ Require Import List.
 (** * Notations **)
 
 (* Module *)
-Notation "'transformation' tname 'from' sinstance 'to' tinstance 'uses' itinstance 'with' m 'as' smodel ':=' transformationbody" :=
-  (fun (tname: Phase sinstance tinstance itinstance) (m:smodel) =>  transformationbody)
+Notation "'transformation' tname 'from' sinstance 'to' tinstance 'with' m 'as' smodel ':=' transformationbody" :=
+  (fun (tname: Phase sinstance tinstance _) (m:smodel) =>  transformationbody)
     (right associativity,
      tname at next level,
      sinstance at next level,
      tinstance at next level,
-     itinstance at next level,
      m at next level,
      smodel at next level,
      at level 60): coqtl.
@@ -40,17 +39,6 @@ Notation "sid 'class' stype 'for' forid 'in' forset 'to' outputels" :=
 Notation "sid 'class' stype 'when' guard 'for' forid 'in' forset 'to' outputels" :=
   (BuildSingleElementRule _ stype  (fun sid => (guard, forset)) (fun sid forid => outputels))
     (right associativity, at level 60): coqtl.
-
-(*
-(* TODO InputPatternElement no FOR, guard *)
-Notation "sid 'class' stype 'to2' outputels" :=
-  (BuildSingleElementRule _ _ stype NatClass (fun sid => (true, 0::nil)) (fun sid forid => outputels))
-    (right associativity, at level 60): coqtl.
-
-(* TODO InputPatternElement no FOR *)
-Notation "sid 'class' stype 'when2' guard 'to2' outputels" :=
-  (BuildSingleElementRule _ _ stype NatClass (fun sid => (guard, 0::nil)) (fun sid forid => outputels))
-    (right associativity, at level 60): coqtl. *)
 
 (* OutputPatternElement *)
 Notation "elid ':' elname 'class' eltype := eldef 'with' refdef" :=
