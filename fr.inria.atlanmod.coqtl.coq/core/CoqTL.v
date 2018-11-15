@@ -715,8 +715,9 @@ Section CoqTL.
      (toModelClass type (setTargetElementId te ope sp (Some iter))). 
 
 
-  Definition resolveAllIter (tr: TransformationA) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) 
+  Definition resolveAllIter (tr': Phase) (sm:SourceModel) (name: string) (type: TargetModelClass) (sps: list (list SourceModelElement)) 
     (iters : list nat) : option (list ((denoteModelClass type))) :=
+      let tr := (parsePhase tr') in
         match (length (optionList2List (zipWith (resolveIter tr sm name type) sps iters))) with
         | 0 => None
         | S n => Some (optionList2List (zipWith (resolveIter tr sm name type) sps iters))
