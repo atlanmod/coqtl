@@ -32,3 +32,8 @@ examples/Class2RelationalMV/RelationalMetamodel.v
 examples/Class2RelationalMV/RelationalMetamodelPattern.v
 examples/Class2RelationalMV/Class2Relational.v
 examples/Class2RelationalMV/PersonModel.v
+
+-R "examples/HSM2FSM" examples.HSM2FSM
+examples/HSM2FSM/HSM.v
+examples/HSM2FSM/HSM2FSM.v
+examples/HSM2FSM/HSMModel.v

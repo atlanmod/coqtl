@@ -52,3 +52,9 @@ examples/Class2RelationalMV/Class2Relational.vo examples/Class2RelationalMV/Clas
 examples/Class2RelationalMV/Class2Relational.vio: examples/Class2RelationalMV/Class2Relational.v core/utils/tTop.vio core/Notations.vio core/CoqTL.vio examples/Class2RelationalMV/ClassMetamodel.vio examples/Class2RelationalMV/RelationalMetamodel.vio examples/Class2RelationalMV/ClassMetamodelPattern.vio
 examples/Class2RelationalMV/PersonModel.vo examples/Class2RelationalMV/PersonModel.glob examples/Class2RelationalMV/PersonModel.v.beautified: examples/Class2RelationalMV/PersonModel.v core/Model.vo examples/Class2RelationalMV/ClassMetamodel.vo
 examples/Class2RelationalMV/PersonModel.vio: examples/Class2RelationalMV/PersonModel.v core/Model.vio examples/Class2RelationalMV/ClassMetamodel.vio
+examples/HSM2FSM/HSM.vo examples/HSM2FSM/HSM.glob examples/HSM2FSM/HSM.v.beautified: examples/HSM2FSM/HSM.v core/utils/tTop.vo core/Metamodel.vo core/Model.vo
+examples/HSM2FSM/HSM.vio: examples/HSM2FSM/HSM.v core/utils/tTop.vio core/Metamodel.vio core/Model.vio
+examples/HSM2FSM/HSM2FSM.vo examples/HSM2FSM/HSM2FSM.glob examples/HSM2FSM/HSM2FSM.v.beautified: examples/HSM2FSM/HSM2FSM.v core/utils/tTop.vo core/Notations.vo core/CoqTL.vo examples/HSM2FSM/HSM.vo
+examples/HSM2FSM/HSM2FSM.vio: examples/HSM2FSM/HSM2FSM.v core/utils/tTop.vio core/Notations.vio core/CoqTL.vio examples/HSM2FSM/HSM.vio
+examples/HSM2FSM/HSMModel.vo examples/HSM2FSM/HSMModel.glob examples/HSM2FSM/HSMModel.v.beautified: examples/HSM2FSM/HSMModel.v core/Model.vo examples/HSM2FSM/HSM.vo
+examples/HSM2FSM/HSMModel.vio: examples/HSM2FSM/HSMModel.v core/Model.vio examples/HSM2FSM/HSM.vio
