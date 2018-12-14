@@ -26,7 +26,7 @@ Notation "'rule' rulename 'from' rbody" :=
     (right associativity, at level 60): coqtl.
 
 (* InputPatternElement *)
-Notation "sid 'class' stype 'from' sinstance ',' sbody" :=
+Notation "sid 'class' stype ',' sbody" :=
   (BuildMultiElementRule stype (fun sid => sbody))
     (right associativity, at level 60): coqtl.
 
