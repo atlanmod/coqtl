@@ -84,5 +84,7 @@ Definition Graph2Tree' :=
 
 Close Scope coqtl.
 
+Unset Notation.
+Print Graph2Tree'.
 
 Definition Graph2Tree := parseTransformation (Graph2Tree'). 
