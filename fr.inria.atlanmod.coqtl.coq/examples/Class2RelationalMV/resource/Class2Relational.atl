@@ -1,0 +1,35 @@
+module Class2Relational;
+
+create OUT : Relational from IN : Class;
+
+rule Class2Table { 
+    from c : Class!Class
+    to tab : Relational!Table (
+		name <- c.name
+		cols <- c.attrs + key)
+	   ,
+	   key : Relational!Column(
+		name <- c.name + 'id'
+	   )
+}
+
+rule SinglevaluedAttribute2Column {
+    from a : Class!Attribute (not a.multiValued)
+    to c : Relational!Column ( 
+		name <- a.name )
+}
+
+rule MultivaluedAttribute2Column {
+    from a : Class!Attribute (a.multiValued)
+    to c : Relational!Column ( 
+		name <- a.name 
+		table <- pivot),
+	   pivot: Relational!Table (
+		name <- a.name + 'pivot'
+	    cols <- { psrc, ptrg } ),
+	   psrc: Relational!Column ( 
+		name <- "key"),
+	   ptrg: Relational!Column ( 
+		name <- a.name 
+		table <- a.type)
+}

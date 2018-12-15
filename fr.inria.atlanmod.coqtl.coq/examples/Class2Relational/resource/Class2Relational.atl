@@ -1,0 +1,16 @@
+module Class2Relational;
+
+create OUT : Relational from IN : Class;
+
+rule Class2Table { 
+    from c : Class!Class
+    to tab : Relational!Table (
+		name <- c.name
+		cols <- c.attrs )
+}
+
+rule Attribute2Column {
+    from a : Class!Attribute
+    to c : Relational!Column ( 
+		name <- a.name )
+}
