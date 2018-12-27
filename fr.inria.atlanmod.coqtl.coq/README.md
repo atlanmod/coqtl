@@ -13,6 +13,7 @@ Usage
 
 * Sample usage e.g.:
 > Run model transformation: examples/Class2Relational/PersonTest.v
+
 > Proofs: examples/Class2Relational/theorems/thm_c2r_complete.v
 
 Contacts
