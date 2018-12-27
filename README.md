@@ -18,4 +18,4 @@ Contacts
 ------
 > Massimo Tisi: massimo.tisi@imt-atlantique.fr
 
-> Zheng Cheng: zheng.cheng@inria.fr
+> Zheng Cheng: zheng.cheng@imt-atlantique.fr
