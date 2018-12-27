@@ -8,7 +8,9 @@ Usage
 ------
 * To compile CoqTL libraries and sample transformations:
 > coq_makefile -f _CoqProject -o Makefile
+
 > make
+
 * Sample usage e.g.:
 > Run model transformation: examples/Class2Relational/PersonTest.v
 > Proofs: examples/Class2Relational/theorems/thm_c2r_complete.v
