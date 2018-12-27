@@ -6,14 +6,15 @@ We propose an alternative solution by designing and implementing an internal dom
 
 Usage
 ------
-* Compile all **.v** files. Please run/refer **compile.bat** for compilation order of these files.
-* To check sample model transformation specification, check **Class2Relational.v**.
-* To run sample model transformation, check **PersonTest.v**.
-* To check proofs done by CoqTL, check **.v** files with the prefix **thm_**.
-* To understand the architecture of CoqTL, we recommend to start with **CoqTL.v**.
+* To compile CoqTL libraries and sample transformations:
+> coq_makefile -f _CoqProject -o Makefile
+> make
+* Sample usage e.g.:
+> Run model transformation: examples/Class2Relational/PersonTest.v
+> Proofs: examples/Class2Relational/theorems/thm_c2r_complete.v
 
 Contacts
 ------
 > Massimo Tisi: massimo.tisi@imt-atlantique.fr
 
-> Zheng Cheng: zheng.cheng@inria.fr
+> Zheng Cheng: zheng.cheng@imt-atlantique.fr
