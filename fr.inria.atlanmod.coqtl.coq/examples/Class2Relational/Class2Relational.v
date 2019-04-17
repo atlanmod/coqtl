@@ -4,59 +4,47 @@ Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
 
-Require Import core.utils.tTop.
-Require Import core.Notations.
+Require Import core.utils.TopUtils.
 Require Import core.CoqTL.
 
-Require Import examples.Class2Relational.ClassMetamodel.
-Require Import examples.Class2Relational.RelationalMetamodel.
+Require Import Class2Relational.ClassMetamodel.
+Require Import Class2Relational.RelationalMetamodel.
 
-Definition Class2RelationalConcrete :=
-  transformation Class2Relational from ClassMetamodel to RelationalMetamodel
-    with m as ClassModel := [
-
-       rule Class2Table
-         from
-           element c class ClassEClass from ClassMetamodel
-             when true
-         to
-          [
-           output "tab"
-             element t class TableClass from RelationalMetamodel :=
-               BuildTable (getClassId c) (getClassName c)
-             links
-               [
-                 reference TableColumnsReference from RelationalMetamodel :=
-                   attrs <- getClassAttributes c m;
-                   cols <- resolveAll Class2Relational m "col" ColumnClass
-                      (map (fun a:Attribute => [a: ClassMetamodel_EObject]) attrs);
-                   return BuildTableColumns t cols
-               ]
-          ];
-
-      rule Attribute2Column
-        from
-          element a class AttributeEClass from ClassMetamodel 
-            when (negb (getAttributeDerived a))
-        to
-         [
-          output "col"
-            element c class ColumnClass from RelationalMetamodel := 
-               BuildColumn (getAttributeId a) (getAttributeName a)
-            links
-              [
-                reference ColumnReferenceReference from RelationalMetamodel :=
-                  cl <- getAttributeType a m;
-                  tb <- resolve Class2Relational m "tab" TableClass [cl: ClassMetamodel_EObject];
-                  return BuildColumnReference c tb
-              ] 
-         ]
-
-  ].
+Definition Class2Relational :=
+  (BuildTransformation ClassMetamodel RelationalMetamodel
+  [
+     (BuildRule [ClassEClass]
+        (fun (m: ClassModel) (c: Class) => true)
+        [
+        (BuildOutputPatternElement "tab" TableClass
+            (fun (m: ClassModel) (c: Class) => BuildTable (getClassId c) (getClassName c))
+            [
+                (BuildOutputPatternElementReference TableColumnReference
+                    (fun (m: ClassModel) (c: Class) (t: Table) (Class2Relational: Transformation) =>
+                        reference TableColumnsReference from RelationalMetamodel :=
+                        attrs <- getClassAttributes c m;
+                        cols <- resolveAll Class2Relational m "col" ColumnClass
+                            (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
+                        return BuildTableColumns t cols))
+            ])                               
+        ]);
+     (BuildRule [AttributeEClass]
+        (fun (m: ClassModel) (a: Attribute) => true)
+        [
+        (BuildOutputPatternElement "col" ColumnClass
+            (fun (m: ClassModel) (a: Attribute) => BuildColumn (getAttributeId a) (getAttributeName a))
+            [
+                (BuildOutputPatternElementReference ColumnReferenceReference
+                    (fun (m: ClassModel) (a: Attribute) (c: Column) (Class2Relational: Transformation) =>
+                        reference ColumnReferenceReference from RelationalMetamodel :=
+                            cl <- getAttributeType a m;
+                            tb <- resolve Class2Relational m "tab" TableClass [ClassMetamodel_toEObject cl];
+                            return BuildColumnReference c tb))
+            ])
+        ])
+  ]).
 
 Unset Printing Notations.
-(* Print Class2RelationalConcrete.  *)
-(* Compute maxArity (parseTransformation Class2Relational). *)
 
-Definition Class2Relational := parseTransformation Class2RelationalConcrete.
-
+(* Print Class2Relational. *)
+(* Check Class2Relational. *)

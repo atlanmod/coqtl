@@ -1,12 +1,12 @@
 -R "core/utils" "core.utils"
-core/utils/tArith.v
-core/utils/tList.v
-core/utils/tConcat.v
-core/utils/tTuple.v
-core/utils/tString.v
-core/utils/tPrint.v
-core/utils/tNotation.v
-core/utils/tTop.v
+core/utils/ArithUtils.v
+core/utils/ListUtils.v
+core/utils/ConcatUtils.v
+core/utils/TupleUtils.v
+core/utils/StringUtils.v
+core/utils/PrintUtils.v
+core/utils/NotationUtils.v
+core/utils/TopUtils.v
 core/utils/CpdtTactics.v
 
 -R core core
@@ -21,19 +21,4 @@ examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
 examples/Class2Relational/Class2Relational.v
 examples/Class2Relational/PersonModel.v
-
--R "examples/Class2RelationalMV" examples.Class2RelationalMV
-examples/Class2RelationalMV/ClassMetamodel.v
-examples/Class2RelationalMV/RelationalMetamodel.v
-examples/Class2RelationalMV/Class2Relational.v
-examples/Class2RelationalMV/PersonModel.v
-
--R "examples/HSM2FSM" examples.HSM2FSM
-examples/HSM2FSM/HSM.v
-examples/HSM2FSM/FSM.v
-examples/HSM2FSM/HSM2FSM.v
-examples/HSM2FSM/HSMModel.v
-
--R "examples/HSM2HSM_rec" examples.HSM2FSM_rec
-examples/HSM2HSM_rec/HSM.v
 

@@ -8,7 +8,7 @@ Require Import Omega.
 Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Engine.
-Require Import core.utils.tTop.
+Require Import core.utils.TopUtils.
 Require Import core.utils.CpdtTactics.
 
 
