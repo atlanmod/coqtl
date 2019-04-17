@@ -1,5 +1,5 @@
-Require Import Bool.
 Require Import String.
+Require Import Bool.
 Require Import List.      (* sequence *)
 Require Import Multiset.  (* bag *)
 Require Import ListSet.   (* set *)

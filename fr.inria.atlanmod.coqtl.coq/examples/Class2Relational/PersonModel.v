@@ -1,4 +1,5 @@
 Require Import List.
+Require Import String.
 
 Require Import core.Model.
 
@@ -16,5 +17,3 @@ Definition PersonModel : Model ClassMetamodel_EObject ClassMetamodel_ELink :=
       (ClassMetamodel_BuildELink AttributeTypeEReference (BuildAttributeType (BuildAttribute 2 true "mere") (BuildClass 0 "Person"))) :: 
       nil)
   ).
-
-
