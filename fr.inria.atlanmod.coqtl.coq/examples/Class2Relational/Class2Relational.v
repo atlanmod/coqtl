@@ -28,7 +28,8 @@ Definition Class2Relational :=
              [(BuildOutputPatternElementReference
                  ClassMetamodel RelationalMetamodel
                  [ClassEClass] TableClass TableColumnsReference
-                 (fun (m: ClassModel) (c:Class) (t: Table) =>
+                 (fun (t: MatchedTransformation ClassMetamodel RelationalMetamodel)
+                    (m: ClassModel) (c:Class) (t: Table) =>
                     attrs <- getClassAttributes c m;
                       cols <- Some nil;
                       return BuildTableColumns t cols))])]);
@@ -44,7 +45,8 @@ Definition Class2Relational :=
                [(BuildOutputPatternElementReference
                    ClassMetamodel RelationalMetamodel
                    [AttributeEClass] ColumnClass ColumnReferenceReference
-                   (fun (m: ClassModel) (a: Attribute) (c: Column) =>
+                   (fun (t: MatchedTransformation ClassMetamodel RelationalMetamodel)
+                      (m: ClassModel) (a: Attribute) (c: Column) =>
                       None))])])]).
 
 (* Definition Class2Relational :=
