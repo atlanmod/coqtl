@@ -20,6 +20,8 @@ Section CoqTL.
   Definition SourceModel := Model SourceModelElement SourceModelLink.
   Definition TargetModel := Model TargetModelElement TargetModelLink.
 
+  (** ** Abstract Syntax **)
+
   Fixpoint outputReferenceTypes
             (sclasses : list SourceModelClass) (tclass: TargetModelClass)  (tref: TargetModelReference):=
     match sclasses with
@@ -77,13 +79,28 @@ Section CoqTL.
   
   Inductive Rule : Type := 
     BuildRule :
-       forall (InElTypes: list SourceModelClass), (SourceModel -> (guardTypes InElTypes)) ->
-      list OutputPatternElement -> Rule.
+       forall (InElTypes: list SourceModelClass), string -> (SourceModel -> (guardTypes InElTypes))
+       -> list OutputPatternElement -> Rule.
   
   Inductive Transformation : Type := 
     BuildTransformation :
       list Rule ->
       Transformation.
+
+  (** ** Getters **)
+
+  Definition Rule_getName (x : Rule) : string :=
+    match x with BuildRule _ y _ _ => y end.
+
+  Definition Rule_getInTypes (x : Rule) : list SourceModelClass :=
+    match x with BuildRule y _ _ _ => y end.
+
+  Definition Rule_getOutputPattern (x : Rule) : list OutputPatternElement :=
+    match x with BuildRule _ _ _ y => y end.
+  
+  Definition Transformation_getRules (x : Transformation) : list Rule :=
+    match x with BuildTransformation y => y end.
+
 
 End CoqTL.
 

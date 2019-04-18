@@ -19,6 +19,7 @@ Definition Class2Relational :=
      [(BuildRule
          ClassMetamodel RelationalMetamodel
          [ClassEClass]
+         "Class2Table"
          (fun (m: ClassModel) (c:Class) => true)
          [(BuildOutputPatternElement
              ClassMetamodel RelationalMetamodel
@@ -31,11 +32,12 @@ Definition Class2Relational :=
                  (fun (t: MatchedTransformation ClassMetamodel RelationalMetamodel)
                     (m: ClassModel) (c:Class) (t: Table) =>
                     attrs <- getClassAttributes c m;
-                      cols <- Some nil;
-                      return BuildTableColumns t cols))])]);
+                    cols <- Some nil;
+                    return BuildTableColumns t cols))])]);
         (BuildRule
            ClassMetamodel RelationalMetamodel
            [AttributeEClass]
+           "Attribute2Column"
            (fun (m: ClassModel) (a: Attribute) => true)
            [(BuildOutputPatternElement
                ClassMetamodel RelationalMetamodel
