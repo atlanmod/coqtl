@@ -95,12 +95,63 @@ Section CoqTL.
   Definition Rule_getInTypes (x : Rule) : list SourceModelClass :=
     match x with BuildRule y _ _ _ => y end.
 
+  Definition Rule_getGuard (x : Rule) : SourceModel -> (guardTypes (Rule_getInTypes x)).
+  Proof.
+    destruct x.
+    unfold Rule_getInTypes.
+    assumption.
+  Defined.
+
   Definition Rule_getOutputPattern (x : Rule) : list OutputPatternElement :=
     match x with BuildRule _ _ _ y => y end.
   
   Definition Transformation_getRules (x : Transformation) : list Rule :=
     match x with BuildTransformation y => y end.
 
+  (** ** Rule matching **)
+  Fixpoint evalGuardFix  (intypes: list SourceModelClass) (f: guardTypes intypes) (el: list SourceModelElement) : option bool.
+    destruct intypes eqn:intypes1, el eqn:el1.
+    - exact None.
+    - exact None.
+    - exact None.
+    - destruct l eqn:intypes2, l0 eqn:el2.
+      + destruct (toModelClass s s0) eqn:tmc.
+        * exact (Some (f d)).
+        * exact None.
+      + exact None.
+      + exact None.
+      + destruct (toModelClass s s0) eqn:tmc.
+        * rewrite <- intypes2 in f.                    
+          exact (evalGuardFix l (f d) l0).
+        * exact None.
+  Defined.
+
+  Definition evalGuard (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
+    evalGuardFix (Rule_getInTypes r) ((Rule_getGuard r) sm) sp.
+  
+  Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
+    evalGuard r sm sp.
+
+  Definition matchPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list Rule :=
+    filter (fun (r:Rule) =>
+            match matchRuleOnPattern r sm sp with
+            | (Some true) => true
+            | _ => false end) (Transformation_getRules tr).
+
+  (** TODO **)
+  
+  (** ** Rule scheduling **)
+  
+  Definition maxArity (tr: Transformation) : nat :=
+    max (map (length (A:=SourceModelClass)) (map Rule_getInTypes (Transformation_getRules tr))).
+    
+  Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
+    tuples_up_to_n (allModelElements sm) (maxArity tr).
+
+  Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
+    Build_Model
+      (concat (optionList2List nil))
+      (concat (optionList2List nil)).
 
 End CoqTL.
 

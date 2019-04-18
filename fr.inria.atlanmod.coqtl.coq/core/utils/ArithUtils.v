@@ -1,4 +1,5 @@
 Require Import ZArith.
+Require Import tNotation.
 
 Fixpoint ble_nat (n m : nat) : bool :=
   match n with
@@ -59,3 +60,10 @@ induction n; intros.
      simpl in H.
      assumption.
 Qed.
+
+Fixpoint max (l : list nat) : nat :=
+  match l with
+  | nil => 0
+  | a::nil => a
+  | a::m => let b:= max m in if ble_nat a b then b else a
+  end.
