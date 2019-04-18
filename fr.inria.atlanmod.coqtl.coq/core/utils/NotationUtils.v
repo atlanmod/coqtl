@@ -17,3 +17,7 @@ Fixpoint applyAll {A: Type} {B: Type} (lf : list (A -> B)) (lx : list A) : list 
   | f::llf, x::llx => (f x) :: (applyAll llf llx)
   | _, _ => nil
   end.
+
+Notation "'[' r1 ; .. ; r2 ']'" :=
+  (cons r1 .. (cons r2 nil) ..)
+    (right associativity, at level 9).

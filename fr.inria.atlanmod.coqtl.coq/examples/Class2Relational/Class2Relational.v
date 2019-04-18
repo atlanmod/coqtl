@@ -6,11 +6,48 @@ Require Import Omega.
 
 Require Import core.utils.TopUtils.
 Require Import core.CoqTL.
+Require Import core.Metamodel.
 
 Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
 
+
+
 Definition Class2Relational :=
+  (BuildTransformation
+     ClassMetamodel RelationalMetamodel
+     [(BuildRule
+         ClassMetamodel RelationalMetamodel
+         [ClassEClass]
+         (fun (m: ClassModel) (c:Class) => true)
+         [(BuildOutputPatternElement
+             ClassMetamodel RelationalMetamodel
+             "tab"
+             [ClassEClass] TableClass 
+             (fun (m: ClassModel) (c:Class) => BuildTable (getClassId c) (getClassName c))
+             [(BuildOutputPatternElementReference
+                 ClassMetamodel RelationalMetamodel
+                 [ClassEClass] TableClass TableColumnsReference
+                 (fun (m: ClassModel) (c:Class) (t: Table) =>
+                    attrs <- getClassAttributes c m;
+                      cols <- Some nil;
+                      return BuildTableColumns t cols))])]);
+        (BuildRule
+           ClassMetamodel RelationalMetamodel
+           [AttributeEClass]
+           (fun (m: ClassModel) (a: Attribute) => true)
+           [(BuildOutputPatternElement
+               ClassMetamodel RelationalMetamodel
+               "col"
+               [AttributeEClass] ColumnClass 
+               (fun (m: ClassModel) (a: Attribute) => BuildColumn (getAttributeId a) (getAttributeName a))
+               [(BuildOutputPatternElementReference
+                   ClassMetamodel RelationalMetamodel
+                   [AttributeEClass] ColumnClass ColumnReferenceReference
+                   (fun (m: ClassModel) (a: Attribute) (c: Column) =>
+                      None))])])]).
+
+(* Definition Class2Relational :=
   (BuildTransformation ClassMetamodel RelationalMetamodel
   [
      (BuildRule [ClassEClass]
@@ -42,7 +79,7 @@ Definition Class2Relational :=
                             return BuildColumnReference c tb))
             ])
         ])
-  ]).
+  ]). *)
 
 Unset Printing Notations.
 
