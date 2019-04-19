@@ -10,14 +10,6 @@ Require Import core.Engine.
 Require Import core.utils.TopUtils.
 Require Import core.utils.CpdtTactics.
 
-
-Definition prod (a:nat) (b:nat) := a * b.
-
-Definition A := [1;2;3].
-Definition B := [2;3;4].
-
-Compute (map (fun n => map n B ) (map prod A)).
-
 Section CoqTL.
 
   Variables (SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type)
@@ -269,7 +261,6 @@ Section CoqTL.
     | l => Some (concat (optionList2List (map (fun r => instantiateRuleOnPattern r sm sp) l)))
     end.
 
-  
   (** ** Rule scheduling **)
   
   Definition maxArity (tr: Transformation) : nat :=
@@ -302,3 +293,4 @@ Arguments BuildOutputPatternElementReference
           [SourceModelElement] [SourceModelLink] [SourceModelClass] [SourceModelReference] _
           [TargetModelElement] [TargetModelLink] [TargetModelClass] [TargetModelReference] _
           _ [IterType].
+Arguments execute: default implicits.
