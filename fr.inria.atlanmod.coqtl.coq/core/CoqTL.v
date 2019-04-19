@@ -10,10 +10,6 @@ Require Import core.Engine.
 Require Import core.utils.TopUtils.
 Require Import core.utils.CpdtTactics.
 
-Definition T : Type := nat -> string -> bool.
-
-Definition t : T :=
-  fun (n:nat) (s:string) => true.
 
 Section CoqTL.
 
@@ -234,7 +230,7 @@ Section CoqTL.
   Proof.
     destruct r eqn:hr.
     destruct o eqn:ho.
-    - exact (Some (evalIteratorFix InElTypes t0 (i sm) sp)).
+    - exact (Some (evalIteratorFix InElTypes t (i sm) sp)).
     - exact None.
   Defined.
 
@@ -269,9 +265,9 @@ Section CoqTL.
               | _ => false end) (Transformation_getRules tr).
 
   (** TODO **)
-  Definition instantiateRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
+  Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
-      if m then 
+      if m then
         match evalIterator r sm sp with
         | None => None
         | Some x => None
