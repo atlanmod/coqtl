@@ -54,23 +54,21 @@ Section CoqTL.
     | cons class classes' => (denoteModelClass class) -> guardTypes classes'
     end.
     
-  Inductive MatchedOutputPatternElement : Type := 
+  Inductive MatchedOutputPatternElement (InElTypes: list SourceModelClass) (IterType: Type) : Type := 
     BuildMatchedOutputPatternElement :
       string ->
-      forall (InElTypes: list SourceModelClass),
-      forall (t:TargetModelClass),
-      forall (IterType: Type),
-        (IterType -> SourceModel -> (outputPatternElementTypes InElTypes t))
-        -> MatchedOutputPatternElement.
+      forall (OutType:TargetModelClass),
+       (IterType -> SourceModel -> (outputPatternElementTypes InElTypes OutType)) ->
+       MatchedOutputPatternElement InElTypes IterType.
   
   Inductive MatchedRule : Type := 
     BuildMatchedRule :
       string ->
       forall (InElTypes: list SourceModelClass),
         (SourceModel -> (guardTypes InElTypes))
-        -> forall (t: Type),
-        option (SourceModel -> (iteratedListTypes InElTypes t))
-        -> list MatchedOutputPatternElement
+        -> forall (IterType: Type),
+        (SourceModel -> (iteratedListTypes InElTypes IterType))
+        -> list (MatchedOutputPatternElement InElTypes IterType)
         -> MatchedRule.
   
   Inductive MatchedTransformation : Type := 
@@ -78,32 +76,27 @@ Section CoqTL.
       list MatchedRule ->
       MatchedTransformation.
   
-  Inductive OutputPatternElementReference : Type :=
+  Inductive OutputPatternElementReference (InElTypes: list SourceModelClass) (IterType: Type) (OutType:TargetModelClass): Type :=
     BuildOutputPatternElementReference :
-      forall (InElTypes: list SourceModelClass),
-      forall (t:TargetModelClass),
-      forall (IterType: Type),
       forall (OutRef: TargetModelReference),
-        (MatchedTransformation -> IterType -> SourceModel -> (outputReferenceTypes InElTypes t OutRef)) ->
-        OutputPatternElementReference.
+        (MatchedTransformation -> IterType -> SourceModel -> (outputReferenceTypes InElTypes OutType OutRef)) ->
+        OutputPatternElementReference InElTypes IterType OutType.
 
-  Inductive OutputPatternElement : Type := 
+  Inductive OutputPatternElement (InElTypes: list SourceModelClass) (IterType: Type) : Type := 
     BuildOutputPatternElement :
       string ->
-      forall (InElTypes: list SourceModelClass),
-      forall (t:TargetModelClass),
-      forall (IterType: Type),
-       (IterType -> SourceModel -> (outputPatternElementTypes InElTypes t)) ->
-       list OutputPatternElementReference -> OutputPatternElement.   
+      forall (OutType:TargetModelClass),
+       (IterType -> SourceModel -> (outputPatternElementTypes InElTypes OutType)) ->
+       list (OutputPatternElementReference InElTypes IterType OutType)-> OutputPatternElement InElTypes IterType.
   
   Inductive Rule : Type := 
     BuildRule :
       string ->
       forall (InElTypes: list SourceModelClass),
         (SourceModel -> (guardTypes InElTypes))
-        -> forall (t: Type),
-        option (SourceModel -> (iteratedListTypes InElTypes t))
-        -> list OutputPatternElement
+        -> forall (IterType: Type),
+        (SourceModel -> (iteratedListTypes InElTypes IterType))
+        -> list (OutputPatternElement InElTypes IterType)
         -> Rule.
   
   Inductive Transformation : Type := 
@@ -112,37 +105,24 @@ Section CoqTL.
       Transformation.
 
   (** ** Accessors **)
-  Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
-    match o with 
-      BuildOutputPatternElement y _ _ _ _ _ => y
-    end.
-
-  Definition OutputPatternElement_getInTypes (o: OutputPatternElement) : list SourceModelClass :=
-    match o with 
-      BuildOutputPatternElement _ y _ _ _ _ => y
-    end.
-
-  Definition OutputPatternElement_getOutType (o: OutputPatternElement) : TargetModelClass :=
+  Definition OutputPatternElement_getName {InElTypes: list SourceModelClass} {IterType: Type} (o: OutputPatternElement InElTypes IterType) : string :=
     match o with 
       BuildOutputPatternElement _ _ y _ _ _ => y
-    end.  
-
-  Definition OutputPatternElement_getIteratorType (o: OutputPatternElement) : Type :=
-    match o with 
-      BuildOutputPatternElement _ _ _ y _ _ => y
     end.
 
-  Definition OutputPatternElement_getOutPatternElement (o: OutputPatternElement) :
-    ((OutputPatternElement_getIteratorType o) ->
-     SourceModel ->
-     (outputPatternElementTypes
-        (OutputPatternElement_getInTypes o)
-        (OutputPatternElement_getOutType o))) :=
+  Definition OutputPatternElement_getOutType {InElTypes: list SourceModelClass} {IterType: Type} (o: OutputPatternElement InElTypes IterType) : TargetModelClass :=
+    match o with 
+      BuildOutputPatternElement _ _ _ y _ _ => y
+    end.  
+
+  Definition OutputPatternElement_getOutPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (o: OutputPatternElement InElTypes IterType) :
+    IterType -> SourceModel -> (outputPatternElementTypes InElTypes (OutputPatternElement_getOutType o)) :=
     match o with 
       BuildOutputPatternElement _ _ _ _ y _ => y
     end.
 
-  Definition OutputPatternElement_getOutputElementReferences (o: OutputPatternElement) : list OutputPatternElementReference :=
+  Definition OutputPatternElement_getOutputElementReferences {InElTypes: list SourceModelClass} {IterType: Type} (o: OutputPatternElement InElTypes IterType) :
+    list (OutputPatternElementReference InElTypes IterType (OutputPatternElement_getOutType o)) :=
     match o with 
       BuildOutputPatternElement _ _ _ _ _ y => y
     end.
@@ -157,7 +137,8 @@ Section CoqTL.
       BuildRule _ y _ _ _ _ => y
     end.
 
-  Definition Rule_getGuard (x : Rule) : SourceModel -> (guardTypes (Rule_getInTypes x)).
+  Definition Rule_getGuard (x : Rule) :
+    SourceModel -> (guardTypes (Rule_getInTypes x)).
   Proof.
     destruct x.
     - unfold Rule_getInTypes.
@@ -169,7 +150,8 @@ Section CoqTL.
       BuildRule _ _ _ y _ _ => y
     end.
   
-  Definition Rule_getIteratedList (x: Rule) : option (SourceModel -> (iteratedListTypes (Rule_getInTypes x) (Rule_getIteratorType x))).
+  Definition Rule_getIteratedList (x: Rule) :
+    SourceModel -> (iteratedListTypes (Rule_getInTypes x) (Rule_getIteratorType x)).
   Proof.
     destruct x eqn:hx.
     - unfold Rule_getInTypes.
@@ -177,7 +159,8 @@ Section CoqTL.
       assumption.
   Defined.
   
-  Definition Rule_getOutputPattern (x : Rule) : list OutputPatternElement :=
+  Definition Rule_getOutputPattern (x : Rule) :
+    list (OutputPatternElement (Rule_getInTypes x) (Rule_getIteratorType x)) :=
     match x with
       BuildRule _ _ _ _ _ y => y
     end.
@@ -185,7 +168,7 @@ Section CoqTL.
   Definition Transformation_getRules (x : Transformation) : list Rule :=
     match x with BuildTransformation y => y end.
 
-  (** ** Rule matching **)
+    (** ** Rule matching **)
   Fixpoint evalGuardFix  (intypes: list SourceModelClass) (f: guardTypes intypes) (el: list SourceModelElement) : option bool.
   Proof.
     destruct intypes eqn:intypes1, el eqn:el1.
@@ -226,12 +209,10 @@ Section CoqTL.
   Defined.
   
   Definition evalIterator (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
-    option (list (Rule_getIteratorType r)).
+    list (Rule_getIteratorType r).
   Proof.
     destruct r eqn:hr.
-    destruct o eqn:ho.
-    - exact (Some (evalIteratorFix InElTypes t (i sm) sp)).
-    - exact None.
+    exact (evalIteratorFix InElTypes IterType (i sm) sp).
   Defined.
 
   Fixpoint evalOutputPatternElementFix (intypes: list SourceModelClass) (ot: TargetModelClass) (f: outputPatternElementTypes intypes ot) (el: list SourceModelElement) : option TargetModelElement.
@@ -252,9 +233,10 @@ Section CoqTL.
         * exact None.
   Defined.
 
-  Definition evalOutputPatternElement (o : OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: OutputPatternElement_getIteratorType o) : option TargetModelElement :=
-    evalOutputPatternElementFix (OutputPatternElement_getInTypes o) (OutputPatternElement_getOutType o) ((OutputPatternElement_getOutPatternElement o) iter sm) sp.
-  
+  Definition evalOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (o: OutputPatternElement InElTypes IterType) (sm: SourceModel) (sp: list SourceModelElement) (iter: IterType)
+    : option TargetModelElement :=
+    evalOutputPatternElementFix InElTypes (OutputPatternElement_getOutType o) ((OutputPatternElement_getOutPatternElement o) iter sm) sp.
+
   Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
     evalGuard r sm sp.
 
@@ -268,10 +250,7 @@ Section CoqTL.
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        match evalIterator r sm sp with
-        | None => None
-        | Some x => None
-        end
+        None
       else
         None.
   
@@ -293,15 +272,17 @@ End CoqTL.
 
 Arguments MatchedTransformation: default implicits.
 
-Arguments BuildTransformation [SourceModelElement] [SourceModelLink] [SourceModelClass]
-     [SourceModelReference] _ [TargetModelElement] [TargetModelLink] [TargetModelClass]
- [TargetModelReference] _.
-Arguments BuildRule [SourceModelElement] [SourceModelLink] [SourceModelClass]
-     [SourceModelReference] _ [TargetModelElement] [TargetModelLink] [TargetModelClass]
- [TargetModelReference] _.
-Arguments BuildOutputPatternElement [SourceModelElement] [SourceModelLink] [SourceModelClass]
-     [SourceModelReference] _ [TargetModelElement] [TargetModelLink] [TargetModelClass]
- [TargetModelReference] _.
-Arguments BuildOutputPatternElementReference [SourceModelElement] [SourceModelLink] [SourceModelClass]
-     [SourceModelReference] _ [TargetModelElement] [TargetModelLink] [TargetModelClass]
- [TargetModelReference] _.
+Arguments BuildTransformation
+          [SourceModelElement] [SourceModelLink] [SourceModelClass] [SourceModelReference] _
+          [TargetModelElement] [TargetModelLink] [TargetModelClass] [TargetModelReference] _.
+Arguments BuildRule
+          [SourceModelElement] [SourceModelLink] [SourceModelClass] [SourceModelReference] _
+          [TargetModelElement] [TargetModelLink] [TargetModelClass] [TargetModelReference] _.
+Arguments BuildOutputPatternElement
+          [SourceModelElement] [SourceModelLink] [SourceModelClass] [SourceModelReference] _
+          [TargetModelElement] [TargetModelLink] [TargetModelClass] [TargetModelReference] _
+          _ [IterType].
+Arguments BuildOutputPatternElementReference
+          [SourceModelElement] [SourceModelLink] [SourceModelClass] [SourceModelReference] _
+          [TargetModelElement] [TargetModelLink] [TargetModelClass] [TargetModelReference] _
+          _ [IterType].
