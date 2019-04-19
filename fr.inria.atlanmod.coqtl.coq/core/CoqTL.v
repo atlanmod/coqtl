@@ -38,6 +38,15 @@ Section CoqTL.
       outputPatternElementTypes classes' tclass
     end.
 
+  Fixpoint iteratorElementTypes
+           (sclasses : list SourceModelClass) (itype: Type) :=
+    match sclasses with
+    | nil => list itype
+    | cons class classes' =>
+      (denoteModelClass class) ->
+      iteratorElementTypes classes' itype
+    end.
+
   Fixpoint guardTypes (classes : list SourceModelClass) :=
     match classes with
     | nil => bool
@@ -88,7 +97,7 @@ Section CoqTL.
       forall (InElTypes: list SourceModelClass),
         (SourceModel -> (guardTypes InElTypes))
         -> forall (t: Type),
-          list Type
+          (SourceModel -> (iteratorElementTypes InElTypes t))
         -> list OutputPatternElement
         -> Rule.
   
