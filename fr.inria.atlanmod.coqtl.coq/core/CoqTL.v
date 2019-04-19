@@ -20,8 +20,10 @@ Section CoqTL.
   Definition SourceModel := Model SourceModelElement SourceModelLink.
   Definition TargetModel := Model TargetModelElement TargetModelLink.
 
-  (** ** Abstract Syntax **)
+  (** * Abstract Syntax **)
 
+  (** ** Expression Types **)
+  
   Fixpoint outputReferenceTypes
             (sclasses : list SourceModelClass) (tclass: TargetModelClass)  (tref: TargetModelReference):=
     match sclasses with
@@ -52,7 +54,9 @@ Section CoqTL.
     | nil => bool
     | cons class classes' => (denoteModelClass class) -> guardTypes classes'
     end.
-    
+
+  (** ** Syntax Types **)
+  
   Inductive MatchedOutputPatternElement (InElTypes: list SourceModelClass) (IterType: Type) : Type := 
     BuildMatchedOutputPatternElement :
       string ->
@@ -104,6 +108,7 @@ Section CoqTL.
       Transformation.
 
   (** ** Accessors **)
+  
   Definition OutputPatternElement_getName {InElTypes: list SourceModelClass} {IterType: Type} (o: OutputPatternElement InElTypes IterType) : string :=
     match o with 
       BuildOutputPatternElement _ _ y _ _ _ => y
@@ -167,7 +172,10 @@ Section CoqTL.
   Definition Transformation_getRules (x : Transformation) : list Rule :=
     match x with BuildTransformation y => y end.
 
-    (** ** Rule matching **)
+  (** * Semantics **)
+  
+  (** ** Expression Evaluation **)
+  
   Fixpoint evalGuardFix  (intypes: list SourceModelClass) (f: guardTypes intypes) (el: list SourceModelElement) : option bool.
   Proof.
     destruct intypes eqn:intypes1, el eqn:el1.
@@ -236,6 +244,8 @@ Section CoqTL.
     : option TargetModelElement :=
     evalOutputPatternElementFix InElTypes (OutputPatternElement_getOutType o) ((OutputPatternElement_getOutPatternElement o) iter sm) sp.
 
+  (** ** Rule application **)
+  
   Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
     evalGuard r sm sp.
 
@@ -248,7 +258,6 @@ Section CoqTL.
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-          (*map (fun n => map n B ) (map prod A)*)
         Some (optionList2List (concat
                 (map (fun f => map f (Rule_getOutputPattern r))
                      (map (evalOutputPatternElement sm sp) (evalIterator r sm sp)))))
@@ -293,4 +302,5 @@ Arguments BuildOutputPatternElementReference
           [SourceModelElement] [SourceModelLink] [SourceModelClass] [SourceModelReference] _
           [TargetModelElement] [TargetModelLink] [TargetModelClass] [TargetModelReference] _
           _ [IterType].
+
 Arguments execute: default implicits.
