@@ -75,12 +75,22 @@ Section CoqTL.
       forall (InElTypes: list SourceModelClass),
        forall (t:TargetModelClass),
        (SourceModel -> (outputPatternElementTypes InElTypes t)) ->
-       list OutputPatternElementReference -> OutputPatternElement.
+       list OutputPatternElementReference -> OutputPatternElement.   
   
   Inductive Rule : Type := 
-    BuildRule :
-       string -> forall (InElTypes: list SourceModelClass), (SourceModel -> (guardTypes InElTypes))
-       -> list OutputPatternElement -> Rule.
+  | BuildRule :
+      string ->
+      forall (InElTypes: list SourceModelClass),
+        (SourceModel -> (guardTypes InElTypes))
+        -> list OutputPatternElement -> Rule
+  | BuildIterativeRule :
+      string ->
+      forall (InElTypes: list SourceModelClass),
+        (SourceModel -> (guardTypes InElTypes))
+        -> forall (t: Type),
+          list Type
+        -> list OutputPatternElement
+        -> Rule.
   
   Inductive Transformation : Type := 
     BuildTransformation :
@@ -90,20 +100,31 @@ Section CoqTL.
   (** ** Getters **)
 
   Definition Rule_getName (x : Rule) : string :=
-    match x with BuildRule y _ _ _ => y end.
+    match x with
+    | BuildRule y _ _ _ => y
+    | BuildIterativeRule y _ _ _ _ _ => y
+    end.
 
   Definition Rule_getInTypes (x : Rule) : list SourceModelClass :=
-    match x with BuildRule _ y _ _ => y end.
+    match x with
+    | BuildRule _ y _ _ => y
+    | BuildIterativeRule _ y _ _ _ _ => y
+    end.
 
   Definition Rule_getGuard (x : Rule) : SourceModel -> (guardTypes (Rule_getInTypes x)).
   Proof.
     destruct x.
-    unfold Rule_getInTypes.
-    assumption.
+    - unfold Rule_getInTypes.
+      assumption.
+    - unfold Rule_getInTypes.
+      assumption.
   Defined.
 
   Definition Rule_getOutputPattern (x : Rule) : list OutputPatternElement :=
-    match x with BuildRule _ _ _ y => y end.
+    match x with
+    | BuildRule _ _ _ y => y
+    | BuildIterativeRule _ _ _ _ _ y => y
+    end.
   
   Definition Transformation_getRules (x : Transformation) : list Rule :=
     match x with BuildTransformation y => y end.
