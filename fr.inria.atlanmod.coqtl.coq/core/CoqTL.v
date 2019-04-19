@@ -191,8 +191,8 @@ Section CoqTL.
 
   (** ** Rule matching **)
   Fixpoint evalGuardFix  (intypes: list SourceModelClass) (f: guardTypes intypes) (el: list SourceModelElement) : option bool.
-    destruct intypes eqn:intypes1, el eqn:el1.
   Proof.
+    destruct intypes eqn:intypes1, el eqn:el1.
     - exact None.
     - exact None.
     - exact None.
@@ -212,6 +212,7 @@ Section CoqTL.
     evalGuardFix (Rule_getInTypes r) ((Rule_getGuard r) sm) sp.
 
   Fixpoint evalIteratorFix  (intypes: list SourceModelClass) (ot: Type) (f: iteratedListTypes intypes ot) (el: list SourceModelElement) : list ot.
+  Proof.
     destruct intypes eqn:intypes1, el eqn:el1.
     - exact nil.
     - exact nil.
@@ -236,6 +237,27 @@ Section CoqTL.
     - exact (Some (evalIteratorFix InElTypes t0 (i sm) sp)).
     - exact None.
   Defined.
+
+  Fixpoint evalOutputPatternElementFix (intypes: list SourceModelClass) (ot: TargetModelClass) (f: outputPatternElementTypes intypes ot) (el: list SourceModelElement) : option TargetModelElement.
+  Proof.
+    destruct intypes eqn:intypes1, el eqn:el1.
+    - exact None.
+    - exact None.
+    - exact None.
+    - destruct l eqn:intypes2, l0 eqn:el2.
+      + destruct (toModelClass s s0) eqn:tmc.
+        * exact (Some (toModelElement ot (f d))).
+        * exact None.
+      + exact None.
+      + exact None.
+      + destruct (toModelClass s s0) eqn:tmc.
+        * rewrite <- intypes2 in f.
+          exact (evalOutputPatternElementFix l ot (f d) l0).
+        * exact None.
+  Defined.
+
+  Definition evalOutputPatternElement (o : OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: OutputPatternElement_getIteratorType o) : option TargetModelElement :=
+    evalOutputPatternElementFix (OutputPatternElement_getInTypes o) (OutputPatternElement_getOutType o) ((OutputPatternElement_getOutPatternElement o) iter sm) sp.
   
   Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
     evalGuard r sm sp.

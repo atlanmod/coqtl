@@ -85,7 +85,6 @@ Definition Class2Relational :=
         ])
   ]). *)
 
-Unset Printing Notations.
-
+(* Unset Printing Notations. *)
 (* Print Class2Relational. *)
 (* Check Class2Relational. *)
