@@ -63,7 +63,8 @@ Section CoqTL.
       string ->
       forall (InElTypes: list SourceModelClass),
       forall (t:TargetModelClass),
-        (SourceModel -> (outputPatternElementTypes InElTypes t))
+      forall (IterType: Type),
+        (IterType -> SourceModel -> (outputPatternElementTypes InElTypes t))
         -> MatchedOutputPatternElement.
   
   Inductive MatchedRule : Type := 
@@ -85,16 +86,18 @@ Section CoqTL.
     BuildOutputPatternElementReference :
       forall (InElTypes: list SourceModelClass),
       forall (t:TargetModelClass),
+      forall (IterType: Type),
       forall (OutRef: TargetModelReference),
-        (MatchedTransformation -> SourceModel -> (outputReferenceTypes InElTypes t OutRef)) ->
+        (MatchedTransformation -> IterType -> SourceModel -> (outputReferenceTypes InElTypes t OutRef)) ->
         OutputPatternElementReference.
 
   Inductive OutputPatternElement : Type := 
     BuildOutputPatternElement :
       string ->
       forall (InElTypes: list SourceModelClass),
-       forall (t:TargetModelClass),
-       (SourceModel -> (outputPatternElementTypes InElTypes t)) ->
+      forall (t:TargetModelClass),
+      forall (IterType: Type),
+       (IterType -> SourceModel -> (outputPatternElementTypes InElTypes t)) ->
        list OutputPatternElementReference -> OutputPatternElement.   
   
   Inductive Rule : Type := 
@@ -112,7 +115,41 @@ Section CoqTL.
       list Rule ->
       Transformation.
 
-  (** ** Getters **)
+  (** ** Accessors **)
+  Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
+    match o with 
+      BuildOutputPatternElement y _ _ _ _ _ => y
+    end.
+
+  Definition OutputPatternElement_getInTypes (o: OutputPatternElement) : list SourceModelClass :=
+    match o with 
+      BuildOutputPatternElement _ y _ _ _ _ => y
+    end.
+
+  Definition OutputPatternElement_getOutType (o: OutputPatternElement) : TargetModelClass :=
+    match o with 
+      BuildOutputPatternElement _ _ y _ _ _ => y
+    end.  
+
+  Definition OutputPatternElement_getIteratorType (o: OutputPatternElement) : Type :=
+    match o with 
+      BuildOutputPatternElement _ _ _ y _ _ => y
+    end.
+
+  Definition OutputPatternElement_getOutPatternElement (o: OutputPatternElement) :
+    ((OutputPatternElement_getIteratorType o) ->
+     SourceModel ->
+     (outputPatternElementTypes
+        (OutputPatternElement_getInTypes o)
+        (OutputPatternElement_getOutType o))) :=
+    match o with 
+      BuildOutputPatternElement _ _ _ _ y _ => y
+    end.
+
+  Definition OutputPatternElement_getOutputElementReferences (o: OutputPatternElement) : list OutputPatternElementReference :=
+    match o with 
+      BuildOutputPatternElement _ _ _ _ _ y => y
+    end.
 
   Definition Rule_getName (x : Rule) : string :=
     match x with 

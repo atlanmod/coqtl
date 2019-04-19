@@ -19,40 +19,36 @@ Definition Class2Relational :=
      [(BuildRule
          ClassMetamodel RelationalMetamodel
          "Class2Table"
-         [ClassEClass]
-         (fun (m: ClassModel) (c:Class) => true)
-         unit
-         None
+         [ClassEClass] (fun (m: ClassModel) (c:Class) => true)
+         unit None
          [(BuildOutputPatternElement
              ClassMetamodel RelationalMetamodel
              "tab"
-             [ClassEClass] TableClass 
-             (fun (m: ClassModel) (c:Class) => BuildTable (getClassId c) (getClassName c))
+             [ClassEClass] TableClass unit
+             (fun (_:unit) (m: ClassModel) (c:Class) => BuildTable (getClassId c) (getClassName c))
              [(BuildOutputPatternElementReference
                  ClassMetamodel RelationalMetamodel
-                 [ClassEClass] TableClass TableColumnsReference
+                 [ClassEClass] TableClass unit TableColumnsReference
                  (fun (t: MatchedTransformation ClassMetamodel RelationalMetamodel)
-                    (m: ClassModel) (c:Class) (t: Table) =>
+                    (i:unit) (m: ClassModel) (c:Class) (t: Table) =>
                     attrs <- getClassAttributes c m;
                     cols <- Some nil;
                     return BuildTableColumns t cols))])]);
         (BuildRule
            ClassMetamodel RelationalMetamodel
            "Attribute2Column"
-           [AttributeEClass]
-           (fun (m: ClassModel) (a: Attribute) => true)
-           unit
-           None
+           [AttributeEClass] (fun (m: ClassModel) (a: Attribute) => true)
+           unit None
            [(BuildOutputPatternElement
                ClassMetamodel RelationalMetamodel
                "col"
-               [AttributeEClass] ColumnClass 
-               (fun (m: ClassModel) (a: Attribute) => BuildColumn (getAttributeId a) (getAttributeName a))
+               [AttributeEClass] ColumnClass unit
+               (fun (_: unit) (m: ClassModel) (a: Attribute) => BuildColumn (getAttributeId a) (getAttributeName a))
                [(BuildOutputPatternElementReference
                    ClassMetamodel RelationalMetamodel
-                   [AttributeEClass] ColumnClass ColumnReferenceReference
+                   [AttributeEClass] ColumnClass unit ColumnReferenceReference
                    (fun (t: MatchedTransformation ClassMetamodel RelationalMetamodel)
-                      (m: ClassModel) (a: Attribute) (c: Column) =>
+                      (i: unit) (m: ClassModel) (a: Attribute) (c: Column) =>
                       None))])])]).
 
 (* Definition Class2Relational :=
