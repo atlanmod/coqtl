@@ -21,6 +21,8 @@ Definition Class2Relational :=
          "Class2Table"
          [ClassEClass]
          (fun (m: ClassModel) (c:Class) => true)
+         unit
+         None
          [(BuildOutputPatternElement
              ClassMetamodel RelationalMetamodel
              "tab"
@@ -39,6 +41,8 @@ Definition Class2Relational :=
            "Attribute2Column"
            [AttributeEClass]
            (fun (m: ClassModel) (a: Attribute) => true)
+           unit
+           None
            [(BuildOutputPatternElement
                ClassMetamodel RelationalMetamodel
                "col"
