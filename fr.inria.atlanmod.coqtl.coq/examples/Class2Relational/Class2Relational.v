@@ -18,8 +18,8 @@ Definition Class2Relational :=
      ClassMetamodel RelationalMetamodel
      [(BuildRule
          ClassMetamodel RelationalMetamodel
-         [ClassEClass]
          "Class2Table"
+         [ClassEClass]
          (fun (m: ClassModel) (c:Class) => true)
          [(BuildOutputPatternElement
              ClassMetamodel RelationalMetamodel
@@ -36,8 +36,8 @@ Definition Class2Relational :=
                     return BuildTableColumns t cols))])]);
         (BuildRule
            ClassMetamodel RelationalMetamodel
-           [AttributeEClass]
            "Attribute2Column"
+           [AttributeEClass]
            (fun (m: ClassModel) (a: Attribute) => true)
            [(BuildOutputPatternElement
                ClassMetamodel RelationalMetamodel

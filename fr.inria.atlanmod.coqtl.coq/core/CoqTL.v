@@ -79,7 +79,7 @@ Section CoqTL.
   
   Inductive Rule : Type := 
     BuildRule :
-       forall (InElTypes: list SourceModelClass), string -> (SourceModel -> (guardTypes InElTypes))
+       string -> forall (InElTypes: list SourceModelClass), (SourceModel -> (guardTypes InElTypes))
        -> list OutputPatternElement -> Rule.
   
   Inductive Transformation : Type := 
@@ -90,10 +90,10 @@ Section CoqTL.
   (** ** Getters **)
 
   Definition Rule_getName (x : Rule) : string :=
-    match x with BuildRule _ y _ _ => y end.
+    match x with BuildRule y _ _ _ => y end.
 
   Definition Rule_getInTypes (x : Rule) : list SourceModelClass :=
-    match x with BuildRule y _ _ _ => y end.
+    match x with BuildRule _ y _ _ => y end.
 
   Definition Rule_getGuard (x : Rule) : SourceModel -> (guardTypes (Rule_getInTypes x)).
   Proof.
