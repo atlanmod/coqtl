@@ -86,3 +86,4 @@ Fixpoint zipWith {A : Type} {B : Type} {C : Type} (f: A -> B -> C) (la: list A) 
   | nil, _ => nil
   | _, nil => nil
   end.
+

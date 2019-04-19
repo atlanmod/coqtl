@@ -11,6 +11,13 @@ Require Import core.utils.TopUtils.
 Require Import core.utils.CpdtTactics.
 
 
+Definition prod (a:nat) (b:nat) := a * b.
+
+Definition A := [1;2;3].
+Definition B := [2;3;4].
+
+Compute (map (fun n => map n B ) (map prod A)).
+
 Section CoqTL.
 
   Variables (SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type)
@@ -233,7 +240,7 @@ Section CoqTL.
         * exact None.
   Defined.
 
-  Definition evalOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (o: OutputPatternElement InElTypes IterType) (sm: SourceModel) (sp: list SourceModelElement) (iter: IterType)
+  Definition evalOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (sm: SourceModel) (sp: list SourceModelElement) (iter: IterType) (o: OutputPatternElement InElTypes IterType) 
     : option TargetModelElement :=
     evalOutputPatternElementFix InElTypes (OutputPatternElement_getOutType o) ((OutputPatternElement_getOutPatternElement o) iter sm) sp.
 
@@ -245,14 +252,23 @@ Section CoqTL.
               match matchRuleOnPattern r sm sp with
               | (Some true) => true
               | _ => false end) (Transformation_getRules tr).
-
-  (** TODO **)
+  
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        None
+          (*map (fun n => map n B ) (map prod A)*)
+        Some (optionList2List (concat
+                (map (fun f => map f (Rule_getOutputPattern r))
+                     (map (evalOutputPatternElement sm sp) (evalIterator r sm sp)))))
       else
         None.
+
+  Definition instantiatePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
+    match matchPattern tr sm sp with
+    | nil => None
+    | l => Some (concat (optionList2List (map (fun r => instantiateRuleOnPattern r sm sp) l)))
+    end.
+
   
   (** ** Rule scheduling **)
   
@@ -265,7 +281,7 @@ Section CoqTL.
   (** TODO **)
   Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
     Build_Model
-      (concat (optionList2List nil))
+      (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
       (concat (optionList2List nil)).
 
 End CoqTL.
