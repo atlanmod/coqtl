@@ -61,9 +61,19 @@ Section CoqTL.
        (SourceModel -> (outputPatternElementTypes InElTypes t)) -> MatchedOutputPatternElement.
   
   Inductive MatchedRule : Type := 
-    BuildMatchedRule :
-       forall (InElTypes: list SourceModelClass), (SourceModel -> (guardTypes InElTypes)) ->
-      list MatchedOutputPatternElement -> MatchedRule.
+  | BuildMatchedRule :
+      string ->
+      forall (InElTypes: list SourceModelClass),
+        (SourceModel -> (guardTypes InElTypes))
+        -> list MatchedOutputPatternElement -> MatchedRule
+  | BuildIterativeMatchedRule :
+      string ->
+      forall (InElTypes: list SourceModelClass),
+        (SourceModel -> (guardTypes InElTypes))
+        -> forall (t: Type),
+          (SourceModel -> (iteratorElementTypes InElTypes t))
+        -> list MatchedOutputPatternElement
+        -> MatchedRule.
   
   Inductive MatchedTransformation : Type := 
     BuildMatchedTransformation :
