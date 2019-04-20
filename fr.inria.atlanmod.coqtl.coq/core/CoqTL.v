@@ -295,6 +295,17 @@ Section CoqTL.
               match matchRuleOnPattern r sm sp with
               | (Some true) => true
               | _ => false end) (Transformation_getRules tr).
+
+  Definition instantiateRuleOnPatternIter (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelElement) :=
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        match (nth_error (evalIterator r sm sp) iter) with
+        | Some i => 
+             Some (optionList2List (map (evalOutputPatternElement sm sp i) (Rule_getOutputPattern r)))
+        | None => None
+        end
+      else
+        None.
   
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
@@ -310,6 +321,9 @@ Section CoqTL.
     | nil => None
     | l => Some (concat (optionList2List (map (fun r => instantiateRuleOnPattern r sm sp) l)))
     end.
+
+  (*Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): list TargetModelLink.
+  *)
 
   (** ** Rule scheduling **)
   
