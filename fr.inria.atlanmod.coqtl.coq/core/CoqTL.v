@@ -25,14 +25,14 @@ Section CoqTL.
   (** ** Expression Types **)
   
   Fixpoint outputReferenceTypes
-            (sclasses : list SourceModelClass) (tclass: TargetModelClass)  (tref: TargetModelReference):=
+           (sclasses : list SourceModelClass) (tclass: TargetModelClass)  (tref: TargetModelReference):=
     match sclasses with
     | nil => (denoteModelClass tclass) -> (option (denoteModelReference tref))
     | cons class classes' => (denoteModelClass class) -> outputReferenceTypes classes' tclass tref
     end.
  
   Fixpoint outputPatternElementTypes
-            (sclasses : list SourceModelClass) (tclass: TargetModelClass) :=
+           (sclasses : list SourceModelClass) (tclass: TargetModelClass) :=
     match sclasses with
     | nil => (denoteModelClass tclass)
     | cons class classes' =>
@@ -108,6 +108,18 @@ Section CoqTL.
       Transformation.
 
   (** ** Accessors **)
+
+  Definition OutputPatternElementReference_getRefType {InElTypes: list SourceModelClass} {IterType: Type} {OutType:TargetModelClass} (o: OutputPatternElementReference InElTypes IterType OutType) : TargetModelReference :=
+    match o with 
+      BuildOutputPatternElementReference _ _ _ y _ => y
+    end.
+
+  Definition OutputPatternElementReference_getOutputReference {InElTypes: list SourceModelClass} {IterType: Type} {OutType:TargetModelClass} (o: OutputPatternElementReference InElTypes IterType OutType) :
+    MatchedTransformation -> IterType -> SourceModel -> (outputReferenceTypes InElTypes OutType (OutputPatternElementReference_getRefType o)).
+  Proof.
+    destruct o eqn:ho.
+    exact o0.
+  Defined.
   
   Definition OutputPatternElement_getName {InElTypes: list SourceModelClass} {IterType: Type} (o: OutputPatternElement InElTypes IterType) : string :=
     match o with 
@@ -243,6 +255,35 @@ Section CoqTL.
   Definition evalOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (sm: SourceModel) (sp: list SourceModelElement) (iter: IterType) (o: OutputPatternElement InElTypes IterType) 
     : option TargetModelElement :=
     evalOutputPatternElementFix InElTypes (OutputPatternElement_getOutType o) ((OutputPatternElement_getOutPatternElement o) iter sm) sp.
+
+  Fixpoint evalOutputPatternElementReferenceFix (intypes: list SourceModelClass) (ot: TargetModelClass) (or: TargetModelReference) (oe: TargetModelElement) (f: outputReferenceTypes intypes ot or) (el: list SourceModelElement) : option TargetModelLink.
+  Proof.
+    destruct intypes eqn:intypes1, el eqn:el1.
+    - exact None.
+    - exact None.
+    - exact None.
+    - destruct l eqn:intypes2, l0 eqn:el2.
+      + destruct (toModelClass s s0) eqn:tmc.
+        * destruct (toModelClass ot oe) eqn:tmct.
+          -- destruct ((f d) d0) eqn:tml.
+             ++ exact (Some (toModelLink or d1)).
+             ++ exact None.
+          -- exact None.
+        * exact None.
+      + exact None.
+      + exact None.
+      + destruct (toModelClass s s0) eqn:tmc.
+        * rewrite <- intypes2 in f.
+          exact (evalOutputPatternElementReferenceFix l ot or oe (f d) l0).
+        * exact None.
+  Defined.
+
+  Definition evalOutputPatternElementReference
+             {InElTypes: list SourceModelClass} {IterType: Type} {TargetType: TargetModelClass}
+             (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: IterType) (tr: MatchedTransformation)
+             (o: OutputPatternElementReference InElTypes IterType TargetType) 
+    : option TargetModelLink :=
+    evalOutputPatternElementReferenceFix InElTypes TargetType (OutputPatternElementReference_getRefType o) oe ((OutputPatternElementReference_getOutputReference o) tr iter sm) sp.
 
   (** ** Rule application **)
   

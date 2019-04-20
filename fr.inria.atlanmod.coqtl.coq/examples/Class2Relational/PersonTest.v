@@ -11,8 +11,6 @@ Require Import examples.Class2Relational.PersonModel.
 
 (* Require Import Class2RelationalVerif. *)
 
-Compute execute Class2Relational PersonModel.
-
 (* Expected Output :
       = {|
        Model.modelElements := RelationalMetamodel_BuildEObject TableClass
@@ -30,3 +28,6 @@ Compute execute Class2Relational PersonModel.
                                    (BuildTable 0 "Person")) :: nil |}
      : TargetModel RelationalMetamodel_EObject RelationalMetamodel_ELink
  *)
+
+Compute execute Class2Relational PersonModel.
+
