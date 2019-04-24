@@ -253,6 +253,22 @@ Section CoqTL.
     | BuildTransformation a => BuildMatchedTransformation (map matchRule a) 
     end.
 
+  Definition unmatchOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (x: MatchedOutputPatternElement InElTypes IterType)
+    : OutputPatternElement InElTypes IterType :=
+    match x with
+    | BuildMatchedOutputPatternElement _ _ c d e => BuildOutputPatternElement InElTypes IterType c d e nil
+    end.
+
+  Definition unmatchRule (x: MatchedRule) : Rule :=
+    match x with
+    | BuildMatchedRule a b c d e f => BuildRule a b c d e (map unmatchOutputPatternElement f) 
+    end.
+
+  Definition unmatchTransformation (x: MatchedTransformation) : Transformation :=
+    match x with
+    | BuildMatchedTransformation a => BuildTransformation (map unmatchRule a) 
+    end.
+
   (** * Semantics **)
   
   (** ** Expression Evaluation **)
@@ -446,7 +462,6 @@ Section CoqTL.
   Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (allModelElements sm) (maxArity tr).
 
-  (** TODO **)
   Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
     Build_Model
       (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
