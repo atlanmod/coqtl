@@ -156,9 +156,8 @@ Section CoqTL.
   Definition Rule_getGuard (x : Rule) :
     SourceModel -> (guardTypes (Rule_getInTypes x)).
   Proof.
-    destruct x.
-    - unfold Rule_getInTypes.
-      assumption.
+    destruct x eqn:hx.
+    assumption.
   Defined.
 
   Definition Rule_getIteratorType (x : Rule) : Type :=
@@ -170,9 +169,7 @@ Section CoqTL.
     SourceModel -> (iteratedListTypes (Rule_getInTypes x) (Rule_getIteratorType x)).
   Proof.
     destruct x eqn:hx.
-    - unfold Rule_getInTypes.
-      unfold Rule_getIteratorType.
-      assumption.
+    assumption.
   Defined.
   
   Definition Rule_getOutputPattern (x : Rule) :
@@ -183,6 +180,60 @@ Section CoqTL.
   
   Definition Transformation_getRules (x : Transformation) : list Rule :=
     match x with BuildTransformation y => y end.
+  
+  Definition MatchedOutputPatternElement_getName {InElTypes: list SourceModelClass} {IterType: Type} (o: MatchedOutputPatternElement InElTypes IterType) : string :=
+    match o with 
+      BuildMatchedOutputPatternElement _ _ y _ _ => y
+    end.
+
+  Definition MatchedOutputPatternElement_getOutType {InElTypes: list SourceModelClass} {IterType: Type} (o: MatchedOutputPatternElement InElTypes IterType) : TargetModelClass :=
+    match o with 
+      BuildMatchedOutputPatternElement _ _ _ y _ => y
+    end.  
+
+  Definition MatchedOutputPatternElement_getOutPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (o: MatchedOutputPatternElement InElTypes IterType) :
+    IterType -> SourceModel -> (outputPatternElementTypes InElTypes (MatchedOutputPatternElement_getOutType o)) :=
+    match o with 
+      BuildMatchedOutputPatternElement _ _ _ _ y => y
+    end.
+
+  Definition MatchedRule_getName (x : MatchedRule) : string :=
+    match x with 
+      BuildMatchedRule y _ _ _ _ _ => y
+    end.
+
+  Definition MatchedRule_getInTypes (x : MatchedRule) : list SourceModelClass :=
+    match x with
+      BuildMatchedRule _ y _ _ _ _ => y
+    end.
+
+  Definition MatchedRule_getGuard (x : MatchedRule) :
+    SourceModel -> (guardTypes (MatchedRule_getInTypes x)).
+  Proof.
+    destruct x eqn:hx.
+    assumption.
+  Defined.
+
+  Definition MatchedRule_getIteratorType (x : MatchedRule) : Type :=
+    match x with
+      BuildMatchedRule _ _ _ y _ _ => y
+    end.
+  
+  Definition MatchedRule_getIteratedList (x: MatchedRule) :
+    SourceModel -> (iteratedListTypes (MatchedRule_getInTypes x) (MatchedRule_getIteratorType x)).
+  Proof.
+    destruct x eqn:hx.
+    assumption.
+  Defined.
+  
+  Definition MatchedRule_getOutputPattern (x : MatchedRule) :
+    list (MatchedOutputPatternElement (MatchedRule_getInTypes x) (MatchedRule_getIteratorType x)) :=
+    match x with
+      BuildMatchedRule _ _ _ _ _ y => y
+    end.
+  
+  Definition MatchedTransformation_getRules (x : MatchedTransformation) : list MatchedRule :=
+    match x with BuildMatchedTransformation y => y end.
 
   (** * Semantics **)
   
