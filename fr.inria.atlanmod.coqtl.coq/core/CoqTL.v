@@ -235,6 +235,24 @@ Section CoqTL.
   Definition MatchedTransformation_getRules (x : MatchedTransformation) : list MatchedRule :=
     match x with BuildMatchedTransformation y => y end.
 
+  (** ** Copying Matched Transformation *)
+  
+  Definition matchOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (x: OutputPatternElement InElTypes IterType)
+    : MatchedOutputPatternElement InElTypes IterType :=
+    match x with
+    | BuildOutputPatternElement _ _ c d e f => BuildMatchedOutputPatternElement InElTypes IterType c d e
+    end.
+
+  Definition matchRule (x: Rule) : MatchedRule :=
+    match x with
+    | BuildRule a b c d e f => BuildMatchedRule a b c d e (map matchOutputPatternElement f) 
+    end.
+
+  Definition matchTransformation (x: Transformation) : MatchedTransformation :=
+    match x with
+    | BuildTransformation a => BuildMatchedTransformation (map matchRule a) 
+    end.
+
   (** * Semantics **)
   
   (** ** Expression Evaluation **)
@@ -419,7 +437,7 @@ Section CoqTL.
     | nil => None
     | l => Some (concat (optionList2List (map (fun r => applyRuleOnPattern r tr sm sp) l)))
     end.
-
+  
   (** ** Rule scheduling **)
   
   Definition maxArity (tr: Transformation) : nat :=
