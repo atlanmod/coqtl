@@ -322,8 +322,52 @@ Section CoqTL.
     | l => Some (concat (optionList2List (map (fun r => instantiateRuleOnPattern r sm sp) l)))
     end.
 
-  (*Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): list TargetModelLink.
-  *)
+  Definition applyOutputPatternElementOnPatternIter
+             (r: Rule)
+             (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
+             (tr: Transformation)
+             (sm: SourceModel)
+             (sp: list SourceModelElement) (iter: nat) : option (list TargetModelLink):=             
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        match (nth_error (evalIterator r sm sp) iter) with
+        | Some i =>
+          match (evalOutputPatternElement sm sp i ope) with
+          | Some l => 
+            Some (optionList2List (map ( fun (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope))
+                        => evalOutputPatternElementReference sm sp l i (BuildMatchedTransformation nil) oper
+                      )
+                      (OutputPatternElement_getOutputElementReferences ope)))
+          | None => None
+          end
+        | None => None
+        end
+      else
+        None.
+  
+  Definition applyRuleOnPatternIter (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelLink) :=
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        match (nth_error (evalIterator r sm sp) iter) with
+        | Some i => 
+          Some (concat (optionList2List (map (fun x => applyOutputPatternElementOnPatternIter r x tr sm sp iter) (Rule_getOutputPattern r))))
+        | None => None
+        end
+      else
+        None.
+
+  Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        Some (concat (optionList2List (map (applyRuleOnPatternIter r tr sm sp) (indexes (length (evalIterator r sm sp))))))
+      else
+        None.
+
+  Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
+    match matchPattern tr sm sp with
+    | nil => None
+    | l => Some (concat (optionList2List (map (fun r => applyRuleOnPattern r tr sm sp) l)))
+    end.
 
   (** ** Rule scheduling **)
   
@@ -337,7 +381,7 @@ Section CoqTL.
   Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
     Build_Model
       (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
-      (concat (optionList2List nil)).
+      (concat (optionList2List (map (applyPattern tr sm) (allTuples tr sm)))).
 
 End CoqTL.
 

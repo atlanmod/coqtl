@@ -67,3 +67,9 @@ Fixpoint max (l : list nat) : nat :=
   | a::nil => a
   | a::m => let b:= max m in if ble_nat a b then b else a
   end.
+
+Fixpoint indexes (length: nat): list nat :=
+  match length with
+  | 0 => nil
+  | S length' => (length') :: indexes(length')
+  end.
