@@ -30,4 +30,3 @@ Require Import examples.Class2Relational.PersonModel.
  *)
 
 Compute execute Class2Relational PersonModel.
-

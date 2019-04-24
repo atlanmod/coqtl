@@ -499,6 +499,10 @@ Section CoqTL.
                end
     | None => None
     end.
+
+  Definition resolve (tr: MatchedTransformation) (sm: SourceModel) (name: string)
+             (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
+    resolveIter tr sm name type sp 0.
   
   (** ** Rule scheduling **)
   
@@ -533,4 +537,5 @@ Arguments BuildOutputPatternElementReference
           _ [IterType].
 
 Arguments resolveIter: default implicits.
+Arguments resolve: default implicits.
 Arguments execute: default implicits.
