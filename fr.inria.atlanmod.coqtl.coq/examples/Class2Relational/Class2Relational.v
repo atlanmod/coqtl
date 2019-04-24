@@ -45,7 +45,9 @@ Definition Class2Relational :=
                    [AttributeEClass] ColumnClass ColumnReferenceReference
                    (fun (t: MatchedTransformation ClassMetamodel RelationalMetamodel)
                       _ (m: ClassModel) (a: Attribute) (c: Column) =>
-                      None))])])]).
+                      cl <- getAttributeType a m;
+                            tb <- resolveIter t m "tab" TableClass [ClassMetamodel_toEObject cl] 0;
+                            return BuildColumnReference c tb))])])]).
 
 (* Definition Class2Relational :=
   (BuildTransformation ClassMetamodel RelationalMetamodel

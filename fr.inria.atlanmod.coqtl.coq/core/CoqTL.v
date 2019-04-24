@@ -532,4 +532,5 @@ Arguments BuildOutputPatternElementReference
           [TargetModelElement] [TargetModelLink] [TargetModelClass] [TargetModelReference] _
           _ [IterType].
 
+Arguments resolveIter: default implicits.
 Arguments execute: default implicits.
