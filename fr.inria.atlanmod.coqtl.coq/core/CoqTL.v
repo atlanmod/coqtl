@@ -526,6 +526,8 @@ Section CoqTL.
       (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
       (concat (optionList2List (map (applyPattern tr sm) (allTuples tr sm)))).
 
+  
+  
 End CoqTL.
 
 Arguments MatchedTransformation: default implicits.

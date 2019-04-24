@@ -39,7 +39,7 @@ Definition Class2Relational :=
            unit (fun (m: ClassModel) (a: Attribute) => [tt])
            [(BuildOutputPatternElement
                ClassMetamodel RelationalMetamodel
-               [AttributeEClass] "col" ColumnClass 
+               [AttributeEClass] "col" ColumnClass
                (fun _ (m: ClassModel) (a: Attribute) => BuildColumn (getAttributeId a) (getAttributeName a))
                [(BuildOutputPatternElementReference
                    ClassMetamodel RelationalMetamodel

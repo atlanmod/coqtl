@@ -19,9 +19,9 @@ Require Import core.Model.
 
 Set Implicit Arguments.
 
+(* OutputPatternElement and OutputPatternElementReference removed because of type parameters *)
 Class TransformationEngine 
   (Transformation: Type) (Rule: Type) 
-  (OutputPatternElement: Type) (OutputPatternElementReference: Type) 
   (SourceModelElement: Type) (SourceModelLink: Type) 
   (TargetModelElement: Type) (TargetModelLink: Type) :=
   {
@@ -35,16 +35,6 @@ Class TransformationEngine
 
               Return rules within given transformation. *)
       getRules: Transformation -> list Rule;
-
-      (** *** getOutputPatternElements
-
-              Return output pattern elements within given rule. *)
-      getOutputPatternElements: Rule -> list OutputPatternElement;
-
-      (** *** getOutputPatternElementReferences
-
-              Return output pattern references within given rule *)
-      getOutputPatternElementReferences: OutputPatternElement -> list OutputPatternElementReference;
 
     (** ** Transformation Engine Functions *)
 
@@ -212,7 +202,7 @@ Class TransformationEngine
   }.
 
 Theorem match_functionality :  
-  forall (Transformation Rule OutputPatternElement OutputPatternElementReference SourceModelElement SourceModelLink TargetModelElement TargetModelLink: Type) (eng: TransformationEngine Transformation Rule OutputPatternElement OutputPatternElementReference SourceModelElement SourceModelLink TargetModelElement TargetModelLink)
+  forall (Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink: Type) (eng: TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink)
     (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r1: Rule) (r2: Rule),
           matchPattern tr sm sp  = Some r1 -> matchPattern tr sm sp = Some r2 -> r1 = r2.
 Proof.
