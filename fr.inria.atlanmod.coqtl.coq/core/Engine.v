@@ -71,7 +71,7 @@ Class TransformationEngine
       (** *** applyRuleOnPattern 
 
               TODO *)      
-      applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> list TargetModelElement -> option (list TargetModelLink);
+      applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
 
     (** ** Theorems of Transformation Engine *)
 
@@ -97,10 +97,10 @@ Class TransformationEngine
         tr_surj_links : 
         forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
           tm = execute tr sm -> In t1 (allModelLinks tm) ->
-          (exists (sp : list SourceModelElement) (tel : list TargetModelElement) (tpl : list TargetModelLink) (r : Rule),
+          (exists (sp : list SourceModelElement) (tpl : list TargetModelLink) (r : Rule),
             In r (getRules tr) /\
             In t1 tpl /\
-            applyRuleOnPattern r tr sm sp tel = Some tpl /\
+            applyRuleOnPattern r tr sm sp = Some tpl /\
             incl sp (allModelElements sm) /\
             incl tpl (allModelLinks tm) /\
             In r (matchPattern tr sm sp));
@@ -127,11 +127,10 @@ Class TransformationEngine
 
                 Definition: if a rule matches, then its output model references is included in the target model *)
         outp_incl_links :
-            forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: Rule) (tes: list TargetModelElement) (tls: list TargetModelLink),
+            forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: Rule) (tls: list TargetModelLink),
               tm = execute tr sm -> In r (getRules tr) -> incl sp (allModelElements sm) ->
               In r (matchPattern tr sm sp) ->
-              instantiateRuleOnPattern r tr sm sp = Some tes ->
-              applyRuleOnPattern r tr sm sp tes = Some tls ->
+              applyRuleOnPattern r tr sm sp = Some tls ->
               incl tls (allModelLinks tm);
 
     
@@ -168,7 +167,7 @@ Class TransformationEngine
         forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) 
                (sp : list SourceModelElement) (tp : list TargetModelElement) (tls : list TargetModelLink) (r : Rule),
           tm = execute tr sm ->
-          applyRuleOnPattern r tr sm sp tp = Some tls ->
+          applyRuleOnPattern r tr sm sp = Some tls ->
           instantiateRuleOnPattern r tr sm sp = Some tp ->
           In r (matchPattern tr sm sp) ->
           applyPattern tr sm sp = Some tls;
