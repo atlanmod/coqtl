@@ -72,7 +72,7 @@ Class TransformationEngine
 
               TODO *)      
       applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
-(*
+      
     (** ** Theorems of Transformation Engine *)
 
       (** *** Soundness Theorems *)
@@ -80,7 +80,7 @@ Class TransformationEngine
         (** **** tr_surj_elements 
 
                 Definition: every model element in the target model is produced by a rule application *)
-        tr_surj_elements : 
+(*        tr_surj_elements : 
         forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
           tm = execute tr sm -> In t1 (allModelElements tm) ->
           (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
@@ -149,7 +149,17 @@ Class TransformationEngine
         match_functional :
             forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r1: list Rule) (r2: list Rule),
               matchPattern tr sm sp = r1 -> matchPattern tr sm sp = r2 -> r1 = r2;
+ *)
+      (** *** Rules *)
 
+      (** **** match_pattern_derivable **)
+      match_pattern_derivable : 
+        forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
+          tm = execute tr sm ->
+          forall (sp : list SourceModelElement)(r : Rule),
+            In r (matchPattern tr sm sp) -> 
+                                           matchRuleOnPattern r tr sm sp = return true;
+(*
         (** **** instantiate_pattern_derivable 
 
                  Definition: the result of _instantiatePattern_ can be derived from _instantiateRuleOnPattern_ and _matchPattern_ *)

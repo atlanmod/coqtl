@@ -536,6 +536,24 @@ Section CoqTL.
 
   (*Definition applyRuleOnPattern' (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
   *)  
+
+  Theorem tr_match_pattern_derivable : 
+    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
+      tm = execute tr sm ->
+      forall (sp : list SourceModelElement)(r : Rule),
+        In r (matchPattern tr sm sp) -> 
+        matchRuleOnPattern' r tr sm sp = return true.
+  Proof.
+    intros.  
+    unfold matchRuleOnPattern'.
+    apply filter_In in H0.
+    destruct H0.
+    destruct (matchRuleOnPattern r sm sp).
+    + destruct b.
+      * reflexivity.
+      * inversion H1.
+    + inversion H1.
+  Qed.
   
   Instance CoqTLEngine : 
     TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink := 
@@ -549,7 +567,7 @@ Section CoqTL.
       matchRuleOnPattern := matchRuleOnPattern';
       instantiateRuleOnPattern := instantiateRuleOnPattern';
       applyRuleOnPattern := applyRuleOnPattern;
-      (*match_pattern_derivable :=  tr_match_pattern_derivable; 
+      match_pattern_derivable :=  tr_match_pattern_derivable; (*
       instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
       apply_pattern_derivable :=  tr_apply_pattern_derivable; 
       tr_surj_elements := tr_surj_elements;
