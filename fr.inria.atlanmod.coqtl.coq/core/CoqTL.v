@@ -526,7 +526,40 @@ Section CoqTL.
       (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
       (concat (optionList2List (map (applyPattern tr sm) (allTuples tr sm)))).
 
+  (** * Certification **)
+
+  Definition matchRuleOnPattern' (r: Rule) (t: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
+    matchRuleOnPattern r sm sp.
+
+  Definition instantiateRuleOnPattern' (r: Rule) (t: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
+    instantiateRuleOnPattern r sm sp.
+
+  (*Definition applyRuleOnPattern' (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
+  *)  
   
+  Instance CoqTLEngine : 
+    TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink := 
+    {
+      getRules := Transformation_getRules;
+      execute := execute;
+      
+      matchPattern := matchPattern;
+      instantiatePattern := instantiatePattern;
+      applyPattern := applyPattern;
+      matchRuleOnPattern := matchRuleOnPattern';
+      instantiateRuleOnPattern := instantiateRuleOnPattern';
+      applyRuleOnPattern := applyRuleOnPattern;
+      (*match_pattern_derivable :=  tr_match_pattern_derivable; 
+      instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
+      apply_pattern_derivable :=  tr_apply_pattern_derivable; 
+      tr_surj_elements := tr_surj_elements;
+      tr_surj_links := tr_surj_links;
+      outp_incl_elements := outp_incl_elements;
+      outp_incl_links := outp_incl_links;
+      match_in := match_incl;
+      match_functional := match_functional;*)
+    }.
+
   
 End CoqTL.
 

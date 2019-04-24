@@ -72,7 +72,7 @@ Class TransformationEngine
 
               TODO *)      
       applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
-
+(*
     (** ** Theorems of Transformation Engine *)
 
       (** *** Soundness Theorems *)
@@ -197,7 +197,7 @@ Class TransformationEngine
 
                  Definition: remove binding, the links is a subset of tm created before. 
                  See: Soichiro Hidaka, Frédéric Jouault, Massimo Tisi. On Additivity in Transformation Languages. MODELS 2017. *)
-
+*)
   }.
 
 Theorem match_functionality :  
