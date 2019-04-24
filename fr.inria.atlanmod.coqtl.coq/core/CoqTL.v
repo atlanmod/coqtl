@@ -177,6 +177,10 @@ Section CoqTL.
     match x with
       BuildRule _ _ _ _ _ y => y
     end.
+
+  Definition Rule_findOutputPatternElement (r: Rule) (name: string) : option (OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) :=
+    find (fun(o:OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) => beq_string name (OutputPatternElement_getName o))
+         (Rule_getOutputPattern r).
   
   Definition Transformation_getRules (x : Transformation) : list Rule :=
     match x with BuildTransformation y => y end.
@@ -381,6 +385,20 @@ Section CoqTL.
               | (Some true) => true
               | _ => false end) (Transformation_getRules tr).
 
+  Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (name: string): option (TargetModelElement) :=
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        match (nth_error (evalIterator r sm sp) iter) with
+        | Some i =>
+          match (Rule_findOutputPatternElement r name) with
+          | Some o =>  evalOutputPatternElement sm sp i o
+          | None => None
+          end
+        | None => None
+        end
+      else
+        None.
+  
   Definition instantiateRuleOnPatternIter (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
@@ -452,6 +470,34 @@ Section CoqTL.
     match matchPattern tr sm sp with
     | nil => None
     | l => Some (concat (optionList2List (map (fun r => applyRuleOnPattern r tr sm sp) l)))
+    end.
+
+  (** ** Resolution **)
+  
+  (*TODO*)
+  Definition resolveIter (tr: MatchedTransformation) (sm: SourceModel) (name: string)
+             (type: TargetModelClass) (sp: list SourceModelElement) 
+             (iter : nat) : option (denoteModelClass type) :=
+    let tr := unmatchTransformation tr in
+    let matchedRule := find (fun r:Rule =>
+            match matchRuleOnPattern r sm sp with
+            | Some true =>
+              match nth_error (evalIterator r sm sp) iter with
+              | Some x =>
+                match Rule_findOutputPatternElement r name with
+                | Some x => true
+                | None => false
+                end
+              | None => false
+              end
+            | _ => false end)
+                            (Transformation_getRules tr) in
+    match matchedRule with
+    | Some r => match instantiateRuleOnPatternIterName r sm sp iter name with
+               | Some e => toModelClass type e
+               | None => None
+               end
+    | None => None
     end.
   
   (** ** Rule scheduling **)
