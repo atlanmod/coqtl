@@ -503,6 +503,10 @@ Section CoqTL.
   Definition resolve (tr: MatchedTransformation) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
     resolveIter tr sm name type sp 0.
+
+  Definition resolveAll (tr: MatchedTransformation) (sm: SourceModel) (name: string)
+             (type: TargetModelClass) (sps: list(list SourceModelElement)) : option (list (denoteModelClass type)) :=
+    Some (optionList2List (map (resolve tr sm name type) sps)).
   
   (** ** Rule scheduling **)
   
@@ -538,4 +542,5 @@ Arguments BuildOutputPatternElementReference
 
 Arguments resolveIter: default implicits.
 Arguments resolve: default implicits.
+Arguments resolveAll: default implicits.
 Arguments execute: default implicits.
