@@ -404,7 +404,7 @@ Section CoqTL.
           match (evalOutputPatternElement sm sp i ope) with
           | Some l => 
             Some (optionList2List (map ( fun (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope))
-                        => evalOutputPatternElementReference sm sp l i (BuildMatchedTransformation nil) oper
+                        => evalOutputPatternElementReference sm sp l i (matchTransformation tr) oper
                       )
                       (OutputPatternElement_getOutputElementReferences ope)))
           | None => None
