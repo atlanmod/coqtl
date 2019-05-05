@@ -46,7 +46,9 @@ examples/HSM2FSM/HSM.vo examples/HSM2FSM/HSM.glob examples/HSM2FSM/HSM.v.beautif
 examples/HSM2FSM/HSM.vio: examples/HSM2FSM/HSM.v core/utils/tTop.vio core/Metamodel.vio core/Model.vio
 examples/HSM2FSM/FSM.vo examples/HSM2FSM/FSM.glob examples/HSM2FSM/FSM.v.beautified: examples/HSM2FSM/FSM.v core/utils/tTop.vo core/Metamodel.vo core/Model.vo
 examples/HSM2FSM/FSM.vio: examples/HSM2FSM/FSM.v core/utils/tTop.vio core/Metamodel.vio core/Model.vio
-examples/HSM2FSM/HSM2FSM.vo examples/HSM2FSM/HSM2FSM.glob examples/HSM2FSM/HSM2FSM.v.beautified: examples/HSM2FSM/HSM2FSM.v core/utils/tTop.vo core/Notations.vo core/CoqTL.vo examples/HSM2FSM/HSM.vo examples/HSM2FSM/FSM.vo
-examples/HSM2FSM/HSM2FSM.vio: examples/HSM2FSM/HSM2FSM.v core/utils/tTop.vio core/Notations.vio core/CoqTL.vio examples/HSM2FSM/HSM.vio examples/HSM2FSM/FSM.vio
+examples/HSM2FSM/HSM2FSM.vo examples/HSM2FSM/HSM2FSM.glob examples/HSM2FSM/HSM2FSM.v.beautified: examples/HSM2FSM/HSM2FSM.v core/utils/tTop.vo core/Notations.vo core/CoqTL.vo examples/HSM2HSM_rec/HSM.vo examples/HSM2FSM/FSM.vo
+examples/HSM2FSM/HSM2FSM.vio: examples/HSM2FSM/HSM2FSM.v core/utils/tTop.vio core/Notations.vio core/CoqTL.vio examples/HSM2HSM_rec/HSM.vio examples/HSM2FSM/FSM.vio
 examples/HSM2FSM/HSMModel.vo examples/HSM2FSM/HSMModel.glob examples/HSM2FSM/HSMModel.v.beautified: examples/HSM2FSM/HSMModel.v core/Model.vo examples/HSM2FSM/HSM.vo
 examples/HSM2FSM/HSMModel.vio: examples/HSM2FSM/HSMModel.v core/Model.vio examples/HSM2FSM/HSM.vio
+examples/HSM2HSM_rec/HSM.vo examples/HSM2HSM_rec/HSM.glob examples/HSM2HSM_rec/HSM.v.beautified: examples/HSM2HSM_rec/HSM.v core/utils/tTop.vo core/Metamodel.vo core/Model.vo
+examples/HSM2HSM_rec/HSM.vio: examples/HSM2HSM_rec/HSM.v core/utils/tTop.vio core/Metamodel.vio core/Model.vio

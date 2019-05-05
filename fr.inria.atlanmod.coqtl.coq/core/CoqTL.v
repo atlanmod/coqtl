@@ -499,8 +499,61 @@ Section CoqTL.
     assumption.
   Qed.
 
-     
-  Theorem tr_surj_elements : 
+Theorem tr_execute_surj_elements : 
+  forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
+   tm = execute tr sm -> In t1 (allModelElements tm) -> 
+   (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
+     instantiatePattern tr sm sp = Some tp /\
+     incl sp (allModelElements sm) /\
+     In t1 tp /\
+     incl tp (allModelElements tm)).
+Proof.
+Admitted.
+
+
+Theorem tr_instantiatePattern_surj_elements : 
+ forall (tr: TransformationA) (sm : SourceModel) (tm : TargetModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (t1 : TargetModelElement),
+  incl sp (allModelElements sm) ->
+  incl tp (allModelElements tm) ->
+   instantiatePattern tr sm sp = Some tp ->
+    In t1 tp ->
+     (exists (r : RuleA),
+       In r (TransformationA_getRules tr) /\
+       matchPattern tr sm sp = Some r /\
+       instantiateRuleOnPattern r tr sm sp = Some tp).
+Proof.
+Admitted.
+
+(*   Definition instantiateRuleOnPattern (r: RuleA) (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
+    pre <- evalGuardExpressionPre r sp;
+    m <- evalGuardExpression (RuleA_getGuard r) tr sm sp;
+      if m then 
+        return optionList2List (map (evalOutputPatternElementExpression tr sm sp) (map OutputPatternElementA_getOutputPatternElementExpression (RuleA_getOutputPattern r)))
+      else
+        None. 
+
+  Definition evalOutputPatternElementExpression (tr: TransformationA) (sm: SourceModel) (sp: list SourceModelElement) (o : OutputPatternElementExpressionA): option TargetModelElement :=
+  r <- (nth_error ((TransformationA_getTransformation tr) (fun c:SourceModel => nil) sm) (OutputPatternElementExpressionA_getRule o));
+    ra <- (nth_error (TransformationA_getRules tr) (OutputPatternElementExpressionA_getRule o));
+  evalOutputPatternElementExpressionFix o r (RuleA_getInTypes ra) sm sp. 
+*)
+
+Theorem tr_instantiateRuleOnPattern_surj_elements : 
+ forall (tr: TransformationA) (sm : SourceModel) (tm : TargetModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (t1 : TargetModelElement) (r : RuleA),
+  incl sp (allModelElements sm) ->
+  incl tp (allModelElements tm) ->
+  instantiateRuleOnPattern r tr sm sp = Some tp ->
+  In t1 tp ->
+   (evalGuardExpressionPre r sp = Some true /\
+    evalGuardExpression (RuleA_getGuard r) tr sm sp = Some true /\
+    (exists (expr: OutputPatternElementExpressionA),
+        In expr ((map OutputPatternElementA_getOutputPatternElementExpression (RuleA_getOutputPattern r))) /\
+        (evalOutputPatternElementExpression tr sm sp expr) = Some t1 )).
+Proof.
+Admitted. 
+
+
+Theorem tr_surj_elements : 
     forall (tr: TransformationA) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
       tm = execute tr sm -> In t1 (allModelElements tm) -> 
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : RuleA),
