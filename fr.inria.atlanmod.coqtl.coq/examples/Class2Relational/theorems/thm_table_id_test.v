@@ -45,7 +45,12 @@ Proof.
                     rename H into Heval.
                     unfold evalOutputPatternElementExpression in Heval.
 
-(* The problem here is that:
+(* 
+The goal of Heval:
+return (RelationalMetamodel_toEObjectOfEClass TableClass (BuildTable (getClassId c1) (getClassName c1))) =
+        return t1
+
+The problem here is that:
      the signature of evalOutputPatternElementExpression does not have Rule as input,
      instead it computes a rule based on the given outexpression.
      so there are at least two Rules in the context, but Coq have no idea they are the same.
