@@ -537,6 +537,44 @@ Section CoqTL.
   (*Definition applyRuleOnPattern' (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
   *)  
 
+  Theorem tr_execute_surj_elements : 
+  forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (te : TargetModelElement),
+   tm = execute tr sm -> In te (allModelElements tm) -> 
+   (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
+     instantiatePattern tr sm sp = Some tp /\
+     incl sp (allModelElements sm) /\
+     In te tp /\
+     incl tp (allModelElements tm)).
+  Proof.
+  Admitted.
+
+  Theorem tr_instantiatePattern_surj_elements : 
+    forall (tr: Transformation) (sm : SourceModel) (tm : TargetModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
+      incl sp (allModelElements sm) ->
+      incl tp (allModelElements tm) ->
+      instantiatePattern tr sm sp = Some tp ->
+      In te tp ->
+      (exists (r : Rule),
+          In r (Transformation_getRules tr) /\  (*TODO seems redundent*)
+          In r (matchPattern tr sm sp) /\
+          instantiateRuleOnPattern r sm sp = Some tp).
+  Proof.
+  Admitted.
+
+  Theorem tr_instantiateRuleOnPattern_surj_elements : 
+ forall (tr: Transformation) (sm : SourceModel) (tm : TargetModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement) (r : Rule),
+  incl sp (allModelElements sm) ->
+  incl tp (allModelElements tm) ->
+  instantiateRuleOnPattern r sm sp = Some tp ->
+  In te tp ->
+   (evalGuardExpressionPre r sp = Some true /\
+    evalGuardExpression (RuleA_getGuard r) tr sm sp = Some true /\
+    (exists (expr: OutputPatternElementExpressionA),
+        In expr ((map OutputPatternElementA_getOutputPatternElementExpression (RuleA_getOutputPattern r))) /\
+        (evalOutputPatternElementExpression tr sm sp expr) = Some t1 )).
+  Proof.
+  Admitted. 
+  
   Theorem tr_match_pattern_derivable : 
     forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
       tm = execute tr sm ->
