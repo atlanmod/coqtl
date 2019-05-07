@@ -546,6 +546,7 @@ Section CoqTL.
   Proof.
     intros.  
     unfold matchRuleOnPattern'.
+    unfold matchPattern in H0.
     apply filter_In in H0.
     destruct H0.
     destruct (matchRuleOnPattern r sm sp).
