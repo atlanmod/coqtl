@@ -567,11 +567,12 @@ Section CoqTL.
   incl tp (allModelElements tm) ->
   instantiateRuleOnPattern r sm sp = Some tp ->
   In te tp ->
-   (evalGuardExpressionPre r sp = Some true /\
-    evalGuardExpression (RuleA_getGuard r) tr sm sp = Some true /\
-    (exists (expr: OutputPatternElementExpressionA),
-        In expr ((map OutputPatternElementA_getOutputPatternElementExpression (RuleA_getOutputPattern r))) /\
-        (evalOutputPatternElementExpression tr sm sp expr) = Some t1 )).
+   (In r (matchPattern tr sm sp) /\
+    evalGuard r sm sp = Some true /\
+    (exists (o: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (it: (Rule_getIteratorType r)),
+        In it (evalIterator r sm sp) /\
+        In o (Rule_getOutputPattern r) /\
+        (evalOutputPatternElement sm sp it o) = Some te)).
   Proof.
   Admitted. 
   
