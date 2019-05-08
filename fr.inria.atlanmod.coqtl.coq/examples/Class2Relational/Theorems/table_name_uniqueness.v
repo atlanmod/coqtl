@@ -35,12 +35,13 @@ Proof.
       destruct sp eqn:sp_ca.
       -- inversion Hmatch.  (* TODO theorem at this point *)
       -- destruct l eqn:l_ca.
-         --- apply tr_instantiateRuleOnPattern_surj_elements with (te:=t1) (tm:=rm) in Hinst.  
-              ----  destruct Hinst as [Hgpre].
+         --- apply tr_instantiateRuleOnPattern_surj_elements with (te:=t1) (tm:=rm) (tr:=Class2Relational) in Hinst.  
+              ----  destruct Hinst as [HrinMatch].
                     destruct H as [Hguard].
-                    destruct H as [outexpr].
-                    destruct H as [HoutinOuts].
-                    destruct H as [Ha].
+                    destruct H as [out].
+                    destruct H as [it].
+                    destruct H as [Hit].
+                    destruct H as [Hout].
                     rename H into Heval.
                     unfold evalOutputPatternElement in Heval.
                     crush.  (* TODO check whats going on here *)
@@ -56,7 +57,6 @@ Proof.
                                   contradiction.
                           ------- simpl in Heval.
                                   admit.
-              ---- admit.
               ---- assumption.
               ---- assumption.
               ---- assumption.
