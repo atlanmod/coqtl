@@ -33,7 +33,10 @@ Proof.
   - { 
       destruct inst as [r]. destruct H as [Hrintr]. destruct H as [Hmatch]. rename H into Hinst.
       destruct sp eqn:sp_ca.
-      -- inversion Hmatch.  (* TODO theorem at this point *)
+      -- assert ((matchPattern Class2Relational cm nil) = nil).
+                {apply tr_matchPattern_sp_nil. }
+         rewrite H in Hmatch.
+         contradiction.
       -- destruct l eqn:l_ca.
          --- apply tr_instantiateRuleOnPattern_surj_elements with (te:=t1) (tm:=rm) (tr:=Class2Relational) in Hinst.  
               ----  destruct Hinst as [HrinMatch].
