@@ -46,20 +46,30 @@ Proof.
                     destruct H as [Hit].
                     destruct H as [Hout].
                     rename H into Heval.
-                    unfold evalOutputPatternElement in Heval.
-                    crush.  (* TODO check whats going on here *)
-                    ----- destruct c eqn: c_ca.
-                          destruct c0 eqn: c0_ca.
-                          ------- simpl in Heval.
-                                  admit.
-                          ------- simpl in Heval.
-                                  contradiction.
-                    ----- destruct c eqn: c_ca.
-                          destruct c0 eqn: c0_ca.
-                          ------- simpl in Heval.
-                                  contradiction.
-                          ------- simpl in Heval.
-                                  admit.
+                    destruct c eqn: c_ca;
+                    destruct c0 eqn: c0_ca.
+                    ----- (* ClassEClass *)
+                          unfold Class2Relational in Hrintr.
+                          destruct Hrintr as [r1|rrest].
+                          ------ admit.
+                          ------ destruct rrest as [r2|ctrdct].
+                                 ------- rewrite <- r2 in Hguard.
+                                         unfold  evalGuard in Hguard.
+                                         simpl in Hguard.
+                                         (* its ok to inversion here, or chose a better tactic*)
+                                         inversion Hguard. 
+                                 ------- contradiction.
+                    ----- (* AttributeEClass *)
+                          unfold Class2Relational in Hrintr.
+                          destruct Hrintr as [r1|rrest].
+                          ------ rewrite <- r1 in Hguard.
+                                 unfold  evalGuard in Hguard.
+                                 simpl in Hguard.
+                                 (* its ok to inversion here, or chose a better tactic*)
+                                 inversion Hguard. 
+                          ------ destruct rrest as [r2|ctrdct].
+                                 ------- admit.
+                                 ------- contradiction.
               ---- assumption.
               ---- assumption.
               ---- assumption.
