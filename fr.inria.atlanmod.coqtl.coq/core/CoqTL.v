@@ -594,7 +594,13 @@ Section CoqTL.
       * inversion H1.
     + inversion H1.
   Qed.
-  
+
+  Theorem tr_matchPattern_sp_nil : 
+    forall (tr: Transformation) (sm : SourceModel),
+      (matchPattern tr sm nil) = nil.
+  Proof.
+  Admitted.
+     
   Instance CoqTLEngine : 
     TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink := 
     {
@@ -623,6 +629,7 @@ End CoqTL.
 
 Arguments MatchedTransformation: default implicits.
 
+
 Arguments BuildTransformation
           [SourceModelElement] [SourceModelLink] [SourceModelClass] [SourceModelReference] _
           [TargetModelElement] [TargetModelLink] [TargetModelClass] [TargetModelReference] _.
@@ -636,10 +643,31 @@ Arguments BuildOutputPatternElement
 Arguments BuildOutputPatternElementReference
           [SourceModelElement] [SourceModelLink] [SourceModelClass] [SourceModelReference] _
           [TargetModelElement] [TargetModelLink] [TargetModelClass] [TargetModelReference] _
-          _ [IterType].
+          _ [IterType]. 
 
 Arguments resolveIter: default implicits.
 Arguments resolve: default implicits.
 Arguments resolveAllIter: default implicits.
 Arguments resolveAll: default implicits.
+
+
 Arguments execute: default implicits.
+Arguments matchPattern: default implicits.
+Arguments instantiatePattern: default implicits.
+Arguments instantiateRuleOnPattern: default implicits.
+Arguments evalGuard: default implicits.
+Arguments evalIterator: default implicits.
+Arguments evalOutputPatternElement: default implicits.
+Arguments evalOutputPatternElementFix: default implicits.
+
+Arguments Transformation: default implicits.
+Arguments Transformation_getRules: default implicits.
+
+Arguments Rule: default implicits.
+Arguments Rule_getInTypes: default implicits.
+Arguments Rule_getIteratorType: default implicits.
+Arguments Rule_getOutputPattern: default implicits.
+
+Arguments OutputPatternElement: default implicits.
+Arguments OutputPatternElement_getOutType: default implicits.
+Arguments OutputPatternElement_getOutPatternElement: default implicits.
