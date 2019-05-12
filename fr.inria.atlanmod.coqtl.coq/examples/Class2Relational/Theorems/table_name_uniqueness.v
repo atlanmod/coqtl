@@ -13,6 +13,7 @@ Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
 
+From mathcomp Require Import ssreflect ssrfun ssrbool eqtype.
 
 
 Theorem Table_name_uniqueness :
@@ -51,7 +52,21 @@ Proof.
                     ----- (* ClassEClass *)
                           unfold Class2Relational in Hrintr.
                           destruct Hrintr as [r1|rrest].
-                          ------ admit.
+                          ------  revert Hit.
+                                  revert Heval.
+                                  revert it.
+                                  revert Hout.
+                                  revert out.
+                                  rewrite <- r1.
+                                  intros.
+                                  simpl in Hout.
+                                  destruct Hout.
+                                  + rewrite <- H in Heval.
+                                    unfold evalOutputPatternElement in Heval.
+                                    simpl in Heval.
+                                    admit.
+                                  + contradiction.
+                                  
                           ------ destruct rrest as [r2|ctrdct].
                                  ------- rewrite <- r2 in Hguard.
                                          unfold  evalGuard in Hguard.
