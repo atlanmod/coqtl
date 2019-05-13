@@ -600,7 +600,14 @@ Section CoqTL.
       (matchPattern tr sm nil) = nil.
   Proof.
   Admitted.
-     
+
+  Theorem tr_matchPattern_sp_gt_maxArity : 
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      (length sp) > (maxArity tr) ->
+      (matchPattern tr sm sp) = nil.
+  Proof.
+  Admitted.
+
   Instance CoqTLEngine : 
     TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink := 
     {
@@ -662,6 +669,7 @@ Arguments evalOutputPatternElementFix: default implicits.
 
 Arguments Transformation: default implicits.
 Arguments Transformation_getRules: default implicits.
+Arguments maxArity: default implicits.
 
 Arguments Rule: default implicits.
 Arguments Rule_getInTypes: default implicits.
