@@ -1,4 +1,5 @@
 Require Import Coq.Logic.Eqdep_dec.
+Require Import Coq.Arith.Gt.
 Require Import Coq.Arith.EqNat.
 Require Import List.
 
@@ -15,7 +16,7 @@ Require Import examples.Class2Relational.RelationalMetamodel.
 
 
 
-Theorem Table_name_uniqueness :
+Theorem Table_id_defindedness :
   forall (cm : ClassModel) (rm : RelationalModel), 
     rm = execute Class2Relational cm (* transformation *) ->
       (forall (c1 : ClassMetamodel_EObject), In c1 (@allModelElements _ _ cm) -> ClassMetamodel_getId c1 > 0) (* precondition *) ->
@@ -33,8 +34,7 @@ Proof.
   - { 
       destruct inst as [r]. destruct H as [Hrintr]. destruct H as [Hmatch]. rename H into Hinst.
       destruct sp eqn:sp_ca.
-      -- assert ((matchPattern Class2Relational cm nil) = nil).
-                {apply tr_matchPattern_sp_nil. }
+      -- assert ((matchPattern Class2Relational cm nil) = nil). {apply tr_matchPattern_sp_nil. }
          rewrite H in Hmatch.
          contradiction.
       -- destruct l eqn:l_ca.
@@ -51,7 +51,28 @@ Proof.
                     ----- (* ClassEClass *)
                           unfold Class2Relational in Hrintr.
                           destruct Hrintr as [r1|rrest].
-                          ------ admit.
+                          ------  revert Hit.
+                                  revert Heval.
+                                  revert it.
+                                  revert Hout.
+                                  revert out.
+                                  rewrite <- r1.
+                                  intros.
+                                  simpl in Hout.
+                                  destruct Hout.
+                                  + rewrite <- H in Heval.
+                                    unfold evalOutputPatternElement in Heval.
+                                    simpl in Heval.
+                                    (* its ok to inversion here, or chose a better tactic*)
+                                    inversion Heval.
+                                    simpl.
+                                    assert (In c ([ClassMetamodel_BuildEObject ClassEClass c1])). { simpl. left. symmetry. assumption. }
+                                    apply Hinsm in H0. 
+                                    apply Hpre in H0.
+                                    unfold ClassMetamodel_getId in H0.
+                                    rewrite  c_ca in H0.
+                                    assumption.
+                                  + contradiction.
                           ------ destruct rrest as [r2|ctrdct].
                                  ------- rewrite <- r2 in Hguard.
                                          unfold  evalGuard in Hguard.
@@ -68,14 +89,39 @@ Proof.
                                  (* its ok to inversion here, or chose a better tactic*)
                                  inversion Hguard. 
                           ------ destruct rrest as [r2|ctrdct].
-                                 ------- admit.
+                                 ------- revert Hit.
+                                         revert Heval.
+                                         revert it.
+                                         revert Hout.
+                                         revert out.
+                                         rewrite <- r2.
+                                         intros.
+                                         simpl in Hout.
+                                         destruct Hout.
+                                         + rewrite <- H in Heval.
+                                           unfold evalOutputPatternElement in Heval.
+                                           simpl in Heval.
+                                           (* its ok to inversion here, or chose a better tactic*)
+                                           inversion Heval.
+                                           simpl.
+                                           assert (In c ([ClassMetamodel_BuildEObject AttributeEClass c1])). { simpl. left. symmetry. assumption. }
+                                           apply Hinsm in H0. 
+                                           apply Hpre in H0.
+                                           unfold ClassMetamodel_getId in H0.
+                                           rewrite  c_ca in H0.
+                                           assumption.
+                                         + contradiction.
                                  ------- contradiction.
               ---- assumption.
               ---- assumption.
               ---- assumption.
-         --- inversion Hmatch.
+         --- assert ((length sp) > (maxArity Class2Relational)). { rewrite sp_ca. unfold maxArity. simpl. apply gt_n_S. apply gt_Sn_O. }
+             apply tr_matchPattern_sp_gt_maxArity with (sm:=cm) in H.
+             rewrite sp_ca in H.
+             rewrite H in Hmatch.
+             contradiction.
     }
   - assumption.
   - assumption.
   - assumption.
-Admitted.
+Qed.
