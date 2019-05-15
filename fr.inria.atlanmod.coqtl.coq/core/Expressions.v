@@ -14,16 +14,14 @@ Section Exp.
 
   Variables (ModelElement ModelLink ModelClass ModelReference: Type)
             (mm: Metamodel ModelElement ModelLink ModelClass ModelReference).
-  
-  Definition Model := Model ModelElement ModelLink.
-  
+    
   Fixpoint denoteFuncOfClasses (sclasses : list ModelClass) (otype: Type) :=
     match sclasses with
     | nil => otype
     | cons class classes' => (denoteModelClass class) -> denoteFuncOfClasses classes' otype
     end.
 
-  Fixpoint evalFuncOfClasses (intypes: list ModelClass) (otype: Type) (f: denoteFuncOfClasses intypes otype) (el: list ModelElement) : option otype.
+  Fixpoint evalFuncOfClassesFix (intypes: list ModelClass) (otype: Type) (f: denoteFuncOfClasses intypes otype) (el: list ModelElement) : option otype.
   Proof.
     destruct intypes eqn:intypes1, el eqn:el1.
     - exact None.
@@ -37,9 +35,12 @@ Section Exp.
       + exact None.
       + destruct (toModelClass m m0) eqn:tmc.
         * rewrite <- intypes2 in f.
-          exact (evalFuncOfClasses l otype (f d) l0).
+          exact (evalFuncOfClassesFix l otype (f d) l0).
         * exact None.
   Defined.
+
+  Definition evalFuncOfClasses (m: Model ModelElement ModelLink) (intypes: list ModelClass) (otype: Type) (f: (Model ModelElement ModelLink) -> (denoteFuncOfClasses intypes otype)) (el: list ModelElement) : option otype :=
+    evalFuncOfClassesFix intypes otype (f m) el.
   
 End Exp.
 

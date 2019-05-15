@@ -263,19 +263,19 @@ Section CoqTL.
   (** ** Expression Evaluation **)
   
   Definition evalGuard (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    evalFuncOfClasses smm (Rule_getInTypes r) bool ((Rule_getGuard r) sm) sp.
+    evalFuncOfClasses smm sm (Rule_getInTypes r) bool (Rule_getGuard r) sp.
   
   Definition evalIterator (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
     list (Rule_getIteratorType r).
   Proof.
     destruct r eqn:hr.
-    exact (optionListToList (evalFuncOfClasses smm InElTypes (list IterType) (i sm) sp)).
+    exact (optionListToList (evalFuncOfClasses smm sm InElTypes (list IterType) i sp)).
   Defined.
 
   Definition evalOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (sm: SourceModel) (sp: list SourceModelElement) (iter: IterType) (o: OutputPatternElement InElTypes IterType) 
     : option TargetModelElement :=
     let val := 
-        evalFuncOfClasses smm InElTypes (denoteModelClass (OutputPatternElement_getOutType o)) ((OutputPatternElement_getOutPatternElement o) iter sm) sp in
+        evalFuncOfClasses smm sm InElTypes (denoteModelClass (OutputPatternElement_getOutType o)) ((OutputPatternElement_getOutPatternElement o) iter) sp in
     match val with
     | None => None
     | Some r => Some (toModelElement (OutputPatternElement_getOutType o) r)
@@ -287,8 +287,8 @@ Section CoqTL.
              (o: OutputPatternElementReference InElTypes IterType TargetType) 
     : option TargetModelLink :=
     let val :=
-    evalFuncOfClasses smm InElTypes ((denoteModelClass TargetType) -> option (denoteModelReference (OutputPatternElementReference_getRefType o)))
-                      ((OutputPatternElementReference_getOutputReference o) tr iter sm) sp in
+    evalFuncOfClasses smm sm InElTypes ((denoteModelClass TargetType) -> option (denoteModelReference (OutputPatternElementReference_getRefType o)))
+                      ((OutputPatternElementReference_getOutputReference o) tr iter) sp in
     match val with
     | None => None
     | Some r =>
