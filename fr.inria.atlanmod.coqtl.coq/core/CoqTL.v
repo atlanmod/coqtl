@@ -525,7 +525,7 @@ Section CoqTL.
 
   Theorem tr_evalGuardFix_sp_nil : 
     forall (sm : SourceModel) (r: Rule),
-      evalGuardFix (Rule_getInTypes r) (Rule_getGuard r sm) nil = None.
+      evalGuard r sm nil = None.
   Proof.
     intros.
     destruct r.
@@ -536,7 +536,7 @@ Section CoqTL.
   Theorem tr_evalGuardFix_sp_gt_maxArity : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       (length sp) > (length (Rule_getInTypes r)) ->
-      evalGuardFix (Rule_getInTypes r) (Rule_getGuard r sm) sp = None.
+      evalGuard r sm sp = None.
   Proof.
     intros.
     destruct r.
@@ -554,8 +554,7 @@ Section CoqTL.
     - auto.
     - simpl.
       unfold matchRuleOnPattern.
-      unfold evalGuard.
-      assert (evalGuardFix (Rule_getInTypes a) (Rule_getGuard a sm) nil = None).
+      assert (evalGuard a sm nil = None).
       { apply tr_evalGuardFix_sp_nil. }
       rewrite H.
       apply IHl.
@@ -569,7 +568,6 @@ Section CoqTL.
     intros.
     unfold matchPattern.
     unfold matchRuleOnPattern.
-    unfold evalGuard.
     destruct tr.
     induction l.
     - simpl; auto.
@@ -577,7 +575,7 @@ Section CoqTL.
       { assert (maxArity (BuildTransformation (a :: l)) >= length (Rule_getInTypes a) ).
         { apply  max_list_upperBound. crush. }
         crush. }
-      assert (evalGuardFix  (Rule_getInTypes a) (Rule_getGuard a sm) sp = None).
+      assert (evalGuard a sm sp = None).
       { apply tr_evalGuardFix_sp_gt_maxArity. exact H0. }
       simpl.
       rewrite H1.
