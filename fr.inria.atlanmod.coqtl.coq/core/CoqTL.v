@@ -497,17 +497,37 @@ Section CoqTL.
   Qed.
 
   Theorem tr_instantiatePattern_surj_elements : 
-    forall (tr: Transformation) (sm : SourceModel) (tm : TargetModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
-      incl sp (allModelElements sm) ->
-      incl tp (allModelElements tm) ->
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
       instantiatePattern tr sm sp = Some tp ->
       In te tp ->
-      (exists (r : Rule),
-          In r (Transformation_getRules tr) /\  (*TODO seems redundent*)
+      (exists (r : Rule) (tp1 : list TargetModelElement),
           In r (matchPattern tr sm sp) /\
-          instantiateRuleOnPattern r sm sp = Some tp).
+          instantiateRuleOnPattern r sm sp = Some tp1 /\
+          incl tp1 tp /\
+          In te tp1).
   Proof.
-  Admitted.
+    intros.
+    unfold instantiatePattern in H.
+    destruct (matchPattern tr sm sp) eqn:mtch.
+    - inversion H.
+    - Arguments optionList2List : simpl never.
+      Arguments map : simpl never.
+      inversion H.
+      rewrite <- H2 in H0.
+      apply concat_map_option_exists in H0.
+      destruct H0.
+      exists x.
+      destruct H0.
+      destruct (instantiateRuleOnPattern x sm sp) eqn:inst.
+      + exists l0.
+        split. assumption.
+        split. reflexivity.
+        split. apply concat_map_option_incl with (a:=x).
+        * assumption.
+        * assumption.
+        * assumption.
+      + contradiction.
+  Qed.
 
   Theorem tr_instantiateRuleOnPattern_surj_elements : 
  forall (tr: Transformation) (sm : SourceModel) (tm : TargetModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement) (r : Rule),
