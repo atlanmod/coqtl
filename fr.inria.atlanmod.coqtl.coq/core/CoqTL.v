@@ -266,11 +266,11 @@ Section CoqTL.
     evalFuncOfClasses smm sm (Rule_getInTypes r) bool (Rule_getGuard r) sp.
   
   Definition evalIterator (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
-    list (Rule_getIteratorType r).
-  Proof.
-    destruct r eqn:hr.
-    exact (optionListToList (evalFuncOfClasses smm sm InElTypes (list IterType) i sp)).
-  Defined.
+    list (Rule_getIteratorType r) :=
+    optionListToList
+      (evalFuncOfClasses
+         smm sm
+         (Rule_getInTypes r) (list (Rule_getIteratorType r)) (Rule_getIteratedList r) sp).
 
   Definition evalOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (sm: SourceModel) (sp: list SourceModelElement) (iter: IterType) (o: OutputPatternElement InElTypes IterType) 
     : option TargetModelElement :=
@@ -474,7 +474,27 @@ Section CoqTL.
      In te tp /\
      incl tp (allModelElements tm)).
   Proof.
-  Admitted.
+    intros.
+    rewrite H in H0.
+    simpl in H0.
+    apply concat_map_option_exists in H0.
+    destruct H0.
+    exists x.
+    destruct H0.
+    destruct (instantiatePattern tr sm x) eqn:inst.
+    - exists l.
+      split.
+      + reflexivity.
+      + unfold allTuples in H0.
+        split. apply tuples_up_to_n_incl with (n:=(maxArity tr)). assumption.
+        split. assumption.
+        unfold execute in H.
+        rewrite H. simpl.
+        apply concat_map_option_incl with (a:=x).
+        * assumption.
+        * assumption.
+    - contradiction.
+  Qed.
 
   Theorem tr_instantiatePattern_surj_elements : 
     forall (tr: Transformation) (sm : SourceModel) (tm : TargetModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
@@ -521,16 +541,6 @@ Section CoqTL.
       * reflexivity.
       * inversion H1.
     + inversion H1.
-  Qed.
-
-  Theorem tr_evalGuardFix_sp_nil : 
-    forall (sm : SourceModel) (r: Rule),
-      evalGuardFix (Rule_getInTypes r) (Rule_getGuard r sm) nil = None.
-  Proof.
-    intros.
-    destruct r.
-    simpl.
-    destruct InElTypes; auto.
   Qed.
 
   Theorem tr_evalGuardFix_sp_gt_maxArity : 
