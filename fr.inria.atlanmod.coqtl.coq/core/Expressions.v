@@ -24,24 +24,22 @@ Section Exp.
   Fixpoint evalFuncOfClassesFix (intypes: list ModelClass) (otype: Type) (f: denoteFuncOfClasses intypes otype) (el: list ModelElement) : option otype.
   Proof.
     destruct intypes eqn:intypes1, el eqn:el1.
+    - exact (Some f).
     - exact None.
     - exact None.
-    - exact None.
-    - destruct l eqn:intypes2, l0 eqn:el2.
-      + destruct (toModelClass m m0) eqn:tmc.
+    - destruct (toModelClass m m0) eqn:tmc.
+      + destruct l eqn:intypes2, l0 eqn:el2.
         * exact (Some (f d)).
         * exact None.
-      + exact None.
-      + exact None.
-      + destruct (toModelClass m m0) eqn:tmc.
+        * exact None.
         * rewrite <- intypes2 in f.
           exact (evalFuncOfClassesFix l otype (f d) l0).
-        * exact None.
+      + exact None.
   Defined.
 
   Definition evalFuncOfClasses (m: Model ModelElement ModelLink) (intypes: list ModelClass) (otype: Type) (f: (Model ModelElement ModelLink) -> (denoteFuncOfClasses intypes otype)) (el: list ModelElement) : option otype :=
     evalFuncOfClassesFix intypes otype (f m) el.
-  
+
 End Exp.
 
 Arguments denoteFuncOfClasses: default implicits.
