@@ -474,7 +474,27 @@ Section CoqTL.
      In te tp /\
      incl tp (allModelElements tm)).
   Proof.
-  Admitted.
+    intros.
+    rewrite H in H0.
+    simpl in H0.
+    apply concat_map_option_exists in H0.
+    destruct H0.
+    exists x.
+    destruct H0.
+    destruct (instantiatePattern tr sm x) eqn:inst.
+    - exists l.
+      split.
+      + reflexivity.
+      + unfold allTuples in H0.
+        split. apply tuples_up_to_n_incl with (n:=(maxArity tr)). assumption.
+        split. assumption.
+        unfold execute in H.
+        rewrite H. simpl.
+        apply concat_map_option_incl with (a:=x).
+        * assumption.
+        * assumption.
+    - contradiction.
+  Qed.
 
   Theorem tr_instantiatePattern_surj_elements : 
     forall (tr: Transformation) (sm : SourceModel) (tm : TargetModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
