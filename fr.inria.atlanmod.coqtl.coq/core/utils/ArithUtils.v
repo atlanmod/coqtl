@@ -73,8 +73,28 @@ Lemma max_list_upperBound : forall l a ,
   In a l ->
   a <= max l.
 Proof.
-Admitted.
-      
+  intros.
+  induction l.
+  - contradiction.
+  - case (ble_nat a0 (max l)) eqn: ca.
+    -- unfold max.
+       fold max.
+       rewrite ca.
+       inversion H.
+       --- rewrite  H0 in ca.
+           apply ble_nat_true in ca.
+           exact ca
+       --- apply IHl. exact H0.
+    -- unfold max.
+       fold max.
+       rewrite ca.
+       inversion H.
+       --- omega.
+       --- apply IHl in H0.
+           apply ble_nat_false in ca.
+           omega.
+Qed.
+         
 Fixpoint indexes (length: nat): list nat :=
   match length with
   | 0 => nil
