@@ -61,13 +61,20 @@ induction n; intros.
      assumption.
 Qed.
 
+
+
 Fixpoint max (l : list nat) : nat :=
   match l with
   | nil => 0
-  | a::nil => a
   | a::m => let b:= max m in if ble_nat a b then b else a
   end.
 
+Lemma max_list_upperBound : forall l a ,
+  In a l ->
+  a <= max l.
+Proof.
+Admitted.
+      
 Fixpoint indexes (length: nat): list nat :=
   match length with
   | 0 => nil
