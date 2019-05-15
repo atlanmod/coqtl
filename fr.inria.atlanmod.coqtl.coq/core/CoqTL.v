@@ -543,7 +543,7 @@ Section CoqTL.
     + inversion H1.
   Qed.
 
-  Theorem tr_evalGuardFix_sp_nil : 
+  Theorem tr_evalGuard_sp_nil : 
     forall (sm : SourceModel) (r: Rule),
       evalGuard r sm nil = None.
   Proof.
@@ -551,9 +551,9 @@ Section CoqTL.
     destruct r.
     simpl.
     destruct InElTypes; auto.
-  Qed.
+  Admitted.
 
-  Theorem tr_evalGuardFix_sp_gt_maxArity : 
+  Theorem tr_evalGuard_sp_gt_maxArity : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       (length sp) > (length (Rule_getInTypes r)) ->
       evalGuard r sm sp = None.
@@ -575,7 +575,7 @@ Section CoqTL.
     - simpl.
       unfold matchRuleOnPattern.
       assert (evalGuard a sm nil = None).
-      { apply tr_evalGuardFix_sp_nil. }
+      { apply tr_evalGuard_sp_nil. }
       rewrite H.
       apply IHl.
   Qed.
