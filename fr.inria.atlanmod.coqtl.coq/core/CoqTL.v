@@ -595,19 +595,77 @@ Section CoqTL.
     + inversion H1.
   Qed.
 
+  Theorem tr_evalGuardFix_sp_nil : 
+    forall (sm : SourceModel) (r: Rule),
+      evalGuardFix (Rule_getInTypes r) (Rule_getGuard r sm) nil = None.
+  Proof.
+    intros.
+    destruct r.
+    simpl.
+    destruct InElTypes; auto.
+  Qed.
+
+  Theorem tr_evalGuardFix_sp_gt_maxArity : 
+    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+      (length sp) > (length (Rule_getInTypes r)) ->
+      evalGuardFix (Rule_getInTypes r) (Rule_getGuard r sm) sp = None.
+  Proof.
+    intros.
+    destruct r.
+    simpl.
+
+  Admitted.
+      
   Theorem tr_matchPattern_sp_nil : 
     forall (tr: Transformation) (sm : SourceModel),
       (matchPattern tr sm nil) = nil.
   Proof.
-  Admitted.
-
+    intros.
+    unfold matchPattern.
+    induction (Transformation_getRules tr).
+    - auto.
+    - simpl.
+      unfold matchRuleOnPattern.
+      unfold evalGuard.
+      assert (evalGuardFix (Rule_getInTypes a) (Rule_getGuard a sm) nil = None).
+      { apply tr_evalGuardFix_sp_nil. }
+      rewrite H.
+      apply IHl.
+  Qed.
+  
   Theorem tr_matchPattern_sp_gt_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       (length sp) > (maxArity tr) ->
       (matchPattern tr sm sp) = nil.
   Proof.
-  Admitted.
+    intros.
+    unfold matchPattern.
+    unfold matchRuleOnPattern.
+    unfold evalGuard.
+    destruct tr.
+    induction l.
+    - simpl; auto.
+    - assert (length sp > length (Rule_getInTypes a)).
+      { assert (maxArity (BuildTransformation (a :: l)) >= length (Rule_getInTypes a) ).
+        { apply  max_list_upperBound. crush. }
+        crush. }
+      assert (evalGuardFix  (Rule_getInTypes a) (Rule_getGuard a sm) sp = None).
+      { apply tr_evalGuardFix_sp_gt_maxArity. exact H0. }
+      simpl.
+      rewrite H1.
+      apply IHl.
+      unfold maxArity in H.
+      simpl in H.
+      case ( ble_nat (Datatypes.length (Rule_getInTypes a))
+          (max (map (Datatypes.length (A:=SourceModelClass)) (map Rule_getInTypes l)))) eqn: ca_max.
+      -- crush.
+      -- apply ble_nat_false in ca_max.
+         unfold maxArity.
+         simpl.
+         crush.
+  Qed.      
 
+      
   Instance CoqTLEngine : 
     TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink := 
     {
