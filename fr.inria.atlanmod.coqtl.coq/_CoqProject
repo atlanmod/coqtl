@@ -13,6 +13,7 @@ core/utils/CpdtTactics.v
 core/Metamodel.v
 core/Model.v
 core/Engine.v
+core/Expressions.v
 core/CoqTL.v
 
 -R "examples/Class2Relational" examples.Class2Relational
