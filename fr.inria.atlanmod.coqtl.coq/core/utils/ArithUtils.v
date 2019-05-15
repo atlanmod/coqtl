@@ -83,7 +83,7 @@ Proof.
        inversion H.
        --- rewrite  H0 in ca.
            apply ble_nat_true in ca.
-           exact ca
+           exact ca.
        --- apply IHl. exact H0.
     -- unfold max.
        fold max.
