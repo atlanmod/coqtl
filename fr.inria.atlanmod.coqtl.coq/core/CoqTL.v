@@ -362,7 +362,7 @@ Section CoqTL.
     m <- matchRuleOnPattern r sm sp;
       if m then
         match (nth_error (evalIterator r sm sp) iter) with
-        | Some i =>
+         | Some i =>
           match (evalOutputPatternElement sm sp i ope) with
           | Some l => 
             Some (optionList2List (map ( fun (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope))
@@ -530,18 +530,23 @@ Section CoqTL.
   Qed.
 
   Theorem tr_instantiateRuleOnPattern_surj_elements : 
- forall (tr: Transformation) (sm : SourceModel) (tm : TargetModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement) (r : Rule),
-  incl sp (allModelElements sm) ->
-  incl tp (allModelElements tm) ->
-  instantiateRuleOnPattern r sm sp = Some tp ->
-  In te tp ->
-   (In r (matchPattern tr sm sp) /\
-    evalGuard r sm sp = Some true /\
-    (exists (o: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (it: (Rule_getIteratorType r)),
-        In it (evalIterator r sm sp) /\
-        In o (Rule_getOutputPattern r) /\
-        (evalOutputPatternElement sm sp it o) = Some te)).
+    forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
+      instantiateRuleOnPattern r sm sp = Some tp ->
+      In te tp ->
+      (exists (o: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (it: (Rule_getIteratorType r)),
+          In it (evalIterator r sm sp) /\
+          In o (Rule_getOutputPattern r) /\
+          (evalOutputPatternElement sm sp it o) = Some te).
   Proof.
+    intros.
+    unfold instantiateRuleOnPattern in H.
+    destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+    - destruct b.
+      + Arguments optionList2List : simpl never.
+        Arguments map : simpl never.
+        inversion H.
+        rewrite <- H2 in H0.
+        apply optionList2List_In in H0.
   Admitted. 
   
   Theorem tr_match_pattern_derivable : 
