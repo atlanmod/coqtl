@@ -6,6 +6,7 @@ Require Import Omega.
 
 Require Import core.Metamodel.
 Require Import core.Model.
+Require Import core.Expressions.
 Require Import core.Engine.
 Require Import core.utils.TopUtils.
 Require Import core.utils.CpdtTactics.
@@ -24,36 +25,20 @@ Section CoqTL.
 
   (** ** Expression Types **)
   
-  Fixpoint outputReferenceTypes
-           (sclasses : list SourceModelClass) (tclass: TargetModelClass)  (tref: TargetModelReference):=
-    match sclasses with
-    | nil => (denoteModelClass tclass) -> (option (denoteModelReference tref))
-    | cons class classes' => (denoteModelClass class) -> outputReferenceTypes classes' tclass tref
-    end.
- 
-  Fixpoint outputPatternElementTypes
-           (sclasses : list SourceModelClass) (tclass: TargetModelClass) :=
-    match sclasses with
-    | nil => (denoteModelClass tclass)
-    | cons class classes' =>
-      (denoteModelClass class) ->
-      outputPatternElementTypes classes' tclass
-    end.
+  Definition outputReferenceTypes
+             (sclasses : list SourceModelClass) (tclass: TargetModelClass)  (tref: TargetModelReference):=
+    denoteFuncOfClasses smm (sclasses) ((denoteModelClass tclass) -> option (denoteModelReference tref)).
+  
+  Definition outputPatternElementTypes
+             (sclasses : list SourceModelClass) (tclass: TargetModelClass) :=
+    denoteFuncOfClasses smm (sclasses) (denoteModelClass tclass).
 
-  Fixpoint iteratedListTypes
-           (sclasses : list SourceModelClass) (itype: Type) :=
-    match sclasses with
-    | nil => list itype
-    | cons class classes' =>
-      (denoteModelClass class) ->
-      iteratedListTypes classes' itype
-    end.
+  Definition iteratedListTypes
+             (sclasses : list SourceModelClass) (itype: Type) :=
+    denoteFuncOfClasses smm (sclasses) (list itype).
 
-  Fixpoint guardTypes (classes : list SourceModelClass) :=
-    match classes with
-    | nil => bool
-    | cons class classes' => (denoteModelClass class) -> guardTypes classes'
-    end.
+  Definition guardTypes (sclasses : list SourceModelClass) :=
+    denoteFuncOfClasses smm (sclasses) bool.
 
   (** ** Syntax Types **)
   
@@ -277,103 +262,46 @@ Section CoqTL.
   
   (** ** Expression Evaluation **)
   
-  Fixpoint evalGuardFix  (intypes: list SourceModelClass) (f: guardTypes intypes) (el: list SourceModelElement) : option bool.
-  Proof.
-    destruct intypes eqn:intypes1, el eqn:el1.
-    - exact None.
-    - exact None.
-    - exact None.
-    - destruct l eqn:intypes2, l0 eqn:el2.
-      + destruct (toModelClass s s0) eqn:tmc.
-        * exact (Some (f d)).
-        * exact None.
-      + exact None.
-      + exact None.
-      + destruct (toModelClass s s0) eqn:tmc.
-        * rewrite <- intypes2 in f.                    
-          exact (evalGuardFix l (f d) l0).
-        * exact None.
-  Defined.
-
   Definition evalGuard (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    evalGuardFix (Rule_getInTypes r) ((Rule_getGuard r) sm) sp.
-
-  Fixpoint evalIteratorFix  (intypes: list SourceModelClass) (ot: Type) (f: iteratedListTypes intypes ot) (el: list SourceModelElement) : list ot.
-  Proof.
-    destruct intypes eqn:intypes1, el eqn:el1.
-    - exact nil.
-    - exact nil.
-    - exact nil.
-    - destruct l eqn:intypes2, l0 eqn:el2.
-      + destruct (toModelClass s s0) eqn:tmc.
-        * exact (f d).
-        * exact nil.
-      + exact nil.
-      + exact nil.
-      + destruct (toModelClass s s0) eqn:tmc.
-        * rewrite <- intypes2 in f.                    
-          exact (evalIteratorFix l ot (f d) l0).
-        * exact nil.
-  Defined.
+    evalFuncOfClasses smm sm (Rule_getInTypes r) bool (Rule_getGuard r) sp.
   
   Definition evalIterator (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
     list (Rule_getIteratorType r).
   Proof.
     destruct r eqn:hr.
-    exact (evalIteratorFix InElTypes IterType (i sm) sp).
-  Defined.
-
-  Fixpoint evalOutputPatternElementFix (intypes: list SourceModelClass) (ot: TargetModelClass) (f: outputPatternElementTypes intypes ot) (el: list SourceModelElement) : option TargetModelElement.
-  Proof.
-    destruct intypes eqn:intypes1, el eqn:el1.
-    - exact None.
-    - exact None.
-    - exact None.
-    - destruct l eqn:intypes2, l0 eqn:el2.
-      + destruct (toModelClass s s0) eqn:tmc.
-        * exact (Some (toModelElement ot (f d))).
-        * exact None.
-      + exact None.
-      + exact None.
-      + destruct (toModelClass s s0) eqn:tmc.
-        * rewrite <- intypes2 in f.
-          exact (evalOutputPatternElementFix l ot (f d) l0).
-        * exact None.
+    exact (optionListToList (evalFuncOfClasses smm sm InElTypes (list IterType) i sp)).
   Defined.
 
   Definition evalOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (sm: SourceModel) (sp: list SourceModelElement) (iter: IterType) (o: OutputPatternElement InElTypes IterType) 
     : option TargetModelElement :=
-    evalOutputPatternElementFix InElTypes (OutputPatternElement_getOutType o) ((OutputPatternElement_getOutPatternElement o) iter sm) sp.
-
-  Fixpoint evalOutputPatternElementReferenceFix (intypes: list SourceModelClass) (ot: TargetModelClass) (or: TargetModelReference) (oe: TargetModelElement) (f: outputReferenceTypes intypes ot or) (el: list SourceModelElement) : option TargetModelLink.
-  Proof.
-    destruct intypes eqn:intypes1, el eqn:el1.
-    - exact None.
-    - exact None.
-    - exact None.
-    - destruct l eqn:intypes2, l0 eqn:el2.
-      + destruct (toModelClass s s0) eqn:tmc.
-        * destruct (toModelClass ot oe) eqn:tmct.
-          -- destruct ((f d) d0) eqn:tml.
-             ++ exact (Some (toModelLink or d1)).
-             ++ exact None.
-          -- exact None.
-        * exact None.
-      + exact None.
-      + exact None.
-      + destruct (toModelClass s s0) eqn:tmc.
-        * rewrite <- intypes2 in f.
-          exact (evalOutputPatternElementReferenceFix l ot or oe (f d) l0).
-        * exact None.
-  Defined.
+    let val := 
+        evalFuncOfClasses smm sm InElTypes (denoteModelClass (OutputPatternElement_getOutType o)) ((OutputPatternElement_getOutPatternElement o) iter) sp in
+    match val with
+    | None => None
+    | Some r => Some (toModelElement (OutputPatternElement_getOutType o) r)
+    end.
 
   Definition evalOutputPatternElementReference
              {InElTypes: list SourceModelClass} {IterType: Type} {TargetType: TargetModelClass}
              (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: IterType) (tr: MatchedTransformation)
              (o: OutputPatternElementReference InElTypes IterType TargetType) 
     : option TargetModelLink :=
-    evalOutputPatternElementReferenceFix InElTypes TargetType (OutputPatternElementReference_getRefType o) oe ((OutputPatternElementReference_getOutputReference o) tr iter sm) sp.
-
+    let val :=
+    evalFuncOfClasses smm sm InElTypes ((denoteModelClass TargetType) -> option (denoteModelReference (OutputPatternElementReference_getRefType o)))
+                      ((OutputPatternElementReference_getOutputReference o) tr iter) sp in
+    match val with
+    | None => None
+    | Some r =>
+      match toModelClass TargetType oe with
+      | None => None
+      | Some t => 
+        match r t with
+        | None => None
+        | Some s => Some (toModelLink (OutputPatternElementReference_getRefType o) s)
+        end
+      end
+    end.
+ 
   (** ** Rule application **)
   
   Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
@@ -723,7 +651,6 @@ Arguments instantiateRuleOnPattern: default implicits.
 Arguments evalGuard: default implicits.
 Arguments evalIterator: default implicits.
 Arguments evalOutputPatternElement: default implicits.
-Arguments evalOutputPatternElementFix: default implicits.
 
 Arguments Transformation: default implicits.
 Arguments Transformation_getRules: default implicits.
