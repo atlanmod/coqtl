@@ -566,7 +566,8 @@ Section CoqTL.
       * inversion H0.
     + inversion H0.
   Qed.
-  
+
+  (*
   Theorem tr_matchPattern_sp_gt_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       (length sp) > (maxArity tr) ->
@@ -597,17 +598,14 @@ Section CoqTL.
          unfold maxArity.
          simpl.
          crush.
-  Qed.      
+  Qed.   
 
-  Theorem tr_evalGuardFix_sp_gt_maxArity : 
+  Theorem tr_evalGuard_sp_gt_maxArity : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       (length sp) > (length (Rule_getInTypes r)) ->
-      evalGuardFix (Rule_getInTypes r) (Rule_getGuard r sm) sp = None.
+      evalGuard r sm sp = None.
   Proof.
-    intros.
-    destruct r.
-    simpl.
-  Admitted.
+  Admitted. *)
       
   Instance CoqTLEngine : 
     TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink := 

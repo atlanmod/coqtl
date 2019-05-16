@@ -154,12 +154,11 @@ Class TransformationEngine
 
       (** **** match_pattern_derivable **)
       match_pattern_derivable : 
-        forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
-          tm = execute tr sm ->
-          forall (sp : list SourceModelElement)(r : Rule),
-            In r (matchPattern tr sm sp) -> 
-                                           matchRuleOnPattern r tr sm sp = return true;
-(*
+        forall (tr: Transformation) (sm : SourceModel),
+        forall (sp : list SourceModelElement)(r : Rule),
+          In r (matchPattern tr sm sp) -> 
+          matchRuleOnPattern r tr sm sp = return true;
+    (*
         (** **** instantiate_pattern_derivable 
 
                  Definition: the result of _instantiatePattern_ can be derived from _instantiateRuleOnPattern_ and _matchPattern_ *)
