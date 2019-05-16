@@ -337,6 +337,14 @@ Section CoqTL.
         end
       else
         None.
+
+  Definition instantiateElementOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (name: string) : option (list TargetModelElement) :=
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        Some (optionList2List
+                (map (fun it : nat => instantiateRuleOnPatternIterName r sm sp it name) (indexes (length (evalIterator r sm sp)))))
+      else
+        None.
   
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
@@ -522,7 +530,6 @@ Section CoqTL.
     unfold allTuples.
     unfold maxArity.
     rewrite H.
-    simpl.
     unfold optionToList.
     unfold instantiatePattern.
     unfold matchPattern.
