@@ -495,7 +495,7 @@ Section CoqTL.
         * assumption.
     - contradiction.
   Qed.
-
+  
   Theorem tr_instantiatePattern_surj_elements : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
       instantiatePattern tr sm sp = Some tp ->
@@ -547,13 +547,13 @@ Section CoqTL.
         inversion H.
         rewrite <- H2 in H0.
         apply optionList2List_In in H0.
-  Admitted. 
-  
+  Admitted.
+
   Theorem tr_match_pattern_derivable : 
     forall (tr: Transformation) (sm : SourceModel),
-      forall (sp : list SourceModelElement)(r : Rule),
-        In r (matchPattern tr sm sp) -> 
-        matchRuleOnPattern' r tr sm sp = return true.
+    forall (sp : list SourceModelElement)(r : Rule),
+      In r (matchPattern tr sm sp) -> 
+      matchRuleOnPattern' r tr sm sp = return true.
   Proof.
     intros.  
     unfold matchRuleOnPattern'.
@@ -565,34 +565,6 @@ Section CoqTL.
       * reflexivity.
       * inversion H0.
     + inversion H0.
-  Qed.
-
-  Theorem tr_evalGuardFix_sp_gt_maxArity : 
-    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-      (length sp) > (length (Rule_getInTypes r)) ->
-      evalGuardFix (Rule_getInTypes r) (Rule_getGuard r sm) sp = None.
-  Proof.
-    intros.
-    destruct r.
-    simpl.
-
-  Admitted.
-      
-  Theorem tr_matchPattern_sp_nil : 
-    forall (tr: Transformation) (sm : SourceModel),
-      (matchPattern tr sm nil) = nil.
-  Proof.
-    intros.
-    unfold matchPattern.
-    induction (Transformation_getRules tr).
-    - auto.
-    - simpl.
-      unfold matchRuleOnPattern.
-      unfold evalGuard.
-      assert (evalGuardFix (Rule_getInTypes a) (Rule_getGuard a sm) nil = None).
-      { apply tr_evalGuardFix_sp_nil. }
-      rewrite H.
-      apply IHl.
   Qed.
   
   Theorem tr_matchPattern_sp_gt_maxArity : 
@@ -627,6 +599,15 @@ Section CoqTL.
          crush.
   Qed.      
 
+  Theorem tr_evalGuardFix_sp_gt_maxArity : 
+    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+      (length sp) > (length (Rule_getInTypes r)) ->
+      evalGuardFix (Rule_getInTypes r) (Rule_getGuard r sm) sp = None.
+  Proof.
+    intros.
+    destruct r.
+    simpl.
+  Admitted.
       
   Instance CoqTLEngine : 
     TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink := 
