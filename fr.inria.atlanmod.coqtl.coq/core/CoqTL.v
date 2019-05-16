@@ -613,22 +613,33 @@ Section CoqTL.
 
   (** ** matchPattern **)
 
-  Theorem tr_matchPattern_derivable : 
+  Theorem tr_matchPattern_in : 
     forall (tr: Transformation) (sm : SourceModel),
     forall (sp : list SourceModelElement)(r : Rule),
-      In r (matchPattern tr sm sp) -> 
+      In r (matchPattern tr sm sp) <->
+      In r (Transformation_getRules tr) /\
       matchRuleOnPattern' r tr sm sp = return true.
   Proof.
-    intros.  
-    unfold matchRuleOnPattern'.
-    unfold matchPattern in H.
-    apply filter_In in H.
-    destruct H.
-    destruct (matchRuleOnPattern r sm sp).
-    + destruct b.
-      * reflexivity.
-      * inversion H0.
-    + inversion H0.
+    intros.
+    split.
+    - intros.
+      unfold matchRuleOnPattern'.
+      unfold matchPattern in H.
+      apply filter_In in H.
+      destruct H.
+      destruct (matchRuleOnPattern r sm sp).
+      + destruct b.
+        * split. assumption. reflexivity.
+        * inversion H0.
+      + inversion H0.
+    - intros.
+      destruct H.
+      unfold matchPattern.
+      apply <- filter_In.
+      split. assumption.
+      unfold matchRuleOnPattern' in H0.
+      rewrite H0.
+      reflexivity.
   Qed.
 
   Theorem tr_matchPattern_maxArity : 
