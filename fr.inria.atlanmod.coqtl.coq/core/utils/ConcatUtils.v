@@ -19,6 +19,21 @@ Proof.
       exact H.
 Qed.
 
+Lemma concat_in:
+  forall (T: Type) (el: T) (l0 : list T) (l1 : list (list T)),
+    In el l0 -> In l0 l1 -> In el (concat l1).
+Proof.
+  intros.
+  induction l1.
+  - inversion H0.
+  - simpl.
+    simpl in H0.
+    apply in_or_app.
+    destruct H0.
+    + left. rewrite H0. assumption.
+    + right. apply IHl1. assumption.
+Qed.
+
 Lemma concat_map_option_incl:
   forall (T1 T2: Type) (a: T1) (l: list T1) (f: T1 -> option (list T2)) (lt: list T2),
     (In a l) -> (f a) = Some lt -> 

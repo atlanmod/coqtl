@@ -466,6 +466,41 @@ Section CoqTL.
   *)  
 
   Theorem tr_execute_surj_elements : 
+    forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
+      In te (allModelElements (execute tr sm)) <->
+      (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
+          incl sp (allModelElements sm) /\
+          instantiatePattern tr sm sp = Some tp /\
+          In te tp).
+  Proof.
+    intros.
+    split.
+    - intros.
+      simpl in H.
+      apply concat_map_option_exists in H.
+      destruct H.
+      exists x.
+      destruct H.
+      destruct (instantiatePattern tr sm x) eqn:inst.
+      + exists l.
+        split. 
+        unfold allTuples in H.
+        apply tuples_up_to_n_incl with (n:=(maxArity tr)). assumption.
+        split. reflexivity.
+        assumption.
+      + contradiction.
+    - intros.
+      destruct H. destruct H. destruct H. destruct H0.
+      unfold execute. simpl.
+      apply concat_in with (l0:=x0).
+      + assumption.
+      + unfold instantiatePattern in H0.
+        destruct (matchPattern tr sm x) eqn:mtch.
+        * inversion H0.
+        * unfold matchPattern in mtch.
+  Admitted.
+    
+  Theorem tr_execute_surj_elements : 
   forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (te : TargetModelElement),
    tm = execute tr sm -> In te (allModelElements tm) -> 
    (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
