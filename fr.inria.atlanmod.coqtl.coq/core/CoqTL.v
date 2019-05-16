@@ -537,40 +537,9 @@ Section CoqTL.
   Proof.
   Admitted.
   
-  (*Theorem tr_execute_surj_elements : 
-    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (te : TargetModelElement),
-      tm = execute tr sm -> In te (allModelElements tm) -> 
-      (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
-     instantiatePattern tr sm sp = Some tp /\
-     incl sp (allModelElements sm) /\
-     In te tp /\
-     incl tp (allModelElements tm)).
-  Proof.
-    intros.
-    rewrite H in H0.
-    simpl in H0.
-    apply concat_map_option_exists in H0.
-    destruct H0.
-    exists x.
-    destruct H0.
-    destruct (instantiatePattern tr sm x) eqn:inst.
-    - exists l.
-      split.
-      + reflexivity.
-      + unfold allTuples in H0.
-        split. apply tuples_up_to_n_incl with (n:=(maxArity tr)). assumption.
-        split. assumption.
-        unfold execute in H.
-        rewrite H. simpl.
-        apply concat_map_option_incl with (a:=x).
-        * assumption.
-        * assumption.
-    - contradiction.
-  Qed. *)
-
   (** ** instantiatePattern **)
-  
-  Theorem tr_instantiatePattern_surj : 
+
+  Theorem tr_instantiatePattern_surj' : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement),
       instantiatePattern tr sm sp = Some tp ->
       (exists (r : Rule) (tp1 : list TargetModelElement),
@@ -595,50 +564,88 @@ Section CoqTL.
         * assumption.
       + unfold instantiateRuleOnPattern in inst.
   Admitted.
-
+  
   Theorem  tr_instantiatePattern_incl :
     forall (tr: Transformation) (sm : SourceModel)
       (sp : list SourceModelElement) (tp: list TargetModelElement) (tp1: list TargetModelElement)
       (r : Rule),
-      instantiatePattern tr sm sp = Some tp ->
-      In r (Transformation_getRules tr) ->
       instantiateRuleOnPattern r sm sp = Some tp1 ->
+      In r (Transformation_getRules tr) ->
+      instantiatePattern tr sm sp = Some tp ->
       incl tp1 tp.
   Proof.
   Admitted.
 
-  Theorem tr_instantiatePattern_surj_elements : 
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
+  Theorem incl_equiv_to_surj:
+    (forall (tr: Transformation) (sm : SourceModel)
+      (sp : list SourceModelElement) (tp: list TargetModelElement) (tp1: list TargetModelElement)
+      (r : Rule),
+      instantiateRuleOnPattern r sm sp = Some tp1 ->
+      In r (matchPattern tr sm sp) ->
       instantiatePattern tr sm sp = Some tp ->
-      In te tp ->
+      incl tp1 tp) <->
+    (forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
+     instantiatePattern tr sm sp = Some tp ->
       (exists (r : Rule) (tp1 : list TargetModelElement),
           In r (matchPattern tr sm sp) /\
           instantiateRuleOnPattern r sm sp = Some tp1 /\
-          incl tp1 tp /\
+          In te tp1) ->
+      In te tp).
+  Proof.
+    split.
+    - intros.
+      destruct H1. destruct H1. destruct H1. destruct H2.
+      + pose (H tr sm sp tp x0 x H2 H1 H0).
+        apply i in H3.
+        assumption.
+    - intros.
+      unfold incl.
+      intros.
+      epose (H tr sm sp tp a H2).
+      apply i.
+      exists r, tp1.
+      split. assumption.
+      split. assumption.
+      assumption.
+  Qed.    
+
+  Theorem tr_instantiatePattern_surj : 
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
+      instantiatePattern tr sm sp = Some tp ->
+      In te tp <->
+      (exists (r : Rule) (tp1 : list TargetModelElement),
+          In r (matchPattern tr sm sp) /\
+          instantiateRuleOnPattern r sm sp = Some tp1 /\
           In te tp1).
   Proof.
-    intros.
-    unfold instantiatePattern in H.
-    destruct (matchPattern tr sm sp) eqn:mtch.
-    - inversion H.
-    - Arguments optionList2List : simpl never.
-      Arguments map : simpl never.
-      inversion H.
-      rewrite <- H2 in H0.
-      apply concat_map_option_exists in H0.
-      destruct H0.
-      exists x.
-      destruct H0.
-      destruct (instantiateRuleOnPattern x sm sp) eqn:inst.
-      + exists l0.
+    split.
+    - intros.
+      unfold instantiatePattern in H.
+      destruct (matchPattern tr sm sp) eqn:mtch.
+      + inversion H.
+      + Arguments optionList2List : simpl never.
+        Arguments map : simpl never.
+        inversion H.
+        rewrite <- H2 in H0.
+        apply concat_map_option_exists in H0.
+        destruct H0.
+        exists x.
+        destruct H0.
+        destruct (instantiateRuleOnPattern x sm sp) eqn:inst.
+        exists l0.
         split. assumption.
         split. reflexivity.
-        split. apply concat_map_option_incl with (a:=x).
-        * assumption.
-        * assumption.
-        * assumption.
+        assumption.
+        contradiction.
+    - intros.
+      destruct H0. destruct H0. destruct H0. destruct H1.
+      unfold instantiatePattern in H.
+      destruct (matchPattern tr sm sp) eqn:mtch.
       + contradiction.
-  Qed.
+      + inversion H.
+  Admitted.
+
+
 
   (** ** instantiateRuleOnPattern **)
     
