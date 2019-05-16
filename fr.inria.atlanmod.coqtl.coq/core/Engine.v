@@ -31,50 +31,37 @@ Class TransformationEngine
 
     (** ** Transformation Engine Accessors *)
 
-    (** *** getRules        
+    (** *** getRules
         Returns the rules of the given transformation. *)
-
     getRules: Transformation -> list Rule;
 
     (** ** Transformation Engine Functions *)
     
-    (** *** execute    
+    (** *** execute
         Given a _source model_ and a _transformation_, _execute_ should return a _target model_. *)
-
     execute: Transformation -> SourceModel -> TargetModel;
     
-    (** *** matchPattern 
-        TODO *)
-
+    (** *** matchPattern *)
     matchPattern: Transformation -> SourceModel -> list SourceModelElement -> list Rule;
 
-    (** *** matchRuleOnPattern 
-        TODO *)
-
+    (** *** matchRuleOnPattern *)
     matchRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option bool;
 
-    (** *** instantiatePattern 
-        TODO *)
-
+    (** *** instantiatePattern *)
     instantiatePattern: Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelElement);
 
-    (** *** instantiateRuleOnPattern 
-        TODO *)
-
+    (** *** instantiateRuleOnPattern *)
     instantiateRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelElement); 
       
-    (** *** applyPattern 
-        TODO *)      
-
+    (** *** applyPattern *)
     applyPattern: Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
       
-    (** *** applyRuleOnPattern 
-        TODO *)      
+    (** *** applyRuleOnPattern *)
     applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
       
     (** ** Theorems of the Transformation Engine *)
 
-    tr_execute_in_elements : 
+    tr_execute_in_elements :
     forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
       In te (allModelElements (execute tr sm)) <->
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
@@ -82,7 +69,7 @@ Class TransformationEngine
           instantiatePattern tr sm sp = Some tp /\
           In te tp);
 
-    tr_execute_in_links : 
+    tr_execute_in_links :
     forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
       In tl (allModelLinks (execute tr sm)) <->
       (exists (sp : list SourceModelElement) (tpl : list TargetModelLink),
@@ -90,12 +77,12 @@ Class TransformationEngine
           applyPattern tr sm sp = Some tpl /\
           In tl tpl);
 
-    tr_execute_nil_tr : 
+    tr_execute_nil_tr :
     forall (tr: Transformation) (sm : SourceModel),
       getRules tr = nil ->
       allModelElements (execute tr sm) = nil;
 
-    tr_instantiatePattern_in : 
+    tr_instantiatePattern_in :
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
       instantiatePattern tr sm sp = Some tp ->
       In te tp <->
@@ -104,7 +91,7 @@ Class TransformationEngine
           instantiateRuleOnPattern r tr sm sp = Some tp1 /\
           In te tp1);
 
-    tr_applyPattern_in : 
+    tr_applyPattern_in :
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
       applyPattern tr sm sp = Some tpl ->
       In tl tpl <->
@@ -113,7 +100,7 @@ Class TransformationEngine
           applyRuleOnPattern r tr sm sp = Some tpl1 /\
           In tl tpl1);
 
-    tr_matchPattern_in : 
+    tr_matchPattern_in :
     forall (tr: Transformation) (sm : SourceModel),
     forall (sp : list SourceModelElement)(r : Rule),
       In r (matchPattern tr sm sp) <->

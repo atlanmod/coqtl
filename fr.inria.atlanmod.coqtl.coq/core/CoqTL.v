@@ -721,7 +721,6 @@ Section CoqTL.
     {
       getRules := Transformation_getRules;
       execute := execute;
-      
       matchPattern := matchPattern;
       instantiatePattern := instantiatePattern;
       applyPattern := applyPattern;
@@ -735,12 +734,10 @@ Section CoqTL.
       tr_applyPattern_in := tr_applyPattern_in;
       tr_matchPattern_in := tr_matchPattern_in;
     }.
-
   
 End CoqTL.
 
 Arguments MatchedTransformation: default implicits.
-
 
 Arguments BuildTransformation
           [SourceModelElement] [SourceModelLink] [SourceModelClass] [SourceModelReference] _
@@ -761,7 +758,6 @@ Arguments resolveIter: default implicits.
 Arguments resolve: default implicits.
 Arguments resolveAllIter: default implicits.
 Arguments resolveAll: default implicits.
-
 
 Arguments execute: default implicits.
 Arguments matchPattern: default implicits.
