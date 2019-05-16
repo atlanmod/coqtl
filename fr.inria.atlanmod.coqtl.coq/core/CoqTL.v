@@ -586,21 +586,22 @@ Section CoqTL.
   Theorem tr_instantiateRuleOnPattern_in : 
     forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
       instantiateRuleOnPattern r sm sp = Some tp ->
-      In te tp ->
+      In te tp <->
       (exists (o: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tp1: list TargetModelElement),
           In o (Rule_getOutputPattern r) /\
           instantiateElementOnPattern r sm sp (OutputPatternElement_getName o) = Some tp1 /\
           In te tp1).
   Proof.
-    intros.
-    unfold instantiateRuleOnPattern in H.
-    destruct (matchRuleOnPattern r sm sp) eqn:mtch.
-    - destruct b.
-      + Arguments optionList2List : simpl never.
-        Arguments map : simpl never.
-        inversion H.
-        rewrite <- H2 in H0.
-        apply optionList2List_In in H0.
+    split.
+    - intros.
+      unfold instantiateRuleOnPattern in H.
+      destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+      + destruct b.
+        * Arguments optionList2List : simpl never.
+          Arguments map : simpl never.
+          inversion H.
+          rewrite <- H2 in H0.
+          apply optionList2List_In in H0.
   Admitted.
 
   (** ** instantiateElementOnPattern **)
@@ -623,7 +624,7 @@ Section CoqTL.
   Theorem tr_applyRuleOnPattern_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
       applyRuleOnPattern r tr sm sp = Some tpl ->
-      In tl tpl ->
+      In tl tpl <->
       (exists (o: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tpl1: list TargetModelLink),
           In o (Rule_getOutputPattern r) /\
           applyElementOnPattern r o tr sm sp = Some tpl1 /\
