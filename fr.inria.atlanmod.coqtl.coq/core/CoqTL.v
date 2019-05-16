@@ -477,8 +477,8 @@ Section CoqTL.
   Definition instantiateRuleOnPattern' (r: Rule) (t: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     instantiateRuleOnPattern r sm sp.
 
-  (*Definition applyRuleOnPattern' (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
-   *)
+  Definition applyRuleOnPattern' (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
+    applyRuleOnPattern r tr sm sp.
 
   (** ** execute **)
   
@@ -706,6 +706,14 @@ Section CoqTL.
   Proof.
   Admitted.
 
+  (*Theorem tr_matchRuleOnPattern : 
+    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+      matchRuleOnPattern r sm sp = Some true <->
+      evalFuncOfClasses smm sm (Rule_getInTypes r) bool (Rule_getGuard r) sp = Some true.
+  Proof.
+    crush.
+  Qed.*)
+
   (** * Typeclass instantiation **)
       
   Instance CoqTLEngine : 
@@ -719,16 +727,13 @@ Section CoqTL.
       applyPattern := applyPattern;
       matchRuleOnPattern := matchRuleOnPattern';
       instantiateRuleOnPattern := instantiateRuleOnPattern';
-      applyRuleOnPattern := applyRuleOnPattern;
-      (* match_pattern_derivable :=  tr_matchPattern_in;
-      instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
-      apply_pattern_derivable :=  tr_apply_pattern_derivable; 
-      tr_surj_elements := tr_surj_elements;
-      tr_surj_links := tr_surj_links;
-      outp_incl_elements := outp_incl_elements;
-      outp_incl_links := outp_incl_links;
-      match_in := match_incl;
-      match_functional := match_functional;*)
+      applyRuleOnPattern := applyRuleOnPattern';
+      tr_execute_in_elements := tr_execute_in_elements;
+      tr_execute_in_links := tr_execute_in_links;
+      tr_execute_nil_tr := tr_execute_nil_tr;
+      tr_instantiatePattern_in := tr_instantiatePattern_in;
+      tr_applyPattern_in := tr_applyPattern_in;
+      tr_matchPattern_in := tr_matchPattern_in;
     }.
 
   
