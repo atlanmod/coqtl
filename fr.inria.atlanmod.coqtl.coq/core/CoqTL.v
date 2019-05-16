@@ -587,10 +587,10 @@ Section CoqTL.
     forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
       instantiateRuleOnPattern r sm sp = Some tp ->
       In te tp ->
-      (exists (o: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (it: (Rule_getIteratorType r)),
-          In it (evalIterator r sm sp) /\
+      (exists (o: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tp1: list TargetModelElement),
           In o (Rule_getOutputPattern r) /\
-          (evalOutputPatternElement sm sp it o) = Some te).
+          instantiateElementOnPattern r sm sp (OutputPatternElement_getName o) = Some tp1 /\
+          In te tp1).
   Proof.
     intros.
     unfold instantiateRuleOnPattern in H.
@@ -604,7 +604,7 @@ Section CoqTL.
   Admitted.
 
   (** ** instantiateElementOnPattern **)
-
+  
   (** ** applyPattern **)
 
   (** ** applyRuleOnPattern **)
