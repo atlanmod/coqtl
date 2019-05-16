@@ -370,19 +370,26 @@ Section CoqTL.
     m <- matchRuleOnPattern r sm sp;
       if m then
         match (nth_error (evalIterator r sm sp) iter) with
-         | Some i =>
+        | Some i =>
           match (evalOutputPatternElement sm sp i ope) with
           | Some l => 
             Some (optionList2List (map ( fun (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope))
-                        => evalOutputPatternElementReference sm sp l i (matchTransformation tr) oper
-                      )
-                      (OutputPatternElement_getOutputElementReferences ope)))
+                                         => evalOutputPatternElementReference sm sp l i (matchTransformation tr) oper
+                                       )
+                                       (OutputPatternElement_getOutputElementReferences ope)))
           | None => None
           end
         | None => None
         end
       else
         None.
+
+  Definition applyElementOnPattern (r: Rule) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        Some (concat (optionList2List (map (fun iter => applyOutputPatternElementOnPatternIter r ope tr sm sp iter) (indexes (length (evalIterator r sm sp))))) )
+      else
+        None. 
   
   Definition applyRuleOnPatternIter (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelLink) :=
     m <- matchRuleOnPattern r sm sp;
@@ -596,9 +603,13 @@ Section CoqTL.
         apply optionList2List_In in H0.
   Admitted.
 
+  (** ** instantiateElementOnPattern **)
+
   (** ** applyPattern **)
 
   (** ** applyRuleOnPattern **)
+
+  (** ** applyElementOnPattern **)
 
   (** ** matchPattern **)
 
