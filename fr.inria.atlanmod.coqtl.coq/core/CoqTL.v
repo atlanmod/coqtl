@@ -467,7 +467,7 @@ Section CoqTL.
 
   (** ** execute **)
 
-  Theorem  tr_execute_incl :
+  Theorem  tr_execute_incl_elements :
     forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (tp: list TargetModelElement),
       incl sp (allModelElements sm) ->
       instantiatePattern tr sm sp = Some tp ->
@@ -482,6 +482,14 @@ Section CoqTL.
       + assumption.
       + apply max_list_upperBound.
         apply in_map_iff.
+  Admitted.
+
+  Theorem  tr_execute_incl_links :
+    forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (tpl: list TargetModelLink),
+      incl sp (allModelElements sm) ->
+      applyPattern tr sm sp = Some tpl ->
+      incl tpl (allModelLinks (execute tr sm)).
+  Proof.
   Admitted.
   
   Theorem tr_execute_surj_elements : 
@@ -517,6 +525,16 @@ Section CoqTL.
         destruct (matchPattern tr sm x) eqn:mtch.
         * inversion H0.
         * unfold matchPattern in mtch.
+  Admitted.
+
+  Theorem tr_execute_surj_links : 
+    forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
+      In tl (allModelLinks (execute tr sm)) <->
+      (exists (sp : list SourceModelElement) (tpl : list TargetModelLink),
+          incl sp (allModelElements sm) /\
+          applyPattern tr sm sp = Some tpl /\
+          In tl tpl).
+  Proof.
   Admitted.
   
   (*Theorem tr_execute_surj_elements : 
