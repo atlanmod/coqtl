@@ -465,7 +465,7 @@ Section CoqTL.
   (*Definition applyRuleOnPattern' (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
   *)  
 
-  Theorem tr_execute_surj_elements : 
+  Theorem tr_execute_surj_elements' : 
     forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
       In te (allModelElements (execute tr sm)) <->
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
