@@ -466,31 +466,6 @@ Section CoqTL.
    *)
 
   (** ** execute **)
-
-  Theorem  tr_execute_incl_elements :
-    forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (tp: list TargetModelElement),
-      incl sp (allModelElements sm) ->
-      instantiatePattern tr sm sp = Some tp ->
-      incl tp (allModelElements (execute tr sm)).
-  Proof.
-    intros.
-    unfold execute.
-    simpl.
-    apply concat_map_option_incl with (a:=sp).
-    - unfold allTuples.
-      apply tuples_up_to_n_incl_length.
-      + assumption.
-      + apply max_list_upperBound.
-        apply in_map_iff.
-  Admitted.
-
-  Theorem  tr_execute_incl_links :
-    forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (tpl: list TargetModelLink),
-      incl sp (allModelElements sm) ->
-      applyPattern tr sm sp = Some tpl ->
-      incl tpl (allModelLinks (execute tr sm)).
-  Proof.
-  Admitted.
   
   Theorem tr_execute_surj_elements : 
     forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
@@ -539,43 +514,6 @@ Section CoqTL.
   
   (** ** instantiatePattern **)
 
-  Theorem tr_instantiatePattern_surj' : 
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement),
-      instantiatePattern tr sm sp = Some tp ->
-      (exists (r : Rule) (tp1 : list TargetModelElement),
-          In r (matchPattern tr sm sp) /\
-          instantiateRuleOnPattern r sm sp = Some tp1 /\
-          incl tp1 tp).
-  Proof.
-    intros.
-    unfold instantiatePattern in H.
-    destruct (matchPattern tr sm sp) eqn:mtch.
-    - inversion H.
-    - Arguments optionList2List : simpl never.
-      Arguments map : simpl never.
-      inversion H.
-      exists r.
-      destruct (instantiateRuleOnPattern r sm sp) eqn:inst.
-      + exists l0.
-        split. apply in_eq.
-        split. reflexivity.
-        apply concat_map_option_incl with (a:=r).
-        * apply in_eq.
-        * assumption.
-      + unfold instantiateRuleOnPattern in inst.
-  Admitted.
-  
-  Theorem  tr_instantiatePattern_incl :
-    forall (tr: Transformation) (sm : SourceModel)
-      (sp : list SourceModelElement) (tp: list TargetModelElement) (tp1: list TargetModelElement)
-      (r : Rule),
-      instantiateRuleOnPattern r sm sp = Some tp1 ->
-      In r (Transformation_getRules tr) ->
-      instantiatePattern tr sm sp = Some tp ->
-      incl tp1 tp.
-  Proof.
-  Admitted.
-
   Theorem tr_instantiatePattern_surj : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
       instantiatePattern tr sm sp = Some tp ->
@@ -612,11 +550,9 @@ Section CoqTL.
       + inversion H.
   Admitted.
 
-
-
   (** ** instantiateRuleOnPattern **)
     
-  Theorem tr_instantiateRuleOnPattern_surj_elements : 
+  Theorem tr_instantiateRuleOnPattern_surj : 
     forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
       instantiateRuleOnPattern r sm sp = Some tp ->
       In te tp ->
