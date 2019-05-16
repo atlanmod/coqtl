@@ -511,6 +511,23 @@ Section CoqTL.
           In tl tpl).
   Proof.
   Admitted.
+
+  Theorem tr_execute_nil_tr : 
+    forall (tr: Transformation) (sm : SourceModel),
+      Transformation_getRules tr = nil ->
+      allModelElements (execute tr sm) = nil.
+  Proof.
+    intros. 
+    unfold execute.
+    unfold allTuples.
+    unfold maxArity.
+    rewrite H.
+    simpl.
+    unfold optionToList.
+    unfold instantiatePattern.
+    unfold matchPattern.
+    crush.
+  Qed.
   
   (** ** instantiatePattern **)
 
@@ -571,6 +588,10 @@ Section CoqTL.
         rewrite <- H2 in H0.
         apply optionList2List_In in H0.
   Admitted.
+
+  (** ** applyPattern **)
+
+  (** ** applyRuleOnPattern **)
 
   (** ** matchPattern **)
 
