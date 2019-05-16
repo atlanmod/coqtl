@@ -496,7 +496,24 @@ Section CoqTL.
     - contradiction.
   Qed.
 
-  Theorem tr_instantiatePattern_surj_elements' : 
+  Theorem  tr_execute_incl :
+    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (tes: list TargetModelElement),
+      tm = execute tr sm -> incl sp (allModelElements sm) ->
+      instantiatePattern tr sm sp = Some tes ->
+      incl tes (allModelElements tm).
+  Proof.
+    intros.
+    unfold execute in H.
+    rewrite H. simpl.
+    apply concat_map_option_incl with (a:=sp).
+    - unfold allTuples.
+      apply tuples_up_to_n_incl_length.
+      + assumption.
+      + apply max_list_upperBound.
+        apply in_map_iff.
+  Admitted.
+
+  Theorem tr_instantiatePattern_surj : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement),
       instantiatePattern tr sm sp = Some tp ->
       (exists (r : Rule) (tp1 : list TargetModelElement),
@@ -520,6 +537,17 @@ Section CoqTL.
         * apply in_eq.
         * assumption.
       + unfold instantiateRuleOnPattern in inst.
+  Admitted.
+
+  Theorem  tr_instantiatePattern_incl :
+    forall (tr: Transformation) (sm : SourceModel)
+      (sp : list SourceModelElement) (tp: list TargetModelElement) (tp1: list TargetModelElement)
+      (r : Rule),
+      instantiatePattern tr sm sp = Some tp ->
+      In r (Transformation_getRules tr) ->
+      instantiateRuleOnPattern r sm sp = Some tp1 ->
+      incl tp1 tp.
+  Proof.
   Admitted.
 
   Theorem tr_instantiatePattern_surj_elements : 
@@ -554,23 +582,6 @@ Section CoqTL.
         * assumption.
       + contradiction.
   Qed.
-
-  Theorem  outp_incl_elements2 :
-    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (tes: list TargetModelElement) ,
-      tm = execute tr sm -> incl sp (allModelElements sm) ->
-      instantiatePattern tr sm sp = Some tes ->
-      incl tes (allModelElements tm).
-  Proof.
-    intros.
-    unfold execute in H.
-    rewrite H. simpl.
-    apply concat_map_option_incl with (a:=sp).
-    - unfold allTuples.
-      apply tuples_up_to_n_incl_length.
-      + assumption.
-      + apply max_list_upperBound.
-        apply in_map_iff.
-  Admitted.
     
   Theorem tr_instantiateRuleOnPattern_surj_elements : 
     forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
