@@ -482,7 +482,7 @@ Section CoqTL.
 
   (** ** execute **)
   
-  Theorem tr_execute_surj_elements : 
+  Theorem tr_execute_in_elements : 
     forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
       In te (allModelElements (execute tr sm)) <->
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
@@ -517,7 +517,7 @@ Section CoqTL.
         * unfold matchPattern in mtch.
   Admitted.
 
-  Theorem tr_execute_surj_links : 
+  Theorem tr_execute_in_links : 
     forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
       In tl (allModelLinks (execute tr sm)) <->
       (exists (sp : list SourceModelElement) (tpl : list TargetModelLink),
@@ -545,7 +545,7 @@ Section CoqTL.
   
   (** ** instantiatePattern **)
 
-  Theorem tr_instantiatePattern_surj : 
+  Theorem tr_instantiatePattern_in : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
       instantiatePattern tr sm sp = Some tp ->
       In te tp <->
@@ -583,7 +583,7 @@ Section CoqTL.
 
   (** ** instantiateRuleOnPattern **)
     
-  Theorem tr_instantiateRuleOnPattern_surj : 
+  Theorem tr_instantiateRuleOnPattern_in : 
     forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
       instantiateRuleOnPattern r sm sp = Some tp ->
       In te tp ->
@@ -607,7 +607,29 @@ Section CoqTL.
   
   (** ** applyPattern **)
 
+  Theorem tr_applyPattern_in : 
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
+      applyPattern tr sm sp = Some tpl ->
+      In tl tpl <->
+      (exists (r : Rule) (tpl1 : list TargetModelLink),
+          In r (matchPattern tr sm sp) /\
+          applyRuleOnPattern r tr sm sp = Some tpl1 /\
+          In tl tpl1).
+  Proof.
+  Admitted.
+
   (** ** applyRuleOnPattern **)
+
+  Theorem tr_applyRuleOnPattern_in : 
+    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
+      applyRuleOnPattern r tr sm sp = Some tpl ->
+      In tl tpl ->
+      (exists (o: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tpl1: list TargetModelLink),
+          In o (Rule_getOutputPattern r) /\
+          applyElementOnPattern r o tr sm sp = Some tpl1 /\
+          In tl tpl1).
+  Proof.
+  Admitted.
 
   (** ** applyElementOnPattern **)
 
@@ -682,6 +704,8 @@ Section CoqTL.
       matchRuleOnPattern r sm sp = None.
   Proof.
   Admitted.
+
+  (** * Typeclass instantiation **)
       
   Instance CoqTLEngine : 
     TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink := 
@@ -695,7 +719,7 @@ Section CoqTL.
       matchRuleOnPattern := matchRuleOnPattern';
       instantiateRuleOnPattern := instantiateRuleOnPattern';
       applyRuleOnPattern := applyRuleOnPattern;
-      match_pattern_derivable :=  tr_matchPattern_derivable; (*
+      (* match_pattern_derivable :=  tr_matchPattern_in;
       instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
       apply_pattern_derivable :=  tr_apply_pattern_derivable; 
       tr_surj_elements := tr_surj_elements;

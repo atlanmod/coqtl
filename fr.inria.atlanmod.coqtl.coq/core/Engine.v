@@ -149,7 +149,7 @@ Class TransformationEngine
         match_functional :
             forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r1: list Rule) (r2: list Rule),
               matchPattern tr sm sp = r1 -> matchPattern tr sm sp = r2 -> r1 = r2;
- *)
+
       (** *** Rules *)
 
       (** **** match_pattern_derivable **)
@@ -158,7 +158,7 @@ Class TransformationEngine
         forall (sp : list SourceModelElement)(r : Rule),
           In r (matchPattern tr sm sp) -> 
           matchRuleOnPattern r tr sm sp = return true;
-    (*
+    
         (** **** instantiate_pattern_derivable 
 
                  Definition: the result of _instantiatePattern_ can be derived from _instantiateRuleOnPattern_ and _matchPattern_ *)
