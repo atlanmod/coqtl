@@ -455,7 +455,7 @@ Section CoqTL.
       (concat (optionList2List (map (applyPattern tr sm) (allTuples tr sm)))).
 
   (** * Certification **)
-
+  
   Definition matchRuleOnPattern' (r: Rule) (t: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
     matchRuleOnPattern r sm sp.
 
@@ -463,8 +463,37 @@ Section CoqTL.
     instantiateRuleOnPattern r sm sp.
 
   (*Definition applyRuleOnPattern' (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
-  *)  
+   *)
 
+  (** ** execute **)
+  
+  Theorem tr_execute_surj_elements'' : 
+    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
+      tm = execute tr sm <->
+      (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
+          incl sp (allModelElements sm) /\
+          instantiatePattern tr sm sp = Some tp /\
+          incl tp (allModelElements tm)).
+  Proof.
+  Admitted.
+
+  Theorem  tr_execute_incl :
+    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (tes: list TargetModelElement),
+      tm = execute tr sm -> incl sp (allModelElements sm) ->
+      instantiatePattern tr sm sp = Some tes ->
+      incl tes (allModelElements tm).
+  Proof.
+    intros.
+    unfold execute in H.
+    rewrite H. simpl.
+    apply concat_map_option_incl with (a:=sp).
+    - unfold allTuples.
+      apply tuples_up_to_n_incl_length.
+      + assumption.
+      + apply max_list_upperBound.
+        apply in_map_iff.
+  Admitted.
+  
   Theorem tr_execute_surj_elements' : 
     forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
       In te (allModelElements (execute tr sm)) <->
@@ -499,11 +528,11 @@ Section CoqTL.
         * inversion H0.
         * unfold matchPattern in mtch.
   Admitted.
-    
+  
   Theorem tr_execute_surj_elements : 
-  forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (te : TargetModelElement),
-   tm = execute tr sm -> In te (allModelElements tm) -> 
-   (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
+    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (te : TargetModelElement),
+      tm = execute tr sm -> In te (allModelElements tm) -> 
+      (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
      instantiatePattern tr sm sp = Some tp /\
      incl sp (allModelElements sm) /\
      In te tp /\
@@ -531,23 +560,8 @@ Section CoqTL.
     - contradiction.
   Qed.
 
-  Theorem  tr_execute_incl :
-    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (tes: list TargetModelElement),
-      tm = execute tr sm -> incl sp (allModelElements sm) ->
-      instantiatePattern tr sm sp = Some tes ->
-      incl tes (allModelElements tm).
-  Proof.
-    intros.
-    unfold execute in H.
-    rewrite H. simpl.
-    apply concat_map_option_incl with (a:=sp).
-    - unfold allTuples.
-      apply tuples_up_to_n_incl_length.
-      + assumption.
-      + apply max_list_upperBound.
-        apply in_map_iff.
-  Admitted.
-
+  (** ** instantiatePattern **)
+  
   Theorem tr_instantiatePattern_surj : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement),
       instantiatePattern tr sm sp = Some tp ->
@@ -617,6 +631,8 @@ Section CoqTL.
         * assumption.
       + contradiction.
   Qed.
+
+  (** ** instantiateRuleOnPattern **)
     
   Theorem tr_instantiateRuleOnPattern_surj_elements : 
     forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
@@ -638,7 +654,9 @@ Section CoqTL.
         apply optionList2List_In in H0.
   Admitted.
 
-  Theorem tr_match_pattern_derivable : 
+  (** ** matchPattern **)
+
+  Theorem tr_matchPattern_derivable : 
     forall (tr: Transformation) (sm : SourceModel),
     forall (sp : list SourceModelElement)(r : Rule),
       In r (matchPattern tr sm sp) -> 
@@ -656,13 +674,12 @@ Section CoqTL.
     + inversion H0.
   Qed.
 
-  (*
   Theorem tr_matchPattern_sp_gt_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       (length sp) > (maxArity tr) ->
       (matchPattern tr sm sp) = nil.
   Proof.
-    intros.
+  (*  intros.
     unfold matchPattern.
     unfold matchRuleOnPattern.
     unfold evalGuard.
@@ -686,15 +703,17 @@ Section CoqTL.
       -- apply ble_nat_false in ca_max.
          unfold maxArity.
          simpl.
-         crush.
-  Qed.   
+         crush. *)
+  Admitted.
+
+  (** ** matchRuleOnPattern **)
 
   Theorem tr_evalGuard_sp_gt_maxArity : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       (length sp) > (length (Rule_getInTypes r)) ->
-      evalGuard r sm sp = None.
+      matchRuleOnPattern r sm sp = None.
   Proof.
-  Admitted. *)
+  Admitted.
       
   Instance CoqTLEngine : 
     TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink := 
@@ -708,7 +727,7 @@ Section CoqTL.
       matchRuleOnPattern := matchRuleOnPattern';
       instantiateRuleOnPattern := instantiateRuleOnPattern';
       applyRuleOnPattern := applyRuleOnPattern;
-      match_pattern_derivable :=  tr_match_pattern_derivable; (*
+      match_pattern_derivable :=  tr_matchPattern_derivable; (*
       instantiate_pattern_derivable :=  tr_instantiate_pattern_derivable;
       apply_pattern_derivable :=  tr_apply_pattern_derivable; 
       tr_surj_elements := tr_surj_elements;
