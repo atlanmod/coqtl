@@ -79,16 +79,11 @@ Lemma concat_map_exists :
     forall (T1 T2: Type) (b : T2) (l : list T1) (f : T1 -> list T2),
       In b (concat (map f l)) -> (exists (a : T1), In a l /\ In b (f a)).
 Proof.
-    intros.
-    apply concat_exists in H.
-    destruct H. destruct H.
-    induction l.
-    - inversion H.
-    - simpl in H. destruct H.
-      -- exists a. rewrite H. split. simpl. left. reflexivity. apply H0.
-      -- apply IHl in H. destruct H. exists x0. destruct H. split. simpl. right. apply H. apply H1.
+  intros.
+  apply in_flat_map.
+  rewrite flat_map_concat_map.
+  assumption.
 Qed.
-
 
 Lemma concat_map_option_exists :
     forall (T1 T2: Type) (b : T2) 
