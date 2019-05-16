@@ -466,26 +466,16 @@ Section CoqTL.
    *)
 
   (** ** execute **)
-  
-  Theorem tr_execute_surj_elements'' : 
-    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
-      tm = execute tr sm <->
-      (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
-          incl sp (allModelElements sm) /\
-          instantiatePattern tr sm sp = Some tp /\
-          incl tp (allModelElements tm)).
-  Proof.
-  Admitted.
 
   Theorem  tr_execute_incl :
-    forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (tes: list TargetModelElement),
-      tm = execute tr sm -> incl sp (allModelElements sm) ->
-      instantiatePattern tr sm sp = Some tes ->
-      incl tes (allModelElements tm).
+    forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (tp: list TargetModelElement),
+      incl sp (allModelElements sm) ->
+      instantiatePattern tr sm sp = Some tp ->
+      incl tp (allModelElements (execute tr sm)).
   Proof.
     intros.
-    unfold execute in H.
-    rewrite H. simpl.
+    unfold execute.
+    simpl.
     apply concat_map_option_incl with (a:=sp).
     - unfold allTuples.
       apply tuples_up_to_n_incl_length.
@@ -494,7 +484,7 @@ Section CoqTL.
         apply in_map_iff.
   Admitted.
   
-  Theorem tr_execute_surj_elements' : 
+  Theorem tr_execute_surj_elements : 
     forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
       In te (allModelElements (execute tr sm)) <->
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
@@ -529,7 +519,7 @@ Section CoqTL.
         * unfold matchPattern in mtch.
   Admitted.
   
-  Theorem tr_execute_surj_elements : 
+  (*Theorem tr_execute_surj_elements : 
     forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (te : TargetModelElement),
       tm = execute tr sm -> In te (allModelElements tm) -> 
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
@@ -558,7 +548,7 @@ Section CoqTL.
         * assumption.
         * assumption.
     - contradiction.
-  Qed.
+  Qed. *)
 
   (** ** instantiatePattern **)
   
@@ -674,7 +664,7 @@ Section CoqTL.
     + inversion H0.
   Qed.
 
-  Theorem tr_matchPattern_sp_gt_maxArity : 
+  Theorem tr_matchPattern_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       (length sp) > (maxArity tr) ->
       (matchPattern tr sm sp) = nil.
@@ -708,9 +698,9 @@ Section CoqTL.
 
   (** ** matchRuleOnPattern **)
 
-  Theorem tr_evalGuard_sp_gt_maxArity : 
+  Theorem tr_matchRuleOnPattern_inTypes : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-      (length sp) > (length (Rule_getInTypes r)) ->
+      (length sp) <> (length (Rule_getInTypes r)) ->
       matchRuleOnPattern r sm sp = None.
   Proof.
   Admitted.
