@@ -576,39 +576,6 @@ Section CoqTL.
   Proof.
   Admitted.
 
-  Theorem incl_equiv_to_surj:
-    (forall (tr: Transformation) (sm : SourceModel)
-      (sp : list SourceModelElement) (tp: list TargetModelElement) (tp1: list TargetModelElement)
-      (r : Rule),
-      instantiateRuleOnPattern r sm sp = Some tp1 ->
-      In r (matchPattern tr sm sp) ->
-      instantiatePattern tr sm sp = Some tp ->
-      incl tp1 tp) <->
-    (forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
-     instantiatePattern tr sm sp = Some tp ->
-      (exists (r : Rule) (tp1 : list TargetModelElement),
-          In r (matchPattern tr sm sp) /\
-          instantiateRuleOnPattern r sm sp = Some tp1 /\
-          In te tp1) ->
-      In te tp).
-  Proof.
-    split.
-    - intros.
-      destruct H1. destruct H1. destruct H1. destruct H2.
-      + pose (H tr sm sp tp x0 x H2 H1 H0).
-        apply i in H3.
-        assumption.
-    - intros.
-      unfold incl.
-      intros.
-      epose (H tr sm sp tp a H2).
-      apply i.
-      exists r, tp1.
-      split. assumption.
-      split. assumption.
-      assumption.
-  Qed.    
-
   Theorem tr_instantiatePattern_surj : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
       instantiatePattern tr sm sp = Some tp ->
