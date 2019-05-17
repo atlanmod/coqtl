@@ -667,16 +667,16 @@ Section CoqTL.
 
   (** ** applyRuleOnPattern **)
 
-  (*Theorem tr_applyRuleOnPattern_in : 
+  Theorem tr_applyRuleOnPattern_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
-      applyRuleOnPattern r tr sm sp = Some tpl ->
+      applyRuleOnPattern' r tr sm sp = Some tpl ->
       In tl tpl <->
-      (exists (o: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tpl1: list TargetModelLink),
-          In o (Rule_getOutputPattern r) /\
-          applyElementOnPattern r o tr sm sp = Some tpl1 /\
+      (exists (i: nat) (tpl1: list TargetModelLink),
+          i < length (evalIterator r sm sp) /\
+          applyRuleOnPatternIter r tr sm sp i = Some tpl1 /\
           In tl tpl1).
   Proof.
-  Admitted.*)
+  Admitted.
 
   Theorem tr_applyRuleOnPattern_inTypes : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
@@ -834,6 +834,7 @@ Section CoqTL.
       tr_applyPattern_nil_tr := tr_applyPattern_nil_tr;
       tr_applyPattern_maxArity := tr_applyPattern_maxArity;
 
+      tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
       tr_applyRuleOnPattern_inTypes := tr_applyRuleOnPattern_inTypes;
       
       tr_matchPattern_in := tr_matchPattern_in;
