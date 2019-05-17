@@ -27,18 +27,18 @@ Section CoqTL.
   
   Definition outputReferenceTypes
              (sclasses : list SourceModelClass) (tclass: TargetModelClass)  (tref: TargetModelReference):=
-    denoteFuncOfClasses smm (sclasses) ((denoteModelClass tclass) -> option (denoteModelReference tref)).
+    denoteFunction smm (sclasses) ((denoteModelClass tclass) -> option (denoteModelReference tref)).
   
   Definition outputPatternElementTypes
              (sclasses : list SourceModelClass) (tclass: TargetModelClass) :=
-    denoteFuncOfClasses smm (sclasses) (denoteModelClass tclass).
+    denoteFunction smm (sclasses) (denoteModelClass tclass).
 
   Definition iteratedListTypes
              (sclasses : list SourceModelClass) (itype: Type) :=
-    denoteFuncOfClasses smm (sclasses) (list itype).
+    denoteFunction smm (sclasses) (list itype).
 
   Definition guardTypes (sclasses : list SourceModelClass) :=
-    denoteFuncOfClasses smm (sclasses) bool.
+    denoteFunction smm (sclasses) bool.
 
   (** ** Syntax Types **)
   
@@ -263,19 +263,19 @@ Section CoqTL.
   (** ** Expression Evaluation **)
   
   Definition evalGuard (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    evalFuncOfClasses smm sm (Rule_getInTypes r) bool (Rule_getGuard r) sp.
+    evalFunction smm sm (Rule_getInTypes r) bool (Rule_getGuard r) sp.
   
   Definition evalIterator (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
     list (Rule_getIteratorType r) :=
     optionListToList
-      (evalFuncOfClasses
+      (evalFunction
          smm sm
          (Rule_getInTypes r) (list (Rule_getIteratorType r)) (Rule_getIteratedList r) sp).
 
   Definition evalOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (sm: SourceModel) (sp: list SourceModelElement) (iter: IterType) (o: OutputPatternElement InElTypes IterType) 
     : option TargetModelElement :=
     let val := 
-        evalFuncOfClasses smm sm InElTypes (denoteModelClass (OutputPatternElement_getOutType o)) ((OutputPatternElement_getOutPatternElement o) iter) sp in
+        evalFunction smm sm InElTypes (denoteModelClass (OutputPatternElement_getOutType o)) ((OutputPatternElement_getOutPatternElement o) iter) sp in
     match val with
     | None => None
     | Some r => Some (toModelElement (OutputPatternElement_getOutType o) r)
@@ -287,8 +287,8 @@ Section CoqTL.
              (o: OutputPatternElementReference InElTypes IterType TargetType) 
     : option TargetModelLink :=
     let val :=
-    evalFuncOfClasses smm sm InElTypes ((denoteModelClass TargetType) -> option (denoteModelReference (OutputPatternElementReference_getRefType o)))
-                      ((OutputPatternElementReference_getOutputReference o) tr iter) sp in
+        evalFunction smm sm InElTypes ((denoteModelClass TargetType) -> option (denoteModelReference (OutputPatternElementReference_getRefType o)))
+                     ((OutputPatternElementReference_getOutputReference o) tr iter) sp in
     match val with
     | None => None
     | Some r =>
@@ -688,6 +688,8 @@ Section CoqTL.
   (** ** applyIterationOnPattern **)
   
   (** ** applyElementOnPattern **)
+
+  (** ** applyReferenceOnPattern **)
 
   (** ** matchPattern **)
 
