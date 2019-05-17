@@ -114,9 +114,9 @@ Class TransformationEngine :=
             In te tp1);
 
     tr_instantiatePattern_nil_tr : 
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-      getRules tr = nil ->
-      instantiatePattern tr sm sp = None;
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        getRules tr = nil ->
+        instantiatePattern tr sm sp = None;
 
     tr_instantiatePattern_maxArity : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
@@ -133,9 +133,9 @@ Class TransformationEngine :=
             In tl tpl1);
 
     tr_applyPattern_nil_tr : 
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-      getRules tr = nil ->
-      applyPattern tr sm sp = None;
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        getRules tr = nil ->
+        applyPattern tr sm sp = None;
 
     tr_applyPattern_maxArity : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
@@ -149,10 +149,15 @@ Class TransformationEngine :=
         In r (getRules tr) /\
         matchRuleOnPattern r tr sm sp = return true;
 
+    tr_matchPattern_nil_tr : 
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        getRules tr = nil ->
+        matchPattern tr sm sp = nil;
+    
     tr_matchPattern_maxArity : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         length sp > maxArity tr ->
-        matchPattern tr sm sp) = nil;
+        matchPattern tr sm sp = nil;
 
     tr_matchRuleOnPattern_inTypes : 
       forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),

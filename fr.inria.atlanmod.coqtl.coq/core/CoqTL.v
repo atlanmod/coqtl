@@ -693,6 +693,13 @@ Section CoqTL.
       rewrite H0.
       reflexivity.
   Qed.
+  
+  Theorem tr_matchPattern_nil_tr : 
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      Transformation_getRules tr = nil ->
+      matchPattern tr sm sp = nil.
+  Proof.
+  Admitted.
 
   Theorem tr_matchPattern_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
@@ -788,6 +795,7 @@ Section CoqTL.
       tr_applyPattern_maxArity := tr_applyPattern_maxArity;
 
       tr_matchPattern_in := tr_matchPattern_in;
+      tr_matchPattern_nil_tr := tr_matchPattern_nil_tr;
       tr_matchPattern_maxArity := tr_matchPattern_maxArity;
       
       tr_matchRuleOnPattern_inTypes := tr_matchRuleOnPattern_inTypes;
