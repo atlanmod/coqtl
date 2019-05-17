@@ -150,6 +150,18 @@ Class TransformationEngine :=
       forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
         i >= length (evalIterator r sm sp) ->
         instantiateIterationOnPattern r sm sp i = None;
+
+    tr_instantiateElementOnPattern_inTypes : 
+      forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+        (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+        length sp <> length (getInTypes r) ->
+        instantiateElementOnPattern ope sm sp i = None;
+
+    tr_instantiateElementOnPattern_iterator : 
+      forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+        (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+        i >= length (evalIterator r sm sp) ->
+        instantiateElementOnPattern ope sm sp i = None;
     
     tr_applyPattern_in :
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),

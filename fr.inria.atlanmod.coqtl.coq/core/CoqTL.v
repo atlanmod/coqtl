@@ -684,6 +684,22 @@ Section CoqTL.
   Admitted.
   
   (** ** instantiateElementOnPattern **)
+
+  Theorem tr_instantiateElementOnPattern_inTypes : 
+    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
+      length sp <> length (Rule_getInTypes r) ->
+      instantiateElementOnPattern r ope sm sp i = None.
+  Proof.
+  Admitted.
+
+  Theorem tr_instantiateElementOnPattern_iterator : 
+    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
+      i >= length (evalIterator r sm sp) ->
+      instantiateElementOnPattern r ope sm sp i = None.
+  Proof.
+  Admitted.
   
   (** ** applyPattern **)
 
@@ -802,6 +818,24 @@ Section CoqTL.
   Admitted.
 
   (** ** applyReferenceOnPattern **)
+
+  Theorem tr_applyReferenceOnPattern_inTypes : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
+      (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
+      length sp <> length (Rule_getInTypes r) ->
+      applyReferenceOnPattern r ope oper tr sm sp i = None.
+  Proof.
+  Admitted.
+
+  Theorem tr_applyReferenceOnPattern_iterator : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
+      (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
+      i >= length (evalIterator r sm sp) ->
+      applyReferenceOnPattern r ope oper tr sm sp i = None.
+  Proof.
+  Admitted.
 
   (** ** matchPattern **)
 
@@ -949,6 +983,9 @@ Section CoqTL.
       tr_instantiateIterationOnPattern_in := tr_instantiateRuleOnPatternIter_in;
       tr_instantiateIterationOnPattern_inTypes := tr_instantiateRuleOnPatternIter_inTypes;
       tr_instantiateIterationOnPattern_iterator := tr_instantiateRuleOnPatternIter_iterator;
+
+      tr_instantiateElementOnPattern_inTypes := tr_instantiateElementOnPattern_inTypes;
+      tr_instantiateElementOnPattern_iterator := tr_instantiateElementOnPattern_iterator;
       
       tr_applyPattern_in := tr_applyPattern_in;
       tr_applyPattern_nil_tr := tr_applyPattern_nil_tr;
