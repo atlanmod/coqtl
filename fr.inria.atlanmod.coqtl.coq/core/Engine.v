@@ -253,11 +253,6 @@ Class TransformationEngine :=
         In r (matchPattern tr sm sp) <->
         In r (getRules tr) /\
         matchRuleOnPattern r tr sm sp = return true;
-
-    tr_matchPattern_nil_tr : 
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-        getRules tr = nil ->
-        matchPattern tr sm sp = nil;
     
     tr_matchPattern_maxArity : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
@@ -315,3 +310,44 @@ Proof.
     split. assumption.
     assumption.
 Qed.
+
+Theorem
+  tr_matchPattern_nil_tr : forall t: TransformationEngine,
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        getRules tr = nil ->
+        matchPattern tr sm sp = nil.
+Proof.
+  intros.
+  destruct (matchPattern tr sm sp) eqn:mtch. reflexivity.
+  exfalso.
+  pose (tr_matchPattern_in tr sm sp r).
+  rewrite H in i.
+  pose (in_eq r l).
+  rewrite <- mtch in i0.
+  apply i in i0.
+  simpl in i0.
+  destruct i0.
+  contradiction.
+Qed.
+
+(*Theorem
+    tr_execute_nil_tr' : forall t: TransformationEngine, 
+      forall (tr: Transformation) (sm : SourceModel),
+        getRules tr = nil ->
+        allModelElements (execute tr sm) = nil.
+Proof.
+  intros.
+  destruct (allModelElements (execute tr sm)) eqn:ame.
+  - reflexivity.
+  - exfalso.
+    pose (tr_execute_in_elements tr sm t0).
+    pose (in_eq t0 l).
+    rewrite <- ame in i0.
+    apply i in i0.
+    destruct i0. destruct H0. destruct H0. destruct H1.
+    pose (tr_instantiatePattern_in tr sm x x0 t0).
+    assert ((instantiatePattern tr sm x = return x0) /\ In t0 x0).
+    { split. assumption. assumption. }
+    apply i0 in H3.
+    pose tr_matchPattern_in.
+      *)
