@@ -113,6 +113,11 @@ Class TransformationEngine :=
             instantiateRuleOnPattern r tr sm sp = Some tp1 /\
             In te tp1);
 
+    tr_instantiatePattern_nil_tr : 
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      getRules tr = nil ->
+      instantiatePattern tr sm sp = None;
+
     tr_applyPattern_in :
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
         applyPattern tr sm sp = Some tpl ->
@@ -121,6 +126,11 @@ Class TransformationEngine :=
             In r (matchPattern tr sm sp) /\
             applyRuleOnPattern r tr sm sp = Some tpl1 /\
             In tl tpl1);
+
+    tr_applyPattern_nil_tr : 
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      getRules tr = nil ->
+      applyPattern tr sm sp = None;
 
     tr_matchPattern_in :
       forall (tr: Transformation) (sm : SourceModel),

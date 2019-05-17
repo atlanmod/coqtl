@@ -581,6 +581,13 @@ Section CoqTL.
       + inversion H.
   Admitted.
 
+  Theorem tr_instantiatePattern_nil_tr : 
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      Transformation_getRules tr = nil ->
+      instantiatePattern tr sm sp = None.
+  Proof.
+  Admitted.
+
   (** ** instantiateRuleOnPattern **)
     
   (*Theorem tr_instantiateRuleOnPattern_in : 
@@ -616,6 +623,13 @@ Section CoqTL.
           In r (matchPattern tr sm sp) /\
           applyRuleOnPattern r tr sm sp = Some tpl1 /\
           In tl tpl1).
+  Proof.
+  Admitted.
+
+  Theorem tr_applyPattern_nil_tr : 
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      Transformation_getRules tr = nil ->
+      applyPattern tr sm sp = None.
   Proof.
   Admitted.
 
@@ -750,7 +764,9 @@ Section CoqTL.
       tr_execute_in_links := tr_execute_in_links;
       tr_execute_nil_tr := tr_execute_nil_tr;
       tr_instantiatePattern_in := tr_instantiatePattern_in;
+      tr_instantiatePattern_nil_tr := tr_instantiatePattern_nil_tr;
       tr_applyPattern_in := tr_applyPattern_in;
+      tr_applyPattern_nil_tr := tr_applyPattern_nil_tr;
       tr_matchPattern_in := tr_matchPattern_in;
       tr_matchPattern_maxArity := tr_matchPattern_maxArity;
       tr_matchRuleOnPattern_inTypes := tr_matchRuleOnPattern_inTypes;
