@@ -74,13 +74,19 @@ Class TransformationEngine :=
 
     (** *** instantiateRuleOnPattern *)
     instantiateRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelElement); 
-      
+
+    (** *** instantiateIterationOnPattern *)
+    instantiateIterationOnPattern: Rule -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelElement);
+    
     (** *** applyPattern *)
     applyPattern: Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
       
     (** *** applyRuleOnPattern *)
     applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
-      
+
+    (** *** applyIterationOnPattern *)
+    applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelLink);
+    
     (** ** Theorems of the Transformation Engine *)
 
     tr_execute_in_elements :

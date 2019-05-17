@@ -792,9 +792,13 @@ Section CoqTL.
       matchPattern := matchPattern;
       instantiatePattern := instantiatePattern;
       applyPattern := applyPattern;
+      
       matchRuleOnPattern := matchRuleOnPattern';
       instantiateRuleOnPattern := instantiateRuleOnPattern';
       applyRuleOnPattern := applyRuleOnPattern';
+
+      instantiateIterationOnPattern := instantiateRuleOnPatternIter;
+      applyIterationOnPattern := applyRuleOnPatternIter;
       
       tr_execute_in_elements := tr_execute_in_elements;
       tr_execute_in_links := tr_execute_in_links;
