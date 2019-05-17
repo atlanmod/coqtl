@@ -619,6 +619,13 @@ Section CoqTL.
           apply optionList2List_In in H0.
   Admitted.*)
 
+  Theorem tr_instantiateRuleOnPattern_inTypes : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+      length sp <> length (Rule_getInTypes r) ->
+      instantiateRuleOnPattern' r tr sm sp = None.
+  Proof.
+  Admitted.
+
   (** ** instantiateElementOnPattern **)
   
   (** ** applyPattern **)
@@ -660,6 +667,13 @@ Section CoqTL.
           In tl tpl1).
   Proof.
   Admitted.*)
+
+  Theorem tr_applyRuleOnPattern_inTypes : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+      length sp <> length (Rule_getInTypes r) ->
+      applyRuleOnPattern' r tr sm sp = None.
+  Proof.
+  Admitted.
 
   (** ** applyElementOnPattern **)
 
@@ -789,11 +803,15 @@ Section CoqTL.
       tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_instantiatePattern_nil_tr := tr_instantiatePattern_nil_tr;
       tr_instantiatePattern_maxArity := tr_instantiatePattern_maxArity;
+
+      tr_instantiateRuleOnPattern_inTypes := tr_instantiateRuleOnPattern_inTypes;
       
       tr_applyPattern_in := tr_applyPattern_in;
       tr_applyPattern_nil_tr := tr_applyPattern_nil_tr;
       tr_applyPattern_maxArity := tr_applyPattern_maxArity;
 
+      tr_applyRuleOnPattern_inTypes := tr_applyRuleOnPattern_inTypes;
+      
       tr_matchPattern_in := tr_matchPattern_in;
       tr_matchPattern_nil_tr := tr_matchPattern_nil_tr;
       tr_matchPattern_maxArity := tr_matchPattern_maxArity;

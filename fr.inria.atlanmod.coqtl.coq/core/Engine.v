@@ -121,7 +121,12 @@ Class TransformationEngine :=
     tr_instantiatePattern_maxArity : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         length sp > maxArity tr ->
-        instantiatePattern tr sm sp = None; 
+        instantiatePattern tr sm sp = None;
+
+    tr_instantiateRuleOnPattern_inTypes : 
+      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+        length sp <> length (getInTypes r) ->
+        instantiateRuleOnPattern r tr sm sp = None;
 
     tr_applyPattern_in :
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
@@ -140,7 +145,12 @@ Class TransformationEngine :=
     tr_applyPattern_maxArity : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         length sp > maxArity tr ->
-        applyPattern tr sm sp = None;    
+        applyPattern tr sm sp = None;
+
+    tr_applyRuleOnPattern_inTypes : 
+      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+        length sp <> length (getInTypes r) ->
+        applyRuleOnPattern r tr sm sp = None;
 
     tr_matchPattern_in :
       forall (tr: Transformation) (sm : SourceModel),
