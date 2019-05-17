@@ -22,31 +22,37 @@ Set Implicit Arguments.
 (* OutputPatternElement and OutputPatternElementReference removed because of type parameters *)
 Class TransformationEngine :=
   {
-    Transformation: Type;
-    Rule: Type; 
     SourceModelElement: Type;
-    SourceModelLink: Type; 
+    SourceModelClass: Type;
+    SourceModelLink: Type;
+    SourceModelReference: Type;
     TargetModelElement: Type;
+    TargetModelClass: Type;
     TargetModelLink: Type;
+    TargetModelReference: Type;
 
     SourceModel := Model SourceModelElement SourceModelLink;
     TargetModel := Model TargetModelElement TargetModelLink;
+    
+    Transformation: Type;
+    Rule: Type;
+    OutputPatternElement: list SourceModelClass -> Type -> Type;
 
     (** ** Transformation Engine Accessors *)
 
     (** *** getRules
         Returns the rules of the given transformation. *)
     getRules: Transformation -> list Rule;
-(*
+
     (** *** getInTypes **)
-    getInTypes: Rule -> list ModelClass;
+    getInTypes: Rule -> list SourceModelClass;
 
     (** *** getIteratorType **)
     getIteratorType: Rule -> Type;
 
     (** *** getOutputPattern **)
-    getOutputPattern: Rule -> list (OutputPatternElement (getInTypes x) (getIteratorType x));
-*)
+    getOutputPattern: forall x:Rule, list (OutputPatternElement (getInTypes x) (getIteratorType x));
+
     (** ** Transformation Engine Functions *)
     
     (** *** execute
@@ -165,4 +171,4 @@ Theorem incl_equiv_to_surj:
       split. assumption.
       assumption.
   Qed.
-  
+

@@ -719,13 +719,24 @@ Section CoqTL.
   Instance CoqTLEngine : 
     TransformationEngine := 
     {
+      SourceModelElement := SourceModelElement;
+      SourceModelClass := SourceModelClass;
+      SourceModelLink := SourceModelLink;
+      SourceModelReference := SourceModelReference;
+      TargetModelElement := TargetModelElement;
+      TargetModelClass := TargetModelClass;
+      TargetModelLink := TargetModelLink;
+      TargetModelReference := TargetModelReference;
+
       Transformation := Transformation;
       Rule := Rule;
-      SourceModelElement := SourceModelElement;
-      SourceModelLink := SourceModelLink;
-      TargetModelElement := TargetModelElement;
-      TargetModelLink := TargetModelLink;
+      OutputPatternElement := OutputPatternElement;
+            
       getRules := Transformation_getRules;
+      getInTypes := Rule_getInTypes;
+      getIteratorType := Rule_getIteratorType;
+      getOutputPattern := Rule_getOutputPattern;
+      
       execute := execute;
       matchPattern := matchPattern;
       instantiatePattern := instantiatePattern;
@@ -733,6 +744,7 @@ Section CoqTL.
       matchRuleOnPattern := matchRuleOnPattern';
       instantiateRuleOnPattern := instantiateRuleOnPattern';
       applyRuleOnPattern := applyRuleOnPattern';
+      
       tr_execute_in_elements := tr_execute_in_elements;
       tr_execute_in_links := tr_execute_in_links;
       tr_execute_nil_tr := tr_execute_nil_tr;
