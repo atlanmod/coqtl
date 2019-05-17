@@ -1001,6 +1001,9 @@ Section CoqTL.
       tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
       tr_applyElementOnPattern_inTypes := tr_applyElementOnPattern_inTypes;
       tr_applyElementOnPattern_iterator := tr_applyElementOnPattern_iterator;
+
+      tr_applyReferenceOnPattern_inTypes := tr_applyReferenceOnPattern_inTypes;
+      tr_applyReferenceOnPattern_iterator := tr_applyReferenceOnPattern_iterator;
       
       tr_matchPattern_in := tr_matchPattern_in;
       tr_matchPattern_nil_tr := tr_matchPattern_nil_tr;
