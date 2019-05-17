@@ -670,14 +670,14 @@ Section CoqTL.
   Admitted.
 
   Theorem tr_instantiateRuleOnPatternIter_inTypes : 
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       length sp <> length (Rule_getInTypes r) ->
       instantiateRuleOnPatternIter r sm sp i = None.
   Proof.
   Admitted.
 
   Theorem tr_instantiateRuleOnPatternIter_iterator : 
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       i >= length (evalIterator r sm sp) ->
       instantiateRuleOnPatternIter r sm sp i = None.
   Proof.
@@ -733,6 +733,39 @@ Section CoqTL.
   Admitted.
 
   (** ** applyIterationOnPattern **)
+
+  Theorem tr_applyRuleOnPatternIter_in : 
+    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink) (i:nat),
+      applyRuleOnPatternIter r tr sm sp i = Some tpl ->
+      In tl tpl <->
+      (exists (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tpl1: list TargetModelLink),
+          In ope (Rule_getOutputPattern r) /\ 
+          applyElementOnPattern r ope tr sm sp i = Some tpl1 /\
+          In tl tpl1).
+  Proof.
+    split.
+    - intros.
+      unfold instantiateRuleOnPattern in H.
+      destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+      + destruct b.
+        * Arguments optionList2List : simpl never.
+          Arguments map : simpl never.
+          inversion H.
+  Admitted.
+
+  Theorem tr_applyRuleOnPatternIter_inTypes : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+      length sp <> length (Rule_getInTypes r) ->
+      applyRuleOnPatternIter r tr sm sp i = None.
+  Proof.
+  Admitted.
+
+  Theorem tr_applyRuleOnPatternIter_iterator : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+      i >= length (evalIterator r sm sp) ->
+      applyRuleOnPatternIter r tr sm sp i = None.
+  Proof.
+  Admitted.
   
   (** ** applyElementOnPattern **)
 
@@ -891,7 +924,11 @@ Section CoqTL.
 
       tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
       tr_applyRuleOnPattern_inTypes := tr_applyRuleOnPattern_inTypes;
-      
+
+      tr_applyIterationOnPattern_in := tr_applyRuleOnPatternIter_in;
+      tr_applyIterationOnPattern_inTypes := tr_applyRuleOnPatternIter_inTypes;
+      tr_applyIterationOnPattern_iterator := tr_applyRuleOnPatternIter_iterator;
+        
       tr_matchPattern_in := tr_matchPattern_in;
       tr_matchPattern_nil_tr := tr_matchPattern_nil_tr;
       tr_matchPattern_maxArity := tr_matchPattern_maxArity;

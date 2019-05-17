@@ -142,12 +142,12 @@ Class TransformationEngine :=
             instantiateElementOnPattern ope sm sp i = Some te);
     
     tr_instantiateIterationOnPattern_inTypes : 
-      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+      forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
         length sp <> length (getInTypes r) ->
         instantiateIterationOnPattern r sm sp i = None;
 
     tr_instantiateIterationOnPattern_iterator : 
-      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+      forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
         i >= length (evalIterator r sm sp) ->
         instantiateIterationOnPattern r sm sp i = None;
     
@@ -184,6 +184,25 @@ Class TransformationEngine :=
         length sp <> length (getInTypes r) ->
         applyRuleOnPattern r tr sm sp = None;
 
+    tr_applyIterationOnPattern_in : 
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink) (i:nat),
+        applyIterationOnPattern r tr sm sp i = Some tpl ->
+        In tl tpl <->
+        (exists (ope: OutputPatternElement (getInTypes r) (getIteratorType r)) (tpl1: list TargetModelLink),
+            In ope (getOutputPattern r) /\ 
+            applyElementOnPattern ope tr sm sp i = Some tpl1 /\
+            In tl tpl1);
+    
+    tr_applyIterationOnPattern_inTypes : 
+      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+        length sp <> length (getInTypes r) ->
+        applyIterationOnPattern r tr sm sp i = None;
+
+    tr_applyIterationOnPattern_iterator : 
+      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+        i >= length (evalIterator r sm sp) ->
+        applyIterationOnPattern r tr sm sp i = None;
+    
     tr_matchPattern_in :
       forall (tr: Transformation) (sm : SourceModel),
       forall (sp : list SourceModelElement)(r : Rule),
