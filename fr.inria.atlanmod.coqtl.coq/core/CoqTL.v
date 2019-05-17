@@ -881,9 +881,9 @@ Section CoqTL.
       tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
       tr_instantiateRuleOnPattern_inTypes := tr_instantiateRuleOnPattern_inTypes;
 
-      tr_instantiateRuleOnPatternIter_in := tr_instantiateRuleOnPatternIter_in;
-      tr_instantiateRuleOnPatternIter_inTypes := tr_instantiateRuleOnPatternIter_inTypes;
-      tr_instantiateRuleOnPatternIter_iterator := tr_instantiateRuleOnPatternIter_iterator;
+      tr_instantiateIterationOnPattern_in := tr_instantiateRuleOnPatternIter_in;
+      tr_instantiateIterationOnPattern_inTypes := tr_instantiateRuleOnPatternIter_inTypes;
+      tr_instantiateIterationOnPattern_iterator := tr_instantiateRuleOnPatternIter_iterator;
       
       tr_applyPattern_in := tr_applyPattern_in;
       tr_applyPattern_nil_tr := tr_applyPattern_nil_tr;

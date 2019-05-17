@@ -133,7 +133,7 @@ Class TransformationEngine :=
         length sp <> length (getInTypes r) ->
         instantiateRuleOnPattern r tr sm sp = None;
 
-    tr_instantiateRuleOnPatternIter_in : 
+    tr_instantiateIterationOnPattern_in : 
       forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement) (i:nat),
         instantiateIterationOnPattern r sm sp i = Some tp ->
         In te tp <->
@@ -141,12 +141,12 @@ Class TransformationEngine :=
             In ope (getOutputPattern r) /\ 
             instantiateElementOnPattern ope sm sp i = Some te);
     
-    tr_instantiateRuleOnPatternIter_inTypes : 
+    tr_instantiateIterationOnPattern_inTypes : 
       forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
         length sp <> length (getInTypes r) ->
         instantiateIterationOnPattern r sm sp i = None;
 
-    tr_instantiateRuleOnPatternIter_iterator : 
+    tr_instantiateIterationOnPattern_iterator : 
       forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
         i >= length (evalIterator r sm sp) ->
         instantiateIterationOnPattern r sm sp i = None;
