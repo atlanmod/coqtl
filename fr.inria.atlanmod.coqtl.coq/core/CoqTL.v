@@ -621,7 +621,6 @@ Section CoqTL.
   Proof.
   Admitted.
 
-
   (** ** instantiateRuleOnPattern **)
     
   Theorem tr_instantiateRuleOnPattern_in : 
@@ -651,6 +650,38 @@ Section CoqTL.
   Admitted.
 
   (** ** instantiateIterationOnPattern **)
+
+  Theorem tr_instantiateRuleOnPatternIter_in : 
+    forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement) (i:nat),
+      instantiateRuleOnPatternIter r sm sp i = Some tp ->
+      In te tp <->
+      (exists (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
+          In ope (Rule_getOutputPattern r) /\ 
+          instantiateElementOnPattern r ope sm sp i = Some te).
+  Proof.
+    split.
+    - intros.
+      unfold instantiateRuleOnPattern in H.
+      destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+      + destruct b.
+        * Arguments optionList2List : simpl never.
+          Arguments map : simpl never.
+          inversion H.
+  Admitted.
+
+  Theorem tr_instantiateRuleOnPatternIter_inTypes : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+      length sp <> length (Rule_getInTypes r) ->
+      instantiateRuleOnPatternIter r sm sp i = None.
+  Proof.
+  Admitted.
+
+  Theorem tr_instantiateRuleOnPatternIter_iterator : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+      i >= length (evalIterator r sm sp) ->
+      instantiateRuleOnPatternIter r sm sp i = None.
+  Proof.
+  Admitted.
   
   (** ** instantiateElementOnPattern **)
   
@@ -849,6 +880,10 @@ Section CoqTL.
 
       tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
       tr_instantiateRuleOnPattern_inTypes := tr_instantiateRuleOnPattern_inTypes;
+
+      tr_instantiateRuleOnPatternIter_in := tr_instantiateRuleOnPatternIter_in;
+      tr_instantiateRuleOnPatternIter_inTypes := tr_instantiateRuleOnPatternIter_inTypes;
+      tr_instantiateRuleOnPatternIter_iterator := tr_instantiateRuleOnPatternIter_iterator;
       
       tr_applyPattern_in := tr_applyPattern_in;
       tr_applyPattern_nil_tr := tr_applyPattern_nil_tr;
