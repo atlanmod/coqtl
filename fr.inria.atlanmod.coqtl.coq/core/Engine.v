@@ -89,6 +89,9 @@ Class TransformationEngine :=
 
     (** *** applyIterationOnPattern *)
     applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelLink);
+
+    (** *** applyElementOnPattern *)
+    applyElementOnPattern: forall r:Rule, OutputPatternElement (getInTypes r) (getIteratorType r) -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelLink);
     
     (** ** Theorems of the Transformation Engine *)
 
