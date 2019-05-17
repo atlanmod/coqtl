@@ -691,13 +691,6 @@ Section CoqTL.
   Proof.
   Admitted.
 
-  Theorem tr_applyPattern_nil_tr : 
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-      Transformation_getRules tr = nil ->
-      applyPattern tr sm sp = None.
-  Proof.
-  Admitted.
-
   Theorem tr_applyPattern_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       length sp > maxArity tr ->
@@ -956,7 +949,6 @@ Section CoqTL.
       tr_instantiateElementOnPattern_iterator := tr_instantiateElementOnPattern_iterator;
       
       tr_applyPattern_in := tr_applyPattern_in;
-      tr_applyPattern_nil_tr := tr_applyPattern_nil_tr;
       tr_applyPattern_maxArity := tr_applyPattern_maxArity;
 
       tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;

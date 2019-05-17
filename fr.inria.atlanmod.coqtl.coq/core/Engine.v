@@ -162,11 +162,6 @@ Class TransformationEngine :=
             applyRuleOnPattern r tr sm sp = Some tpl1 /\
             In tl tpl1);
 
-    tr_applyPattern_nil_tr : 
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-        getRules tr = nil ->
-        applyPattern tr sm sp = None;
-
     tr_applyPattern_maxArity : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         length sp > maxArity tr ->
@@ -329,13 +324,34 @@ Theorem
 Proof.
   intros.
   destruct (instantiatePattern tr sm sp) eqn:dst.
-  - 
-    apply tr_matchPattern_nil_tr with (sm:=sm) (sp:=sp) in H.
+  - apply tr_matchPattern_nil_tr with (sm:=sm) (sp:=sp) in H.
     destruct l.
     * right. reflexivity.
     * exfalso.
       pose (tr_instantiatePattern_in tr sm sp (t0 :: l) t0).
       assert (instantiatePattern tr sm sp = return (t0 :: l) /\ In t0 (t0 :: l)).
+      { split. assumption. apply in_eq. }
+      apply i in H0.
+      rewrite H in H0.
+      destruct H0. destruct H0. destruct H0. simpl in H0. contradiction.
+  - left. reflexivity.
+Qed.
+
+Theorem
+    tr_applyPattern_nil_tr : forall t: TransformationEngine,
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        getRules tr = nil ->
+        (applyPattern tr sm sp = None \/
+         applyPattern tr sm sp = Some nil).
+Proof.
+  intros.
+  destruct (applyPattern tr sm sp) eqn:dst.
+  - apply tr_matchPattern_nil_tr with (sm:=sm) (sp:=sp) in H.
+    destruct l.
+    * right. reflexivity.
+    * exfalso.
+      pose (tr_applyPattern_in tr sm sp (t0 :: l) t0).
+      assert (applyPattern tr sm sp = return (t0 :: l) /\ In t0 (t0 :: l)).
       { split. assumption. apply in_eq. }
       apply i in H0.
       rewrite H in H0.
