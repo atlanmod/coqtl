@@ -483,6 +483,13 @@ Section CoqTL.
   Definition applyRuleOnPattern' (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
     applyRuleOnPattern r tr sm sp.
 
+  Definition OutputPatternElement_getOutType' (InElTypes: list SourceModelClass) (IterType: Type) (o: OutputPatternElement InElTypes IterType) : TargetModelClass :=
+    OutputPatternElement_getOutType o.
+
+  Definition OutputPatternElement_getOutputElementReferences' (InElTypes: list SourceModelClass) (IterType: Type) (o: OutputPatternElement InElTypes IterType) :
+    list (OutputPatternElementReference InElTypes IterType (OutputPatternElement_getOutType o)) :=
+    OutputPatternElement_getOutputElementReferences o.
+  
   (** ** execute **)
   
   Theorem tr_execute_in_elements : 
@@ -770,7 +777,7 @@ Section CoqTL.
   Proof.
     crush.
   Qed.*)
-
+    
   (** * Typeclass instantiation **)
       
   Instance CoqTLEngine : 
@@ -794,6 +801,8 @@ Section CoqTL.
       getInTypes := Rule_getInTypes;
       getIteratorType := Rule_getIteratorType;
       getOutputPattern := Rule_getOutputPattern;
+      getOutType := OutputPatternElement_getOutType';
+      getOutputElementReferences := OutputPatternElement_getOutputElementReferences';
       
       execute := execute;
       matchPattern := matchPattern;

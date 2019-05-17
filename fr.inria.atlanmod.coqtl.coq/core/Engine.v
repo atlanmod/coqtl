@@ -46,6 +46,9 @@ Class TransformationEngine :=
     getInTypes: Rule -> list SourceModelClass;
     getIteratorType: Rule -> Type;
     getOutputPattern: forall x:Rule, list (OutputPatternElement (getInTypes x) (getIteratorType x));
+    getOutType (InElTypes: list SourceModelClass) (IterType: Type) (o: OutputPatternElement InElTypes IterType) : TargetModelClass;
+    getOutputElementReferences: forall (InElTypes:list SourceModelClass) (IterType: Type) (o:OutputPatternElement InElTypes IterType),
+        list (OutputPatternElementReference InElTypes IterType (getOutType o));
 
     maxArity (tr: Transformation) : nat :=
       max (map (length (A:=SourceModelClass)) (map getInTypes (getRules tr)));
