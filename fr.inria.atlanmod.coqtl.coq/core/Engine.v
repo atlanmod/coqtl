@@ -109,7 +109,7 @@ Class TransformationEngine :=
         length sp > maxArity tr ->
         instantiatePattern tr sm sp = None;
 
-    tr_instantiateRuleOnPattern_in : 
+    tr_instantiateRuleOnPattern_in :
       forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
         (instantiateRuleOnPattern r tr sm sp = Some tp /\
          In te tp) <->
@@ -238,11 +238,6 @@ Class TransformationEngine :=
         In r (matchPattern tr sm sp) <->
         In r (getRules tr) /\
         matchRuleOnPattern r tr sm sp = return true;
-    
-    tr_matchPattern_maxArity : 
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-        length sp > maxArity tr ->
-        matchPattern tr sm sp = nil;
 
     tr_matchRuleOnPattern_inTypes : 
       forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
@@ -384,4 +379,22 @@ Proof.
     destruct H3. destruct H3. destruct H3.
     contradiction.
 Qed.
-      
+
+Theorem 
+    tr_matchPattern_maxArity : forall t: TransformationEngine,
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        length sp > maxArity tr ->
+        matchPattern tr sm sp = nil.
+Proof.
+  intros.
+  destruct (matchPattern tr sm sp) eqn:dst. reflexivity.
+  exfalso.
+  pose (tr_matchPattern_in tr sm sp r).
+  pose (tr_matchRuleOnPattern_inTypes tr sm r sp).
+  pose (in_eq r l).
+  rewrite <- dst in i0.
+  apply i in i0.
+  destruct i0.
+  unfold maxArity in H.
+Admitted.
+

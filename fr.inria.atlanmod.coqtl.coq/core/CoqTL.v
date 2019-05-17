@@ -837,38 +837,6 @@ Section CoqTL.
       rewrite H0.
       reflexivity.
   Qed.
-  
-  Theorem tr_matchPattern_maxArity : 
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-      length sp > maxArity tr ->
-      matchPattern tr sm sp = nil.
-  Proof.
-  (*  intros.
-    unfold matchPattern.
-    unfold matchRuleOnPattern.
-    unfold evalGuard.
-    destruct tr.
-    induction l.
-    - simpl; auto.
-    - assert (length sp > length (Rule_getInTypes a)).
-      { assert (maxArity (BuildTransformation (a :: l)) >= length (Rule_getInTypes a) ).
-        { apply  max_list_upperBound. crush. }
-        crush. }
-      assert (evalGuardFix  (Rule_getInTypes a) (Rule_getGuard a sm) sp = None).
-      { apply tr_evalGuardFix_sp_gt_maxArity. exact H0. }
-      simpl.
-      rewrite H1.
-      apply IHl.
-      unfold maxArity in H.
-      simpl in H.
-      case ( ble_nat (Datatypes.length (Rule_getInTypes a))
-          (max (map (Datatypes.length (A:=SourceModelClass)) (map Rule_getInTypes l)))) eqn: ca_max.
-      -- crush.
-      -- apply ble_nat_false in ca_max.
-         unfold maxArity.
-         simpl.
-         crush. *)
-  Admitted.
 
   (** ** matchRuleOnPattern **)
 
@@ -966,7 +934,6 @@ Section CoqTL.
       tr_applyReferenceOnPattern_iterator := tr_applyReferenceOnPattern_iterator;
       
       tr_matchPattern_in := tr_matchPattern_in;
-      tr_matchPattern_maxArity := tr_matchPattern_maxArity;
       
       tr_matchRuleOnPattern_inTypes := tr_matchRuleOnPattern_inTypes;
     }.
