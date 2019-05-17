@@ -752,6 +752,7 @@ Section CoqTL.
       tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_applyPattern_in := tr_applyPattern_in;
       tr_matchPattern_in := tr_matchPattern_in;
+      tr_matchPattern_maxArity := tr_matchPattern_maxArity;
       tr_matchRuleOnPattern_inTypes := tr_matchRuleOnPattern_inTypes;
     }.
   

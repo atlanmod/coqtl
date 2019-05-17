@@ -54,6 +54,9 @@ Class TransformationEngine :=
     (** *** getOutputPattern **)
     getOutputPattern: forall x:Rule, list (OutputPatternElement (getInTypes x) (getIteratorType x));
 
+    maxArity (tr: Transformation) : nat :=
+    max (map (length (A:=SourceModelClass)) (map getInTypes (getRules tr)));
+
     (** ** Transformation Engine Functions *)
     
     (** *** execute
@@ -125,6 +128,11 @@ Class TransformationEngine :=
         In r (matchPattern tr sm sp) <->
         In r (getRules tr) /\
         matchRuleOnPattern r tr sm sp = return true;
+
+    tr_matchPattern_maxArity : 
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        (length sp) > (maxArity tr) ->
+        (matchPattern tr sm sp) = nil;
 
     tr_matchRuleOnPattern_inTypes : 
       forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
