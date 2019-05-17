@@ -69,7 +69,12 @@ Class TransformationEngine :=
     applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
     applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelLink);
     applyElementOnPattern: forall r:Rule, OutputPatternElement (getInTypes r) (getIteratorType r) -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelLink);
-
+    applyReferenceOnPattern:
+      forall (r: Rule)
+        (ope: OutputPatternElement (getInTypes r) (getIteratorType r))
+        (oper: OutputPatternElementReference (getInTypes r) (getIteratorType r) (getOutType ope)),
+        Transformation -> SourceModel -> list SourceModelElement -> nat -> option TargetModelLink;
+    
     evalIterator: forall r:Rule, SourceModel -> list SourceModelElement -> list (getIteratorType r); 
     
     (** ** Theorems *)

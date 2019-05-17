@@ -364,6 +364,22 @@ Section CoqTL.
     | l => Some (concat (optionList2List (map (fun r => instantiateRuleOnPattern r sm sp) l)))
     end.
 
+  Definition applyReferenceOnPattern
+             (r: Rule)
+             (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
+             (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope))
+             (tr: Transformation)
+             (sm: SourceModel)
+             (sp: list SourceModelElement) (iter: nat) : option TargetModelLink :=
+    match (nth_error (evalIterator r sm sp) iter) with
+    | Some i =>
+      match (evalOutputPatternElement sm sp i ope) with
+      | Some l => evalOutputPatternElementReference sm sp l i (matchTransformation tr) oper
+      | None => None
+      end
+    | None => None
+    end.
+  
   Definition applyElementOnPattern
              (r: Rule)
              (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
@@ -763,20 +779,20 @@ Section CoqTL.
 
   (** ** matchRuleOnPattern **)
 
+  (* Theorem tr_matchRuleOnPattern_eval : 
+    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+      matchRuleOnPattern r sm sp = 
+      evalFunction smm sm (Rule_getInTypes r) bool (Rule_getGuard r) sp.
+  Proof.
+    crush.
+  Qed. *)
+  
   Theorem tr_matchRuleOnPattern_inTypes : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       length sp <> length (Rule_getInTypes r) ->
       matchRuleOnPattern' r tr sm sp = None.
   Proof.
   Admitted.
-
-  (*Theorem tr_matchRuleOnPattern : 
-    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-      matchRuleOnPattern r sm sp = Some true <->
-      evalFuncOfClasses smm sm (Rule_getInTypes r) bool (Rule_getGuard r) sp = Some true.
-  Proof.
-    crush.
-  Qed.*)
     
   (** * Typeclass instantiation **)
       
@@ -819,6 +835,8 @@ Section CoqTL.
       instantiateElementOnPattern := instantiateElementOnPattern;
       applyElementOnPattern := applyElementOnPattern;
 
+      applyReferenceOnPattern := applyReferenceOnPattern;
+      
       evalIterator := evalIterator;
         
       tr_execute_in_elements := tr_execute_in_elements;
