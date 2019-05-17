@@ -313,6 +313,13 @@ Section CoqTL.
               | (Some true) => true
               | _ => false end) (Transformation_getRules tr).
 
+  Definition instantiateElementOnPattern (r: Rule) (o: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat)
+  : option TargetModelElement :=
+    match (nth_error (evalIterator r sm sp) iter) with
+        | Some i => evalOutputPatternElement sm sp i o
+        | None => None
+    end.
+  
   Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (name: string): option (TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
@@ -330,15 +337,11 @@ Section CoqTL.
   Definition instantiateRuleOnPatternIter (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        match (nth_error (evalIterator r sm sp) iter) with
-        | Some i => 
-             Some (optionList2List (map (evalOutputPatternElement sm sp i) (Rule_getOutputPattern r)))
-        | None => None
-        end
+        Some (optionList2List (map (fun o => instantiateElementOnPattern r o sm sp iter) (Rule_getOutputPattern r)))
       else
         None.
 
-  Definition instantiateElementOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (name: string) : option (list TargetModelElement) :=
+  Definition instantiateElementsOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (name: string) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
         Some (optionList2List
@@ -799,6 +802,8 @@ Section CoqTL.
 
       instantiateIterationOnPattern := instantiateRuleOnPatternIter;
       applyIterationOnPattern := applyRuleOnPatternIter;
+
+      instantiateElementOnPattern := instantiateElementOnPattern;
       
       tr_execute_in_elements := tr_execute_in_elements;
       tr_execute_in_links := tr_execute_in_links;
