@@ -6,7 +6,6 @@ Require Import Omega.
 
 Require Import core.Metamodel.
 Require Import core.Model.
-Require Import core.Engine.
 Require Import core.utils.TopUtils.
 Require Import core.utils.CpdtTactics.
 
@@ -44,5 +43,4 @@ End Exp.
 
 Arguments denoteFuncOfClasses: default implicits.
 Arguments evalFuncOfClasses: default implicits.
-
 

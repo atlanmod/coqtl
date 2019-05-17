@@ -16,6 +16,7 @@ Require Import Omega.
 
 Require Import core.utils.TopUtils.
 Require Import core.Model.
+Require Import core.Expressions.
 
 Set Implicit Arguments.
 
@@ -39,61 +40,34 @@ Class TransformationEngine :=
     OutputPatternElement: list SourceModelClass -> Type -> Type;
     OutputPatternElementReference: list SourceModelClass -> Type -> TargetModelClass -> Type;
 
-    (** ** Transformation Engine Accessors *)
-
-    (** *** getRules
-        Returns the rules of the given transformation. *)
+    (** ** Accessors *)
+    
     getRules: Transformation -> list Rule;
-
-    (** *** getInTypes **)
     getInTypes: Rule -> list SourceModelClass;
-
-    (** *** getIteratorType **)
     getIteratorType: Rule -> Type;
-
-    (** *** getOutputPattern **)
     getOutputPattern: forall x:Rule, list (OutputPatternElement (getInTypes x) (getIteratorType x));
 
     maxArity (tr: Transformation) : nat :=
-    max (map (length (A:=SourceModelClass)) (map getInTypes (getRules tr)));
+      max (map (length (A:=SourceModelClass)) (map getInTypes (getRules tr)));
 
-    (** ** Transformation Engine Functions *)
+    (** ** Functions *)
     
-    (** *** execute
-        Given a _source model_ and a _transformation_, _execute_ should return a _target model_. *)
     execute: Transformation -> SourceModel -> TargetModel;
     
-    (** *** matchPattern *)
     matchPattern: Transformation -> SourceModel -> list SourceModelElement -> list Rule;
-
-    (** *** matchRuleOnPattern *)
     matchRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option bool;
 
-    (** *** instantiatePattern *)
     instantiatePattern: Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelElement);
-
-    (** *** instantiateRuleOnPattern *)
     instantiateRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelElement); 
-
-    (** *** instantiateIterationOnPattern *)
     instantiateIterationOnPattern: Rule -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelElement);
-
-    (** *** instantiateElementOnPattern *)
     instantiateElementOnPattern: forall r:Rule, OutputPatternElement (getInTypes r) (getIteratorType r) -> SourceModel -> list SourceModelElement -> nat -> option TargetModelElement;
     
-    (** *** applyPattern *)
     applyPattern: Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
-      
-    (** *** applyRuleOnPattern *)
     applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
-
-    (** *** applyIterationOnPattern *)
     applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelLink);
-
-    (** *** applyElementOnPattern *)
     applyElementOnPattern: forall r:Rule, OutputPatternElement (getInTypes r) (getIteratorType r) -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelLink);
     
-    (** ** Theorems of the Transformation Engine *)
+    (** ** Theorems *)
 
     tr_execute_in_elements :
       forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
@@ -232,4 +206,3 @@ Proof.
     split. assumption.
     assumption.
 Qed.
-

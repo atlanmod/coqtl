@@ -629,6 +629,8 @@ Section CoqTL.
   Proof.
   Admitted.
 
+  (** ** instantiateIterationOnPattern **)
+  
   (** ** instantiateElementOnPattern **)
   
   (** ** applyPattern **)
@@ -678,6 +680,8 @@ Section CoqTL.
   Proof.
   Admitted.
 
+  (** ** applyIterationOnPattern **)
+  
   (** ** applyElementOnPattern **)
 
   (** ** matchPattern **)
