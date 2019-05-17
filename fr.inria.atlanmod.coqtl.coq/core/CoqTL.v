@@ -700,9 +700,9 @@ Section CoqTL.
   (** ** matchRuleOnPattern **)
 
   Theorem tr_matchRuleOnPattern_inTypes : 
-    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       (length sp) <> (length (Rule_getInTypes r)) ->
-      matchRuleOnPattern r sm sp = None.
+      matchRuleOnPattern' r tr sm sp = None.
   Proof.
   Admitted.
 
@@ -752,6 +752,7 @@ Section CoqTL.
       tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_applyPattern_in := tr_applyPattern_in;
       tr_matchPattern_in := tr_matchPattern_in;
+      tr_matchRuleOnPattern_inTypes := tr_matchRuleOnPattern_inTypes;
     }.
   
 End CoqTL.

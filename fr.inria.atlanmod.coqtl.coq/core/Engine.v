@@ -81,50 +81,55 @@ Class TransformationEngine :=
     (** ** Theorems of the Transformation Engine *)
 
     tr_execute_in_elements :
-    forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-      In te (allModelElements (execute tr sm)) <->
-      (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
-          incl sp (allModelElements sm) /\
-          instantiatePattern tr sm sp = Some tp /\
-          In te tp);
+      forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
+        In te (allModelElements (execute tr sm)) <->
+        (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
+            incl sp (allModelElements sm) /\
+            instantiatePattern tr sm sp = Some tp /\
+            In te tp);
 
     tr_execute_in_links :
-    forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
-      In tl (allModelLinks (execute tr sm)) <->
-      (exists (sp : list SourceModelElement) (tpl : list TargetModelLink),
-          incl sp (allModelElements sm) /\
-          applyPattern tr sm sp = Some tpl /\
-          In tl tpl);
+      forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
+        In tl (allModelLinks (execute tr sm)) <->
+        (exists (sp : list SourceModelElement) (tpl : list TargetModelLink),
+            incl sp (allModelElements sm) /\
+            applyPattern tr sm sp = Some tpl /\
+            In tl tpl);
 
     tr_execute_nil_tr :
-    forall (tr: Transformation) (sm : SourceModel),
-      getRules tr = nil ->
-      allModelElements (execute tr sm) = nil;
+      forall (tr: Transformation) (sm : SourceModel),
+        getRules tr = nil ->
+        allModelElements (execute tr sm) = nil;
 
     tr_instantiatePattern_in :
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
-      instantiatePattern tr sm sp = Some tp ->
-      In te tp <->
-      (exists (r : Rule) (tp1 : list TargetModelElement),
-          In r (matchPattern tr sm sp) /\
-          instantiateRuleOnPattern r tr sm sp = Some tp1 /\
-          In te tp1);
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
+        instantiatePattern tr sm sp = Some tp ->
+        In te tp <->
+        (exists (r : Rule) (tp1 : list TargetModelElement),
+            In r (matchPattern tr sm sp) /\
+            instantiateRuleOnPattern r tr sm sp = Some tp1 /\
+            In te tp1);
 
     tr_applyPattern_in :
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
-      applyPattern tr sm sp = Some tpl ->
-      In tl tpl <->
-      (exists (r : Rule) (tpl1 : list TargetModelLink),
-          In r (matchPattern tr sm sp) /\
-          applyRuleOnPattern r tr sm sp = Some tpl1 /\
-          In tl tpl1);
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
+        applyPattern tr sm sp = Some tpl ->
+        In tl tpl <->
+        (exists (r : Rule) (tpl1 : list TargetModelLink),
+            In r (matchPattern tr sm sp) /\
+            applyRuleOnPattern r tr sm sp = Some tpl1 /\
+            In tl tpl1);
 
     tr_matchPattern_in :
-    forall (tr: Transformation) (sm : SourceModel),
-    forall (sp : list SourceModelElement)(r : Rule),
-      In r (matchPattern tr sm sp) <->
-      In r (getRules tr) /\
-      matchRuleOnPattern r tr sm sp = return true;
+      forall (tr: Transformation) (sm : SourceModel),
+      forall (sp : list SourceModelElement)(r : Rule),
+        In r (matchPattern tr sm sp) <->
+        In r (getRules tr) /\
+        matchRuleOnPattern r tr sm sp = return true;
+
+    tr_matchRuleOnPattern_inTypes : 
+      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+        (length sp) <> (length (getInTypes r)) ->
+        matchRuleOnPattern r tr sm sp = None;
     
   }.
 
