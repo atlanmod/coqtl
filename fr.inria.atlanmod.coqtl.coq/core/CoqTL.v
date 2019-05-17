@@ -731,6 +731,7 @@ Section CoqTL.
       Transformation := Transformation;
       Rule := Rule;
       OutputPatternElement := OutputPatternElement;
+      OutputPatternElementReference := OutputPatternElementReference;
             
       getRules := Transformation_getRules;
       getInTypes := Rule_getInTypes;

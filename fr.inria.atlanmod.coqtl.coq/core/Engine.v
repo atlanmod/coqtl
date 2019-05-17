@@ -37,6 +37,7 @@ Class TransformationEngine :=
     Transformation: Type;
     Rule: Type;
     OutputPatternElement: list SourceModelClass -> Type -> Type;
+    OutputPatternElementReference: list SourceModelClass -> Type -> TargetModelClass -> Type;
 
     (** ** Transformation Engine Accessors *)
 
