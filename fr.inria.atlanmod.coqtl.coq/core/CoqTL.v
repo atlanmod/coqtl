@@ -556,7 +556,7 @@ Section CoqTL.
   Proof.
     split.
     - intros.
-      unfold instantiatePattern in H.
+        unfold instantiatePattern in H.
       destruct (matchPattern tr sm sp) eqn:mtch.
       + inversion H.
       + Arguments optionList2List : simpl never.
@@ -717,8 +717,14 @@ Section CoqTL.
   (** * Typeclass instantiation **)
       
   Instance CoqTLEngine : 
-    TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink := 
+    TransformationEngine := 
     {
+      Transformation := Transformation;
+      Rule := Rule;
+      SourceModelElement := SourceModelElement;
+      SourceModelLink := SourceModelLink;
+      TargetModelElement := TargetModelElement;
+      TargetModelLink := TargetModelLink;
       getRules := Transformation_getRules;
       execute := execute;
       matchPattern := matchPattern;

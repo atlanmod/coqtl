@@ -20,11 +20,14 @@ Require Import core.Model.
 Set Implicit Arguments.
 
 (* OutputPatternElement and OutputPatternElementReference removed because of type parameters *)
-Class TransformationEngine 
-  (Transformation: Type) (Rule: Type) 
-  (SourceModelElement: Type) (SourceModelLink: Type) 
-  (TargetModelElement: Type) (TargetModelLink: Type) :=
+Class TransformationEngine :=
   {
+    Transformation: Type;
+    Rule: Type; 
+    SourceModelElement: Type;
+    SourceModelLink: Type; 
+    TargetModelElement: Type;
+    TargetModelLink: Type;
 
     SourceModel := Model SourceModelElement SourceModelLink;
     TargetModel := Model TargetModelElement TargetModelLink;
@@ -34,7 +37,16 @@ Class TransformationEngine
     (** *** getRules
         Returns the rules of the given transformation. *)
     getRules: Transformation -> list Rule;
+(*
+    (** *** getInTypes **)
+    getInTypes: Rule -> list ModelClass;
 
+    (** *** getIteratorType **)
+    getIteratorType: Rule -> Type;
+
+    (** *** getOutputPattern **)
+    getOutputPattern: Rule -> list (OutputPatternElement (getInTypes x) (getIteratorType x));
+*)
     (** ** Transformation Engine Functions *)
     
     (** *** execute
@@ -110,7 +122,7 @@ Class TransformationEngine
   }.
 
 Theorem match_functionality :  
-  forall (Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink: Type) (eng: TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink)
+  forall (eng: TransformationEngine)
     (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r1: list Rule) (r2: list Rule),
           matchPattern tr sm sp  = r1 -> matchPattern tr sm sp = r2 -> r1 = r2.
 Proof.
@@ -121,7 +133,7 @@ Proof.
 Qed.
 
 Theorem incl_equiv_to_surj:
-  forall (Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink: Type) (eng: TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink),
+  forall (eng: TransformationEngine),
     (forall (tr: Transformation) (sm : SourceModel)
       (sp : list SourceModelElement) (tp: list TargetModelElement) (tp1: list TargetModelElement)
       (r : Rule),
