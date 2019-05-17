@@ -202,6 +202,24 @@ Class TransformationEngine :=
       forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
         i >= length (evalIterator r sm sp) ->
         applyIterationOnPattern r tr sm sp i = None;
+
+    tr_applyElementOnPattern_in : 
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink) (i:nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+        applyElementOnPattern ope tr sm sp i = Some tpl ->
+        In tl tpl <->
+        (exists (oper: OutputPatternElementReference (getInTypes r) (getIteratorType r) (getOutType ope)),
+            In ope (getOutputPattern r) /\ 
+            applyReferenceOnPattern oper tr sm sp i = Some tl);
+
+    tr_applyElementOnPattern_inTypes : 
+      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+        length sp <> length (getInTypes r) ->
+        applyElementOnPattern ope tr sm sp i = None;
+
+    tr_applyElementOnPattern_iterator : 
+      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+        i >= length (evalIterator r sm sp) ->
+        applyElementOnPattern ope tr sm sp i = None;
     
     tr_matchPattern_in :
       forall (tr: Transformation) (sm : SourceModel),

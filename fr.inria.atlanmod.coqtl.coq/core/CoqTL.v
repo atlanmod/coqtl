@@ -769,6 +769,38 @@ Section CoqTL.
   
   (** ** applyElementOnPattern **)
 
+  Theorem tr_applyElementOnPattern_in : 
+    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink) (i:nat) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
+      applyElementOnPattern r ope tr sm sp i = Some tpl ->
+      In tl tpl <->
+      (exists (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
+          In ope (Rule_getOutputPattern r) /\ 
+          applyReferenceOnPattern r ope oper tr sm sp i = Some tl).
+  Proof.
+    split.
+    - intros.
+      unfold instantiateRuleOnPattern in H.
+      destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+      + destruct b.
+        * Arguments optionList2List : simpl never.
+          Arguments map : simpl never.
+          inversion H.
+  Admitted.
+
+  Theorem tr_applyElementOnPattern_inTypes : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
+      length sp <> length (Rule_getInTypes r) ->
+      applyElementOnPattern r ope tr sm sp i = None.
+  Proof.
+  Admitted.
+
+  Theorem tr_applyElementOnPattern_iterator : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
+      i >= length (evalIterator r sm sp) ->
+      applyElementOnPattern r ope tr sm sp i = None.
+  Proof.
+  Admitted.
+
   (** ** applyReferenceOnPattern **)
 
   (** ** matchPattern **)
@@ -928,7 +960,11 @@ Section CoqTL.
       tr_applyIterationOnPattern_in := tr_applyRuleOnPatternIter_in;
       tr_applyIterationOnPattern_inTypes := tr_applyRuleOnPatternIter_inTypes;
       tr_applyIterationOnPattern_iterator := tr_applyRuleOnPatternIter_iterator;
-        
+
+      tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
+      tr_applyElementOnPattern_inTypes := tr_applyElementOnPattern_inTypes;
+      tr_applyElementOnPattern_iterator := tr_applyElementOnPattern_iterator;
+      
       tr_matchPattern_in := tr_matchPattern_in;
       tr_matchPattern_nil_tr := tr_matchPattern_nil_tr;
       tr_matchPattern_maxArity := tr_matchPattern_maxArity;
