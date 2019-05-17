@@ -591,13 +591,6 @@ Section CoqTL.
       + inversion H.*)
   Admitted.
 
-  Theorem tr_instantiatePattern_nil_tr : 
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-      Transformation_getRules tr = nil ->
-      instantiatePattern tr sm sp = None.
-  Proof.
-  Admitted.
-
   Theorem tr_instantiatePattern_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       length sp > maxArity tr ->
@@ -950,7 +943,6 @@ Section CoqTL.
       tr_execute_in_links := tr_execute_in_links;
       
       tr_instantiatePattern_in := tr_instantiatePattern_in;
-      tr_instantiatePattern_nil_tr := tr_instantiatePattern_nil_tr;
       tr_instantiatePattern_maxArity := tr_instantiatePattern_maxArity;
 
       tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;

@@ -104,11 +104,6 @@ Class TransformationEngine :=
             instantiateRuleOnPattern r tr sm sp = Some tp1 /\
             In te tp1);
 
-    tr_instantiatePattern_nil_tr : 
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-        getRules tr = nil ->
-        instantiatePattern tr sm sp = None;
-
     tr_instantiatePattern_maxArity : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         length sp > maxArity tr ->
@@ -308,9 +303,9 @@ Qed.
 
 Theorem
   tr_matchPattern_nil_tr : forall t: TransformationEngine,
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-        getRules tr = nil ->
-        matchPattern tr sm sp = nil.
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      getRules tr = nil ->
+      matchPattern tr sm sp = nil.
 Proof.
   intros.
   destruct (matchPattern tr sm sp) eqn:mtch. reflexivity.
@@ -326,10 +321,33 @@ Proof.
 Qed.
 
 Theorem
-    tr_execute_nil_tr : forall t: TransformationEngine, 
-      forall (tr: Transformation) (sm : SourceModel),
-        getRules tr = nil ->
-        allModelElements (execute tr sm) = nil.
+  tr_instantiatePattern_nil_tr : forall t: TransformationEngine,
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      getRules tr = nil ->
+      (instantiatePattern tr sm sp = None \/
+       instantiatePattern tr sm sp = Some nil).
+Proof.
+  intros.
+  destruct (instantiatePattern tr sm sp) eqn:dst.
+  - 
+    apply tr_matchPattern_nil_tr with (sm:=sm) (sp:=sp) in H.
+    destruct l.
+    * right. reflexivity.
+    * exfalso.
+      pose (tr_instantiatePattern_in tr sm sp (t0 :: l) t0).
+      assert (instantiatePattern tr sm sp = return (t0 :: l) /\ In t0 (t0 :: l)).
+      { split. assumption. apply in_eq. }
+      apply i in H0.
+      rewrite H in H0.
+      destruct H0. destruct H0. destruct H0. simpl in H0. contradiction.
+  - left. reflexivity.
+Qed.
+
+Theorem
+  tr_execute_nil_tr : forall t: TransformationEngine, 
+    forall (tr: Transformation) (sm : SourceModel),
+      getRules tr = nil ->
+      allModelElements (execute tr sm) = nil.
 Proof.
   intros.
   destruct (allModelElements (execute tr sm)) eqn:ame.
