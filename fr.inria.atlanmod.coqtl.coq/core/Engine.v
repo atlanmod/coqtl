@@ -69,6 +69,8 @@ Class TransformationEngine :=
     applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
     applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelLink);
     applyElementOnPattern: forall r:Rule, OutputPatternElement (getInTypes r) (getIteratorType r) -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelLink);
+
+    evalIterator: forall r:Rule, SourceModel -> list SourceModelElement -> list (getIteratorType r); 
     
     (** ** Theorems *)
 
@@ -112,6 +114,15 @@ Class TransformationEngine :=
         length sp > maxArity tr ->
         instantiatePattern tr sm sp = None;
 
+    tr_instantiateRuleOnPattern_in : 
+    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
+      instantiateRuleOnPattern r tr sm sp = Some tp ->
+      In te tp <->
+      (exists (i: nat) (tp1: list TargetModelElement),
+          i < length (evalIterator r sm sp) /\
+          instantiateIterationOnPattern r sm sp i = Some tp1 /\
+          In te tp1);
+    
     tr_instantiateRuleOnPattern_inTypes : 
       forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
         length sp <> length (getInTypes r) ->
