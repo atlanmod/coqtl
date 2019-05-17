@@ -583,7 +583,7 @@ Section CoqTL.
 
   (** ** instantiateRuleOnPattern **)
     
-  Theorem tr_instantiateRuleOnPattern_in : 
+  (*Theorem tr_instantiateRuleOnPattern_in : 
     forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
       instantiateRuleOnPattern r sm sp = Some tp ->
       In te tp <->
@@ -602,7 +602,7 @@ Section CoqTL.
           inversion H.
           rewrite <- H2 in H0.
           apply optionList2List_In in H0.
-  Admitted.
+  Admitted.*)
 
   (** ** instantiateElementOnPattern **)
   
@@ -621,7 +621,7 @@ Section CoqTL.
 
   (** ** applyRuleOnPattern **)
 
-  Theorem tr_applyRuleOnPattern_in : 
+  (*Theorem tr_applyRuleOnPattern_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
       applyRuleOnPattern r tr sm sp = Some tpl ->
       In tl tpl <->
@@ -630,7 +630,7 @@ Section CoqTL.
           applyElementOnPattern r o tr sm sp = Some tpl1 /\
           In tl tpl1).
   Proof.
-  Admitted.
+  Admitted.*)
 
   (** ** applyElementOnPattern **)
 
