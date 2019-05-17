@@ -102,8 +102,8 @@ Class TransformationEngine :=
 
     tr_instantiatePattern_in :
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
-        instantiatePattern tr sm sp = Some tp ->
-        In te tp <->
+        (instantiatePattern tr sm sp = Some tp /\
+         In te tp) <->
         (exists (r : Rule) (tp1 : list TargetModelElement),
             In r (matchPattern tr sm sp) /\
             instantiateRuleOnPattern r tr sm sp = Some tp1 /\
@@ -121,8 +121,8 @@ Class TransformationEngine :=
 
     tr_instantiateRuleOnPattern_in : 
       forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
-        instantiateRuleOnPattern r tr sm sp = Some tp ->
-        In te tp <->
+        (instantiateRuleOnPattern r tr sm sp = Some tp /\
+         In te tp) <->
         (exists (i: nat) (tp1: list TargetModelElement),
             i < length (evalIterator r sm sp) /\
             instantiateIterationOnPattern r sm sp i = Some tp1 /\
@@ -135,8 +135,8 @@ Class TransformationEngine :=
 
     tr_instantiateIterationOnPattern_in : 
       forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement) (i:nat),
-        instantiateIterationOnPattern r sm sp i = Some tp ->
-        In te tp <->
+        (instantiateIterationOnPattern r sm sp i = Some tp /\
+         In te tp) <->
         (exists (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
             In ope (getOutputPattern r) /\ 
             instantiateElementOnPattern ope sm sp i = Some te);
@@ -165,8 +165,8 @@ Class TransformationEngine :=
     
     tr_applyPattern_in :
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
-        applyPattern tr sm sp = Some tpl ->
-        In tl tpl <->
+        (applyPattern tr sm sp = Some tpl /\
+         In tl tpl) <->
         (exists (r : Rule) (tpl1 : list TargetModelLink),
             In r (matchPattern tr sm sp) /\
             applyRuleOnPattern r tr sm sp = Some tpl1 /\
@@ -184,8 +184,8 @@ Class TransformationEngine :=
 
     tr_applyRuleOnPattern_in : 
       forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
-        applyRuleOnPattern r tr sm sp = Some tpl ->
-        In tl tpl <->
+        (applyRuleOnPattern r tr sm sp = Some tpl /\
+         In tl tpl) <->
         (exists (i: nat) (tpl1: list TargetModelLink),
             i < length (evalIterator r sm sp) /\
             applyIterationOnPattern r tr sm sp i = Some tpl1 /\
@@ -198,8 +198,8 @@ Class TransformationEngine :=
 
     tr_applyIterationOnPattern_in : 
       forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink) (i:nat),
-        applyIterationOnPattern r tr sm sp i = Some tpl ->
-        In tl tpl <->
+        (applyIterationOnPattern r tr sm sp i = Some tpl /\
+         In tl tpl) <->
         (exists (ope: OutputPatternElement (getInTypes r) (getIteratorType r)) (tpl1: list TargetModelLink),
             In ope (getOutputPattern r) /\ 
             applyElementOnPattern ope tr sm sp i = Some tpl1 /\
@@ -217,8 +217,8 @@ Class TransformationEngine :=
 
     tr_applyElementOnPattern_in : 
       forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink) (i:nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
-        applyElementOnPattern ope tr sm sp i = Some tpl ->
-        In tl tpl <->
+        (applyElementOnPattern ope tr sm sp i = Some tpl /\
+         In tl tpl) <->
         (exists (oper: OutputPatternElementReference (getInTypes r) (getIteratorType r) (getOutType ope)),
             In ope (getOutputPattern r) /\ 
             applyReferenceOnPattern oper tr sm sp i = Some tl);

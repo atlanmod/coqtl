@@ -573,14 +573,14 @@ Section CoqTL.
 
   Theorem tr_instantiatePattern_in : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
-      instantiatePattern tr sm sp = Some tp ->
-      In te tp <->
+      (instantiatePattern tr sm sp = Some tp /\
+       In te tp) <->
       (exists (r : Rule) (tp1 : list TargetModelElement),
           In r (matchPattern tr sm sp) /\
           instantiateRuleOnPattern r sm sp = Some tp1 /\
           In te tp1).
   Proof.
-    split.
+   (* split.
     - intros.
         unfold instantiatePattern in H.
       destruct (matchPattern tr sm sp) eqn:mtch.
@@ -604,7 +604,7 @@ Section CoqTL.
       unfold instantiatePattern in H.
       destruct (matchPattern tr sm sp) eqn:mtch.
       + contradiction.
-      + inversion H.
+      + inversion H.*)
   Admitted.
 
   Theorem tr_instantiatePattern_nil_tr : 
@@ -625,8 +625,8 @@ Section CoqTL.
     
   Theorem tr_instantiateRuleOnPattern_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
-      instantiateRuleOnPattern' r tr sm sp = Some tp ->
-      In te tp <->
+      (instantiateRuleOnPattern' r tr sm sp = Some tp /\
+       In te tp) <->
       (exists (i: nat) (tp1: list TargetModelElement),
           i < length (evalIterator r sm sp) /\
           instantiateRuleOnPatternIter r sm sp i = Some tp1 /\
@@ -653,8 +653,8 @@ Section CoqTL.
 
   Theorem tr_instantiateRuleOnPatternIter_in : 
     forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement) (i:nat),
-      instantiateRuleOnPatternIter r sm sp i = Some tp ->
-      In te tp <->
+      (instantiateRuleOnPatternIter r sm sp i = Some tp /\
+       In te tp) <->
       (exists (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
           In ope (Rule_getOutputPattern r) /\ 
           instantiateElementOnPattern r ope sm sp i = Some te).
@@ -705,8 +705,8 @@ Section CoqTL.
 
   Theorem tr_applyPattern_in : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
-      applyPattern tr sm sp = Some tpl ->
-      In tl tpl <->
+      (applyPattern tr sm sp = Some tpl /\
+       In tl tpl) <->
       (exists (r : Rule) (tpl1 : list TargetModelLink),
           In r (matchPattern tr sm sp) /\
           applyRuleOnPattern r tr sm sp = Some tpl1 /\
@@ -732,8 +732,8 @@ Section CoqTL.
 
   Theorem tr_applyRuleOnPattern_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
-      applyRuleOnPattern' r tr sm sp = Some tpl ->
-      In tl tpl <->
+      (applyRuleOnPattern' r tr sm sp = Some tpl /\
+       In tl tpl) <->
       (exists (i: nat) (tpl1: list TargetModelLink),
           i < length (evalIterator r sm sp) /\
           applyRuleOnPatternIter r tr sm sp i = Some tpl1 /\
@@ -752,8 +752,8 @@ Section CoqTL.
 
   Theorem tr_applyRuleOnPatternIter_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink) (i:nat),
-      applyRuleOnPatternIter r tr sm sp i = Some tpl ->
-      In tl tpl <->
+      (applyRuleOnPatternIter r tr sm sp i = Some tpl /\
+       In tl tpl) <->
       (exists (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tpl1: list TargetModelLink),
           In ope (Rule_getOutputPattern r) /\ 
           applyElementOnPattern r ope tr sm sp i = Some tpl1 /\
@@ -787,8 +787,8 @@ Section CoqTL.
 
   Theorem tr_applyElementOnPattern_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink) (i:nat) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
-      applyElementOnPattern r ope tr sm sp i = Some tpl ->
-      In tl tpl <->
+      (applyElementOnPattern r ope tr sm sp i = Some tpl /\
+       In tl tpl) <->
       (exists (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
           In ope (Rule_getOutputPattern r) /\ 
           applyReferenceOnPattern r ope oper tr sm sp i = Some tl).
