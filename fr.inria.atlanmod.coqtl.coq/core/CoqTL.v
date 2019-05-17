@@ -588,6 +588,14 @@ Section CoqTL.
   Proof.
   Admitted.
 
+  Theorem tr_instantiatePattern_maxArity : 
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      length sp > maxArity tr ->
+      instantiatePattern tr sm sp = None.
+  Proof.
+  Admitted.
+
+
   (** ** instantiateRuleOnPattern **)
     
   (*Theorem tr_instantiateRuleOnPattern_in : 
@@ -629,6 +637,13 @@ Section CoqTL.
   Theorem tr_applyPattern_nil_tr : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       Transformation_getRules tr = nil ->
+      applyPattern tr sm sp = None.
+  Proof.
+  Admitted.
+
+  Theorem tr_applyPattern_maxArity : 
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      length sp > maxArity tr ->
       applyPattern tr sm sp = None.
   Proof.
   Admitted.
@@ -681,8 +696,8 @@ Section CoqTL.
 
   Theorem tr_matchPattern_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-      (length sp) > (maxArity tr) ->
-      (matchPattern tr sm sp) = nil.
+      length sp > maxArity tr ->
+      matchPattern tr sm sp = nil.
   Proof.
   (*  intros.
     unfold matchPattern.
@@ -715,7 +730,7 @@ Section CoqTL.
 
   Theorem tr_matchRuleOnPattern_inTypes : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-      (length sp) <> (length (Rule_getInTypes r)) ->
+      length sp <> length (Rule_getInTypes r) ->
       matchRuleOnPattern' r tr sm sp = None.
   Proof.
   Admitted.
@@ -763,12 +778,18 @@ Section CoqTL.
       tr_execute_in_elements := tr_execute_in_elements;
       tr_execute_in_links := tr_execute_in_links;
       tr_execute_nil_tr := tr_execute_nil_tr;
+      
       tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_instantiatePattern_nil_tr := tr_instantiatePattern_nil_tr;
+      tr_instantiatePattern_maxArity := tr_instantiatePattern_maxArity;
+      
       tr_applyPattern_in := tr_applyPattern_in;
       tr_applyPattern_nil_tr := tr_applyPattern_nil_tr;
+      tr_applyPattern_maxArity := tr_applyPattern_maxArity;
+
       tr_matchPattern_in := tr_matchPattern_in;
       tr_matchPattern_maxArity := tr_matchPattern_maxArity;
+      
       tr_matchRuleOnPattern_inTypes := tr_matchRuleOnPattern_inTypes;
     }.
   
