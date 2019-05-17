@@ -19,6 +19,21 @@ Proof.
       exact H.
 Qed.
 
+Lemma concat_in:
+  forall (T: Type) (el: T) (l0 : list T) (l1 : list (list T)),
+    In el l0 -> In l0 l1 -> In el (concat l1).
+Proof.
+  intros.
+  induction l1.
+  - inversion H0.
+  - simpl.
+    simpl in H0.
+    apply in_or_app.
+    destruct H0.
+    + left. rewrite H0. assumption.
+    + right. apply IHl1. assumption.
+Qed.
+
 Lemma concat_map_option_incl:
   forall (T1 T2: Type) (a: T1) (l: list T1) (f: T1 -> option (list T2)) (lt: list T2),
     (In a l) -> (f a) = Some lt -> 
@@ -68,31 +83,22 @@ Lemma concat_exists :
     forall (T : Type) (a : T) (l : list (list T)),
       In a (concat l) -> (exists (la : list T), In la l /\ In a la).
 Proof.
-    intros.
-    induction l.
-    - inversion H.
-    - simpl in H. apply in_app_or in H. destruct H.
-      + exists a0. split. apply in_eq. apply H.
-      + apply IHl in H. destruct H. exists x. destruct H. split.
-        -- apply in_cons. apply H.
-        -- apply H0.
+  intros.
+  apply in_flat_map.
+  rewrite flat_map_concat_map.
+  rewrite map_id.
+  assumption.
 Qed.
-
 
 Lemma concat_map_exists :
     forall (T1 T2: Type) (b : T2) (l : list T1) (f : T1 -> list T2),
       In b (concat (map f l)) -> (exists (a : T1), In a l /\ In b (f a)).
 Proof.
-    intros.
-    apply concat_exists in H.
-    destruct H. destruct H.
-    induction l.
-    - inversion H.
-    - simpl in H. destruct H.
-      -- exists a. rewrite H. split. simpl. left. reflexivity. apply H0.
-      -- apply IHl in H. destruct H. exists x0. destruct H. split. simpl. right. apply H. apply H1.
+  intros.
+  apply in_flat_map.
+  rewrite flat_map_concat_map.
+  assumption.
 Qed.
-
 
 Lemma concat_map_option_exists :
     forall (T1 T2: Type) (b : T2) 

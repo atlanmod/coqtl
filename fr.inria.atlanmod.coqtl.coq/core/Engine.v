@@ -16,202 +16,177 @@ Require Import Omega.
 
 Require Import core.utils.TopUtils.
 Require Import core.Model.
+Require Import core.Expressions.
 
 Set Implicit Arguments.
 
 (* OutputPatternElement and OutputPatternElementReference removed because of type parameters *)
-Class TransformationEngine 
-  (Transformation: Type) (Rule: Type) 
-  (SourceModelElement: Type) (SourceModelLink: Type) 
-  (TargetModelElement: Type) (TargetModelLink: Type) :=
+Class TransformationEngine :=
   {
+    SourceModelElement: Type;
+    SourceModelClass: Type;
+    SourceModelLink: Type;
+    SourceModelReference: Type;
+    TargetModelElement: Type;
+    TargetModelClass: Type;
+    TargetModelLink: Type;
+    TargetModelReference: Type;
 
     SourceModel := Model SourceModelElement SourceModelLink;
     TargetModel := Model TargetModelElement TargetModelLink;
-
-    (** ** Transformation Engine Accessors *)
-
-      (** *** getRules
-
-              Return rules within given transformation. *)
-      getRules: Transformation -> list Rule;
-
-    (** ** Transformation Engine Functions *)
-
-      (** *** execute
-
-              Given a _souce model_ and a _transformation_, _execute_ should return a _target model_. *)
-      execute: Transformation -> SourceModel -> TargetModel;
-
-      (** *** matchPattern 
-
-              TODO *)
-      matchPattern: Transformation -> SourceModel -> list SourceModelElement -> list Rule;
-
-      (** *** matchRuleOnPattern 
-
-              TODO *)
-      matchRuleOnPattern:  Rule -> Transformation -> SourceModel -> list SourceModelElement -> option bool;
-
-      (** *** instantiatePattern 
-
-              TODO *)
-      instantiatePattern: Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelElement);
-
-      (** *** instantiateRuleOnPattern 
-
-              TODO *)
-      instantiateRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelElement); 
-      
-      (** *** applyPattern 
-
-              TODO *)      
-      applyPattern: Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
-      
-      (** *** applyRuleOnPattern 
-
-              TODO *)      
-      applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
-      
-    (** ** Theorems of Transformation Engine *)
-
-      (** *** Soundness Theorems *)
-
-        (** **** tr_surj_elements 
-
-                Definition: every model element in the target model is produced by a rule application *)
-(*        tr_surj_elements : 
-        forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelElement),
-          tm = execute tr sm -> In t1 (allModelElements tm) ->
-          (exists (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
-            In r (getRules tr) /\
-            In t1 tp /\
-            instantiateRuleOnPattern r tr sm sp = Some tp /\
-            incl sp (allModelElements sm) /\
-            incl tp (allModelElements tm) /\
-            In r (matchPattern tr sm sp));
-
-        (** **** tr_surj_links 
-
-                Definition: every model links in the target model is produced by a rule application *)
-        tr_surj_links : 
-        forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (t1 : TargetModelLink),
-          tm = execute tr sm -> In t1 (allModelLinks tm) ->
-          (exists (sp : list SourceModelElement) (tpl : list TargetModelLink) (r : Rule),
-            In r (getRules tr) /\
-            In t1 tpl /\
-            applyRuleOnPattern r tr sm sp = Some tpl /\
-            incl sp (allModelElements sm) /\
-            incl tpl (allModelLinks tm) /\
-            In r (matchPattern tr sm sp));
-
-      (** *** Completeness Theorems *)
-
-        (** **** outp_incl_elements 
-
-                Definition: if a rule matches, then its output model elements is included in the target model *)
-        outp_incl_elements :
-            forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: Rule) (tes: list TargetModelElement) ,
-              tm = execute tr sm -> In r (getRules tr) -> incl sp (allModelElements sm) ->
-              In r (matchPattern tr sm sp) ->
-              instantiateRuleOnPattern r tr sm sp = Some tes ->
-              incl tes (allModelElements tm);
-
-        outp_incl_elements2 :
-            forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (tes: list TargetModelElement) ,
-              tm = execute tr sm -> incl sp (allModelElements sm) ->
-              instantiatePattern tr sm sp = Some tes ->
-              incl tes (allModelElements tm);
-
-        (** **** outp_incl_links 
-
-                Definition: if a rule matches, then its output model references is included in the target model *)
-        outp_incl_links :
-            forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) (sp : list SourceModelElement) (r: Rule) (tls: list TargetModelLink),
-              tm = execute tr sm -> In r (getRules tr) -> incl sp (allModelElements sm) ->
-              In r (matchPattern tr sm sp) ->
-              applyRuleOnPattern r tr sm sp = Some tls ->
-              incl tls (allModelLinks tm);
-
     
-      (** *** Well-formedness Theorems *)
+    Transformation: Type;
+    Rule: Type;
+    OutputPatternElement: list SourceModelClass -> Type -> Type;
+    OutputPatternElementReference: list SourceModelClass -> Type -> TargetModelClass -> Type;
 
-        (** **** match_in 
+    (** ** Accessors *)
+    
+    getRules: Transformation -> list Rule;
+    getInTypes: Rule -> list SourceModelClass;
+    getIteratorType: Rule -> Type;
+    getOutputPattern: forall x:Rule, list (OutputPatternElement (getInTypes x) (getIteratorType x));
+    getOutType (InElTypes: list SourceModelClass) (IterType: Type) (o: OutputPatternElement InElTypes IterType) : TargetModelClass;
+    getOutputElementReferences: forall (InElTypes:list SourceModelClass) (IterType: Type) (o:OutputPatternElement InElTypes IterType),
+        list (OutputPatternElementReference InElTypes IterType (getOutType o));
 
-                 Definition: if a source pattern matches a rule, then this rule should be included in the transformation *)
-        match_in :
-            forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r: Rule),
-              In r (matchPattern tr sm sp) -> In r (getRules tr);    
+    maxArity (tr: Transformation) : nat :=
+      max (map (length (A:=SourceModelClass)) (map getInTypes (getRules tr)));
 
-        (** **** match_functional 
+    (** ** Functions *)
+    
+    execute: Transformation -> SourceModel -> TargetModel;
+    
+    matchPattern: Transformation -> SourceModel -> list SourceModelElement -> list Rule;
+    matchRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option bool;
 
-                 Definition: execute matchPattern on same arguments produce same result. *)
-        match_functional :
-            forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r1: list Rule) (r2: list Rule),
-              matchPattern tr sm sp = r1 -> matchPattern tr sm sp = r2 -> r1 = r2;
- *)
-      (** *** Rules *)
+    instantiatePattern: Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelElement);
+    instantiateRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelElement); 
+    instantiateIterationOnPattern: Rule -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelElement);
+    instantiateElementOnPattern: forall r:Rule, OutputPatternElement (getInTypes r) (getIteratorType r) -> SourceModel -> list SourceModelElement -> nat -> option TargetModelElement;
+    
+    applyPattern: Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
+    applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> option (list TargetModelLink);
+    applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelLink);
+    applyElementOnPattern: forall r:Rule, OutputPatternElement (getInTypes r) (getIteratorType r) -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option (list TargetModelLink);
 
-      (** **** match_pattern_derivable **)
-      match_pattern_derivable : 
-        forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel),
-          tm = execute tr sm ->
-          forall (sp : list SourceModelElement)(r : Rule),
-            In r (matchPattern tr sm sp) -> 
-                                           matchRuleOnPattern r tr sm sp = return true;
-(*
-        (** **** instantiate_pattern_derivable 
+    evalIterator: forall r:Rule, SourceModel -> list SourceModelElement -> list (getIteratorType r); 
+    
+    (** ** Theorems *)
 
-                 Definition: the result of _instantiatePattern_ can be derived from _instantiateRuleOnPattern_ and _matchPattern_ *)
-        instantiate_pattern_derivable : 
-        forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) 
-               (sp : list SourceModelElement) (tp : list TargetModelElement) (r : Rule),
-          tm = execute tr sm ->
-          instantiateRuleOnPattern r tr sm sp = Some tp ->
-          In r (matchPattern tr sm sp) ->
-          instantiatePattern tr sm sp = Some tp;
+    tr_execute_in_elements :
+      forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
+        In te (allModelElements (execute tr sm)) <->
+        (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
+            incl sp (allModelElements sm) /\
+            instantiatePattern tr sm sp = Some tp /\
+            In te tp);
 
-       (** **** apply_pattern_derivable **)
-        
-        apply_pattern_derivable : 
-        forall (tr: Transformation) (sm : SourceModel) (tm: TargetModel) 
-               (sp : list SourceModelElement) (tp : list TargetModelElement) (tls : list TargetModelLink) (r : Rule),
-          tm = execute tr sm ->
-          applyRuleOnPattern r tr sm sp = Some tls ->
-          instantiateRuleOnPattern r tr sm sp = Some tp ->
-          In r (matchPattern tr sm sp) ->
-          applyPattern tr sm sp = Some tls;
-        
-      (** *** Termination theorems (implicit) *)
+    tr_execute_in_links :
+      forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
+        In tl (allModelLinks (execute tr sm)) <->
+        (exists (sp : list SourceModelElement) (tpl : list TargetModelLink),
+            incl sp (allModelElements sm) /\
+            applyPattern tr sm sp = Some tpl /\
+            In tl tpl);
 
+    tr_execute_nil_tr :
+      forall (tr: Transformation) (sm : SourceModel),
+        getRules tr = nil ->
+        allModelElements (execute tr sm) = nil;
 
-      (** *** Correctness theorems *)
+    tr_instantiatePattern_in :
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
+        instantiatePattern tr sm sp = Some tp ->
+        In te tp <->
+        (exists (r : Rule) (tp1 : list TargetModelElement),
+            In r (matchPattern tr sm sp) /\
+            instantiateRuleOnPattern r tr sm sp = Some tp1 /\
+            In te tp1);
 
-        (** **** TODO no_dangling_links
+    tr_instantiatePattern_nil_tr : 
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        getRules tr = nil ->
+        instantiatePattern tr sm sp = None;
 
-                 Definition: all elements refered by links of target model, should be present in models of target model.
-                 Note: CoqTL does not hold on this property yet *)
+    tr_instantiatePattern_maxArity : 
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        length sp > maxArity tr ->
+        instantiatePattern tr sm sp = None;
 
+    tr_instantiateRuleOnPattern_in : 
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
+        instantiateRuleOnPattern r tr sm sp = Some tp ->
+        In te tp <->
+        (exists (i: nat) (tp1: list TargetModelElement),
+            i < length (evalIterator r sm sp) /\
+            instantiateIterationOnPattern r sm sp i = Some tp1 /\
+            In te tp1);
+    
+    tr_instantiateRuleOnPattern_inTypes : 
+      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+        length sp <> length (getInTypes r) ->
+        instantiateRuleOnPattern r tr sm sp = None;
 
-      (** *** Convergence theorems *)
+    tr_applyPattern_in :
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
+        applyPattern tr sm sp = Some tpl ->
+        In tl tpl <->
+        (exists (r : Rule) (tpl1 : list TargetModelLink),
+            In r (matchPattern tr sm sp) /\
+            applyRuleOnPattern r tr sm sp = Some tpl1 /\
+            In tl tpl1);
 
-        (** **** TODO tr_converge
+    tr_applyPattern_nil_tr : 
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        getRules tr = nil ->
+        applyPattern tr sm sp = None;
 
-                 Definition: apply rules in different order get same output. 
-                 Note: CoqTL does not hold on this property yet *)
+    tr_applyPattern_maxArity : 
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        length sp > maxArity tr ->
+        applyPattern tr sm sp = None;
 
+    tr_applyRuleOnPattern_in : 
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
+        applyRuleOnPattern r tr sm sp = Some tpl ->
+        In tl tpl <->
+        (exists (i: nat) (tpl1: list TargetModelLink),
+            i < length (evalIterator r sm sp) /\
+            applyIterationOnPattern r tr sm sp i = Some tpl1 /\
+            In tl tpl1);
+    
+    tr_applyRuleOnPattern_inTypes : 
+      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+        length sp <> length (getInTypes r) ->
+        applyRuleOnPattern r tr sm sp = None;
 
-      (** *** Additivity theorems *)
+    tr_matchPattern_in :
+      forall (tr: Transformation) (sm : SourceModel),
+      forall (sp : list SourceModelElement)(r : Rule),
+        In r (matchPattern tr sm sp) <->
+        In r (getRules tr) /\
+        matchRuleOnPattern r tr sm sp = return true;
 
-        (** **** TODO tr_additivity
+    tr_matchPattern_nil_tr : 
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        getRules tr = nil ->
+        matchPattern tr sm sp = nil;
+    
+    tr_matchPattern_maxArity : 
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        length sp > maxArity tr ->
+        matchPattern tr sm sp = nil;
 
-                 Definition: remove binding, the links is a subset of tm created before. 
-                 See: Soichiro Hidaka, Frédéric Jouault, Massimo Tisi. On Additivity in Transformation Languages. MODELS 2017. *)
-*)
+    tr_matchRuleOnPattern_inTypes : 
+      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+        length sp <> length (getInTypes r) ->
+        matchRuleOnPattern r tr sm sp = None;
+    
   }.
 
 Theorem match_functionality :  
-  forall (Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink: Type) (eng: TransformationEngine Transformation Rule SourceModelElement SourceModelLink TargetModelElement TargetModelLink)
+  forall (eng: TransformationEngine)
     (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r1: list Rule) (r2: list Rule),
           matchPattern tr sm sp  = r1 -> matchPattern tr sm sp = r2 -> r1 = r2.
 Proof.
@@ -219,4 +194,38 @@ Proof.
     rewrite H in H0.
     inversion H0.
     reflexivity.
+Qed.
+
+Theorem incl_equiv_to_surj:
+  forall (eng: TransformationEngine),
+    (forall (tr: Transformation) (sm : SourceModel)
+       (sp : list SourceModelElement) (tp: list TargetModelElement) (tp1: list TargetModelElement)
+       (r : Rule),
+        instantiateRuleOnPattern r tr sm sp = Some tp1 ->
+        In r (matchPattern tr sm sp) ->
+        instantiatePattern tr sm sp = Some tp ->
+        incl tp1 tp) <->
+    (forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
+        instantiatePattern tr sm sp = Some tp ->
+        (exists (r : Rule) (tp1 : list TargetModelElement),
+            In r (matchPattern tr sm sp) /\
+            instantiateRuleOnPattern r tr sm sp = Some tp1 /\
+            In te tp1) ->
+        In te tp).
+Proof.
+  split.
+  - intros.
+    destruct H1. destruct H1. destruct H1. destruct H2.
+    + pose (H tr sm sp tp x0 x H2 H1 H0).
+      apply i in H3.
+      assumption.
+  - intros.
+    unfold incl.
+    intros.
+    pose (H tr sm sp tp a H2).
+    apply i.
+    exists r, tp1.
+    split. assumption.
+    split. assumption.
+    assumption.
 Qed.
