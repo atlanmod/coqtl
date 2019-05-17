@@ -95,11 +95,6 @@ Class TransformationEngine :=
             applyPattern tr sm sp = Some tpl /\
             In tl tpl);
 
-    tr_execute_nil_tr :
-      forall (tr: Transformation) (sm : SourceModel),
-        getRules tr = nil ->
-        allModelElements (execute tr sm) = nil;
-
     tr_instantiatePattern_in :
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
         (instantiatePattern tr sm sp = Some tp /\
@@ -330,8 +325,8 @@ Proof.
   contradiction.
 Qed.
 
-(*Theorem
-    tr_execute_nil_tr' : forall t: TransformationEngine, 
+Theorem
+    tr_execute_nil_tr : forall t: TransformationEngine, 
       forall (tr: Transformation) (sm : SourceModel),
         getRules tr = nil ->
         allModelElements (execute tr sm) = nil.
@@ -349,5 +344,10 @@ Proof.
     assert ((instantiatePattern tr sm x = return x0) /\ In t0 x0).
     { split. assumption. assumption. }
     apply i0 in H3.
-    pose tr_matchPattern_in.
-      *)
+    apply tr_matchPattern_nil_tr with (sm:=sm) (sp:=x) in H.
+    rewrite H in H3.
+    simpl in H3.
+    destruct H3. destruct H3. destruct H3.
+    contradiction.
+Qed.
+      

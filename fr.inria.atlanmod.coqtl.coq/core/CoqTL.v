@@ -552,22 +552,6 @@ Section CoqTL.
           In tl tpl).
   Proof.
   Admitted.
-
-  Theorem tr_execute_nil_tr : 
-    forall (tr: Transformation) (sm : SourceModel),
-      Transformation_getRules tr = nil ->
-      allModelElements (execute tr sm) = nil.
-  Proof.
-    intros. 
-    unfold execute.
-    unfold allTuples.
-    unfold maxArity.
-    rewrite H.
-    unfold optionToList.
-    unfold instantiatePattern.
-    unfold matchPattern.
-    crush.
-  Qed.
   
   (** ** instantiatePattern **)
 
@@ -964,7 +948,6 @@ Section CoqTL.
         
       tr_execute_in_elements := tr_execute_in_elements;
       tr_execute_in_links := tr_execute_in_links;
-      tr_execute_nil_tr := tr_execute_nil_tr;
       
       tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_instantiatePattern_nil_tr := tr_instantiatePattern_nil_tr;
