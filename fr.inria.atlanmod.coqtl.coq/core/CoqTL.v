@@ -314,11 +314,15 @@ Section CoqTL.
               | _ => false end) (Transformation_getRules tr).
 
   Definition instantiateElementOnPattern (r: Rule) (o: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat)
-  : option TargetModelElement :=
-    match (nth_error (evalIterator r sm sp) iter) with
+    : option TargetModelElement :=
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        match (nth_error (evalIterator r sm sp) iter) with
         | Some i => evalOutputPatternElement sm sp i o
         | None => None
-    end.
+        end
+      else
+        None.
   
   Definition instantiateIterationOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
