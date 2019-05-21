@@ -418,14 +418,14 @@ Section CoqTL.
   Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (concat (optionList2List (map (applyRuleOnPatternIter r tr sm sp) (indexes (length (evalIterator r sm sp))))))
+        Some (flat_map (fun i:nat => optionListToList (applyRuleOnPatternIter r tr sm sp i)) (indexes (length (evalIterator r sm sp))))
       else
         None.
 
   Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
     match matchPattern tr sm sp with
     | nil => None
-    | l => Some (concat (optionList2List (map (fun r => applyRuleOnPattern r tr sm sp) l)))
+    | l => Some (flat_map (fun r => optionListToList (applyRuleOnPattern r tr sm sp)) l)
     end.
 
   (** ** Resolution **)
