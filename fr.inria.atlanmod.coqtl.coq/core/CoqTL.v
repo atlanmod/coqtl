@@ -365,14 +365,18 @@ Section CoqTL.
              (tr: Transformation)
              (sm: SourceModel)
              (sp: list SourceModelElement) (iter: nat) : option TargetModelLink :=
-    match (nth_error (evalIterator r sm sp) iter) with
-    | Some i =>
-      match (evalOutputPatternElement sm sp i ope) with
-      | Some l => evalOutputPatternElementReference sm sp l i (matchTransformation tr) oper
-      | None => None
-      end
-    | None => None
-    end.
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        match (nth_error (evalIterator r sm sp) iter) with
+        | Some i =>
+          match (evalOutputPatternElement sm sp i ope) with
+          | Some l => evalOutputPatternElementReference sm sp l i (matchTransformation tr) oper
+          | None => None
+          end
+        | None => None
+        end
+      else
+        None.
   
   Definition applyElementOnPattern
              (r: Rule)
