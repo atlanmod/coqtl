@@ -475,8 +475,8 @@ Section CoqTL.
 
   Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
     Build_Model
-      (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
-      (concat (optionList2List (map (applyPattern tr sm) (allTuples tr sm)))).
+      (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuples tr sm))
+      (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuples tr sm)).
 
   (** * Certification **)
   
@@ -506,7 +506,7 @@ Section CoqTL.
           instantiatePattern tr sm sp = Some tp /\
           In te tp).
   Proof.
-    intros.
+    (*intros.
     split.
     - intros.
       simpl in H.
@@ -530,7 +530,7 @@ Section CoqTL.
       + unfold instantiatePattern in H0.
         destruct (matchPattern tr sm x) eqn:mtch.
         * inversion H0.
-        * unfold matchPattern in mtch.
+        * unfold matchPattern in mtch.*)
   Admitted.
 
   Theorem tr_execute_in_links : 
@@ -619,9 +619,6 @@ Section CoqTL.
       unfold instantiateRuleOnPattern in H.
       destruct (matchRuleOnPattern r sm sp) eqn:mtch.
       + destruct b.
-        * Arguments optionList2List : simpl never.
-          Arguments map : simpl never.
-          inversion H.
   Admitted.
 
   Theorem tr_instantiateRuleOnPattern_inTypes : 
@@ -646,9 +643,6 @@ Section CoqTL.
       unfold instantiateRuleOnPattern in H.
       destruct (matchRuleOnPattern r sm sp) eqn:mtch.
       + destruct b.
-        * Arguments optionList2List : simpl never.
-          Arguments map : simpl never.
-          inversion H.
   Admitted.
 
   Theorem tr_instantiateIterationOnPattern_inTypes : 
@@ -739,9 +733,6 @@ Section CoqTL.
       unfold instantiateRuleOnPattern in H.
       destruct (matchRuleOnPattern r sm sp) eqn:mtch.
       + destruct b.
-        * Arguments optionList2List : simpl never.
-          Arguments map : simpl never.
-          inversion H.
   Admitted.
 
   Theorem tr_applyIterationOnPattern_inTypes : 
@@ -773,9 +764,6 @@ Section CoqTL.
       unfold instantiateRuleOnPattern in H.
       destruct (matchRuleOnPattern r sm sp) eqn:mtch.
       + destruct b.
-        * Arguments optionList2List : simpl never.
-          Arguments map : simpl never.
-          inversion H.
   Admitted.
 
   Theorem tr_applyElementOnPattern_inTypes : 
