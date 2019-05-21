@@ -327,14 +327,16 @@ Section CoqTL.
   Definition instantiateIterationOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (flat_map (fun o => optionToList (instantiateElementOnPattern r o sm sp iter)) (Rule_getOutputPattern r))
+        Some (flat_map (fun o => optionToList (instantiateElementOnPattern r o sm sp iter))
+                       (Rule_getOutputPattern r))
       else
         None.
   
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (flat_map (fun i:nat => optionListToList (instantiateIterationOnPattern r sm sp i)) (indexes (length (evalIterator r sm sp))))
+        Some (flat_map (fun i:nat => optionListToList (instantiateIterationOnPattern r sm sp i))
+                       (indexes (length (evalIterator r sm sp))))
       else
         None.
 
@@ -357,7 +359,8 @@ Section CoqTL.
   Definition instantiateElementsOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (name: string) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (flat_map (fun it : nat => optionToList (instantiateRuleOnPatternIterName r sm sp it name)) (indexes (length (evalIterator r sm sp))))
+        Some (flat_map (fun it : nat => optionToList (instantiateRuleOnPatternIterName r sm sp it name))
+                       (indexes (length (evalIterator r sm sp))))
       else
         None.
 
@@ -389,24 +392,24 @@ Section CoqTL.
              (sp: list SourceModelElement) (iter: nat) : option (list TargetModelLink):=             
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (flat_map ( fun (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope))
-                                     => optionToList (applyReferenceOnPattern r ope oper tr sm sp iter)
-                                   )
-                                   (OutputPatternElement_getOutputElementReferences ope))
+        Some (flat_map ( fun oper => optionToList (applyReferenceOnPattern r ope oper tr sm sp iter))
+                       (OutputPatternElement_getOutputElementReferences ope))
       else
         None.
 
   Definition applyIterationOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelLink) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (flat_map (fun x => optionListToList (applyElementOnPattern r x tr sm sp iter)) (Rule_getOutputPattern r))
+        Some (flat_map (fun x => optionListToList (applyElementOnPattern r x tr sm sp iter))
+                       (Rule_getOutputPattern r))
       else
         None.
 
   Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (flat_map (fun i:nat => optionListToList (applyIterationOnPattern r tr sm sp i)) (indexes (length (evalIterator r sm sp))))
+        Some (flat_map (fun i:nat => optionListToList (applyIterationOnPattern r tr sm sp i))
+                       (indexes (length (evalIterator r sm sp))))
       else
         None.
 
@@ -419,9 +422,10 @@ Section CoqTL.
   Definition applyElementsOnPattern (r: Rule) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (concat (flat_map (fun iter => optionToList (applyElementOnPattern r ope tr sm sp iter)) (indexes (length (evalIterator r sm sp)))))
+        Some (concat (flat_map (fun iter => optionToList (applyElementOnPattern r ope tr sm sp iter))
+                               (indexes (length (evalIterator r sm sp)))))
       else
-        None. 
+        None.
 
   (** ** Resolution **)
   
@@ -461,7 +465,7 @@ Section CoqTL.
   
   Definition resolveAll (tr: MatchedTransformation) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sps: list(list SourceModelElement)) : option (list (denoteModelClass type)) :=
-        resolveAllIter tr sm name type sps 0.
+    resolveAllIter tr sm name type sps 0.
   
   (** ** Rule scheduling **)
   
