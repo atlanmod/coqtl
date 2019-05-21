@@ -398,3 +398,44 @@ Proof.
   unfold maxArity in H.
 Admitted.
 
+
+Theorem in_flat_map_exists: 
+  (forall (X Y:Type) (x:X) (y:Y) (f: X -> list Y) (B:Prop),
+      (In y (f x) <-> B)) <->
+  (forall (X Y:Type) (x:X) (y:Y) (f: X -> list Y) (B:Prop),
+      (exists ys:list Y, f x = ys /\ In y ys) <-> B).
+Proof.
+  split.
+  + intros.
+    pose (H X Y x y f B).
+    destruct i.
+    split.
+    * intros.
+      destruct H2. destruct H2.
+      rewrite <- H2 in H3.
+      apply H0. assumption.
+    * intros.
+      apply H1 in H2.
+      remember (f x) as ys'.
+      exists ys'.
+      auto.
+  + intros.
+    pose (H X Y x y f B).
+    destruct i.
+    split.
+    * intros.
+      apply H0.
+      exists (f x).
+      auto.
+    * intros.
+      apply H1 in H2.
+      destruct H2. destruct H2.
+      rewrite <- H2 in H3.
+      assumption.
+Qed.
+        
+        
+        
+        
+      
+
