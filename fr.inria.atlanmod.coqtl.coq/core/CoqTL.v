@@ -564,26 +564,47 @@ Section CoqTL.
           instantiateRuleOnPattern r sm sp = Some tp1 /\
           In te tp1).
   Proof.
-   (*split.
+   split.
     - intros.
       unfold instantiatePattern in H.
       destruct (matchPattern tr sm sp) eqn:mtch.
-      + inversion H. inversion H0.
+      + inversion H. inversion H0. inversion H1.
       + remember (r::l) as l1.
+        destruct H.
         inversion H. inversion H0.
         rewrite <- H3 in H1.
         apply in_flat_map in H1.
         destruct H1.
-        exists x.
+        exists x0.
         destruct H1.
-        destruct (instantiateRuleOnPattern x sm sp) eqn:inst.
+        destruct (instantiateRuleOnPattern x0 sm sp) eqn:inst.
         exists l0.
         split. assumption.
         split. reflexivity.
         assumption.
         contradiction.
-    - intros.*)
-  Admitted.
+    - intros.
+      destruct (instantiatePattern tr sm sp) eqn:inst.
+      + exists l. split. reflexivity.
+        unfold instantiatePattern in inst.
+        destruct (matchPattern tr sm sp) eqn:mtch.
+        * inversion inst.
+        * Arguments optionListToList : simpl never.
+          Arguments flat_map : simpl never.
+          inversion inst.
+          apply in_flat_map.
+          destruct H. destruct H. destruct H. destruct H0.
+          exists x. split. assumption.
+          unfold optionListToList.
+          rewrite H0.
+          assumption.
+      + exfalso.
+        destruct H. destruct H. destruct H. destruct H0.
+        unfold instantiatePattern in inst.
+        destruct (matchPattern tr sm sp) eqn:mtch.
+        * contradiction.
+        * inversion inst.
+  Qed.
 
   Theorem tr_instantiatePattern_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
