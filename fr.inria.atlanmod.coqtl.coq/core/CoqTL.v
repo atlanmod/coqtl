@@ -327,7 +327,7 @@ Section CoqTL.
   Definition instantiateIterationOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (optionList2List (map (fun o => instantiateElementOnPattern r o sm sp iter) (Rule_getOutputPattern r)))
+        Some (flat_map (fun o => optionToList (instantiateElementOnPattern r o sm sp iter)) (Rule_getOutputPattern r))
       else
         None.
   
