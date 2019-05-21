@@ -96,8 +96,8 @@ Class TransformationEngine :=
             In tl tpl);
 
     tr_instantiatePattern_in :
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
-        (instantiatePattern tr sm sp = Some tp /\
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+        (exists tp: list TargetModelElement, instantiatePattern tr sm sp = Some tp /\
          In te tp) <->
         (exists (r : Rule) (tp1 : list TargetModelElement),
             In r (matchPattern tr sm sp) /\
@@ -110,8 +110,8 @@ Class TransformationEngine :=
         instantiatePattern tr sm sp = None;
 
     tr_instantiateRuleOnPattern_in :
-      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement),
-        (instantiateRuleOnPattern r tr sm sp = Some tp /\
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+        (exists tp: list TargetModelElement, instantiateRuleOnPattern r tr sm sp = Some tp /\
          In te tp) <->
         (exists (i: nat) (tp1: list TargetModelElement),
             i < length (evalIterator r sm sp) /\
@@ -124,8 +124,8 @@ Class TransformationEngine :=
         instantiateRuleOnPattern r tr sm sp = None;
 
     tr_instantiateIterationOnPattern_in : 
-      forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tp: list TargetModelElement) (te : TargetModelElement) (i:nat),
-        (instantiateIterationOnPattern r sm sp i = Some tp /\
+      forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement) (i:nat),
+        (exists tp: list TargetModelElement, instantiateIterationOnPattern r sm sp i = Some tp /\
          In te tp) <->
         (exists (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
             In ope (getOutputPattern r) /\ 
@@ -154,8 +154,8 @@ Class TransformationEngine :=
         instantiateElementOnPattern ope sm sp i = None;
     
     tr_applyPattern_in :
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
-        (applyPattern tr sm sp = Some tpl /\
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
+        (exists tpl: list TargetModelLink, applyPattern tr sm sp = Some tpl /\
          In tl tpl) <->
         (exists (r : Rule) (tpl1 : list TargetModelLink),
             In r (matchPattern tr sm sp) /\
@@ -168,8 +168,8 @@ Class TransformationEngine :=
         applyPattern tr sm sp = None;
 
     tr_applyRuleOnPattern_in : 
-      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink),
-        (applyRuleOnPattern r tr sm sp = Some tpl /\
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
+        (exists tpl: list TargetModelLink, applyRuleOnPattern r tr sm sp = Some tpl /\
          In tl tpl) <->
         (exists (i: nat) (tpl1: list TargetModelLink),
             i < length (evalIterator r sm sp) /\
@@ -182,8 +182,8 @@ Class TransformationEngine :=
         applyRuleOnPattern r tr sm sp = None;
 
     tr_applyIterationOnPattern_in : 
-      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink) (i:nat),
-        (applyIterationOnPattern r tr sm sp i = Some tpl /\
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat),
+        (exists tpl: list TargetModelLink, applyIterationOnPattern r tr sm sp i = Some tpl /\
          In tl tpl) <->
         (exists (ope: OutputPatternElement (getInTypes r) (getIteratorType r)) (tpl1: list TargetModelLink),
             In ope (getOutputPattern r) /\ 
@@ -201,8 +201,8 @@ Class TransformationEngine :=
         applyIterationOnPattern r tr sm sp i = None;
 
     tr_applyElementOnPattern_in : 
-      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tpl: list TargetModelLink) (tl : TargetModelLink) (i:nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
-        (applyElementOnPattern ope tr sm sp i = Some tpl /\
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+        (exists tpl: list TargetModelLink, applyElementOnPattern ope tr sm sp i = Some tpl /\
          In tl tpl) <->
         (exists (oper: OutputPatternElementReference (getInTypes r) (getIteratorType r) (getOutType ope)),
             In ope (getOutputPattern r) /\ 
@@ -323,12 +323,14 @@ Proof.
     destruct l.
     * right. reflexivity.
     * exfalso.
-      pose (tr_instantiatePattern_in tr sm sp (t0 :: l) t0).
-      assert (instantiatePattern tr sm sp = return (t0 :: l) /\ In t0 (t0 :: l)).
-      { split. assumption. apply in_eq. }
-      apply i in H0.
-      rewrite H in H0.
-      destruct H0. destruct H0. destruct H0. simpl in H0. contradiction.
+      pose (tr_instantiatePattern_in tr sm sp t0).
+      destruct i. destruct H0.
+      -- exists (t0 :: l).
+         split. assumption. simpl. left. reflexivity.
+      -- destruct H0.
+         destruct H0.
+         rewrite H in H0.
+         contradiction.
   - left. reflexivity.
 Qed.
 
@@ -345,12 +347,14 @@ Proof.
     destruct l.
     * right. reflexivity.
     * exfalso.
-      pose (tr_applyPattern_in tr sm sp (t0 :: l) t0).
-      assert (applyPattern tr sm sp = return (t0 :: l) /\ In t0 (t0 :: l)).
-      { split. assumption. apply in_eq. }
-      apply i in H0.
-      rewrite H in H0.
-      destruct H0. destruct H0. destruct H0. simpl in H0. contradiction.
+      pose (tr_applyPattern_in tr sm sp t0).
+      destruct i. destruct H0.
+      -- exists (t0 :: l).
+         split. assumption. simpl. left. reflexivity.
+      -- destruct H0.
+         destruct H0.
+         rewrite H in H0.
+         contradiction.
   - left. reflexivity.
 Qed.
 
@@ -369,15 +373,15 @@ Proof.
     rewrite <- ame in i0.
     apply i in i0.
     destruct i0. destruct H0. destruct H0. destruct H1.
-    pose (tr_instantiatePattern_in tr sm x x0 t0).
-    assert ((instantiatePattern tr sm x = return x0) /\ In t0 x0).
-    { split. assumption. assumption. }
-    apply i0 in H3.
+    pose (tr_instantiatePattern_in tr sm x t0).
     apply tr_matchPattern_nil_tr with (sm:=sm) (sp:=x) in H.
-    rewrite H in H3.
-    simpl in H3.
-    destruct H3. destruct H3. destruct H3.
-    contradiction.
+    destruct i0. destruct H3.
+    -- exists x0.
+       split. assumption. assumption.
+    -- destruct H3.
+       destruct H3.
+       rewrite H in H3.
+       contradiction.
 Qed.
 
 Theorem 
@@ -433,9 +437,3 @@ Proof.
       rewrite <- H2 in H3.
       assumption.
 Qed.
-        
-        
-        
-        
-      
-
