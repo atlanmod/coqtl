@@ -419,7 +419,7 @@ Section CoqTL.
   Definition applyElementsOnPattern (r: Rule) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (concat (optionList2List (map (fun iter => applyElementOnPattern r ope tr sm sp iter) (indexes (length (evalIterator r sm sp))))) )
+        Some (concat (flat_map (fun iter => optionToList (applyElementOnPattern r ope tr sm sp iter)) (indexes (length (evalIterator r sm sp)))))
       else
         None. 
 
