@@ -457,8 +457,7 @@ Section CoqTL.
   Definition resolveAllIter (tr: MatchedTransformation) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
     : option (list (denoteModelClass type)) :=
-    Some (optionList2List
-            (map (fun l:(list SourceModelElement) => resolveIter tr sm name type l iter) sps)).
+    Some (flat_map (fun l:(list SourceModelElement) => optionToList (resolveIter tr sm name type l iter)) sps).
   
   Definition resolveAll (tr: MatchedTransformation) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sps: list(list SourceModelElement)) : option (list (denoteModelClass type)) :=
