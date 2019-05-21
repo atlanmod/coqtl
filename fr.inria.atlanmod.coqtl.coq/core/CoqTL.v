@@ -390,18 +390,10 @@ Section CoqTL.
              (sp: list SourceModelElement) (iter: nat) : option (list TargetModelLink):=             
     m <- matchRuleOnPattern r sm sp;
       if m then
-        match (nth_error (evalIterator r sm sp) iter) with
-        | Some i =>
-          match (evalOutputPatternElement sm sp i ope) with
-          | Some l => 
-            Some (optionList2List (map ( fun (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope))
-                                         => applyReferenceOnPattern r ope oper tr sm sp iter
-                                       )
-                                       (OutputPatternElement_getOutputElementReferences ope)))
-          | None => None
-          end
-        | None => None
-        end
+        Some (optionList2List (map ( fun (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope))
+                                     => applyReferenceOnPattern r ope oper tr sm sp iter
+                                   )
+                                   (OutputPatternElement_getOutputElementReferences ope)))
       else
         None.
 
