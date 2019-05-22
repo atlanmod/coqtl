@@ -352,9 +352,7 @@ Section CoqTL.
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (optionList2List (concat
-                (map (fun f => map f (Rule_getOutputPattern r))
-                     (map (evalOutputPatternElement sm sp) (evalIterator r sm sp)))))
+        Some (concat (optionList2List (map (instantiateRuleOnPatternIter r sm sp) (indexes (length (evalIterator r sm sp))))))
       else
         None.
 
@@ -626,12 +624,32 @@ Section CoqTL.
   Proof.
     split.
     - intros.
+      unfold instantiateRuleOnPattern' in H.
       unfold instantiateRuleOnPattern in H.
       destruct (matchRuleOnPattern r sm sp) eqn:mtch.
       + destruct b.
         * Arguments optionList2List : simpl never.
           Arguments map : simpl never.
           inversion H.
+          inversion H0.
+          inversion H1.
+          rewrite <- H4 in H2.
+          apply concat_map_option_exists in H2.
+          destruct H2.
+          destruct H2.
+          destruct (instantiateRuleOnPatternIter r sm sp x0) eqn:inst_ca.
+          ** exists x0.
+             exists l.
+             split.
+             *** apply indexes_nat_upperBound.
+                 exact H2.
+             *** split; crush.         
+          ** contradiction.
+        * inversion H.
+          destruct H0.
+          inversion H0.        
+      + crush.
+    - admit.
   Admitted.
 
   Theorem tr_instantiateRuleOnPattern_inTypes : 
