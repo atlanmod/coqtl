@@ -500,6 +500,16 @@ Section CoqTL.
   
   (** ** execute **)
   
+  Lemma tr_allTuple_in:
+    forall (tr: Transformation) (sm : SourceModel) 
+    (sp : list SourceModelElement) (tp : list TargetModelElement),
+    instantiatePattern tr sm sp = Some tp ->
+    incl sp (allModelElements sm) ->
+    In sp (allTuples tr sm).
+  Proof.
+  Admitted.
+    
+
   Theorem tr_execute_in_elements : 
     forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
       In te (allModelElements (execute tr sm)) <->
@@ -508,11 +518,11 @@ Section CoqTL.
           instantiatePattern tr sm sp = Some tp /\
           In te tp).
   Proof.
-    (*intros.
+    intros.
     split.
     - intros.
       simpl in H.
-      apply concat_map_option_exists in H.
+      apply in_flat_map in H.
       destruct H.
       exists x.
       destruct H.
@@ -527,13 +537,18 @@ Section CoqTL.
     - intros.
       destruct H. destruct H. destruct H. destruct H0.
       unfold execute. simpl.
-      apply concat_in with (l0:=x0).
-      + assumption.
+      apply in_flat_map.
+      exists x. split.
+      + apply tr_allTuple_in with (tp:=x0); auto.
       + unfold instantiatePattern in H0.
         destruct (matchPattern tr sm x) eqn:mtch.
         * inversion H0.
-        * unfold matchPattern in mtch.*)
-  Admitted.
+        * unfold instantiatePattern.
+          rewrite mtch.
+          inversion H0.
+          rewrite <- H3 in H1.
+          assumption.
+  Qed.
 
   Theorem tr_execute_in_links : 
     forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
@@ -696,10 +711,58 @@ Section CoqTL.
   Proof.
     split.
     - intros.
-      unfold instantiateRuleOnPattern in H.
+      unfold instantiateIterationOnPattern in H.
       destruct (matchRuleOnPattern r sm sp) eqn:mtch.
       + destruct b.
-  Admitted.
+        * Arguments optionList2List : simpl never.
+          Arguments map : simpl never.
+          inversion H.
+          inversion H0.
+          inversion H1.
+          rewrite <- H4 in H2.
+          apply in_flat_map in H2.
+          destruct H2.
+          destruct H2.
+          destruct (instantiateElementOnPattern r x0 sm sp i) eqn:inst_ca.
+          ** exists x0.
+             split.
+             *** assumption.
+             *** simpl in H3; crush.
+          ** contradiction.
+        * inversion H.
+          destruct H0.
+          inversion H0.
+      + crush.
+    - intros.
+      destruct (instantiateIterationOnPattern r sm sp i) eqn:inst.
+      + exists l. split. reflexivity.
+        unfold instantiateIterationOnPattern in inst.
+        destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+        * destruct b.
+          ** inversion inst.
+          apply in_flat_map.
+          destruct H. destruct H.
+          exists x. 
+          split. 
+          *** assumption.
+          *** unfold optionToList.
+              rewrite H0.
+              crush.
+          ** inversion inst.
+        * inversion inst.
+      + exfalso.
+        destruct H. destruct H. 
+        unfold instantiateIterationOnPattern in inst.
+        destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+        * destruct b.
+          ** inversion inst.
+          ** unfold instantiateElementOnPattern in H0.
+             rewrite mtch in H0.
+             inversion H0.
+        * unfold instantiateElementOnPattern in H0.
+          rewrite mtch in H0.
+          inversion H0.
+  Qed.
 
   Theorem tr_instantiateIterationOnPattern_inTypes : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
