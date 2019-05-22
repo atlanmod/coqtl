@@ -100,3 +100,23 @@ Fixpoint indexes (length: nat): list nat :=
   | 0 => nil
   | S length' => (length') :: indexes(length')
   end.
+
+
+Lemma indexes_nat_upperBound:
+  forall x len,
+    In x (indexes len) ->
+    x < len.
+Proof.
+  intros.
+  induction len.
+  - simpl in H. contradiction.
+  - simpl in H.
+    inversion H.
+    -- omega.
+    -- apply IHlen in H0.
+       omega.
+  Qed.
+
+
+
+ 
