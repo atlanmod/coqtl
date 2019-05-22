@@ -500,15 +500,8 @@ Section CoqTL.
   
   (** ** execute **)
   
-  Lemma tr_allTuple_in:
-    forall (tr: Transformation) (sm : SourceModel) 
-    (sp : list SourceModelElement) (tp : list TargetModelElement),
-    instantiatePattern tr sm sp = Some tp ->
-    incl sp (allModelElements sm) ->
-    In sp (allTuples tr sm).
-  Proof.
-  Admitted.
-    
+
+
 
   Theorem tr_execute_in_elements : 
     forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
@@ -539,7 +532,7 @@ Section CoqTL.
       unfold execute. simpl.
       apply in_flat_map.
       exists x. split.
-      + apply tr_allTuple_in with (tp:=x0); auto.
+      + admit.
       + unfold instantiatePattern in H0.
         destruct (matchPattern tr sm x) eqn:mtch.
         * inversion H0.
@@ -548,7 +541,7 @@ Section CoqTL.
           inversion H0.
           rewrite <- H3 in H1.
           assumption.
-  Qed.
+  Admitted.
 
   Theorem tr_execute_in_links : 
     forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
@@ -618,7 +611,13 @@ Section CoqTL.
       length sp > maxArity tr ->
       instantiatePattern tr sm sp = None.
   Proof.
+    intros.
+    unfold instantiatePattern.
+    destruct (matchPattern tr sm sp ) eqn:mtch.
+    - auto.
+    - unfold matchPattern in mtch.
   Admitted.
+
 
   (** ** instantiateRuleOnPattern **)
     
