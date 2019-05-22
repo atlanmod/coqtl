@@ -314,45 +314,29 @@ Section CoqTL.
               | _ => false end) (Transformation_getRules tr).
 
   Definition instantiateElementOnPattern (r: Rule) (o: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat)
-  : option TargetModelElement :=
-    match (nth_error (evalIterator r sm sp) iter) with
-        | Some i => evalOutputPatternElement sm sp i o
-        | None => None
-    end.
-  
-  Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (name: string): option (TargetModelElement) :=
+    : option TargetModelElement :=
     m <- matchRuleOnPattern r sm sp;
       if m then
         match (nth_error (evalIterator r sm sp) iter) with
-        | Some i =>
-          match (Rule_findOutputPatternElement r name) with
-          | Some o =>  evalOutputPatternElement sm sp i o
-          | None => None
-          end
+        | Some i => evalOutputPatternElement sm sp i o
         | None => None
         end
       else
         None.
   
-  Definition instantiateRuleOnPatternIter (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelElement) :=
+  Definition instantiateIterationOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (optionList2List (map (fun o => instantiateElementOnPattern r o sm sp iter) (Rule_getOutputPattern r)))
-      else
-        None.
-
-  Definition instantiateElementsOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (name: string) : option (list TargetModelElement) :=
-    m <- matchRuleOnPattern r sm sp;
-      if m then
-        Some (optionList2List
-                (map (fun it : nat => instantiateRuleOnPatternIterName r sm sp it name) (indexes (length (evalIterator r sm sp)))))
+        Some (flat_map (fun o => optionToList (instantiateElementOnPattern r o sm sp iter))
+                       (Rule_getOutputPattern r))
       else
         None.
   
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (concat (optionList2List (map (instantiateRuleOnPatternIter r sm sp) (indexes (length (evalIterator r sm sp))))))
+        Some (flat_map (fun i:nat => optionListToList (instantiateIterationOnPattern r sm sp i))
+                       (indexes (length (evalIterator r sm sp))))
       else
         None.
 
@@ -362,6 +346,24 @@ Section CoqTL.
     | l => Some (flat_map (fun r => optionListToList (instantiateRuleOnPattern r sm sp)) l)
     end.
 
+  Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (name: string): option (TargetModelElement) :=
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        match (Rule_findOutputPatternElement r name) with
+        | Some o =>  instantiateElementOnPattern r o sm sp iter
+        | None => None
+        end
+      else
+        None.
+
+  Definition instantiateElementsOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (name: string) : option (list TargetModelElement) :=
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        Some (flat_map (fun it : nat => optionToList (instantiateRuleOnPatternIterName r sm sp it name))
+                       (indexes (length (evalIterator r sm sp))))
+      else
+        None.
+
   Definition applyReferenceOnPattern
              (r: Rule)
              (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
@@ -369,14 +371,18 @@ Section CoqTL.
              (tr: Transformation)
              (sm: SourceModel)
              (sp: list SourceModelElement) (iter: nat) : option TargetModelLink :=
-    match (nth_error (evalIterator r sm sp) iter) with
-    | Some i =>
-      match (evalOutputPatternElement sm sp i ope) with
-      | Some l => evalOutputPatternElementReference sm sp l i (matchTransformation tr) oper
-      | None => None
-      end
-    | None => None
-    end.
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        match (nth_error (evalIterator r sm sp) iter) with
+        | Some i =>
+          match (evalOutputPatternElement sm sp i ope) with
+          | Some l => evalOutputPatternElementReference sm sp l i (matchTransformation tr) oper
+          | None => None
+          end
+        | None => None
+        end
+      else
+        None.
   
   Definition applyElementOnPattern
              (r: Rule)
@@ -386,51 +392,40 @@ Section CoqTL.
              (sp: list SourceModelElement) (iter: nat) : option (list TargetModelLink):=             
     m <- matchRuleOnPattern r sm sp;
       if m then
-        match (nth_error (evalIterator r sm sp) iter) with
-        | Some i =>
-          match (evalOutputPatternElement sm sp i ope) with
-          | Some l => 
-            Some (optionList2List (map ( fun (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope))
-                                         => evalOutputPatternElementReference sm sp l i (matchTransformation tr) oper
-                                       )
-                                       (OutputPatternElement_getOutputElementReferences ope)))
-          | None => None
-          end
-        | None => None
-        end
+        Some (flat_map ( fun oper => optionToList (applyReferenceOnPattern r ope oper tr sm sp iter))
+                       (OutputPatternElement_getOutputElementReferences ope))
       else
         None.
 
-  Definition applyElementsOnPattern (r: Rule) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
+  Definition applyIterationOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelLink) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (concat (optionList2List (map (fun iter => applyElementOnPattern r ope tr sm sp iter) (indexes (length (evalIterator r sm sp))))) )
-      else
-        None. 
-  
-  Definition applyRuleOnPatternIter (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelLink) :=
-    m <- matchRuleOnPattern r sm sp;
-      if m then
-        match (nth_error (evalIterator r sm sp) iter) with
-        | Some i => 
-          Some (concat (optionList2List (map (fun x => applyElementOnPattern r x tr sm sp iter) (Rule_getOutputPattern r))))
-        | None => None
-        end
+        Some (flat_map (fun x => optionListToList (applyElementOnPattern r x tr sm sp iter))
+                       (Rule_getOutputPattern r))
       else
         None.
 
   Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (concat (optionList2List (map (applyRuleOnPatternIter r tr sm sp) (indexes (length (evalIterator r sm sp))))))
+        Some (flat_map (fun i:nat => optionListToList (applyIterationOnPattern r tr sm sp i))
+                       (indexes (length (evalIterator r sm sp))))
       else
         None.
 
   Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
     match matchPattern tr sm sp with
     | nil => None
-    | l => Some (concat (optionList2List (map (fun r => applyRuleOnPattern r tr sm sp) l)))
+    | l => Some (flat_map (fun r => optionListToList (applyRuleOnPattern r tr sm sp)) l)
     end.
+
+  Definition applyElementsOnPattern (r: Rule) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
+    m <- matchRuleOnPattern r sm sp;
+      if m then
+        Some (concat (flat_map (fun iter => optionToList (applyElementOnPattern r ope tr sm sp iter))
+                               (indexes (length (evalIterator r sm sp)))))
+      else
+        None.
 
   (** ** Resolution **)
   
@@ -466,12 +461,11 @@ Section CoqTL.
   Definition resolveAllIter (tr: MatchedTransformation) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
     : option (list (denoteModelClass type)) :=
-    Some (optionList2List
-            (map (fun l:(list SourceModelElement) => resolveIter tr sm name type l iter) sps)).
+    Some (flat_map (fun l:(list SourceModelElement) => optionToList (resolveIter tr sm name type l iter)) sps).
   
   Definition resolveAll (tr: MatchedTransformation) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sps: list(list SourceModelElement)) : option (list (denoteModelClass type)) :=
-        resolveAllIter tr sm name type sps 0.
+    resolveAllIter tr sm name type sps 0.
   
   (** ** Rule scheduling **)
   
@@ -483,8 +477,8 @@ Section CoqTL.
 
   Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
     Build_Model
-      (concat (optionList2List (map (instantiatePattern tr sm) (allTuples tr sm))))
-      (concat (optionList2List (map (applyPattern tr sm) (allTuples tr sm)))).
+      (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuples tr sm))
+      (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuples tr sm)).
 
   (** * Certification **)
   
@@ -514,7 +508,7 @@ Section CoqTL.
           instantiatePattern tr sm sp = Some tp /\
           In te tp).
   Proof.
-    intros.
+    (*intros.
     split.
     - intros.
       simpl in H.
@@ -538,7 +532,7 @@ Section CoqTL.
       + unfold instantiatePattern in H0.
         destruct (matchPattern tr sm x) eqn:mtch.
         * inversion H0.
-        * unfold matchPattern in mtch.
+        * unfold matchPattern in mtch.*)
   Admitted.
 
   Theorem tr_execute_in_links : 
@@ -619,7 +613,7 @@ Section CoqTL.
        In te tp) <->
       (exists (i: nat) (tp1: list TargetModelElement),
           i < length (evalIterator r sm sp) /\
-          instantiateRuleOnPatternIter r sm sp i = Some tp1 /\
+          instantiateIterationOnPattern r sm sp i = Some tp1 /\
           In te tp1).
   Proof.
     split.
@@ -661,9 +655,9 @@ Section CoqTL.
 
   (** ** instantiateIterationOnPattern **)
 
-  Theorem tr_instantiateRuleOnPatternIter_in : 
+  Theorem tr_instantiateIterationOnPattern_in : 
     forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement) (i:nat),
-      (exists tp: list TargetModelElement, instantiateRuleOnPatternIter r sm sp i = Some tp /\
+      (exists tp: list TargetModelElement, instantiateIterationOnPattern r sm sp i = Some tp /\
        In te tp) <->
       (exists (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
           In ope (Rule_getOutputPattern r) /\ 
@@ -674,22 +668,19 @@ Section CoqTL.
       unfold instantiateRuleOnPattern in H.
       destruct (matchRuleOnPattern r sm sp) eqn:mtch.
       + destruct b.
-        * Arguments optionList2List : simpl never.
-          Arguments map : simpl never.
-          inversion H.
   Admitted.
 
-  Theorem tr_instantiateRuleOnPatternIter_inTypes : 
+  Theorem tr_instantiateIterationOnPattern_inTypes : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       length sp <> length (Rule_getInTypes r) ->
-      instantiateRuleOnPatternIter r sm sp i = None.
+      instantiateIterationOnPattern r sm sp i = None.
   Proof.
   Admitted.
 
-  Theorem tr_instantiateRuleOnPatternIter_iterator : 
+  Theorem tr_instantiateIterationOnPattern_iterator : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       i >= length (evalIterator r sm sp) ->
-      instantiateRuleOnPatternIter r sm sp i = None.
+      instantiateIterationOnPattern r sm sp i = None.
   Proof.
   Admitted.
   
@@ -739,7 +730,7 @@ Section CoqTL.
        In tl tpl) <->
       (exists (i: nat) (tpl1: list TargetModelLink),
           i < length (evalIterator r sm sp) /\
-          applyRuleOnPatternIter r tr sm sp i = Some tpl1 /\
+          applyIterationOnPattern r tr sm sp i = Some tpl1 /\
           In tl tpl1).
   Proof.
   Admitted.
@@ -753,9 +744,9 @@ Section CoqTL.
 
   (** ** applyIterationOnPattern **)
 
-  Theorem tr_applyRuleOnPatternIter_in : 
+  Theorem tr_applyIterationOnPattern_in : 
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat),
-      (exists tpl: list TargetModelLink, applyRuleOnPatternIter r tr sm sp i = Some tpl /\
+      (exists tpl: list TargetModelLink, applyIterationOnPattern r tr sm sp i = Some tpl /\
        In tl tpl) <->
       (exists (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tpl1: list TargetModelLink),
           In ope (Rule_getOutputPattern r) /\ 
@@ -767,22 +758,19 @@ Section CoqTL.
       unfold instantiateRuleOnPattern in H.
       destruct (matchRuleOnPattern r sm sp) eqn:mtch.
       + destruct b.
-        * Arguments optionList2List : simpl never.
-          Arguments map : simpl never.
-          inversion H.
   Admitted.
 
-  Theorem tr_applyRuleOnPatternIter_inTypes : 
+  Theorem tr_applyIterationOnPattern_inTypes : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       length sp <> length (Rule_getInTypes r) ->
-      applyRuleOnPatternIter r tr sm sp i = None.
+      applyIterationOnPattern r tr sm sp i = None.
   Proof.
   Admitted.
 
-  Theorem tr_applyRuleOnPatternIter_iterator : 
+  Theorem tr_applyIterationOnPattern_iterator : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       i >= length (evalIterator r sm sp) ->
-      applyRuleOnPatternIter r tr sm sp i = None.
+      applyIterationOnPattern r tr sm sp i = None.
   Proof.
   Admitted.
   
@@ -801,9 +789,6 @@ Section CoqTL.
       unfold instantiateRuleOnPattern in H.
       destruct (matchRuleOnPattern r sm sp) eqn:mtch.
       + destruct b.
-        * Arguments optionList2List : simpl never.
-          Arguments map : simpl never.
-          inversion H.
   Admitted.
 
   Theorem tr_applyElementOnPattern_inTypes : 
@@ -923,8 +908,8 @@ Section CoqTL.
       instantiateRuleOnPattern := instantiateRuleOnPattern';
       applyRuleOnPattern := applyRuleOnPattern';
 
-      instantiateIterationOnPattern := instantiateRuleOnPatternIter;
-      applyIterationOnPattern := applyRuleOnPatternIter;
+      instantiateIterationOnPattern := instantiateIterationOnPattern;
+      applyIterationOnPattern := applyIterationOnPattern;
 
       instantiateElementOnPattern := instantiateElementOnPattern;
       applyElementOnPattern := applyElementOnPattern;
@@ -942,9 +927,9 @@ Section CoqTL.
       tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
       tr_instantiateRuleOnPattern_inTypes := tr_instantiateRuleOnPattern_inTypes;
 
-      tr_instantiateIterationOnPattern_in := tr_instantiateRuleOnPatternIter_in;
-      tr_instantiateIterationOnPattern_inTypes := tr_instantiateRuleOnPatternIter_inTypes;
-      tr_instantiateIterationOnPattern_iterator := tr_instantiateRuleOnPatternIter_iterator;
+      tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
+      tr_instantiateIterationOnPattern_inTypes := tr_instantiateIterationOnPattern_inTypes;
+      tr_instantiateIterationOnPattern_iterator := tr_instantiateIterationOnPattern_iterator;
 
       tr_instantiateElementOnPattern_inTypes := tr_instantiateElementOnPattern_inTypes;
       tr_instantiateElementOnPattern_iterator := tr_instantiateElementOnPattern_iterator;
@@ -955,9 +940,9 @@ Section CoqTL.
       tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
       tr_applyRuleOnPattern_inTypes := tr_applyRuleOnPattern_inTypes;
 
-      tr_applyIterationOnPattern_in := tr_applyRuleOnPatternIter_in;
-      tr_applyIterationOnPattern_inTypes := tr_applyRuleOnPatternIter_inTypes;
-      tr_applyIterationOnPattern_iterator := tr_applyRuleOnPatternIter_iterator;
+      tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
+      tr_applyIterationOnPattern_inTypes := tr_applyIterationOnPattern_inTypes;
+      tr_applyIterationOnPattern_iterator := tr_applyIterationOnPattern_iterator;
 
       tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
       tr_applyElementOnPattern_inTypes := tr_applyElementOnPattern_inTypes;
