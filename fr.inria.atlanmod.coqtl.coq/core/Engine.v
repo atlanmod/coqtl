@@ -246,6 +246,112 @@ Class TransformationEngine :=
     
   }.
 
+Theorem tr_matchPattern_nil_tr : forall t: TransformationEngine,
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      getRules tr = nil ->
+      matchPattern tr sm sp = nil.
+Proof.
+  intros.
+  destruct (matchPattern tr sm sp) eqn:mtch. reflexivity.
+  exfalso.
+  pose (tr_matchPattern_in tr sm sp r).
+  rewrite H in i.
+  pose (in_eq r l).
+  rewrite <- mtch in i0.
+  apply i in i0.
+  simpl in i0.
+  destruct i0.
+  contradiction.
+Qed.
+
+Theorem tr_instantiatePattern_nil_tr : forall t: TransformationEngine,
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      getRules tr = nil ->
+      (instantiatePattern tr sm sp = None \/
+       instantiatePattern tr sm sp = Some nil).
+Proof.
+  intros.
+  destruct (instantiatePattern tr sm sp) eqn:dst.
+  - apply tr_matchPattern_nil_tr with (sm:=sm) (sp:=sp) in H.
+    destruct l.
+    * right. reflexivity.
+    * exfalso.
+      pose (tr_instantiatePattern_in tr sm sp t0).
+      destruct i. destruct H0.
+      -- exists (t0 :: l).
+         split. assumption. simpl. left. reflexivity.
+      -- destruct H0.
+         destruct H0.
+         rewrite H in H0.
+         contradiction.
+  - left. reflexivity.
+Qed.
+
+Theorem tr_applyPattern_nil_tr : forall t: TransformationEngine,
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        getRules tr = nil ->
+        (applyPattern tr sm sp = None \/
+         applyPattern tr sm sp = Some nil).
+Proof.
+  intros.
+  destruct (applyPattern tr sm sp) eqn:dst.
+  - apply tr_matchPattern_nil_tr with (sm:=sm) (sp:=sp) in H.
+    destruct l.
+    * right. reflexivity.
+    * exfalso.
+      pose (tr_applyPattern_in tr sm sp t0).
+      destruct i. destruct H0.
+      -- exists (t0 :: l).
+         split. assumption. simpl. left. reflexivity.
+      -- destruct H0.
+         destruct H0.
+         rewrite H in H0.
+         contradiction.
+  - left. reflexivity.
+Qed.
+
+Theorem tr_execute_nil_tr : forall t: TransformationEngine, 
+    forall (tr: Transformation) (sm : SourceModel),
+      getRules tr = nil ->
+      allModelElements (execute tr sm) = nil.
+Proof.
+  intros.
+  destruct (allModelElements (execute tr sm)) eqn:ame.
+  - reflexivity.
+  - exfalso.
+    pose (tr_execute_in_elements tr sm t0).
+    pose (in_eq t0 l).
+    rewrite <- ame in i0.
+    apply i in i0.
+    destruct i0. destruct H0. destruct H0. destruct H1.
+    pose (tr_instantiatePattern_in tr sm x t0).
+    apply tr_matchPattern_nil_tr with (sm:=sm) (sp:=x) in H.
+    destruct i0. destruct H3.
+    -- exists x0.
+       split. assumption. assumption.
+    -- destruct H3.
+       destruct H3.
+       rewrite H in H3.
+       contradiction.
+Qed.
+
+Theorem tr_matchPattern_maxArity : forall t: TransformationEngine,
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        length sp > maxArity tr ->
+        matchPattern tr sm sp = nil.
+Proof.
+  intros.
+  destruct (matchPattern tr sm sp) eqn:dst. reflexivity.
+  exfalso.
+  pose (tr_matchPattern_in tr sm sp r).
+  pose (tr_matchRuleOnPattern_inTypes tr sm r sp).
+  pose (in_eq r l).
+  rewrite <- dst in i0.
+  apply i in i0.
+  destruct i0.
+  unfold maxArity in H.
+Admitted.
+
 Theorem match_functionality :  
   forall (eng: TransformationEngine)
     (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r1: list Rule) (r2: list Rule),
@@ -256,6 +362,8 @@ Proof.
     inversion H0.
     reflexivity.
 Qed.
+
+(* Metatheorems *)
 
 Theorem incl_equiv_to_surj:
   forall (eng: TransformationEngine),
@@ -290,118 +398,6 @@ Proof.
     split. assumption.
     assumption.
 Qed.
-
-Theorem
-  tr_matchPattern_nil_tr : forall t: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-      getRules tr = nil ->
-      matchPattern tr sm sp = nil.
-Proof.
-  intros.
-  destruct (matchPattern tr sm sp) eqn:mtch. reflexivity.
-  exfalso.
-  pose (tr_matchPattern_in tr sm sp r).
-  rewrite H in i.
-  pose (in_eq r l).
-  rewrite <- mtch in i0.
-  apply i in i0.
-  simpl in i0.
-  destruct i0.
-  contradiction.
-Qed.
-
-Theorem
-  tr_instantiatePattern_nil_tr : forall t: TransformationEngine,
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-      getRules tr = nil ->
-      (instantiatePattern tr sm sp = None \/
-       instantiatePattern tr sm sp = Some nil).
-Proof.
-  intros.
-  destruct (instantiatePattern tr sm sp) eqn:dst.
-  - apply tr_matchPattern_nil_tr with (sm:=sm) (sp:=sp) in H.
-    destruct l.
-    * right. reflexivity.
-    * exfalso.
-      pose (tr_instantiatePattern_in tr sm sp t0).
-      destruct i. destruct H0.
-      -- exists (t0 :: l).
-         split. assumption. simpl. left. reflexivity.
-      -- destruct H0.
-         destruct H0.
-         rewrite H in H0.
-         contradiction.
-  - left. reflexivity.
-Qed.
-
-Theorem
-    tr_applyPattern_nil_tr : forall t: TransformationEngine,
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-        getRules tr = nil ->
-        (applyPattern tr sm sp = None \/
-         applyPattern tr sm sp = Some nil).
-Proof.
-  intros.
-  destruct (applyPattern tr sm sp) eqn:dst.
-  - apply tr_matchPattern_nil_tr with (sm:=sm) (sp:=sp) in H.
-    destruct l.
-    * right. reflexivity.
-    * exfalso.
-      pose (tr_applyPattern_in tr sm sp t0).
-      destruct i. destruct H0.
-      -- exists (t0 :: l).
-         split. assumption. simpl. left. reflexivity.
-      -- destruct H0.
-         destruct H0.
-         rewrite H in H0.
-         contradiction.
-  - left. reflexivity.
-Qed.
-
-Theorem
-  tr_execute_nil_tr : forall t: TransformationEngine, 
-    forall (tr: Transformation) (sm : SourceModel),
-      getRules tr = nil ->
-      allModelElements (execute tr sm) = nil.
-Proof.
-  intros.
-  destruct (allModelElements (execute tr sm)) eqn:ame.
-  - reflexivity.
-  - exfalso.
-    pose (tr_execute_in_elements tr sm t0).
-    pose (in_eq t0 l).
-    rewrite <- ame in i0.
-    apply i in i0.
-    destruct i0. destruct H0. destruct H0. destruct H1.
-    pose (tr_instantiatePattern_in tr sm x t0).
-    apply tr_matchPattern_nil_tr with (sm:=sm) (sp:=x) in H.
-    destruct i0. destruct H3.
-    -- exists x0.
-       split. assumption. assumption.
-    -- destruct H3.
-       destruct H3.
-       rewrite H in H3.
-       contradiction.
-Qed.
-
-Theorem 
-    tr_matchPattern_maxArity : forall t: TransformationEngine,
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-        length sp > maxArity tr ->
-        matchPattern tr sm sp = nil.
-Proof.
-  intros.
-  destruct (matchPattern tr sm sp) eqn:dst. reflexivity.
-  exfalso.
-  pose (tr_matchPattern_in tr sm sp r).
-  pose (tr_matchRuleOnPattern_inTypes tr sm r sp).
-  pose (in_eq r l).
-  rewrite <- dst in i0.
-  apply i in i0.
-  destruct i0.
-  unfold maxArity in H.
-Admitted.
-
 
 Theorem in_flat_map_exists: 
   (forall (X Y:Type) (x:X) (y:Y) (f: X -> list Y) (B:Prop),
