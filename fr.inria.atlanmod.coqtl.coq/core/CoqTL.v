@@ -753,7 +753,6 @@ Section CoqTL.
 
   Theorem tr_instantiateRuleOnPattern_inTypes : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-      In r (Transformation_getRules tr) ->
       length sp <> length (Rule_getInTypes r) ->
       instantiateRuleOnPattern' r tr sm sp = None.
   Proof.
@@ -765,11 +764,9 @@ Section CoqTL.
       unfold matchRuleOnPattern in mtchP.
       unfold evalGuard in mtchP.
       unfold evalFunction in mtchP.
-      assert (maxArity tr >= length (Rule_getInTypes r)). { apply maxArity_geq_rule_length. assumption. }
-      assert (length sp <> length (Rule_getInTypes r)).  { omega. }
       assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes r) bool (Rule_getGuard r sm) sp = None).
       { apply evalFunctionFix_intypes_el_neq. crush. }
-      rewrite H3 in mtchP. inversion mtchP.     
+      rewrite H0 in mtchP. inversion mtchP.     
     Qed. 
 
   (** ** instantiateIterationOnPattern **)
@@ -862,7 +859,24 @@ Section CoqTL.
     intros.
     unfold instantiateIterationOnPattern.
     destruct (matchRuleOnPattern r sm sp) eqn:mtchP; auto.
-    
+    destruct b; auto.
+    destruct  (Rule_getOutputPattern r) eqn: outs.
+    - unfold flat_map. 
+      admit.  
+    - remember ((flat_map
+           (fun o0 : OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r) =>
+            optionToList (instantiateElementOnPattern r o0 sm sp i)) 
+           (o :: l))).
+      unfold instantiateElementOnPattern in Heql0.
+      rewrite mtchP in Heql0.
+      Search nth_error.
+      assert (nth_error (evalIterator r sm sp) i = None).
+      { apply nth_error_None. crush. }
+      rewrite H0 in Heql0.
+      simpl in Heql0.
+      rewrite <-  outs in Heql0.
+      revert outs.     
+      { admit. }      
   Admitted.
   
   (** ** instantiateElementOnPattern **)

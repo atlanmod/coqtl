@@ -17,6 +17,7 @@ Require Import Omega.
 Require Import core.utils.TopUtils.
 Require Import core.Model.
 Require Import core.Expressions.
+Require Import core.utils.CpdtTactics.
 
 Set Implicit Arguments.
 
@@ -310,6 +311,7 @@ Proof.
   - left. reflexivity.
 Qed.
 
+  
 Theorem tr_execute_nil_tr : forall t: TransformationEngine, 
     forall (tr: Transformation) (sm : SourceModel),
       getRules tr = nil ->
@@ -433,3 +435,5 @@ Proof.
       rewrite <- H2 in H3.
       assumption.
 Qed.
+
+
