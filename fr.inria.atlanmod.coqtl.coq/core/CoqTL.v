@@ -653,7 +653,7 @@ Section CoqTL.
   Qed.
 
   
-    
+  (* TODO: MOVE TO ENGINE.V 
   Theorem tr_instantiatePattern_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       length sp > maxArity tr ->
@@ -681,7 +681,7 @@ Section CoqTL.
           rewrite H4 in mtchP. inversion mtchP.
         * inversion H1.
       + inversion H1.      
-  Qed.
+  Qed. *)
 
 
   (** ** instantiateRuleOnPattern **)
@@ -756,6 +756,7 @@ Section CoqTL.
           inversion H0.
   Qed.
 
+  (* TODO: MOVE TO ENGINE.V
   Theorem tr_instantiateRuleOnPattern_inTypes : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       length sp <> length (Rule_getInTypes r) ->
@@ -772,7 +773,7 @@ Section CoqTL.
       assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes r) bool (Rule_getGuard r sm) sp = None).
       { apply evalFunctionFix_intypes_el_neq. crush. }
       rewrite H0 in mtchP. inversion mtchP.     
-    Qed. 
+    Qed. *)
 
   (** ** instantiateIterationOnPattern **)
 
@@ -839,6 +840,7 @@ Section CoqTL.
           inversion H0.
   Qed.
 
+  (* TODO: MOVE TO ENGINE.V
   Theorem tr_instantiateIterationOnPattern_inTypes : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       length sp <> length (Rule_getInTypes r) ->
@@ -855,7 +857,9 @@ Section CoqTL.
       { apply evalFunctionFix_intypes_el_neq. crush. }
       rewrite H0 in mtchP. inversion mtchP.     
     Qed.
+ *)
 
+  (* TODO: MOVE TO ENGINE.V
   Theorem tr_instantiateIterationOnPattern_iterator : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       i >= length (evalIterator r sm sp) ->
@@ -883,9 +887,11 @@ Section CoqTL.
       revert outs.     
       { admit. }      
   Admitted.
+*)
   
   (** ** instantiateElementOnPattern **)
 
+  (* TODO: MOVE TO ENGINE.V
   Theorem tr_instantiateElementOnPattern_inTypes : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
       (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
@@ -906,7 +912,7 @@ Section CoqTL.
          rewrite mtchP. auto.
     - unfold instantiateElementOnPattern.
       rewrite mtchP. auto.         
-    Qed. 
+    Qed. *)
 
   Theorem tr_instantiateElementOnPattern_iterator : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
