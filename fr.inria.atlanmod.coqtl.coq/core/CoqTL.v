@@ -501,11 +501,53 @@ Section CoqTL.
   Definition OutputPatternElement_getOutputElementReferences' (InElTypes: list SourceModelClass) (IterType: Type) (o: OutputPatternElement InElTypes IterType) :
     list (OutputPatternElementReference InElTypes IterType (OutputPatternElement_getOutType o)) :=
     OutputPatternElement_getOutputElementReferences o.
+
+
+  (** ** maxArity **)
+  Lemma maxArity_geq_rule_length :
+    forall (tr: Transformation) (r: Rule),
+      In r (Transformation_getRules tr) ->
+      maxArity tr >= length (Rule_getInTypes r).
+  Proof.
+    intros.
+    destruct tr.
+    simpl in H.
+    rename l into rules.
+    induction rules.
+    - contradiction.
+    - simpl in H.
+      destruct H.
+      + unfold maxArity.
+        unfold Transformation_getRules.
+        rewrite H.
+        simpl. 
+        destruct ((map (Datatypes.length (A:=SourceModelClass)) (map Rule_getInTypes rules))).
+        ++ simpl. destruct (ble_nat (Datatypes.length (Rule_getInTypes r)) 0) eqn: max.
+           +++ apply ble_nat_true in max. crush.
+           +++ omega.
+        ++ destruct (ble_nat (Datatypes.length (Rule_getInTypes r)) (max (n :: l))) eqn:max.
+           +++ apply ble_nat_true. assumption.
+           +++ omega.
+      + apply IHrules in H.
+        assert (maxArity (BuildTransformation (a :: rules)) >= maxArity (BuildTransformation rules)).
+        { 
+          unfold maxArity.
+          unfold Transformation_getRules.
+          simpl. 
+          destruct (map (Datatypes.length (A:=SourceModelClass)) (map Rule_getInTypes rules)) eqn: rules_ca.
+          ++ simpl. omega.
+          ++ destruct (ble_nat (Datatypes.length (Rule_getInTypes a)) (max (n :: l))) eqn:max.
+             +++ omega.
+             +++ apply ble_nat_false in max.
+                 omega.
+        }
+        remember (maxArity (BuildTransformation (a :: rules))) as x.
+        remember (maxArity (BuildTransformation rules)) as y.
+        remember (Datatypes.length (Rule_getInTypes r)) as z.
+        apply (@ge_trans x y z); assumption.
+  Qed.
   
   (** ** execute **)
-  
-
-
 
   Theorem tr_execute_in_elements : 
     forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
@@ -610,48 +652,7 @@ Section CoqTL.
         * inversion inst.
   Qed.
 
-  Lemma maxArity_geq_rule_length :
-    forall (tr: Transformation) (r: Rule),
-      In r (Transformation_getRules tr) ->
-      maxArity tr >= length (Rule_getInTypes r).
-  Proof.
-    intros.
-    destruct tr.
-    simpl in H.
-    rename l into rules.
-    induction rules.
-    - contradiction.
-    - simpl in H.
-      destruct H.
-      + unfold maxArity.
-        unfold Transformation_getRules.
-        rewrite H.
-        simpl. 
-        destruct ((map (Datatypes.length (A:=SourceModelClass)) (map Rule_getInTypes rules))).
-        ++ simpl. destruct (ble_nat (Datatypes.length (Rule_getInTypes r)) 0) eqn: max.
-           +++ apply ble_nat_true in max. crush.
-           +++ omega.
-        ++ destruct (ble_nat (Datatypes.length (Rule_getInTypes r)) (max (n :: l))) eqn:max.
-           +++ apply ble_nat_true. assumption.
-           +++ omega.
-      + apply IHrules in H.
-        assert (maxArity (BuildTransformation (a :: rules)) >= maxArity (BuildTransformation rules)).
-        { 
-          unfold maxArity.
-          unfold Transformation_getRules.
-          simpl. 
-          destruct (map (Datatypes.length (A:=SourceModelClass)) (map Rule_getInTypes rules)) eqn: rules_ca.
-          ++ simpl. omega.
-          ++ destruct (ble_nat (Datatypes.length (Rule_getInTypes a)) (max (n :: l))) eqn:max.
-             +++ omega.
-             +++ apply ble_nat_false in max.
-                 omega.
-        }
-        remember (maxArity (BuildTransformation (a :: rules))) as x.
-        remember (maxArity (BuildTransformation rules)) as y.
-        remember (Datatypes.length (Rule_getInTypes r)) as z.
-        apply (@ge_trans x y z); assumption.
-  Qed.
+  
     
   Theorem tr_instantiatePattern_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
@@ -1224,6 +1225,8 @@ Section CoqTL.
       tr_matchPattern_in := tr_matchPattern_in;
       
       tr_matchRuleOnPattern_inTypes := tr_matchRuleOnPattern_inTypes;
+
+      tr_maxArity_length := maxArity_geq_rule_length;
     }.
   
 End CoqTL.

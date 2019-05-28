@@ -244,6 +244,11 @@ Class TransformationEngine :=
       forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
         length sp <> length (getInTypes r) ->
         matchRuleOnPattern r tr sm sp = None;
+
+    tr_maxArity_length :
+    forall (tr: Transformation) (r: Rule),
+      In r (getRules tr) ->
+      maxArity tr >= length (getInTypes r);
     
   }.
 
