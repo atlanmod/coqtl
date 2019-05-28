@@ -447,7 +447,7 @@ beq_Tree (Leaf_getTree le_arg1) (Leaf_getTree le_arg2)
 .
 
 Definition beq_Assignment (as_arg1 : Assignment) (as_arg2 : Assignment) : bool :=
-( beq_bool (Assignment_getValue as_arg1) (Assignment_getValue as_arg2) )
+( eqb (Assignment_getValue as_arg1) (Assignment_getValue as_arg2) )
 .
 
 Definition beq_Subtree (su_arg1 : Subtree) (su_arg2 : Subtree) : bool :=
@@ -669,17 +669,17 @@ Definition bddMetamodel_defaultInstanceOfEClass (bdec_arg: bddMetamodel_EClass) 
   | PortEClass => 
   (BuildPort "")
   | InputPortEClass => 
-  (BuildInputPort (BuildPort "") "")
+  (BuildInputPort (BuildPort "") )
   | OutputPortEClass => 
-  (BuildOutputPort (BuildPort "") "")
+  (BuildOutputPort (BuildPort "") )
   | TreeEClass => 
-  ()
+  (BuildTree)
   | LeafEClass => 
-  (BuildLeaf ())
+  (BuildLeaf (BuildTree))
   | AssignmentEClass => 
   (BuildAssignment true)
   | SubtreeEClass => 
-  (BuildSubtree ())
+  (BuildSubtree (BuildTree))
   end.
 
 (* Typeclass Instance *)

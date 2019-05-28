@@ -650,17 +650,17 @@ Definition BDDMetamodel_defaultInstanceOfEClass (bdec_arg: BDDMetamodel_EClass) 
   | PortEClass => 
   (BuildPort "")
   | InputPortEClass => 
-  (BuildInputPort (BuildPort "") "")
+  (BuildInputPort (BuildPort ""))
   | OutputPortEClass => 
-  (BuildOutputPort (BuildPort "") "")
+  (BuildOutputPort (BuildPort ""))
   | TreeEClass => 
-  ()
+  (BuildTree)
   | LeafEClass => 
-  (BuildLeaf ())
+  (BuildLeaf (BuildTree))
   | AssignmentEClass => 
   (BuildAssignment true)
   | SubtreeEClass => 
-  (BuildSubtree ())
+  (BuildSubtree (BuildTree))
   end.
 
 (* Typeclass Instance *)
