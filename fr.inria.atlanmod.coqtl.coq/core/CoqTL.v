@@ -428,23 +428,27 @@ Section CoqTL.
         None.
 
   (** ** Resolution **)
-  
+  Definition isMatchedRule
+    (sm : SourceModel) (r: Rule) (name: string)
+    (sp: list SourceModelElement) (iter: nat) : bool :=
+    match matchRuleOnPattern r sm sp with
+    | Some true =>
+        match nth_error (evalIterator r sm sp) iter with
+        | Some x =>
+            match Rule_findOutputPatternElement r name with
+            | Some x => true
+            | None => false
+            end
+        | None => false
+        end
+    | _ => false
+    end.
+    
   Definition resolveIter (tr: MatchedTransformation) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sp: list SourceModelElement) 
              (iter : nat) : option (denoteModelClass type) :=
     let tr := unmatchTransformation tr in
-    let matchedRule := find (fun r:Rule =>
-            match matchRuleOnPattern r sm sp with
-            | Some true =>
-              match nth_error (evalIterator r sm sp) iter with
-              | Some x =>
-                match Rule_findOutputPatternElement r name with
-                | Some x => true
-                | None => false
-                end
-              | None => false
-              end
-            | _ => false end)
+    let matchedRule := find (fun r:Rule => isMatchedRule sm r name sp iter)
                             (Transformation_getRules tr) in
     match matchedRule with
     | Some r => match instantiateRuleOnPatternIterName r sm sp iter name with
@@ -1081,6 +1085,63 @@ Section CoqTL.
       matchRuleOnPattern' r tr sm sp = None.
   Proof.
   Admitted.
+
+  (** ** Resolve **)
+
+  
+  Theorem tr_resolveIter_some:
+    forall (tr:MatchedTransformation) (sm : SourceModel) (name: string) (type: TargetModelClass)
+      (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
+      resolveIter tr sm name type sp iter = return x ->
+       (exists (r: Rule) (e: TargetModelElement),
+        (find (fun r:Rule => isMatchedRule sm r name sp iter)
+              (Transformation_getRules (unmatchTransformation tr)) = Some r)
+        /\ (instantiateRuleOnPatternIterName r sm sp iter name = Some e)
+        /\ (toModelClass type e = Some x) ).
+  Proof.
+  Admitted.
+                                                     
+  Theorem tr_resolveIter_none:
+    forall (tr:MatchedTransformation) (sm : SourceModel) (name: string) (type: TargetModelClass)
+      (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
+      resolveIter tr sm name type sp iter = None ->
+       let matchedRule := (find (fun r:Rule => isMatchedRule sm r name sp iter)
+                               (Transformation_getRules (unmatchTransformation tr))) in
+       (matchedRule = None \/
+        exists (r: Rule),
+          matchedRule = Some r /\  instantiateRuleOnPatternIterName r sm sp iter name = None
+       ).
+  Proof.
+  Admitted.
+
+  Theorem tr_resolve_unfold:
+    forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
+      (type: TargetModelClass) (sp: list SourceModelElement),
+      resolve tr sm name type sp = resolveIter tr sm name type sp 0.
+  Proof.
+    crush.
+  Qed.
+
+  Theorem tr_resolveAllIter_in:
+    forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
+      (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
+      (te: denoteModelClass type),
+      (exists tes: list (denoteModelClass type),
+          resolveAllIter tr sm name type sps iter = Some tes /\ In te tes) <->
+      (exists (sp: list SourceModelElement),
+          In sp sps /\
+          resolveIter tr sm name type sp iter = Some te).
+  Proof.
+  Admitted.
+     
+  Theorem tr_resolveAll_unfold:
+    forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
+      (type: TargetModelClass) (sps: list(list SourceModelElement)),
+      resolveAll tr sm name type sps = resolveAllIter tr sm name type sps 0.
+  Proof.
+    crush.
+  Qed.
+    
     
   (** * Typeclass instantiation **)
       
