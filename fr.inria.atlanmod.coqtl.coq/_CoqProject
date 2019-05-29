@@ -21,3 +21,9 @@ examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
 examples/Class2Relational/Class2Relational.v
 examples/Class2Relational/PersonModel.v
+
+-R "examples/BDD2TT" examples.BDD2TT
+examples/BDD2TT/BDD.v
+examples/BDD2TT/BDDv2.v
+examples/BDD2TT/TT.v
+examples/BDD2TT/bdd.model.v

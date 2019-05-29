@@ -17,6 +17,7 @@ Require Import Omega.
 Require Import core.utils.TopUtils.
 Require Import core.Model.
 Require Import core.Expressions.
+Require Import core.utils.CpdtTactics.
 
 Set Implicit Arguments.
 
@@ -243,6 +244,11 @@ Class TransformationEngine :=
       forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
         length sp <> length (getInTypes r) ->
         matchRuleOnPattern r tr sm sp = None;
+
+    tr_maxArity_length :
+    forall (tr: Transformation) (r: Rule),
+      In r (getRules tr) ->
+      maxArity tr >= length (getInTypes r);
     
   }.
 
@@ -310,6 +316,7 @@ Proof.
   - left. reflexivity.
 Qed.
 
+  
 Theorem tr_execute_nil_tr : forall t: TransformationEngine, 
     forall (tr: Transformation) (sm : SourceModel),
       getRules tr = nil ->
@@ -433,3 +440,5 @@ Proof.
       rewrite <- H2 in H3.
       assumption.
 Qed.
+
+

@@ -28,18 +28,18 @@ class Ecore2Coq {
 		 ********************************************************************)
 		
 		(* Coq libraries *)
-		Require Import Bool.
 		Require Import String.
-		Require Import List.
-		Require Import Multiset.
-		Require Import ListSet.
+		Require Import List.      (* sequence *)
+		Require Import Multiset.  (* bag *)
+		Require Import ListSet.   (* set *)
 		Require Import Omega.
-		Require Import Coq.Logic.Eqdep_dec.
+		Require Import Bool.
 		
-		(* CoqTL libraries *)
-		Require Import core.utils.tTop.
+		Require Import core.utils.TopUtils.
 		Require Import core.Metamodel.
 		Require Import core.Model.
+		
+		Require Import Coq.Logic.Eqdep_dec.
 		
 			
 		(* Base types *)
