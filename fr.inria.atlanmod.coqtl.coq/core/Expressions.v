@@ -45,7 +45,26 @@ Section Exp.
       length intypes <> length el ->
         evalFunctionFix intypes otype f el = None.
   Proof.
-  Admitted.
+    intros.
+    generalize dependent el.
+    induction intypes.        
+    - intros. destruct el.
+      + crush.
+      + crush.  
+    - intros.
+      induction el.
+      + crush.
+      + destruct (toModelClass a a0) eqn:tmc.
+        * simpl. rewrite tmc.
+          destruct intypes eqn:intypes2, el eqn:el2.
+          ** crush.
+          ** crush.
+          ** crush.
+          ** apply  IHintypes. simpl. simpl in H. Search (S _ <> S _).
+             apply -> Nat.succ_inj_wd_neg in H.
+             exact H.            
+        * simpl. rewrite tmc. auto.
+  Qed.
 
 
 End Exp.
