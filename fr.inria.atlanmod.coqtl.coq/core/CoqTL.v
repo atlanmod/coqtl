@@ -618,10 +618,64 @@ Section CoqTL.
   Proof.
     split.
     - intros.
+      unfold instantiateRuleOnPattern' in H.
       unfold instantiateRuleOnPattern in H.
       destruct (matchRuleOnPattern r sm sp) eqn:mtch.
       + destruct b.
-  Admitted.
+        * Arguments optionList2List : simpl never.
+          Arguments map : simpl never.
+          inversion H.
+          inversion H0.
+          inversion H1.
+          rewrite <- H4 in H2.
+          apply in_flat_map in H2.
+          destruct H2.
+          destruct H2.
+          destruct (instantiateIterationOnPattern r sm sp x0) eqn:inst_ca.
+          ** exists x0.
+             exists l.
+             split.
+             *** apply indexes_nat_upperBound.
+                 exact H2.
+             *** split; crush.
+          ** contradiction.
+        * inversion H.
+          destruct H0.
+          inversion H0.
+      + crush.
+    - intros.
+      destruct (instantiateRuleOnPattern' r tr sm sp) eqn:inst.
+      + exists l. split. reflexivity.
+        unfold instantiateRuleOnPattern' in inst.
+        unfold instantiateRuleOnPattern in inst.
+        destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+        * destruct b.
+          ** inversion inst.
+          apply in_flat_map.
+          destruct H. destruct H. destruct H. destruct H0.
+          exists x. 
+          split. 
+          *** apply indexes_nat_upperBound.
+              assumption.
+          *** unfold optionListToList.
+              rewrite H0.
+              assumption.
+          ** inversion inst.
+        * inversion inst.
+      + exfalso.
+        destruct H. destruct H. destruct H. destruct H0.
+        unfold instantiateRuleOnPattern' in inst.
+        unfold instantiateRuleOnPattern in inst.
+        destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+        * destruct b.
+          ** inversion inst.
+          ** unfold instantiateIterationOnPattern in H0.
+             rewrite mtch in H0.
+             inversion H0.
+        * unfold instantiateIterationOnPattern in H0.
+          rewrite mtch in H0.
+          inversion H0.
+  Qed.
 
   Theorem tr_instantiateRuleOnPattern_inTypes : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
