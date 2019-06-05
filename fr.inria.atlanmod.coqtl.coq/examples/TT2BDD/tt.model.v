@@ -6,6 +6,8 @@
 		 
 Require Import List.
 Require Import core.Model.
+Require Import String.
+Require Import Bool.
 Require Import examples.TT2BDD.TT.
 
 
@@ -227,3 +229,136 @@ Definition InputModel : Model TTMetamodel_EObject TTMetamodel_ELink :=
 		(Build_TTMetamodel_ELink CellPortEReference (BuildCellPort (BuildCell ((BuildLocatedElement "")) true) (BuildPort ((BuildLocatedElement "")) "b"))) ::
 		nil)
 	).
+
+
+Definition getPartition (m: TTModel) (rows: list Row) (port: Port) : (*zeroPart*) (list Row) * (* onePart *) (list Row) :=
+
+  (* Select the rows for which the port is false *)
+  let _zeroPart : list Row :=
+      filter
+        (fun r =>
+           match Row_getCells r m with
+           | None => false
+           | Some cs =>
+             existsb
+               (fun c =>
+                  match Cell_getPort c m with
+                  | None => false 
+                  | Some p => 
+                    andb
+                      (beq_Port p port)
+                      (eqb (Cell_getValue c) false)
+                  end)
+               cs
+           end)
+        rows in
+
+  let _onePart : list Row :=
+      filter
+        (fun r =>
+           match Row_getCells r m with
+           | None => false
+           | Some cs =>
+             existsb
+               (fun c =>
+                  match Cell_getPort c m with
+                  | None => false 
+                  | Some p => 
+                    andb
+                      (beq_Port p port)
+                      (eqb (Cell_getValue c) true)
+                  end)
+               cs
+           end)
+        rows in
+
+  (_zeroPart, _onePart).
+
+Fixpoint getTree (m: TTModel) (rows: list Row) (usablePorts : list Port) : (nat * nat * nat) 
+  :=
+    let _port : option Port :=
+        find
+          (fun p =>
+             forallb
+               (fun r =>
+                  match Row_getCells r m with
+                  | None => false
+                  | Some cs => 
+                    existsb
+                      (* it does not return an error when a cell has no port *)
+                      (fun p1 : option Port =>
+                         match p1 with
+                         | None => false
+                         | Some p2 => beq_Port p p2
+                         end)
+                      (map
+                         (fun c : Cell => Cell_getPort c m)
+                         cs)
+                  end)
+               rows )
+          usablePorts
+    in (0, 0, 0).
+
+(*---------------------------------------------------------------------------------------------------
+-- Build a tree structure from a sequence of rows.
+--
+-- This helper builds a tree from tuples. Among the sequence of usable inputs, it selects a
+-- port where the value is defined in all lines.
+--
+-- The helper getPartition is invoked to obtain two row subsequences that correspond to the
+-- possible states from the selected port.
+--
+-- The tree is built recursively, with the base case leaving the row sequence as a single row.
+--
+-- Inputs:
+--    rows        : the sequence of rows to be processed
+--    usablePorts : the sequence of ports to be considered to build the tree
+--
+-- Outputs:
+--    a tuple contains:
+--      cell        : a cell which acts as a reference and points to the current tree node
+--      zeroSubtree : the subtree for the 0 value of the port
+--      oneSubtree  : the subtree for the 1 value of the port
+---------------------------------------------------------------------------------------------------
+helper def:
+   getTree(rows : Sequence(TT!Row), usablePorts : Sequence(TT!Port))
+      : TupleType( cell : TT!Cell , zeroSubtree : OclAny , oneSubtree : OclAny ) =
+
+      -- Among the usable ports, select one where the value is defined in all rows
+      let _port : TT!Port =
+         usablePorts->any(p |
+            rows->forAll(r |
+               r.cells->collect(c | c.port)
+                     ->includes(p)
+            )
+         ) in
+      
+      -- Select a cell which defines a value for the port
+      let _cell : TT!Cell =
+         rows->first().cells->any(c | c.port = _port) in
+         
+      -- Partition the provided collection of rows
+      let _part : TupleType( zeroPart : Sequence(TT!Row), onePart : Sequence(TT!Row) ) =
+         thisModule.getPartition(rows, _port.debug('the port is ')) in
+
+      -- Define the new collection of usable ports for the resulting partitionings
+      let _updatedPorts : Sequence(TT!Port) =
+         usablePorts->excluding(_port) in
+            
+      -- Build the resulting tuple : the tree structure is created recursively
+      Tuple{
+         cell = _cell,
+         zeroSubtree =
+            if _part.zeroPart->size() = 1 then
+               _part.zeroPart->first()
+            else
+               thisModule.getTree(_part.zeroPart, _updatedPorts)
+            endif,
+         oneSubtree =
+            if _part.onePart->size() = 1 then
+               _part.onePart->first()
+            else
+               thisModule.getTree(_part.onePart, _updatedPorts)
+            endif
+      };
+*)
