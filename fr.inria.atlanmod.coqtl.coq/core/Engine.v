@@ -118,11 +118,6 @@ Class TransformationEngine :=
             i < length (evalIterator r sm sp) /\
             instantiateIterationOnPattern r sm sp i = Some tp1 /\
             In te tp1);
-    
-    tr_instantiateRuleOnPattern_inTypes : 
-      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-        length sp <> length (getInTypes r) ->
-        instantiateRuleOnPattern r tr sm sp = None;
 
     tr_instantiateIterationOnPattern_in : 
       forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement) (i:nat),
@@ -131,7 +126,7 @@ Class TransformationEngine :=
         (exists (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
             In ope (getOutputPattern r) /\ 
             instantiateElementOnPattern ope sm sp i = Some te);
-    
+
     tr_instantiateIterationOnPattern_inTypes : 
       forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
         length sp <> length (getInTypes r) ->
@@ -441,4 +436,45 @@ Proof.
       assumption.
 Qed.
 
+
+Check tr_instantiateRuleOnPattern_in.
+
+Theorem tr_instantiateRuleOnPattern_in2 : 
+   forall eng: TransformationEngine,
+     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement),
+      instantiateRuleOnPattern r tr sm sp <> None ->
+      (exists (i: nat),
+          i < length (evalIterator r sm sp) /\
+          instantiateIterationOnPattern r sm sp i <> None).
+Proof.
+Admitted.
+
+Theorem tr_instantiateRuleOnPattern_res_dec : 
+   forall eng: TransformationEngine,
+     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement),
+      instantiateRuleOnPattern r tr sm sp <> None ->
+      (exists (tp: list TargetModelElement),
+          instantiateRuleOnPattern r tr sm sp = Some tp).
+Proof.
+Admitted.
+
+
+Theorem tr_instantiateRuleOnPattern_inTypes : 
+  forall eng: TransformationEngine,
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+      length sp <> length (getInTypes r) ->
+      instantiateRuleOnPattern r tr sm sp <> None -> False.
+Proof.
+intros.
+assert (exists (tp: list TargetModelElement), instantiateRuleOnPattern r tr sm sp = Some tp).
+{ specialize (tr_instantiateRuleOnPattern_res_some tr r sm sp H0). crush. }
+destruct H1.
+assert (exists (i: nat), i < length (evalIterator r sm sp) /\ instantiateIterationOnPattern r sm sp i <> None).
+{ specialize (tr_instantiateRuleOnPattern_in2 tr r sm sp H0). crush. }
+destruct H2.
+destruct H2.
+assert (instantiateIterationOnPattern r sm sp x0 = None).
+{ specialize (tr_instantiateIterationOnPattern_inTypes sm r sp x0). crush. }
+crush.
+Qed.
 
