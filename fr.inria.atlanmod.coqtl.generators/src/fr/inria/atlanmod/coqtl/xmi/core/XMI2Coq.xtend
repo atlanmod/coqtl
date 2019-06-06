@@ -13,6 +13,7 @@ import fr.inria.atlanmod.coqtl.util.EMFUtil
 import org.eclipse.emf.ecore.EClass
 import java.text.SimpleDateFormat
 import java.util.Date
+import org.eclipse.emf.ecore.util.EcoreUtil
 
 class XMI2Coq {
   
@@ -49,22 +50,11 @@ class XMI2Coq {
 		Definition InputModel : Model «mm_eobject» «mm_elink» :=
 			(Build_Model
 				(
-				«FOR eobject : allEObjects»«IF eobject.eClass.EAllSuperTypes.size>0»«val eSuper = eobject.eClass.EAllSuperTypes.get(0)»
-				(Build_«mm_eobject» «eSuper.name»«Keywords.PostfixEClass» «BuildEObjectSuper(eobject, eSuper)») :: 
-				«ENDIF»«ENDFOR»
 				«FOR eobject : allEObjects»
-				(Build_«mm_eobject» «eobject.eClass.name»«Keywords.PostfixEClass» «BuildEObject(eobject)») :: 
+				(Build_«mm_eobject» «eobject.eClass.name»«Keywords.PostfixEClass» «BuildEObject(eobject, eobject.eClass)») :: 
 				«ENDFOR»
 				nil)
 				(
-				«FOR eobject : allEObjects» «IF eobject.eClass.EAllSuperTypes.size>0»«val eSuper = eobject.eClass.EAllSuperTypes.get(0)»
-				«FOR sf : eSuper.EStructuralFeatures.filter(typeof(EReference))»«val sf_value = eobject.eGet(sf)»«IF sf_value != null»
-				(Build_«mm_elink» «eSuper.name»«sf.name.toFirstUpper»«Keywords.PostfixEReference» «BuildELinkSuper(eobject, eSuper, sf)») ::
-				«ENDIF»
-				«ENDFOR»
-				«ENDIF»
-				«ENDFOR»
-
 				«FOR eobject : allEObjects»
 				«FOR sf : eobject.eClass.EStructuralFeatures.filter(typeof(EReference))»«val sf_value = eobject.eGet(sf)»«IF sf_value != null»
 				(Build_«mm_elink» «eobject.eClass.name»«sf.name.toFirstUpper»«Keywords.PostfixEReference» «BuildELink(eobject, sf)») ::
@@ -75,43 +65,19 @@ class XMI2Coq {
 			).
 	'''
 	
-	def BuildEObject(EObject eobject) '''
-		«IF eobject.eClass.EAllSuperTypes.size>0
-		»(Build«eobject.eClass.name» («BuildEObjectSuper(eobject, eobject.eClass.EAllSuperTypes.get(0))») «
-						FOR sf: eobject.eClass.EStructuralFeatures.filter(typeof(EAttribute)) SEPARATOR " "
-						»«EMFUtil.PrintValue(eobject.eGet(sf))»«
-						ENDFOR»)«
-		ELSE»(Build«eobject.eClass.name» «
-					FOR sf: eobject.eClass.EStructuralFeatures.filter(typeof(EAttribute)) SEPARATOR " "
-					»«EMFUtil.PrintValue(eobject.eGet(sf))»«
-					ENDFOR»)«
-		ENDIF»'''
-	
-	def String BuildEObjectSuper(EObject eobject, EClass eSuper) '''
-		«IF eSuper.EAllSuperTypes.size>0
-		»(Build«eSuper.name» («BuildEObjectSuper(eobject, eSuper.EAllSuperTypes.get(0))») «
-						FOR sf: eSuper.EStructuralFeatures.filter(typeof(EAttribute)) SEPARATOR " "
-						»«EMFUtil.PrintValue(eobject.eGet(sf))»«
-						ENDFOR»)«
-		ELSE»(Build«eSuper.name» «
-						FOR sf: eSuper.EStructuralFeatures.filter(typeof(EAttribute)) SEPARATOR " "
-						»«EMFUtil.PrintValue(eobject.eGet(sf))»«
-						ENDFOR»)«
-		ENDIF»'''
-	
-	def BuildELinkSuper(EObject eobject, EClass eSuper, EStructuralFeature sf)'''
-		«val sf_value = eobject.eGet(sf)»«val tp = sf.EType as EClass»
-		(Build«eSuper.name»«sf.name.toFirstUpper» «BuildEObjectSuper(eobject, eSuper)» «BuildEReference(sf_value, tp)»)'''
-		
+	def BuildEObject(EObject eObject, EClass eClass) '''
+	(Build«eClass.name» «IF eClass.ESuperTypes.size > 0 »«BuildEObject(eObject, eClass.ESuperTypes.get(0))» «ENDIF
+		»"«System.identityHashCode(eObject)+"_"+eClass.name»" «FOR sf: eClass.EAttributes SEPARATOR " "»«EMFUtil.PrintValue(eObject.eGet(sf))»«ENDFOR»)'''
+			
 	def BuildELink(EObject eobject, EStructuralFeature sf)'''
 		«val sf_value = eobject.eGet(sf)»«val tp = sf.EType as EClass»
-		(Build«eobject.eClass.name»«sf.name.toFirstUpper» «BuildEObject(eobject)» «BuildEReference(sf_value, tp)»)'''
+		(Build«eobject.eClass.name»«sf.name.toFirstUpper» «BuildEObject(eobject, eobject.eClass)» «BuildEReference(sf_value, tp)»)'''
 	
 	def BuildEReference(Object sf_value, EClass tp) '''
 		«IF sf_value instanceof EList 
-		»(«FOR v : sf_value.filter(typeof(EObject)) SEPARATOR " :: "»«BuildEObjectSuper(v, tp)»«ENDFOR» :: nil )«
+		»(«FOR v : sf_value.filter(typeof(EObject)) SEPARATOR " :: "»«BuildEObject(v, tp)»«ENDFOR» :: nil )«
 		ELSEIF sf_value instanceof EObject
-		»«BuildEObjectSuper(sf_value as EObject, tp)»«
+		»«BuildEObject(sf_value as EObject, tp)»«
 		ENDIF»'''
 	
 	def HashSet<EObject> getAllEObjects(EObject o) {

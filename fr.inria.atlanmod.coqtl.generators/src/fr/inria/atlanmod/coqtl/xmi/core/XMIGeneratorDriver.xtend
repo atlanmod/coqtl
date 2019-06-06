@@ -18,12 +18,13 @@ class XMIGeneratorDriver {
 	}
 	
 	def static void main(String[] args) {
-		val m_path = "./resources/TT2BDD/tt.model2.xmi"
+		val m_path = "./resources/TT2BDD/tt.xor.xmi"
 		val mm_path = "./resources/TT2BDD/TT.ecore"
-		//val mm_path = "./resources/Relational.ecore"
+		//val mm_path = "./resources/HSM2FSM/HSM.ecore"
+		//val m_path = "./resources/StateMachine.xmi"
 		val m_uri = URI.createFileURI(m_path);
 		val mm_uri = URI.createFileURI(mm_path)
-		val output_path = "./resources/tt.model2.v"
+		val output_path = "./resources/tt.xor.v"
 		val output_uri = URI.createFileURI(output_path);
 		
 		
