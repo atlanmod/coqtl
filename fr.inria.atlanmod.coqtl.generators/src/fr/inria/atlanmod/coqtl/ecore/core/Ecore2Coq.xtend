@@ -46,7 +46,7 @@ class Ecore2Coq {
 			Inductive «eClass.name» : Set :=
 			  Build«eClass.name» :
 			  «IF eClass.ESuperTypes.size>0»(* Inheritence Attribute *) «eClass.ESuperTypes.get(0).name» -> «ENDIF»
-			  (* hash code id *) string ->
+			  (* id *) string ->
 			  «FOR eAttribute : eClass.EAttributes»
 			    (* «eAttribute.name» *) «AttributeType2Coq(eAttribute)» ->
 			  «ENDFOR»
@@ -72,13 +72,13 @@ class Ecore2Coq {
 			  «IF eClass.ESuperTypes.size>0»
 			  «val supName = eClass.ESuperTypes.get(0).name»
 			  Definition «eClass.name»_get«supName.toFirstUpper» («v» : «eClass.name») : «supName» :=
-			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«supName.toLowerCase»«ENDIF» hash «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «supName.toLowerCase» end.
+			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«supName.toLowerCase»«ENDIF» id «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «supName.toLowerCase» end.
 			  «ENDIF»	
-			  Definition «eClass.name»_getHashCodeId («v» : «eClass.name») : string :=
-			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«eClass.ESuperTypes.get(0).name.toLowerCase»«ENDIF» hash «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => hash end.
+			  Definition «eClass.name»_getId («v» : «eClass.name») : string :=
+			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«eClass.ESuperTypes.get(0).name.toLowerCase»«ENDIF» id «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => id end.
 			  «FOR eAttribute : eClass.EAttributes»
 			  Definition «eClass.name»_get«eAttribute.name.toFirstUpper» («v» : «eClass.name») : «AttributeType2Coq(eAttribute)» :=
-			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«eClass.ESuperTypes.get(0).name.toLowerCase»«ENDIF» hash «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «eAttribute.name» end.
+			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«eClass.ESuperTypes.get(0).name.toLowerCase»«ENDIF» id «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «eAttribute.name» end.
 			  «ENDFOR»	 
 			   
 		«ENDFOR»
@@ -284,8 +284,8 @@ class Ecore2Coq {
 		   «FOR eSub : ePackage.EClassifiers.filter(typeof(EClass))»«IF eSub.ESuperTypes.contains(eSuper)
 		   »Fixpoint «mm»_«eSuper.name»_downcast«eSub.name» («arg(eSuper.name)» : «eSuper.name») (l : list «mm_eobject») : option «eSub.name» := 
 		     match l with
-		   	 | Build_«mm_eobject» «eSub.name»«Keywords.PostfixEClass» (Build«eSub.name» eSuper hash «FOR eAttributeCtr : eSub.EAttributes»«eAttributeCtr.name» «ENDFOR») :: l' => 
-		   		if beq_«eSuper.name» «arg(eSuper.name)» eSuper then (Some (Build«eSub.name» eSuper hash «FOR eAttributeCtr : eSub.EAttributes»«eAttributeCtr.name» «ENDFOR»)) else («mm»_«eSuper.name»_downcast«eSub.name» «arg(eSuper.name)» l')
+		   	 | Build_«mm_eobject» «eSub.name»«Keywords.PostfixEClass» (Build«eSub.name» eSuper id «FOR eAttributeCtr : eSub.EAttributes»«eAttributeCtr.name» «ENDFOR») :: l' => 
+		   		if beq_«eSuper.name» «arg(eSuper.name)» eSuper then (Some (Build«eSub.name» eSuper id «FOR eAttributeCtr : eSub.EAttributes»«eAttributeCtr.name» «ENDFOR»)) else («mm»_«eSuper.name»_downcast«eSub.name» «arg(eSuper.name)» l')
 		   	 | _ :: l' => («mm»_«eSuper.name»_downcast«eSub.name» «arg(eSuper.name)» l')
 		   	 | nil => None
 		   end.
