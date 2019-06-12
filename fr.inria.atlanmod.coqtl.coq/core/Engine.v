@@ -105,6 +105,13 @@ Class TransformationEngine :=
             instantiateRuleOnPattern r tr sm sp = Some tp1 /\
             In te tp1);
 
+   tr_instantiatePattern_non_None : 
+     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement),
+      instantiatePattern tr sm sp <> None ->
+      (exists (r: Rule),
+          In r (matchPattern tr sm sp) /\
+          instantiateRuleOnPattern r tr sm sp <> None);
+       
     tr_instantiatePattern_maxArity : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         length sp > maxArity tr ->
@@ -119,6 +126,13 @@ Class TransformationEngine :=
             instantiateIterationOnPattern r sm sp i = Some tp1 /\
             In te tp1);
 
+     tr_instantiateRuleOnPattern_non_None : 
+     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement),
+      instantiateRuleOnPattern r tr sm sp <> None ->
+      (exists (i: nat),
+          i < length (evalIterator r sm sp) /\
+          instantiateIterationOnPattern r sm sp i <> None);
+       
     tr_instantiateIterationOnPattern_in : 
       forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement) (i:nat),
         (exists tp: list TargetModelElement, instantiateIterationOnPattern r sm sp i = Some tp /\
@@ -137,6 +151,8 @@ Class TransformationEngine :=
         i >= length (evalIterator r sm sp) ->
         instantiateIterationOnPattern r sm sp i = None;
 
+
+    
     tr_instantiateElementOnPattern_inTypes : 
       forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
         (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
@@ -436,10 +452,22 @@ Proof.
       assumption.
 Qed.
 
+Theorem option_res_dec : 
+   forall (A B: Type) (f: A -> option B),
+      forall a: A, f a <> None ->
+      (exists (b: B),
+          f a = Some b).
+Proof.
+intros.
+induction (f a).
+- exists a0. crush.
+- crush.
+Qed.
 
-Check tr_instantiateRuleOnPattern_in.
 
-Theorem tr_instantiateRuleOnPattern_in2 : 
+
+
+Theorem tr_instantiateRuleOnPattern_non_None : 
    forall eng: TransformationEngine,
      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement),
       instantiateRuleOnPattern r tr sm sp <> None ->
@@ -449,14 +477,6 @@ Theorem tr_instantiateRuleOnPattern_in2 :
 Proof.
 Admitted.
 
-Theorem tr_instantiateRuleOnPattern_res_dec : 
-   forall eng: TransformationEngine,
-     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement),
-      instantiateRuleOnPattern r tr sm sp <> None ->
-      (exists (tp: list TargetModelElement),
-          instantiateRuleOnPattern r tr sm sp = Some tp).
-Proof.
-Admitted.
 
 
 Theorem tr_instantiateRuleOnPattern_inTypes : 
@@ -467,7 +487,8 @@ Theorem tr_instantiateRuleOnPattern_inTypes :
 Proof.
 intros.
 assert (exists (tp: list TargetModelElement), instantiateRuleOnPattern r tr sm sp = Some tp).
-{ specialize (tr_instantiateRuleOnPattern_res_some tr r sm sp H0). crush. }
+{ specialize (option_res_dec (instantiateRuleOnPattern r tr sm)). intros.
+  specialize (H1 sp H0). destruct H1. exists x. crush. }
 destruct H1.
 assert (exists (i: nat), i < length (evalIterator r sm sp) /\ instantiateIterationOnPattern r sm sp i <> None).
 { specialize (tr_instantiateRuleOnPattern_in2 tr r sm sp H0). crush. }
