@@ -756,24 +756,7 @@ Section CoqTL.
           inversion H0.
   Qed.
 
-  (* TODO: MOVE TO ENGINE.V *)
-  Theorem tr_instantiateRuleOnPattern_inTypes : 
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-      length sp <> length (Rule_getInTypes r) ->
-      instantiateRuleOnPattern' r tr sm sp = None.
-  Proof.
-    intros.
-    unfold instantiateRuleOnPattern'.
-    unfold instantiateRuleOnPattern.
-    destruct (matchRuleOnPattern r sm sp) eqn:mtchP; auto.
-    - destruct b; auto. 
-      unfold matchRuleOnPattern in mtchP.
-      unfold evalGuard in mtchP.
-      unfold evalFunction in mtchP.
-      assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes r) bool (Rule_getGuard r sm) sp = None).
-      { apply evalFunctionFix_intypes_el_neq. crush. }
-      rewrite H0 in mtchP. inversion mtchP.     
-    Qed. 
+
 
   (** ** instantiateIterationOnPattern **)
 
@@ -841,25 +824,6 @@ Section CoqTL.
   Qed.
 
   (* TODO: MOVE TO ENGINE.V *)
-  Theorem tr_instantiateIterationOnPattern_inTypes : 
-    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
-      length sp <> length (Rule_getInTypes r) ->
-      instantiateIterationOnPattern r sm sp i = None.
-  Proof.
-    intros.
-    unfold instantiateIterationOnPattern.
-    destruct (matchRuleOnPattern r sm sp) eqn:mtchP; auto.
-    - destruct b; auto. 
-      unfold matchRuleOnPattern in mtchP.
-      unfold evalGuard in mtchP.
-      unfold evalFunction in mtchP.
-      assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes r) bool (Rule_getGuard r sm) sp = None).
-      { apply evalFunctionFix_intypes_el_neq. crush. }
-      rewrite H0 in mtchP. inversion mtchP.     
-    Qed.
- 
-
-  (* TODO: MOVE TO ENGINE.V *)
   Theorem tr_instantiateIterationOnPattern_iterator : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       i >= length (evalIterator r sm sp) ->
@@ -890,29 +854,6 @@ Section CoqTL.
 
   
   (** ** instantiateElementOnPattern **)
-
-  (* TODO: MOVE TO ENGINE.V *)
-  Theorem tr_instantiateElementOnPattern_inTypes : 
-    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
-      length sp <> length (Rule_getInTypes r) ->
-      instantiateElementOnPattern r ope sm sp i = None.
-  Proof.
-    intros.
-    unfold instantiateIterationOnPattern.
-    destruct (matchRuleOnPattern r sm sp) eqn:mtchP.
-    - destruct b. 
-      + unfold matchRuleOnPattern in mtchP.
-        unfold evalGuard in mtchP.
-        unfold evalFunction in mtchP.
-        assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes r) bool (Rule_getGuard r sm) sp = None).
-        { apply evalFunctionFix_intypes_el_neq. crush. }
-        rewrite H0 in mtchP. inversion mtchP.
-      +  unfold instantiateElementOnPattern.
-         rewrite mtchP. auto.
-    - unfold instantiateElementOnPattern.
-      rewrite mtchP. auto.         
-    Qed. 
 
   Theorem tr_instantiateElementOnPattern_iterator : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
@@ -955,12 +896,6 @@ Section CoqTL.
   Proof.
   Admitted.
 
-  Theorem tr_applyRuleOnPattern_inTypes : 
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-      length sp <> length (Rule_getInTypes r) ->
-      applyRuleOnPattern' r tr sm sp = None.
-  Proof.
-  Admitted.
 
   (** ** applyIterationOnPattern **)
 
@@ -980,12 +915,6 @@ Section CoqTL.
       + destruct b.
   Admitted.
 
-  Theorem tr_applyIterationOnPattern_inTypes : 
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
-      length sp <> length (Rule_getInTypes r) ->
-      applyIterationOnPattern r tr sm sp i = None.
-  Proof.
-  Admitted.
 
   Theorem tr_applyIterationOnPattern_iterator : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
@@ -1011,12 +940,6 @@ Section CoqTL.
       + destruct b.
   Admitted.
 
-  Theorem tr_applyElementOnPattern_inTypes : 
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
-      length sp <> length (Rule_getInTypes r) ->
-      applyElementOnPattern r ope tr sm sp i = None.
-  Proof.
-  Admitted.
 
   Theorem tr_applyElementOnPattern_iterator : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
@@ -1026,15 +949,6 @@ Section CoqTL.
   Admitted.
 
   (** ** applyReferenceOnPattern **)
-
-  Theorem tr_applyReferenceOnPattern_inTypes : 
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
-      (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
-      length sp <> length (Rule_getInTypes r) ->
-      applyReferenceOnPattern r ope oper tr sm sp i = None.
-  Proof.
-  Admitted.
 
   Theorem tr_applyReferenceOnPattern_iterator : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
@@ -1085,13 +999,6 @@ Section CoqTL.
   Proof.
     crush.
   Qed. *)
-  
-  Theorem tr_matchRuleOnPattern_inTypes : 
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-      length sp <> length (Rule_getInTypes r) ->
-      matchRuleOnPattern' r tr sm sp = None.
-  Proof.
-  Admitted.
 
   (** ** Resolve **)
 
