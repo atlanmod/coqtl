@@ -443,18 +443,13 @@ induction (f a).
 Qed.
 
 
-Theorem tr_instantiateElementOnPattern_inTypes : 
+Theorem tr_applyElementOnPattern_inTypes : 
    forall eng: TransformationEngine,
-      forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-        (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
         length sp <> length (getInTypes r) ->
-        instantiateElementOnPattern r ope sm sp i = None.
-
-Theorem tr_applyRuleOnPattern_inTypes : 
-   forall eng: TransformationEngine,
-      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-        length sp <> length (getInTypes r) ->
-        applyRuleOnPattern r tr sm sp = None.
+        applyElementOnPattern r ope tr sm sp i = None.
+Proof.
+Admitted.
 
 Theorem tr_applyIterationOnPattern_inTypes : 
    forall eng: TransformationEngine,
@@ -464,13 +459,11 @@ Theorem tr_applyIterationOnPattern_inTypes :
 Proof.
 Admitted.
 
-Theorem tr_applyElementOnPattern_inTypes : 
+Theorem tr_applyRuleOnPattern_inTypes : 
    forall eng: TransformationEngine,
-      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
         length sp <> length (getInTypes r) ->
-        applyElementOnPattern r ope tr sm sp i = None.
-Proof.
-Admitted.
+        applyRuleOnPattern r tr sm sp = None.
 
 Theorem tr_matchRuleOnPattern_inTypes : 
    forall eng: TransformationEngine,
@@ -479,6 +472,14 @@ Theorem tr_matchRuleOnPattern_inTypes :
         matchRuleOnPattern r tr sm sp = None.
 Proof.
 Admitted.
+
+Theorem tr_instantiateElementOnPattern_inTypes : 
+   forall eng: TransformationEngine,
+      forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+        (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+        length sp <> length (getInTypes r) ->
+        instantiateElementOnPattern r ope sm sp i = None.
+
 Theorem tr_instantiateIterationOnPattern_inTypes : 
    forall eng: TransformationEngine,
      forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
@@ -526,6 +527,14 @@ Admitted.
 
 
 (*  
+  Theorem tr_applyReferenceOnPattern_inTypes : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
+      (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
+      length sp <> length (Rule_getInTypes r) ->
+      applyReferenceOnPattern r ope oper tr sm sp i = None.
+  Proof.
+  Admitted.
 
 Theorem tr_applyReferenceOnPattern_inTypes : 
    forall eng: TransformationEngine,
