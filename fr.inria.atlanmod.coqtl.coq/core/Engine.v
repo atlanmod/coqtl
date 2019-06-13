@@ -464,6 +464,8 @@ Theorem tr_applyRuleOnPattern_inTypes :
       forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
         length sp <> length (getInTypes r) ->
         applyRuleOnPattern r tr sm sp = None.
+Proof.
+Admitted.
 
 Theorem tr_matchRuleOnPattern_inTypes : 
    forall eng: TransformationEngine,
@@ -479,6 +481,8 @@ Theorem tr_instantiateElementOnPattern_inTypes :
         (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
         length sp <> length (getInTypes r) ->
         instantiateElementOnPattern r ope sm sp i = None.
+Proof.
+Admitted.
 
 Theorem tr_instantiateIterationOnPattern_inTypes : 
    forall eng: TransformationEngine,
