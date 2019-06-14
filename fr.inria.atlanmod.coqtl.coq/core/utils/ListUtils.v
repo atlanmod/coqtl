@@ -104,10 +104,18 @@ Theorem in_flat_map_nil:
 Proof.
 split.
 * intros.
-  destruct l.
+  induction l.
   - crush.
-  - admit.
-* admit.
-Admitted.
+  -  apply app_eq_nil in H. destruct H. destruct H0.
+    -- simpl in H. rewrite <- H0. assumption.
+    -- apply IHl. assumption. assumption.
+* intros.
+  induction l.
+  - crush.
+  - simpl.
+    assert (f a = nil). { crush. }
+    rewrite H0. simpl.
+    apply IHl. simpl in H. intros. specialize (H a0). apply H. right. assumption.
+Qed.    
 
  
