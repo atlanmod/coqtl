@@ -939,6 +939,25 @@ Section CoqTL.
   
   (** ** instantiateElementOnPattern **)
 
+  Theorem tr_instantiateElementOnPattern_inTypes : 
+    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
+        length sp <> length (Rule_getInTypes r) ->
+        instantiateElementOnPattern r ope sm sp i <> None -> False.
+  Proof.
+    intros.
+    assert (exists (te: TargetModelElement), instantiateElementOnPattern r ope sm sp i = Some te).
+    { specialize (option_res_dec (instantiateElementOnPattern r ope sm sp)). intros. 
+      specialize (H1 i H0). destruct H1. exists x. crush. }
+    destruct H1.
+    unfold instantiateElementOnPattern in H1.
+    destruct (matchRuleOnPattern r sm sp) eqn: match_res.
+    - destruct b eqn:b_ca.
+      -- admit.
+      -- crush.
+    - crush.
+  Admitted.
+
   Theorem tr_instantiateElementOnPattern_iterator : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
       (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),

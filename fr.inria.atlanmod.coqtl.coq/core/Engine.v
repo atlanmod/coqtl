@@ -153,6 +153,12 @@ Class TransformationEngine :=
         i >= length (evalIterator r sm sp) ->
         instantiateIterationOnPattern r sm sp i = None;
 
+    tr_instantiateElementOnPattern_inTypes : 
+      forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+        (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+        length sp <> length (getInTypes r) ->
+        instantiateElementOnPattern ope sm sp i <> None -> False;
+    
     tr_instantiateElementOnPattern_iterator : 
       forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
         (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
@@ -475,22 +481,28 @@ Theorem tr_matchRuleOnPattern_inTypes :
 Proof.
 Admitted.
 
-Theorem tr_instantiateElementOnPattern_inTypes : 
-   forall eng: TransformationEngine,
-      forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-        (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
-        length sp <> length (getInTypes r) ->
-        instantiateElementOnPattern r ope sm sp i = None.
-Proof.
-Admitted.
+
 
 Theorem tr_instantiateIterationOnPattern_inTypes : 
    forall eng: TransformationEngine,
      forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
         length sp <> length (getInTypes r) ->
-        instantiateIterationOnPattern r sm sp i = None.
+        instantiateIterationOnPattern r sm sp i <> None -> False.
 Proof.
-Admitted.
+intros.
+assert (exists (tp: list TargetModelElement), instantiateIterationOnPattern r sm sp i = Some tp).
+{ specialize (option_res_dec (instantiateIterationOnPattern r sm sp)). intros. 
+  specialize (H1 i H0). destruct H1. exists x. crush. }
+destruct H1.
+assert (exists  ope : OutputPatternElement (getInTypes r) (getIteratorType r),
+     In ope (getOutputPattern r) /\ instantiateElementOnPattern r ope sm sp i <> None).
+{ specialize (tr_instantiateIterationOnPattern_non_None r sm sp i H0).  crush. }
+destruct H2.
+destruct H2.
+assert ( instantiateElementOnPattern r x0 sm sp i = None).
+{ specialize (tr_instantiateElementOnPattern_inTypes sm r sp i x0). intros. crush. }
+crush.
+Qed.
 
 Theorem tr_instantiateRuleOnPattern_inTypes : 
   forall eng: TransformationEngine,
