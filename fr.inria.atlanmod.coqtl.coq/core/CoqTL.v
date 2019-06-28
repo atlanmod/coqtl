@@ -1266,6 +1266,7 @@ Section CoqTL.
       tr_instantiateIterationOnPattern_non_None := tr_instantiateIterationOnPattern_non_None;
       tr_instantiateIterationOnPattern_iterator := tr_instantiateIterationOnPattern_iterator;
 
+      tr_instantiateElementOnPattern_inTypes := tr_instantiateElementOnPattern_inTypes;
       tr_instantiateElementOnPattern_iterator := tr_instantiateElementOnPattern_iterator;
 
       tr_applyPattern_in := tr_applyPattern_in;
