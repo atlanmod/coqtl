@@ -953,10 +953,23 @@ Section CoqTL.
     unfold instantiateElementOnPattern in H1.
     destruct (matchRuleOnPattern r sm sp) eqn: match_res.
     - destruct b eqn:b_ca.
-      -- admit.
+      -- destruct (nth_error (evalIterator r sm sp) i) eqn: eval_iter_ca.
+         --- unfold evalOutputPatternElement in H1.
+             destruct (evalFunction smm sm (Rule_getInTypes r)
+         (denoteModelClass (OutputPatternElement_getOutType ope))
+         (OutputPatternElement_getOutPatternElement ope r0) sp) eqn: eval_fun_ca.
+             * unfold evalFunction in eval_fun_ca.
+               specialize (evalFunctionFix_intypes_el_neq
+                             SourceModelElement SourceModelLink SourceModelClass
+                             SourceModelReference smm (Rule_getInTypes r)
+                             (denoteModelClass (OutputPatternElement_getOutType ope))
+                             (OutputPatternElement_getOutPatternElement ope r0 sm) sp).
+               crush.
+             * crush.      
+         --- crush.
       -- crush.
     - crush.
-  Admitted.
+  Qed.
 
   Theorem tr_instantiateElementOnPattern_iterator : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
