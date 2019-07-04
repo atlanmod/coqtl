@@ -962,9 +962,10 @@ Section CoqTL.
           inversion H0.
   Qed.
 
+  (*TODO CHECK whether In ope (Rule_getOutputPattern r) IS NEEDED , check whettther <-> or -> *)
   Theorem tr_instantiateIterationOnPattern_non_None : 
      forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (i:nat),
-      instantiateIterationOnPattern r sm sp i <> None ->
+      instantiateIterationOnPattern r sm sp i <> None <->
       (exists (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
          In ope (Rule_getOutputPattern r) /\ 
          instantiateElementOnPattern r ope sm sp i <> None).
@@ -1040,9 +1041,21 @@ Section CoqTL.
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
       (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
       i >= length (evalIterator r sm sp) ->
-      instantiateElementOnPattern r ope sm sp i = None.
+      In ope (Rule_getOutputPattern r) ->
+      instantiateElementOnPattern r ope sm sp i <> None -> False.
   Proof.
-  Admitted.
+    intros.
+    specialize (tr_instantiateIterationOnPattern_iterator sm r sp i H).
+    intro.
+    specialize (tr_instantiateIterationOnPattern_non_None r sm sp i).
+    intros.
+    destruct H3.
+    assert ((exists ope : OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r),
+                In ope (Rule_getOutputPattern r) /\ instantiateElementOnPattern r ope sm sp i <> None)).
+    { exists ope. crush. }
+    specialize (H4 H5).
+    crush.
+  Qed.
   
   (** ** applyPattern **)
 
