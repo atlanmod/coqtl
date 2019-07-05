@@ -679,29 +679,72 @@ Section CoqTL.
 
   Theorem tr_instantiatePattern_non_None : 
      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-      instantiatePattern tr sm sp <> None ->
+      instantiatePattern tr sm sp <> None <->
       (exists (r: Rule),
           In r (matchPattern tr sm sp) /\
           instantiateRuleOnPattern' r tr sm sp <> None).
   Proof.
-  intros.
-  specialize (option_res_dec (instantiatePattern tr sm) sp H).
-  intro.
-  destruct H0.
-  unfold instantiatePattern in H.
-      destruct (matchPattern tr sm sp) eqn:mtch.
-      + crush.
-      + destruct (flat_map (fun r : Rule => optionListToList (instantiateRuleOnPattern r sm sp)) (r :: l)) eqn:flat_map_res.
-        ++ crush.
-        ++ assert (In t (t::l0)). { crush. }
-           rewrite <- flat_map_res in H1. apply  in_flat_map in H1.
-           destruct H1. exists x0. destruct H1.
-           split.
-           +++ assumption.
-           +++ unfold instantiateRuleOnPattern'.
-               destruct  (instantiateRuleOnPattern x0 sm sp) eqn: inst_res.
-               * crush.
-               * simpl in H2. crush.
+  split.
+  - intros.
+    specialize (option_res_dec (instantiatePattern tr sm) sp H).
+    intro.
+    destruct H0.
+    unfold instantiatePattern in H.
+    destruct (matchPattern tr sm sp) eqn:mtch.
+    + crush.
+    + destruct (flat_map (fun r : Rule => optionListToList (instantiateRuleOnPattern r sm sp)) (r :: l)) eqn:flat_map_res.
+      ++ crush.
+      ++ assert (In t (t::l0)). { crush. }
+                               rewrite <- flat_map_res in H1. apply  in_flat_map in H1.
+         destruct H1. exists x0. destruct H1.
+         split.
+         +++ assumption.
+         +++ unfold instantiateRuleOnPattern'.
+             destruct  (instantiateRuleOnPattern x0 sm sp) eqn: inst_res.
+      * crush.
+      * simpl in H2. crush.
+   - intros.
+     destruct H.
+     destruct H.
+     unfold instantiateRuleOnPattern' in H0.
+     unfold instantiatePattern.
+     destruct  (matchPattern tr sm sp) eqn: mtch.
+     + crush.
+     + destruct (flat_map (fun r0 : Rule => optionListToList (instantiateRuleOnPattern r0 sm sp)) (r :: l)) eqn: flat_map_res.
+       ++ destruct (instantiateRuleOnPattern' x tr sm sp) eqn: inst_res.
+          +++ assert (l0 <> nil).
+              {             assert (matchRuleOnPattern x sm sp = Some true).
+                            {
+                              unfold matchPattern in mtch.
+                              rewrite <- mtch in H.
+                              apply filter_In in H.
+                              destruct H.
+                              destruct (matchRuleOnPattern x sm sp).
+                              destruct b.
+                              crush. crush. crush.
+                            }
+              unfold instantiateRuleOnPattern' in inst_res.
+              unfold instantiateRuleOnPattern in inst_res.
+              
+              rewrite H1 in inst_res.
+              destruct (flat_map
+                 (fun i : nat => optionListToList (instantiateIterationOnPattern x sm sp i))
+                 (indexes (Datatypes.length (evalIterator x sm sp)))) eqn: inst2_res.
+       * crush.
+       * crush.
+
+              }
+              assert (optionListToList (Some l0) <> nil).
+              { crush. }
+              specialize (in_flat_map_nil Rule TargetModelElement  (fun r0 : Rule => optionListToList (instantiateRuleOnPattern r0 sm sp)) (r::l)).
+              intros.
+              destruct H3.
+              specialize (H3 flat_map_res x H).
+              rewrite <- inst_res in H2.
+              unfold instantiateRuleOnPattern' in H2.
+              crush.  
+          +++ crush.
+       ++ crush.
   Qed.
 
   (* TODO: MOVE TO ENGINE.V *)
