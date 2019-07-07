@@ -881,37 +881,86 @@ Section CoqTL.
 
   Theorem tr_instantiateRuleOnPattern_non_None : 
      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement),
-      instantiateRuleOnPattern' r tr sm sp <> None ->
+      instantiateRuleOnPattern' r tr sm sp <> None <->
       (exists (i: nat),
           i < length (evalIterator r sm sp) /\
           instantiateIterationOnPattern r sm sp i <> None).
   Proof.
   intros.
-  specialize (option_res_dec (instantiateRuleOnPattern' r tr sm) sp H).
-  intro.
-  destruct H0.
-  unfold instantiateRuleOnPattern' in H.
-      unfold instantiateRuleOnPattern in H.
-      destruct (matchRuleOnPattern r sm sp) eqn:mtch.
-      + destruct b.
-        * Arguments optionList2List : simpl never.
-          Arguments map : simpl never.
-          destruct (flat_map (fun i : nat => optionListToList (instantiateIterationOnPattern r sm sp i))
-                     (indexes (Datatypes.length (evalIterator r sm sp)))) eqn:instI_ca.
-          - crush.
-          - assert (In t (t::l)). { crush. }
-            rewrite <- instI_ca in H1.
-                        apply in_flat_map in H1.
-            destruct H1. destruct H1.
-            exists x0.
-            split. 
-            apply indexes_nat_upperBound. crush.
-            unfold optionListToList in H2.
-            destruct (instantiateIterationOnPattern r sm sp x0).
-            -- crush.
-            -- crush.
-        * crush.
-      + crush.
+  split.
+  {
+    intro.
+    specialize (option_res_dec (instantiateRuleOnPattern' r tr sm) sp H).
+    intro.
+    destruct H0.
+    unfold instantiateRuleOnPattern' in H.
+        unfold instantiateRuleOnPattern in H.
+        destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+        + destruct b.
+          * Arguments optionList2List : simpl never.
+            Arguments map : simpl never.
+            destruct (flat_map (fun i : nat => optionListToList (instantiateIterationOnPattern r sm sp i))
+                       (indexes (Datatypes.length (evalIterator r sm sp)))) eqn:instI_ca.
+            - crush.
+            - assert (In t (t::l)). { crush. }
+              rewrite <- instI_ca in H1.
+                          apply in_flat_map in H1.
+              destruct H1. destruct H1.
+              exists x0.
+              split. 
+              apply indexes_nat_upperBound. crush.
+              unfold optionListToList in H2.
+              destruct (instantiateIterationOnPattern r sm sp x0).
+              -- crush.
+              -- crush.
+          * crush.
+        + crush.
+  }
+  {
+    intros.
+    destruct H.
+    destruct H.
+    unfold instantiateRuleOnPattern'.
+    unfold instantiateRuleOnPattern.
+    destruct (matchRuleOnPattern r sm sp) eqn: mtch.
+     + destruct b eqn:b_ca.
+       ++ destruct (flat_map (fun i : nat => optionListToList (instantiateIterationOnPattern r sm sp i))
+    (indexes (Datatypes.length (evalIterator r sm sp)))) eqn: inst_res.
+          +++ specialize (in_flat_map_nil nat TargetModelElement  
+                         (fun i : nat => optionListToList (instantiateIterationOnPattern r sm sp i))
+                         (indexes (Datatypes.length (evalIterator r sm sp)))).
+              intros.
+              assert (In x (indexes (Datatypes.length (evalIterator r sm sp)))). 
+              { specialize indexes_nat_upperBound . 
+                intros.
+                specialize (H2 x (Datatypes.length (evalIterator r sm sp))).
+                destruct H2.
+                specialize (H3 H). assumption.
+              }
+              destruct H1.
+              specialize (H1 inst_res x H2).
+              specialize (option_res_dec (instantiateIterationOnPattern r sm sp) x H0).
+              intros.
+              destruct H4.
+              assert (x0 <> nil).
+              { 
+              unfold instantiateIterationOnPattern in H4.
+              rewrite mtch in H4.
+              destruct (flat_map
+                       (fun o : OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r) =>
+                        optionToList (instantiateElementOnPattern r o sm sp x)) (Rule_getOutputPattern r)) eqn: inst2_ca.
+              * crush.
+              * crush. 
+              }
+              unfold optionListToList in H1.
+              rewrite H4 in H1.
+              crush.
+          +++ crush.
+       ++ unfold instantiateIterationOnPattern in H0. 
+          rewrite mtch in H0. crush.
+    + unfold instantiateIterationOnPattern in H0. 
+      rewrite mtch in H0. crush.
+  }
   Qed.
 
 
