@@ -531,12 +531,15 @@ Proof.
   unfold maxArity in H.
 Admitted.
 
+
 Theorem tr_instantiateIterationOnPattern_iterator : 
   forall eng: TransformationEngine, 
-    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
+    forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       i >= length (evalIterator r sm sp) ->
-      instantiateIterationOnPattern r sm sp i = None.
+      instantiateIterationOnPattern r sm sp i <> None -> False.
   Proof.
+    intros.
+    specialize (tr_instantiateRuleOnPattern_non_None tr r sm sp).
   Admitted.
 
 Theorem tr_instantiateElementOnPattern_iterator : 
