@@ -39,6 +39,31 @@ Section Exp.
   Definition evalFunction (m: Model ModelElement ModelLink) (intypes: list ModelClass) (otype: Type) (f: (Model ModelElement ModelLink) -> (denoteFunction intypes otype)) (el: list ModelElement) : option otype :=
     evalFunctionFix intypes otype (f m) el.
 
+  Lemma evalFunctionFix_intypes_el_eq:
+    forall intypes otype f el,
+        evalFunctionFix intypes otype f el <> None ->
+          length intypes = length el.
+  Proof.
+    intros.
+    generalize dependent el.
+    induction intypes.        
+    - intros. destruct el.
+      + crush.
+      + crush.  
+    - intros.
+      induction el.
+      + crush.
+      + destruct (toModelClass a a0) eqn:tmc.
+        * simpl in H.  rewrite tmc in H.
+          destruct intypes eqn:intypes2, el eqn:el2.
+          ** crush.
+          ** crush.
+          ** crush.
+          ** admit.
+        * admit.
+  Admitted. 
+        
+
 
   Lemma evalFunctionFix_intypes_el_neq:
     forall intypes otype f el,

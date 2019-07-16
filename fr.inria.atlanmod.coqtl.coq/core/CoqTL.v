@@ -10,7 +10,7 @@ Require Import core.Expressions.
 Require Import core.Engine.
 Require Import core.utils.TopUtils.
 Require Import core.utils.CpdtTactics.
-
+Require Import Coq.Program.Equality.
 Section CoqTL.
 
   Variables (SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type)
@@ -589,15 +589,30 @@ Section CoqTL.
       unfold execute. simpl.
       apply in_flat_map.
       exists x. split.
-      + admit.
-      + unfold instantiatePattern in H0.
-        destruct (matchPattern tr sm x) eqn:mtch.
-        * inversion H0.
-        * unfold instantiatePattern.
-          rewrite mtch.
-          inversion H0.
-          admit.
-  Admitted.
+      + apply tuples_up_to_n_incl_length.
+        * assumption.
+        * unfold instantiatePattern in H0.
+          destruct (matchPattern tr sm x) eqn:mtch.
+          ** crush.
+          ** unfold matchPattern in mtch.
+             assert (In r (r::l)). { crush. }
+             rewrite <- mtch in H2.
+             apply filter_In in H2. destruct H2.
+             destruct (matchRuleOnPattern r sm x) eqn:mtch2.
+             *** destruct b eqn: b_ca.
+                  **** unfold matchRuleOnPattern in mtch2.
+                       unfold evalGuard in mtch2.
+                       unfold evalFunction in mtch2.
+                       assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm 
+                                  (Rule_getInTypes r) bool (Rule_getGuard r sm) x <> None).
+                       { crush. }
+                       apply evalFunctionFix_intypes_el_eq in H4.
+                       apply maxArity_geq_rule_length in H2.
+                       crush.
+                  **** crush.
+          *** crush.
+      + crush.
+  Qed.
 
   Theorem tr_execute_in_links : 
     forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
