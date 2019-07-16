@@ -59,11 +59,14 @@ Section Exp.
           ** crush.
           ** crush.
           ** crush.
-          ** admit.
-        * admit.
-  Admitted. 
-        
-
+          ** assert (Datatypes.length (m :: l) = Datatypes.length (m0 :: l0)).
+             { 
+              apply IHintypes with (f:=(eq_rect_r (fun l : list ModelClass => denoteFunction l otype) f eq_refl d)).
+              exact H.
+             }
+             crush.
+        * simpl in H.  rewrite tmc in H. crush.
+  Qed.
 
   Lemma evalFunctionFix_intypes_el_neq:
     forall intypes otype f el,
