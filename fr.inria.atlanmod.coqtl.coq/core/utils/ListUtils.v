@@ -116,6 +116,35 @@ split.
     assert (f a = nil). { crush. }
     rewrite H0. simpl.
     apply IHl. simpl in H. intros. specialize (H a0). apply H. right. assumption.
-Qed.    
+Qed.
 
- 
+Lemma filter_nil:
+    forall (A : Type) (f : A -> bool) (x : A) (l : list A),
+      (filter f l) = nil <->  (forall a: A, In a l -> f a = false).
+Proof.
+split.
+* intros.
+  induction l.
+  - crush. 
+  - simpl in H0.
+    destruct H0.
+    -- rewrite H0 in H.
+       unfold filter in H.
+       destruct (f a).
+       --- crush.
+       --- crush.
+    -- apply IHl.
+       --- simpl in H.
+           destruct (f a0).
+           ---- crush.
+           ---- crush.
+       --- assumption.
+* intros.
+  induction l.
+  - crush.
+  - simpl.
+    assert (f a = false). { crush. }
+    rewrite H0. simpl.
+    apply IHl. simpl in H. intros. specialize (H a0). apply H. right. assumption.
+Qed.
+

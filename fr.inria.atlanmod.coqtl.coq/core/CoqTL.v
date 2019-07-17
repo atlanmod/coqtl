@@ -2078,13 +2078,9 @@ Section CoqTL.
       reflexivity.
   Qed.
 
+
   
-  Lemma filter_nil:
-    forall (A : Type) (f : A -> bool) (x : A) (l : list A),
-      (filter f l) = nil <->  (forall a: A, In a l -> f a = false).
-  Proof.
-  Admitted.
-  
+
   Theorem tr_matchPattern_maxArity : forall t: TransformationEngine,
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         length sp > maxArity tr ->
@@ -2102,18 +2098,15 @@ Section CoqTL.
       -- unfold matchRuleOnPattern in mtch.
          unfold evalGuard in mtch.
          unfold evalFunction in mtch.
-         assert (In r (r::l)). crush.
-         rewrite <- rs in H1.
+         
+         rewrite <- rs in H0.
          assert (length (Rule_getInTypes a) <> length sp).
-         {
-           specialize (maxArity_geq_rule_length tr r H1).
-           intros. admit.
-         }
+         { specialize (maxArity_geq_rule_length tr a H0). crush. }
          assert ( evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes a) bool (Rule_getGuard a sm) sp = None).
          { apply (evalFunctionFix_intypes_el_neq).  crush. }
          crush.
       -- crush.
-  Admitted.
+  Qed.
 
   (** ** matchRuleOnPattern **)
 
