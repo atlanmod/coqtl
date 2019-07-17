@@ -2056,7 +2056,7 @@ Section CoqTL.
   Theorem tr_resolveIter_some:
     forall (tr:MatchedTransformation) (sm : SourceModel) (name: string) (type: TargetModelClass)
       (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
-      resolveIter tr sm name type sp iter = return x ->
+      resolveIter tr sm name type sp iter = return x <->
        (exists (r: Rule) (e: TargetModelElement),
         (find (fun r:Rule => isMatchedRule sm r name sp iter)
               (Transformation_getRules (unmatchTransformation tr)) = Some r)
@@ -2064,23 +2064,36 @@ Section CoqTL.
         /\ (toModelClass type e = Some x) ).
   Proof.
     intros.
-    unfold resolveIter in H.
-    destruct ( find (fun r : Rule => isMatchedRule sm r name sp iter)
-                (Transformation_getRules (unmatchTransformation tr))) eqn: find.
-    - destruct (instantiateRuleOnPatternIterName r sm sp iter name) eqn: inst.
-      -- exists r, t.
-         split.
-         auto.
-         split.
-         auto. auto.
-      -- crush.
-    - crush.
+    split.
+    {
+      intro.
+      unfold resolveIter in H.
+      destruct ( find (fun r : Rule => isMatchedRule sm r name sp iter)
+                      (Transformation_getRules (unmatchTransformation tr))) eqn: find.
+      - destruct (instantiateRuleOnPatternIterName r sm sp iter name) eqn: inst.
+        -- exists r, t.
+           split.
+           auto.
+           split.
+           auto. auto.
+        -- crush.
+      - crush.
+    }
+    {
+      intros.
+      destruct H. destruct H. destruct H. destruct H0.
+      unfold resolveIter.
+      rewrite H.
+      rewrite H0.
+      rewrite H1.
+      reflexivity.
+    }     
   Qed.
                                                      
   Theorem tr_resolveIter_none:
     forall (tr:MatchedTransformation) (sm : SourceModel) (name: string) (type: TargetModelClass)
       (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
-      resolveIter tr sm name type sp iter = None ->
+      resolveIter tr sm name type sp iter = None <->
        let matchedRule := (find (fun r:Rule => isMatchedRule sm r name sp iter)
                                (Transformation_getRules (unmatchTransformation tr))) in
        (matchedRule = None \/
@@ -2095,15 +2108,24 @@ Section CoqTL.
        ).
   Proof.
     intros.
-    unfold resolveIter in H.
-    destruct (find (fun r : Rule => isMatchedRule sm r name sp iter)
-                   (Transformation_getRules (unmatchTransformation tr))) eqn: find.
-    - destruct (instantiateRuleOnPatternIterName r sm sp iter name) eqn: inst.
-      -- right. right. exists r. split.
-         --- auto.
-         --- exists t. auto.
-      -- right. left. exists r. auto.
-    - left. auto.
+    split.
+    {intros. unfold resolveIter in H.
+     destruct (find (fun r : Rule => isMatchedRule sm r name sp iter)
+                    (Transformation_getRules (unmatchTransformation tr))) eqn: find.
+     - destruct (instantiateRuleOnPatternIterName r sm sp iter name) eqn: inst.
+       -- right. right. exists r. split.
+          --- auto.
+          --- exists t. auto.
+       -- right. left. exists r. auto.
+     - left. auto. }
+    {
+      intros.
+      unfold resolveIter. destruct H.
+      -  rewrite H. reflexivity.
+      - destruct H.
+        -- destruct H. destruct H. rewrite H. rewrite H0. reflexivity.
+        --  destruct H. destruct H. destruct H0. destruct H0. rewrite H. rewrite H0. rewrite H1. reflexivity.
+    }
   Qed.
   
   Theorem tr_resolve_unfold:
