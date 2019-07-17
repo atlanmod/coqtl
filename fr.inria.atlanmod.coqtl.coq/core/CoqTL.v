@@ -1651,25 +1651,25 @@ Section CoqTL.
   split.
   {
     intro.
-    specialize (option_res_dec (instantiateIterationOnPattern r sm sp) i H).
+    specialize (option_res_dec (applyIterationOnPattern r tr sm sp) i H).
     intro.
     destruct H0.
-    unfold instantiateIterationOnPattern in H.
+    unfold applyIterationOnPattern in H.
     destruct (matchRuleOnPattern r sm sp) eqn:mtch.
         + destruct b.
           * Arguments optionList2List : simpl never.
             Arguments map : simpl never.
             destruct (flat_map
         (fun o : OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r) =>
-         optionToList (instantiateElementOnPattern r o sm sp i)) (Rule_getOutputPattern r)) eqn:instI_ca.
+         optionListToList (applyElementOnPattern r o tr sm sp i)) (Rule_getOutputPattern r)) eqn:applyI_ca.
             - crush.
             - assert (In t (t::l)). { crush. }
-              rewrite <- instI_ca in H1.
+              rewrite <- applyI_ca in H1.
                           apply in_flat_map in H1.
               destruct H1. destruct H1.
               exists x0.
               unfold optionListToList in H2.
-              destruct (instantiateElementOnPattern r x0 sm sp i).
+              destruct (applyElementOnPattern r x0 tr sm sp i).
               -- crush.
               -- crush.
           * crush.
@@ -1679,30 +1679,45 @@ Section CoqTL.
     intros.
     destruct H.
     destruct H.
-    unfold instantiateIterationOnPattern.
+    unfold applyIterationOnPattern.
     destruct (matchRuleOnPattern r sm sp) eqn: mtch.
      + destruct b eqn:b_ca.
        ++ destruct (flat_map
     (fun o : OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r) =>
-     optionToList (instantiateElementOnPattern r o sm sp i)) (Rule_getOutputPattern r)) eqn: inst_res.
+     optionListToList (applyElementOnPattern r o tr sm sp i)) (Rule_getOutputPattern r)) eqn: apply_res.
           +++ specialize (in_flat_map_nil 
                          (fun o : OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r) =>
-              optionToList (instantiateElementOnPattern r o sm sp i))
+              optionListToList (applyElementOnPattern r o tr sm sp i))
                          (Rule_getOutputPattern r)).
               intros.
+
               destruct H1.
-              
-              specialize (H1 inst_res x H). 
-              specialize (option_res_dec (instantiateElementOnPattern r x sm sp) i H0).
+              specialize (H1 apply_res x H).
+               specialize (option_res_dec (applyElementOnPattern r x tr sm sp) i H0).
               intros.
               destruct H3.
-              unfold optionToList in H1.
+              unfold optionListToList in H1.
               rewrite H3 in H1.
+              
+              assert (x0 <> nil).
+              { 
+              unfold applyElementOnPattern in H3.
+              rewrite mtch in H3.
+              destruct (flat_map
+           (fun
+              oper : OutputPatternElementReference (Rule_getInTypes r) 
+                       (Rule_getIteratorType r) (OutputPatternElement_getOutType x) =>
+            optionToList (applyReferenceOnPattern r x oper tr sm sp i))
+           (OutputPatternElement_getOutputElementReferences x)) eqn: apply2_ca.
+              * crush.
+              * crush. 
+              }
+              unfold optionListToList in H1.
               crush.
           +++ crush.
-       ++ unfold instantiateElementOnPattern in H0. 
+       ++ unfold applyElementOnPattern in H0. 
           rewrite mtch in H0. crush.
-    + unfold instantiateElementOnPattern in H0. 
+    + unfold applyElementOnPattern in H0. 
       rewrite mtch in H0. crush.
   }
   Qed.
