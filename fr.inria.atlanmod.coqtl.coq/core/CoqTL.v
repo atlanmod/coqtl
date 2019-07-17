@@ -1479,27 +1479,25 @@ Section CoqTL.
   split.
   {
     intro.
-    specialize (option_res_dec (instantiateRuleOnPattern' r tr sm) sp H).
+    specialize (option_res_dec (applyRuleOnPattern r tr sm) sp H).
     intro.
     destruct H0.
-    unfold instantiateRuleOnPattern' in H.
-        unfold instantiateRuleOnPattern in H.
+    unfold applyRuleOnPattern in H.
         destruct (matchRuleOnPattern r sm sp) eqn:mtch.
         + destruct b.
           * Arguments optionList2List : simpl never.
             Arguments map : simpl never.
-            destruct (flat_map (fun i : nat => optionListToList (instantiateIterationOnPattern r sm sp i))
-                       (indexes (Datatypes.length (evalIterator r sm sp)))) eqn:instI_ca.
+            destruct (flat_map (fun i : nat => optionListToList (applyIterationOnPattern r tr sm sp i)) (indexes (Datatypes.length (evalIterator r sm sp)))) eqn:applyI_ca.
             - crush.
             - assert (In t (t::l)). { crush. }
-              rewrite <- instI_ca in H1.
+              rewrite <- applyI_ca in H1.
                           apply in_flat_map in H1.
               destruct H1. destruct H1.
               exists x0.
               split. 
               apply indexes_nat_upperBound. crush.
               unfold optionListToList in H2.
-              destruct (instantiateIterationOnPattern r sm sp x0).
+              destruct (applyIterationOnPattern r tr sm sp x0).
               -- crush.
               -- crush.
           * crush.
@@ -1509,14 +1507,13 @@ Section CoqTL.
     intros.
     destruct H.
     destruct H.
-    unfold instantiateRuleOnPattern'.
-    unfold instantiateRuleOnPattern.
+    unfold applyRuleOnPattern.
     destruct (matchRuleOnPattern r sm sp) eqn: mtch.
      + destruct b eqn:b_ca.
-       ++ destruct (flat_map (fun i : nat => optionListToList (instantiateIterationOnPattern r sm sp i))
-    (indexes (Datatypes.length (evalIterator r sm sp)))) eqn: inst_res.
+       ++ destruct (flat_map (fun i : nat => optionListToList (applyIterationOnPattern r tr sm sp i))
+    (indexes (Datatypes.length (evalIterator r sm sp)))) eqn: apply_res.
           +++ specialize (in_flat_map_nil 
-                         (fun i : nat => optionListToList (instantiateIterationOnPattern r sm sp i))
+                         (fun i : nat => optionListToList (applyIterationOnPattern r tr sm sp i))
                          (indexes (Datatypes.length (evalIterator r sm sp)))).
               intros.
               assert (In x (indexes (Datatypes.length (evalIterator r sm sp)))). 
@@ -1527,17 +1524,18 @@ Section CoqTL.
                 specialize (H3 H). assumption.
               }
               destruct H1.
-              specialize (H1 inst_res x H2).
-              specialize (option_res_dec (instantiateIterationOnPattern r sm sp) x H0).
+              specialize (H1 apply_res x H2).
+              specialize (option_res_dec (applyIterationOnPattern r tr sm sp) x H0).
               intros.
               destruct H4.
               assert (x0 <> nil).
               { 
-              unfold instantiateIterationOnPattern in H4.
+              unfold applyIterationOnPattern in H4.
               rewrite mtch in H4.
               destruct (flat_map
-                       (fun o : OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r) =>
-                        optionToList (instantiateElementOnPattern r o sm sp x)) (Rule_getOutputPattern r)) eqn: inst2_ca.
+           (fun o : OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r) =>
+            optionListToList (applyElementOnPattern r o tr sm sp x)) 
+           (Rule_getOutputPattern r)) eqn: apply2_ca.
               * crush.
               * crush. 
               }
@@ -1545,9 +1543,9 @@ Section CoqTL.
               rewrite H4 in H1.
               crush.
           +++ crush.
-       ++ unfold instantiateIterationOnPattern in H0. 
+       ++ unfold applyIterationOnPattern in H0. 
           rewrite mtch in H0. crush.
-    + unfold instantiateIterationOnPattern in H0. 
+    + unfold applyIterationOnPattern in H0. 
       rewrite mtch in H0. crush.
   }
   Qed.
