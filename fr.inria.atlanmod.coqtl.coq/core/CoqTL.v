@@ -1903,12 +1903,6 @@ Section CoqTL.
   }
   Qed.
 
-  Theorem tr_applyElementOnPattern_iterator : 
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
-      i >= length (evalIterator r sm sp) ->
-      applyElementOnPattern r ope tr sm sp i <> None -> False.
-  Proof.
-  Admitted.
 
   (** ** applyReferenceOnPattern **)
 
@@ -1935,6 +1929,41 @@ Section CoqTL.
     - crush.
   Qed.
 
+  (** ** Iterators **)
+
+    Theorem tr_applyElementOnPattern_iterator : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
+      i >= length (evalIterator r sm sp) ->
+      applyElementOnPattern r ope tr sm sp i <> None -> False.
+  Proof.
+  intros.
+    assert (exists (tl: list TargetModelLink), applyElementOnPattern r ope tr sm sp i = Some tl).
+    { specialize (option_res_dec (applyElementOnPattern r ope tr sm sp)). intros. 
+      specialize (H1 i H0). destruct H1. exists x. crush. }
+    destruct H1.
+    unfold applyElementOnPattern in H1.
+    destruct (matchRuleOnPattern r sm sp) eqn: match_res.
+    - destruct b eqn:b_ca.
+      -- destruct ( flat_map
+           (fun
+              oper : OutputPatternElementReference (Rule_getInTypes r) 
+                       (Rule_getIteratorType r) (OutputPatternElement_getOutType ope) =>
+            optionToList (applyReferenceOnPattern r ope oper tr sm sp i))
+           (OutputPatternElement_getOutputElementReferences ope)) eqn: flat_res.
+         --- crush.
+         --- assert (In t (t::l)). { crush. }
+                                  rewrite <- flat_res in H2.
+             apply (in_flat_map) in H2. destruct H2. destruct H2.
+             destruct (applyReferenceOnPattern r ope x0 tr sm sp i) eqn: apply_ref.
+             * specialize (tr_applyReferenceOnPattern_iterator tr sm r sp i ope x0 H). intros.
+               assert (applyReferenceOnPattern r ope x0 tr sm sp i <> None). { rewrite apply_ref. crush. }
+               crush.
+             * crush.
+      -- crush.
+    - crush.
+  Qed.
+
+  
   (** ** matchPattern **)
 
   Theorem tr_matchPattern_in : 
