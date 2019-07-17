@@ -39,34 +39,7 @@ Section Exp.
   Definition evalFunction (m: Model ModelElement ModelLink) (intypes: list ModelClass) (otype: Type) (f: (Model ModelElement ModelLink) -> (denoteFunction intypes otype)) (el: list ModelElement) : option otype :=
     evalFunctionFix intypes otype (f m) el.
 
-  Lemma evalFunctionFix_intypes_el_eq:
-    forall intypes otype f el,
-        evalFunctionFix intypes otype f el <> None ->
-          length intypes = length el.
-  Proof.
-    intros.
-    generalize dependent el.
-    induction intypes.        
-    - intros. destruct el.
-      + crush.
-      + crush.  
-    - intros.
-      induction el.
-      + crush.
-      + destruct (toModelClass a a0) eqn:tmc.
-        * simpl in H.  rewrite tmc in H.
-          destruct intypes eqn:intypes2, el eqn:el2.
-          ** crush.
-          ** crush.
-          ** crush.
-          ** assert (Datatypes.length (m :: l) = Datatypes.length (m0 :: l0)).
-             { 
-              apply IHintypes with (f:=(eq_rect_r (fun l : list ModelClass => denoteFunction l otype) f eq_refl d)).
-              exact H.
-             }
-             crush.
-        * simpl in H.  rewrite tmc in H. crush.
-  Qed.
+
 
   Lemma evalFunctionFix_intypes_el_neq:
     forall intypes otype f el,
@@ -94,7 +67,23 @@ Section Exp.
         * simpl. rewrite tmc. auto.
   Qed.
 
+  
 
+  
+  Lemma evalFunctionFix_intypes_el_neq_contraposition:
+    forall intypes otype f el,
+        evalFunctionFix intypes otype f el <> None ->
+          length intypes = length el.
+  Proof.
+    intros intypes otype f el.
+    specialize (evalFunctionFix_intypes_el_neq intypes otype f el).
+    intro.
+    specialize  (contraposition) with (q:=(evalFunctionFix intypes otype f el) = None) (p:=Datatypes.length intypes <> Datatypes.length el).
+    intros.
+    crush.
+  Qed.
+
+  
 End Exp.
 
 Arguments denoteFunction: default implicits.

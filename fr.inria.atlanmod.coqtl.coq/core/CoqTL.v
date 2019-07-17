@@ -603,10 +603,9 @@ Section CoqTL.
                   **** unfold matchRuleOnPattern in mtch2.
                        unfold evalGuard in mtch2.
                        unfold evalFunction in mtch2.
-                       assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm 
-                                  (Rule_getInTypes r) bool (Rule_getGuard r sm) x <> None).
+                       assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes r) bool (Rule_getGuard r sm) x <> None).
                        { crush. }
-                       apply evalFunctionFix_intypes_el_eq in H4.
+                       apply evalFunctionFix_intypes_el_neq_contraposition in H4.
                        apply maxArity_geq_rule_length in H2.
                        crush.
                   **** crush.
@@ -622,7 +621,50 @@ Section CoqTL.
           applyPattern tr sm sp = Some tpl /\
           In tl tpl).
   Proof.
-  Admitted.
+    intros.
+    split.
+    - intros.
+      simpl in H.
+      apply in_flat_map in H.
+      destruct H.
+      exists x.
+      destruct H.
+      destruct (applyPattern tr sm x) eqn:appl.
+      + exists l.
+        split. 
+        unfold allTuples in H.
+        apply tuples_up_to_n_incl with (n:=(maxArity tr)). assumption.
+        split. reflexivity.
+        assumption.
+      + contradiction.
+    - intros.
+      destruct H. destruct H. destruct H. destruct H0.
+      unfold execute. simpl.
+      apply in_flat_map.
+      exists x. split.
+      + apply tuples_up_to_n_incl_length.
+        * assumption.
+        * unfold  applyPattern in H0.
+          destruct (matchPattern tr sm x) eqn:mtch.
+          ** crush.
+          ** unfold matchPattern in mtch.
+             assert (In r (r::l)). { crush. }
+             rewrite <- mtch in H2.
+             apply filter_In in H2. destruct H2.
+             destruct (matchRuleOnPattern r sm x) eqn:mtch2.
+             *** destruct b eqn: b_ca.
+                  **** unfold matchRuleOnPattern in mtch2.
+                       unfold evalGuard in mtch2.
+                       unfold evalFunction in mtch2.
+                       assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes r) bool (Rule_getGuard r sm) x <> None).
+                       { crush. }
+                       apply evalFunctionFix_intypes_el_neq_contraposition in H4.
+                       apply maxArity_geq_rule_length in H2.
+                       crush.
+                  **** crush.
+          *** crush.
+      + crush.
+  Qed.
   
   (** ** instantiatePattern **)
 
