@@ -403,32 +403,45 @@ Section CoqTL.
              (sp: list SourceModelElement) (iter: nat) : option (list TargetModelLink):=             
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (flat_map ( fun oper => optionToList (applyReferenceOnPattern r ope oper tr sm sp iter))
-                       (OutputPatternElement_getOutputElementReferences ope))
+        match (flat_map ( fun oper => optionToList (applyReferenceOnPattern r ope oper tr sm sp iter))
+                        (OutputPatternElement_getOutputElementReferences ope)) with
+        | nil => None
+        | l=> Some l
+        end
       else
         None.
 
   Definition applyIterationOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : option (list TargetModelLink) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (flat_map (fun x => optionListToList (applyElementOnPattern r x tr sm sp iter))
-                       (Rule_getOutputPattern r))
+        match (flat_map (fun o => optionListToList (applyElementOnPattern r o tr sm sp iter))
+                              (Rule_getOutputPattern r)) with
+        | nil => None
+        | l => Some l
+        end
       else
         None.
 
   Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
-        Some (flat_map (fun i:nat => optionListToList (applyIterationOnPattern r tr sm sp i))
-                       (indexes (length (evalIterator r sm sp))))
+        match (flat_map (fun i:nat => optionListToList (applyIterationOnPattern r tr sm sp i))
+                       (indexes (length (evalIterator r sm sp)))) with
+        | nil => None
+        | l => Some l
+        end
       else
         None.
 
   Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
     match matchPattern tr sm sp with
     | nil => None
-    | l => Some (flat_map (fun r => optionListToList (applyRuleOnPattern r tr sm sp)) l)
+    | l => match  (flat_map (fun r => optionListToList (applyRuleOnPattern r tr sm sp)) l) with
+          | nil => None
+          | l => Some l
+           end
     end.
+
 
   Definition applyElementsOnPattern (r: Rule) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
     m <- matchRuleOnPattern r sm sp;
@@ -1230,7 +1243,7 @@ Section CoqTL.
         inversion H. inversion H0.
         destruct (flat_map (fun r : Rule => optionListToList (applyRuleOnPattern r tr sm sp)) l1) eqn: flat_map_res.
         ++ crush.
-        ++ rewrite <- H3 in H1.
+        ++ inversion H3. rewrite <- H4 in H1.
            rewrite <- flat_map_res in H1.
            apply in_flat_map in H1.
            destruct H1.
@@ -1292,8 +1305,64 @@ Section CoqTL.
          In r (matchPattern tr sm sp) /\
          applyRuleOnPattern r tr sm sp <> None).
   Proof.
-  Admitted.
+    split.
+  - intros.
+    specialize (option_res_dec (applyPattern tr sm) sp H).
+    intro.
+    destruct H0.
+    unfold applyPattern in H.
+    destruct (matchPattern tr sm sp) eqn:mtch.
+    + crush.
+    + destruct (flat_map (fun r : Rule => optionListToList (applyRuleOnPattern r tr sm sp)) (r :: l)) eqn:flat_map_res.
+      ++ crush.
+      ++ assert (In t (t::l0)). { crush. }
+         rewrite <- flat_map_res in H1. apply  in_flat_map in H1.
+         destruct H1. exists x0. destruct H1.
+         split.
+         +++ assumption.
+         +++ destruct  (applyRuleOnPattern x0 tr sm sp) eqn: apply_res.
+             * crush.  
+             * unfold optionListToList in H2. simpl in H2. crush.
+   - intros.
+     destruct H.
+     destruct H.
+     unfold applyRuleOnPattern in H0.
+     unfold applyPattern.
+     destruct  (matchPattern tr sm sp) eqn: mtch.
+     + crush.
+     + destruct (flat_map (fun r0 : Rule => optionListToList (applyRuleOnPattern r0 tr sm sp)) (r :: l)) eqn: flat_map_res.
+       ++ destruct (applyRuleOnPattern x tr sm sp) eqn: apply_res.
+          +++ assert (l0 <> nil).
+              { assert (matchRuleOnPattern x sm sp = Some true).
+                {
+                   unfold matchPattern in mtch.
+                   rewrite <- mtch in H.
+                   apply filter_In in H.
+                   destruct (matchRuleOnPattern x sm sp).
+                   destruct b. crush. crush. crush.
+                }
+                rewrite H1 in H0.
+                unfold applyRuleOnPattern in apply_res.              
+                rewrite H1 in apply_res.
+                destruct (flat_map
+                       (fun i : nat => optionListToList (applyIterationOnPattern x tr sm sp i))
+                       (indexes (Datatypes.length (evalIterator x sm sp)))) eqn: apply_res2.
+                * crush.
+                * crush.
 
+              }
+              assert (optionListToList (Some l0) <> nil).
+              { crush. }
+              specialize (in_flat_map_nil (fun r0 : Rule => optionListToList (applyRuleOnPattern r0 tr sm sp)) (r::l)).
+              intros.
+              destruct H3.
+              specialize (H3 flat_map_res x H).
+              rewrite <- apply_res in H2.
+              crush.  
+          +++ crush.
+       ++ crush.
+  Qed.
+  
   Theorem tr_applyPattern_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       length sp > maxArity tr ->
