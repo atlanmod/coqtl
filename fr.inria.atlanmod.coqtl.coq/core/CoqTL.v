@@ -1946,43 +1946,47 @@ Section CoqTL.
 
   (** ** Iterators **)
 
-    Theorem tr_applyElementOnPattern_iterator : 
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
+
+  Theorem tr_instantiateIterationOnPattern_iterator : 
+    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       i >= length (evalIterator r sm sp) ->
-      applyElementOnPattern r ope tr sm sp i <> None -> False.
+      instantiateIterationOnPattern r sm sp i <> None -> False.
   Proof.
+  Admitted.
+  (*
     intros.
-    assert (exists (tl: list TargetModelLink), applyElementOnPattern r ope tr sm sp i = Some tl).
-    { specialize (option_res_dec (applyElementOnPattern r ope tr sm sp)). intros. 
+    assert (exists (te: list TargetModelElement), instantiateIterationOnPattern r sm sp i = Some te).
+    { specialize (option_res_dec (instantiateIterationOnPattern r sm sp)). intros. 
       specialize (H1 i H0). destruct H1. exists x. crush. }
     destruct H1.
-    unfold applyElementOnPattern in H1.
+    unfold instantiateIterationOnPattern in H1.
     destruct (matchRuleOnPattern r sm sp) eqn: match_res.
     - destruct b eqn:b_ca.
-      -- destruct ( flat_map
-           (fun
-              oper : OutputPatternElementReference (Rule_getInTypes r) 
-                       (Rule_getIteratorType r) (OutputPatternElement_getOutType ope) =>
-            optionToList (applyReferenceOnPattern r ope oper tr sm sp i))
-           (OutputPatternElement_getOutputElementReferences ope)) eqn: flat_res.
+      -- destruct (flat_map
+           (fun o : OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r) =>
+            optionToList (instantiateElementOnPattern r o sm sp i)) (Rule_getOutputPattern r)) eqn: flat_res.
          --- crush.
          --- assert (In t (t::l)). { crush. }
                                   rewrite <- flat_res in H2.
              apply (in_flat_map) in H2. destruct H2. destruct H2.
-             destruct (applyReferenceOnPattern r ope x0 tr sm sp i) eqn: apply_ref.
-             * specialize (tr_applyReferenceOnPattern_iterator tr sm r sp i ope x0 H). intros.
-               assert (applyReferenceOnPattern r ope x0 tr sm sp i <> None). { rewrite apply_ref. crush. }
+             destruct (instantiateElementOnPattern r x0 sm sp i) eqn: inst_ref.
+             * specialize (tr_instantiateElementOnPattern_iterator sm r sp i x0 H). intros.
+               assert (instantiateElementOnPattern r x0 sm sp i <> None). { rewrite inst_ref. crush. }
                crush.
              * crush.
       -- crush.
     - crush.
   Qed.
+  *)
 
+  
   Theorem tr_applyIterationOnPattern_iterator : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       i >= length (evalIterator r sm sp) ->
       applyIterationOnPattern r tr sm sp i <> None -> False.
   Proof.
+  Admitted.
+  (*
   intros.
     assert (exists (tl: list TargetModelLink), applyIterationOnPattern r tr sm sp i = Some tl).
     { specialize (option_res_dec (applyIterationOnPattern r tr sm sp)). intros. 
@@ -2007,7 +2011,7 @@ Section CoqTL.
       -- crush.
     - crush.
   Qed.
-
+ *)
   
   (** ** matchPattern **)
 
@@ -2040,6 +2044,7 @@ Section CoqTL.
       reflexivity.
   Qed.
 
+  
   (** ** matchRuleOnPattern **)
 
   Theorem tr_matchRuleOnPattern_eval : 
@@ -2242,7 +2247,8 @@ Section CoqTL.
 
       tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
       tr_instantiateIterationOnPattern_non_None := tr_instantiateIterationOnPattern_non_None;
-
+      tr_instantiateIterationOnPattern_iterator := tr_instantiateIterationOnPattern_iterator;
+      
       tr_instantiateElementOnPattern_inTypes := tr_instantiateElementOnPattern_inTypes;
 
 
@@ -2259,7 +2265,6 @@ Section CoqTL.
 
       tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
       tr_applyElementOnPattern_non_None := tr_applyElementOnPattern_non_None;
-      tr_applyElementOnPattern_iterator := tr_applyElementOnPattern_iterator;
 
       tr_applyReferenceOnPattern_iterator := tr_applyReferenceOnPattern_iterator;
 
