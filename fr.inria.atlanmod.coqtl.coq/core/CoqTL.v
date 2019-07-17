@@ -1220,7 +1220,70 @@ Section CoqTL.
           applyRuleOnPattern r tr sm sp = Some tpl1 /\
           In tl tpl1).
   Proof.
-  Admitted.
+   split.
+    - intros.
+      unfold applyPattern in H.
+      destruct (matchPattern tr sm sp) eqn:mtch.
+      + inversion H. inversion H0. inversion H1.
+      + remember (r::l) as l1.
+        destruct H.
+        inversion H. inversion H0.
+        destruct (flat_map (fun r : Rule => optionListToList (applyRuleOnPattern r tr sm sp)) l1) eqn: flat_map_res.
+        ++ crush.
+        ++ rewrite <- H3 in H1.
+           rewrite <- flat_map_res in H1.
+           apply in_flat_map in H1.
+           destruct H1.
+           exists x0.
+           destruct H1.
+           destruct (applyRuleOnPattern x0 tr sm sp) eqn:inst.
+           exists l2.
+           split. assumption.
+           split. reflexivity.
+           assumption.
+           contradiction.
+    - intros.
+      destruct (applyPattern tr sm sp) eqn:apply.
+      + exists l. split. reflexivity.
+        unfold applyPattern in apply.
+        destruct (matchPattern tr sm sp) eqn:mtch.
+        * inversion apply.
+        * Arguments optionListToList : simpl never.
+          Arguments flat_map : simpl never.
+          destruct (flat_map (fun r : Rule => optionListToList (applyRuleOnPattern r tr sm sp)) (r::l0)) eqn: flat_map_res.
+          ** specialize (in_flat_map_nil (fun r : Rule => optionListToList (applyRuleOnPattern r tr sm sp)) (r::l0)).
+             intros.
+             destruct H0.
+             specialize (H0 flat_map_res).
+             destruct H. destruct H. destruct H.
+             specialize (H0 x H).
+             destruct H2.
+             rewrite H2 in H0.
+             unfold optionListToList in H0.
+             crush.
+          ** inversion apply.
+             rewrite <- flat_map_res.
+             apply in_flat_map.
+             destruct H. destruct H. destruct H. destruct H0.
+             exists x. split. assumption.
+             unfold optionListToList.
+             rewrite H0.
+             assumption.
+      + exfalso.
+        destruct H. destruct H. destruct H. destruct H0.
+        unfold applyPattern in apply.
+        destruct (matchPattern tr sm sp) eqn:mtch.
+        * contradiction.
+        * destruct (flat_map (fun r : Rule => optionListToList (applyRuleOnPattern r tr sm sp)) (r::l)) eqn: flat_map_res.
+          ** specialize (in_flat_map_nil (fun r : Rule => optionListToList (applyRuleOnPattern r tr sm sp)) (r::l)).
+             intros.
+             destruct H2.
+             specialize (H2 flat_map_res x H).
+             rewrite H0 in H2.
+             unfold optionListToList in H2.
+             crush.
+          ** inversion apply.
+  Qed.
 
   Theorem tr_applyPattern_non_None : 
      forall  (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) ,
