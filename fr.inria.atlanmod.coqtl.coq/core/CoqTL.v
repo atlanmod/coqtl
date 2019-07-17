@@ -1381,7 +1381,92 @@ Section CoqTL.
           applyIterationOnPattern r tr sm sp i = Some tpl1 /\
           In tl tpl1).
   Proof.
-  Admitted.
+    split.
+    - intros.
+      unfold applyRuleOnPattern' in H.
+      unfold applyRuleOnPattern in H.
+      destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+      + destruct b.
+        * Arguments optionList2List : simpl never.
+          Arguments map : simpl never.
+          inversion H.
+          inversion H0.
+          inversion H1.
+          destruct (flat_map (fun i : nat => optionListToList (applyIterationOnPattern r tr sm sp i))
+                     (indexes (Datatypes.length (evalIterator r sm sp)))) eqn:applyI_ca.
+          ** inversion H4.
+          ** rewrite <- applyI_ca in H4.
+          inversion H4.
+          rewrite <- H5 in H2.
+          apply in_flat_map in H2.
+          destruct H2.
+          destruct H2.
+          destruct (applyIterationOnPattern r tr sm sp x0) eqn:apply_ca.
+          *** exists x0.
+             exists l0.
+             split.
+             **** apply indexes_nat_upperBound.
+                 exact H2.
+             **** split; crush.
+          *** contradiction.
+        * inversion H.
+          destruct H0.
+          inversion H0.
+      + crush.
+    - intros.
+      destruct (applyRuleOnPattern' r tr sm sp) eqn:apply.
+      + exists l. split. reflexivity.
+        unfold applyRuleOnPattern' in apply.
+        unfold applyRuleOnPattern in apply.
+        destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+        * destruct b.
+          ** inversion apply. destruct (flat_map (fun i : nat => optionListToList (applyIterationOnPattern r tr sm sp i)) (indexes (Datatypes.length (evalIterator r sm sp)))) eqn:applyI_ca.
+              *** inversion apply.
+              *** rewrite <- applyI_ca in H1.
+                  inversion H1.
+                  apply in_flat_map.
+                  destruct H. destruct H. destruct H. destruct H0.
+                  exists x. 
+                  split. 
+                  **** apply indexes_nat_upperBound.
+                      assumption.
+                  **** unfold optionListToList.
+                      rewrite H0.
+                      assumption.
+          ** inversion apply.
+        * inversion apply.
+      + exfalso.
+        destruct H. destruct H. destruct H. destruct H0.
+        unfold applyRuleOnPattern' in apply.
+        unfold applyRuleOnPattern in apply.
+        destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+        * destruct b.
+          ** destruct (flat_map (fun i : nat => optionListToList (applyIterationOnPattern r tr sm sp i)) (indexes (Datatypes.length (evalIterator r sm sp)))) eqn:applyI_ca.
+              *** assert (optionListToList (applyIterationOnPattern r tr sm sp x) = nil). { 
+                  specialize (in_flat_map_nil
+                  (fun i : nat => optionListToList (applyIterationOnPattern r tr sm sp i))
+                  (indexes (Datatypes.length (evalIterator r sm sp)))
+                  ).
+                  intros.
+                  destruct H2.
+                  specialize (H2 applyI_ca).
+                  specialize (H2 x).
+                  apply H2.
+                  apply indexes_nat_upperBound.
+                  assumption.
+                  }
+                  destruct (applyIterationOnPattern r tr sm sp x).
+                  **** unfold optionListToList in H2. crush.
+                  **** crush.
+              *** crush.
+          ** unfold applyIterationOnPattern in H0.
+             rewrite mtch in H0.
+             inversion H0.
+        * unfold applyIterationOnPattern in H0.
+          rewrite mtch in H0.
+          inversion H0.
+  Qed.
+
 
   Theorem tr_applyRuleOnPattern_non_None : 
      forall  (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) ,
@@ -1390,7 +1475,82 @@ Section CoqTL.
         i < length (evalIterator r sm sp) /\
         applyIterationOnPattern r tr sm sp i <> None ).
   Proof.
-  Admitted.
+  intros.
+  split.
+  {
+    intro.
+    specialize (option_res_dec (instantiateRuleOnPattern' r tr sm) sp H).
+    intro.
+    destruct H0.
+    unfold instantiateRuleOnPattern' in H.
+        unfold instantiateRuleOnPattern in H.
+        destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+        + destruct b.
+          * Arguments optionList2List : simpl never.
+            Arguments map : simpl never.
+            destruct (flat_map (fun i : nat => optionListToList (instantiateIterationOnPattern r sm sp i))
+                       (indexes (Datatypes.length (evalIterator r sm sp)))) eqn:instI_ca.
+            - crush.
+            - assert (In t (t::l)). { crush. }
+              rewrite <- instI_ca in H1.
+                          apply in_flat_map in H1.
+              destruct H1. destruct H1.
+              exists x0.
+              split. 
+              apply indexes_nat_upperBound. crush.
+              unfold optionListToList in H2.
+              destruct (instantiateIterationOnPattern r sm sp x0).
+              -- crush.
+              -- crush.
+          * crush.
+        + crush.
+  }
+  {
+    intros.
+    destruct H.
+    destruct H.
+    unfold instantiateRuleOnPattern'.
+    unfold instantiateRuleOnPattern.
+    destruct (matchRuleOnPattern r sm sp) eqn: mtch.
+     + destruct b eqn:b_ca.
+       ++ destruct (flat_map (fun i : nat => optionListToList (instantiateIterationOnPattern r sm sp i))
+    (indexes (Datatypes.length (evalIterator r sm sp)))) eqn: inst_res.
+          +++ specialize (in_flat_map_nil 
+                         (fun i : nat => optionListToList (instantiateIterationOnPattern r sm sp i))
+                         (indexes (Datatypes.length (evalIterator r sm sp)))).
+              intros.
+              assert (In x (indexes (Datatypes.length (evalIterator r sm sp)))). 
+              { specialize indexes_nat_upperBound . 
+                intros.
+                specialize (H2 x (Datatypes.length (evalIterator r sm sp))).
+                destruct H2.
+                specialize (H3 H). assumption.
+              }
+              destruct H1.
+              specialize (H1 inst_res x H2).
+              specialize (option_res_dec (instantiateIterationOnPattern r sm sp) x H0).
+              intros.
+              destruct H4.
+              assert (x0 <> nil).
+              { 
+              unfold instantiateIterationOnPattern in H4.
+              rewrite mtch in H4.
+              destruct (flat_map
+                       (fun o : OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r) =>
+                        optionToList (instantiateElementOnPattern r o sm sp x)) (Rule_getOutputPattern r)) eqn: inst2_ca.
+              * crush.
+              * crush. 
+              }
+              unfold optionListToList in H1.
+              rewrite H4 in H1.
+              crush.
+          +++ crush.
+       ++ unfold instantiateIterationOnPattern in H0. 
+          rewrite mtch in H0. crush.
+    + unfold instantiateIterationOnPattern in H0. 
+      rewrite mtch in H0. crush.
+  }
+  Qed.
 
   (** ** applyIterationOnPattern **)
 
