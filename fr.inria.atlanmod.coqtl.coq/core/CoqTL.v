@@ -1921,6 +1921,40 @@ Section CoqTL.
 
   (** ** applyReferenceOnPattern **)
 
+  Theorem tr_applyReferenceOnPattern_inTypes : 
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+        (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
+        (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
+        length sp <> length (Rule_getInTypes r) ->
+        applyReferenceOnPattern r ope oper tr sm sp i <> None -> False.
+  Proof.
+    intros.
+    assert (exists (tl: TargetModelLink), applyReferenceOnPattern r ope oper tr sm sp i  = Some tl).
+    { specialize (option_res_dec (applyReferenceOnPattern r ope oper tr sm sp)). intros. 
+      specialize (H1 i H0). destruct H1. exists x. crush. }
+    destruct H1.
+    unfold applyReferenceOnPattern in H1.
+    destruct (matchRuleOnPattern r sm sp) eqn: match_res.
+    - destruct b eqn:b_ca.
+      -- destruct (nth_error (evalIterator r sm sp) i) eqn: eval_iter_ca.
+         --- unfold evalOutputPatternElement in H1.
+             destruct (evalFunction smm sm (Rule_getInTypes r)
+         (denoteModelClass (OutputPatternElement_getOutType ope))
+         (OutputPatternElement_getOutPatternElement ope r0) sp) eqn: eval_fun_ca.
+             * unfold evalFunction in eval_fun_ca.
+               specialize (evalFunctionFix_intypes_el_neq
+                             SourceModelElement SourceModelLink SourceModelClass
+                             SourceModelReference smm (Rule_getInTypes r)
+                             (denoteModelClass (OutputPatternElement_getOutType ope))
+                             (OutputPatternElement_getOutPatternElement ope r0 sm) sp).
+               crush.
+             * crush.
+         --- crush.
+      -- crush.
+    - crush.
+  Qed.
+
+  
   Theorem tr_applyReferenceOnPattern_iterator : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
       (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
@@ -2045,6 +2079,42 @@ Section CoqTL.
   Qed.
 
   
+  Lemma filter_nil:
+    forall (A : Type) (f : A -> bool) (x : A) (l : list A),
+      (filter f l) = nil <->  (forall a: A, In a l -> f a = false).
+  Proof.
+  Admitted.
+  
+  Theorem tr_matchPattern_maxArity : forall t: TransformationEngine,
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+        length sp > maxArity tr ->
+        matchPattern tr sm sp = nil.
+  Proof.
+    intros.
+    unfold matchPattern.
+    destruct (Transformation_getRules tr) eqn: rs.
+    - crush.
+    - 
+      apply filter_nil.
+      exact r.
+      intros.      
+      destruct (matchRuleOnPattern a sm sp) eqn: mtch.
+      -- unfold matchRuleOnPattern in mtch.
+         unfold evalGuard in mtch.
+         unfold evalFunction in mtch.
+         assert (In r (r::l)). crush.
+         rewrite <- rs in H1.
+         assert (length (Rule_getInTypes a) <> length sp).
+         {
+           specialize (maxArity_geq_rule_length tr r H1).
+           intros. admit.
+         }
+         assert ( evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes a) bool (Rule_getGuard a sm) sp = None).
+         { apply (evalFunctionFix_intypes_el_neq).  crush. }
+         crush.
+      -- crush.
+  Admitted.
+
   (** ** matchRuleOnPattern **)
 
   Theorem tr_matchRuleOnPattern_eval : 
@@ -2055,8 +2125,20 @@ Section CoqTL.
     crush.
   Qed. 
 
+  Theorem tr_matchRuleOnPattern_inTypes : 
+      forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+        length sp <> length (Rule_getInTypes r) ->
+        matchRuleOnPattern r sm sp = None.
+  Proof.
+    intros.
+    unfold matchRuleOnPattern.
+    unfold evalGuard.
+    unfold evalFunction.
+    apply evalFunctionFix_intypes_el_neq.
+    crush.
+  Qed.
+  
   (** ** Resolve **)
-
   
   Theorem tr_resolveIter_some:
     forall (tr:MatchedTransformation) (sm : SourceModel) (name: string) (type: TargetModelClass)
@@ -2266,6 +2348,7 @@ Section CoqTL.
       tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
       tr_applyElementOnPattern_non_None := tr_applyElementOnPattern_non_None;
 
+      tr_applyReferenceOnPattern_inTypes := tr_applyReferenceOnPattern_inTypes;
       tr_applyReferenceOnPattern_iterator := tr_applyReferenceOnPattern_iterator;
 
       tr_matchPattern_in := tr_matchPattern_in;
