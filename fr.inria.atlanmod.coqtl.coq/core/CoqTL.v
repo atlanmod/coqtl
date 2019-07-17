@@ -2063,7 +2063,19 @@ Section CoqTL.
         /\ (instantiateRuleOnPatternIterName r sm sp iter name = Some e)
         /\ (toModelClass type e = Some x) ).
   Proof.
-  Admitted.
+    intros.
+    unfold resolveIter in H.
+    destruct ( find (fun r : Rule => isMatchedRule sm r name sp iter)
+                (Transformation_getRules (unmatchTransformation tr))) eqn: find.
+    - destruct (instantiateRuleOnPatternIterName r sm sp iter name) eqn: inst.
+      -- exists r, t.
+         split.
+         auto.
+         split.
+         auto. auto.
+      -- crush.
+    - crush.
+  Qed.
                                                      
   Theorem tr_resolveIter_none:
     forall (tr:MatchedTransformation) (sm : SourceModel) (name: string) (type: TargetModelClass)
