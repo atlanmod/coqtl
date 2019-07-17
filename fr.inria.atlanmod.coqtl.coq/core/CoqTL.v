@@ -817,7 +817,6 @@ Section CoqTL.
        ++ crush.
   Qed.
 
-  (* TODO: MOVE TO ENGINE.V *)
   Theorem tr_instantiatePattern_maxArity : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       length sp > maxArity tr ->
@@ -1368,7 +1367,28 @@ Section CoqTL.
       length sp > maxArity tr ->
       applyPattern tr sm sp = None.
   Proof.
-  Admitted.
+    intros.
+    unfold applyPattern.
+    destruct (matchPattern tr sm sp ) eqn:mtch.
+    - auto.
+    - unfold matchPattern in mtch.
+      assert (In r (r::l)). { crush. }
+      rewrite <- mtch in H0.
+      apply filter_In in H0.
+      destruct H0.
+      destruct ( matchRuleOnPattern r sm sp) eqn:mtchP.
+      + destruct b eqn: b_ca.
+        * unfold matchRuleOnPattern in mtchP.
+          unfold evalGuard in mtchP.
+          unfold evalFunction in mtchP.
+          assert (maxArity tr >= length (Rule_getInTypes r)). { apply maxArity_geq_rule_length. assumption. }
+          assert (length sp > length (Rule_getInTypes r)).  { omega. }
+          assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes r) bool (Rule_getGuard r sm) sp = None).
+          { apply evalFunctionFix_intypes_el_neq. crush. }
+          rewrite H4 in mtchP. inversion mtchP.
+        * inversion H1.
+      + inversion H1.      
+  Qed. 
 
   (** ** applyRuleOnPattern **)
 
