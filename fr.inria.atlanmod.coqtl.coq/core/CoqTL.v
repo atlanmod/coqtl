@@ -1906,7 +1906,7 @@ Section CoqTL.
   Theorem tr_applyElementOnPattern_iterator : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
       i >= length (evalIterator r sm sp) ->
-      applyElementOnPattern r ope tr sm sp i = None.
+      applyElementOnPattern r ope tr sm sp i <> None -> False.
   Proof.
   Admitted.
 
@@ -1917,9 +1917,23 @@ Section CoqTL.
       (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
       (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
       i >= length (evalIterator r sm sp) ->
-      applyReferenceOnPattern r ope oper tr sm sp i = None.
+      applyReferenceOnPattern r ope oper tr sm sp i <> None -> False.
   Proof.
-  Admitted.
+    intros.
+    assert (exists (tl: TargetModelLink), applyReferenceOnPattern r ope oper tr sm sp i = Some tl).
+    { specialize (option_res_dec (applyReferenceOnPattern r ope oper tr sm sp)). intros. 
+      specialize (H1 i H0). destruct H1. exists x. crush. }
+    destruct H1.
+    unfold applyReferenceOnPattern in H1.
+    destruct (matchRuleOnPattern r sm sp) eqn: match_res.
+    - destruct b eqn:b_ca.
+      -- destruct (nth_error (evalIterator r sm sp) i) eqn: eval_iter_ca.
+         --- specialize (nth_error_None (evalIterator r sm sp) i).
+             crush.           
+         --- crush.
+      -- crush.
+    - crush.
+  Qed.
 
   (** ** matchPattern **)
 
