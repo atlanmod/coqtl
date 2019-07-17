@@ -1835,7 +1835,73 @@ Section CoqTL.
           In oper (OutputPatternElement_getOutputElementReferences ope) /\ 
           applyReferenceOnPattern r ope oper tr sm sp i <> None).
   Proof.
-  Admitted.
+  intros.
+  split.
+  {
+    intro.
+    specialize (option_res_dec (applyElementOnPattern r ope tr sm sp) i H).
+    intro.
+    destruct H0.
+    unfold applyElementOnPattern in H.
+    destruct (matchRuleOnPattern r sm sp) eqn:mtch.
+        + destruct b.
+          * Arguments optionList2List : simpl never.
+            Arguments map : simpl never.
+            destruct (flat_map
+          (fun
+             oper : OutputPatternElementReference (Rule_getInTypes r) 
+                      (Rule_getIteratorType r) (OutputPatternElement_getOutType ope) =>
+           optionToList (applyReferenceOnPattern r ope oper tr sm sp i))
+          (OutputPatternElement_getOutputElementReferences ope)) eqn:applyI_ca.
+            - crush.
+            - assert (In t (t::l)). { crush. }
+              rewrite <- applyI_ca in H1.
+                          apply in_flat_map in H1.
+              destruct H1. destruct H1.
+              exists x0.
+              unfold optionToList in H2.
+              destruct (applyReferenceOnPattern r ope x0 tr sm sp i).
+              -- crush.
+              -- crush.
+          * crush.
+        + crush.
+  }
+  {
+    intros.
+    destruct H.
+    destruct H.
+    unfold applyElementOnPattern.
+    destruct (matchRuleOnPattern r sm sp) eqn: mtch.
+     + destruct b eqn:b_ca.
+       ++ destruct (flat_map
+      (fun
+         oper : OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r)
+                  (OutputPatternElement_getOutType ope) =>
+       optionToList (applyReferenceOnPattern r ope oper tr sm sp i))
+      (OutputPatternElement_getOutputElementReferences ope)) eqn: apply_res.
+          +++ specialize (in_flat_map_nil 
+                        (fun
+                   oper : OutputPatternElementReference (Rule_getInTypes r)
+                            (Rule_getIteratorType r) (OutputPatternElement_getOutType ope) =>
+                 optionToList (applyReferenceOnPattern r ope oper tr sm sp i))
+                        (OutputPatternElement_getOutputElementReferences ope)).
+              intros.
+
+              destruct H1.
+              specialize (H1 apply_res x H).
+               specialize (option_res_dec (applyReferenceOnPattern r ope x tr sm sp) i H0).
+              intros.
+              destruct H3.
+              unfold optionToList in H1.
+              rewrite H3 in H1.
+              crush.              
+          +++ crush.
+       ++ unfold applyReferenceOnPattern in H0. 
+          rewrite mtch in H0. crush.
+    + unfold applyReferenceOnPattern in H0. 
+      rewrite mtch in H0. crush.
+  }
+  Qed.
 
   Theorem tr_applyElementOnPattern_iterator : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
