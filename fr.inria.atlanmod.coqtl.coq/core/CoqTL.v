@@ -2146,8 +2146,36 @@ Section CoqTL.
           In sp sps /\
           resolveIter tr sm name type sp iter = Some te).
   Proof.
-  Admitted.
-     
+    intros.
+    split.
+    - intros.
+      destruct H. destruct H.
+      unfold resolveAllIter in H.
+      inversion H.
+      rewrite <- H2 in H0.
+      apply in_flat_map in H0.
+      destruct H0. destruct H0.
+      exists x0. split; auto.
+      destruct (resolveIter tr sm name type x0 iter).
+      -- unfold optionToList in H1. crush.
+      -- crush.
+    - intros.
+      destruct H. destruct H.
+      remember (resolveAllIter tr sm name type sps iter) as tes1.
+      destruct tes1 eqn: resolveAll.
+      -- exists l.
+         split. auto.
+         unfold resolveAllIter in Heqtes1.
+         inversion Heqtes1.
+         apply in_flat_map.
+         exists x. split. auto.
+         destruct (resolveIter tr sm name type x iter).
+         --- crush.
+         --- crush.
+      -- unfold resolveAllIter in Heqtes1.
+         crush.
+  Qed.
+      
   Theorem tr_resolveAll_unfold:
     forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
       (type: TargetModelClass) (sps: list(list SourceModelElement)),
