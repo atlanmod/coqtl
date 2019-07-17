@@ -2084,12 +2084,28 @@ Section CoqTL.
        let matchedRule := (find (fun r:Rule => isMatchedRule sm r name sp iter)
                                (Transformation_getRules (unmatchTransformation tr))) in
        (matchedRule = None \/
-        exists (r: Rule),
-          matchedRule = Some r /\  instantiateRuleOnPatternIterName r sm sp iter name = None
+        (exists (r: Rule),
+          matchedRule = Some r /\
+          instantiateRuleOnPatternIterName r sm sp iter name = None) \/
+        (exists (r: Rule),
+          matchedRule = Some r /\
+          exists e, instantiateRuleOnPatternIterName r sm sp iter name = Some e /\
+          toModelClass type e = None) 
+                   
        ).
   Proof.
-  Admitted.
-
+    intros.
+    unfold resolveIter in H.
+    destruct (find (fun r : Rule => isMatchedRule sm r name sp iter)
+                   (Transformation_getRules (unmatchTransformation tr))) eqn: find.
+    - destruct (instantiateRuleOnPatternIterName r sm sp iter name) eqn: inst.
+      -- right. right. exists r. split.
+         --- auto.
+         --- exists t. auto.
+      -- right. left. exists r. auto.
+    - left. auto.
+  Qed.
+  
   Theorem tr_resolve_unfold:
     forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
       (type: TargetModelClass) (sp: list SourceModelElement),
