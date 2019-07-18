@@ -1219,7 +1219,27 @@ Section CoqTL.
     - crush.
   Qed.
 
-
+  Theorem tr_instantiateElementOnPattern_iterator : 
+    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
+      i >= length (evalIterator r sm sp) ->
+      instantiateElementOnPattern r ope sm sp i <> None -> False.
+  Proof.
+      intros.
+      assert (exists (te: TargetModelElement), instantiateElementOnPattern r ope sm sp i = Some te).
+    { specialize (option_res_dec (instantiateElementOnPattern r ope sm sp)). intros. 
+      specialize (H1 i H0). destruct H1. exists x. crush. }
+    destruct H1.
+    unfold instantiateElementOnPattern in H1.
+    destruct (matchRuleOnPattern r sm sp) eqn: match_res.
+    - destruct b eqn:b_ca.
+      -- destruct (nth_error (evalIterator r sm sp) i) eqn: eval_iter_ca.
+         --- specialize (nth_error_None (evalIterator r sm sp) i).
+             crush.           
+         --- crush.
+      -- crush.
+    - crush.
+  Qed. 
   
   (** ** applyPattern **)
 
@@ -1976,76 +1996,7 @@ Section CoqTL.
          --- crush.
       -- crush.
     - crush.
-  Qed.
-
-  (** ** Iterators **)
-
-
-  Theorem tr_instantiateIterationOnPattern_iterator : 
-    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
-      i >= length (evalIterator r sm sp) ->
-      instantiateIterationOnPattern r sm sp i <> None -> False.
-  Proof.
-  Admitted.
-  (*
-    intros.
-    assert (exists (te: list TargetModelElement), instantiateIterationOnPattern r sm sp i = Some te).
-    { specialize (option_res_dec (instantiateIterationOnPattern r sm sp)). intros. 
-      specialize (H1 i H0). destruct H1. exists x. crush. }
-    destruct H1.
-    unfold instantiateIterationOnPattern in H1.
-    destruct (matchRuleOnPattern r sm sp) eqn: match_res.
-    - destruct b eqn:b_ca.
-      -- destruct (flat_map
-           (fun o : OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r) =>
-            optionToList (instantiateElementOnPattern r o sm sp i)) (Rule_getOutputPattern r)) eqn: flat_res.
-         --- crush.
-         --- assert (In t (t::l)). { crush. }
-                                  rewrite <- flat_res in H2.
-             apply (in_flat_map) in H2. destruct H2. destruct H2.
-             destruct (instantiateElementOnPattern r x0 sm sp i) eqn: inst_ref.
-             * specialize (tr_instantiateElementOnPattern_iterator sm r sp i x0 H). intros.
-               assert (instantiateElementOnPattern r x0 sm sp i <> None). { rewrite inst_ref. crush. }
-               crush.
-             * crush.
-      -- crush.
-    - crush.
-  Qed.
-  *)
-
-  
-  Theorem tr_applyIterationOnPattern_iterator : 
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
-      i >= length (evalIterator r sm sp) ->
-      applyIterationOnPattern r tr sm sp i <> None -> False.
-  Proof.
-  Admitted.
-  (*
-  intros.
-    assert (exists (tl: list TargetModelLink), applyIterationOnPattern r tr sm sp i = Some tl).
-    { specialize (option_res_dec (applyIterationOnPattern r tr sm sp)). intros. 
-      specialize (H1 i H0). destruct H1. exists x. crush. }
-    destruct H1.
-    unfold applyIterationOnPattern in H1.
-    destruct (matchRuleOnPattern r sm sp) eqn: match_res.
-    - destruct b eqn:b_ca.
-      -- destruct ( flat_map
-           (fun o : OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r) =>
-            optionListToList (applyElementOnPattern r o tr sm sp i)) 
-           (Rule_getOutputPattern r)) eqn: flat_res.
-         --- crush.
-         --- assert (In t (t::l)). { crush. }
-                                  rewrite <- flat_res in H2.
-             apply (in_flat_map) in H2. destruct H2. destruct H2.
-             destruct (applyElementOnPattern r x0 tr sm sp i) eqn: apply_ref.
-             * specialize (tr_applyElementOnPattern_iterator tr sm r sp i x0 H). intros.
-               assert (applyElementOnPattern r x0 tr sm sp i <> None). { rewrite apply_ref. crush. }
-               crush.
-             * crush.
-      -- crush.
-    - crush.
-  Qed.
- *)
+  Qed. 
   
   (** ** matchPattern **)
 
@@ -2322,10 +2273,9 @@ Section CoqTL.
 
       tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
       tr_instantiateIterationOnPattern_non_None := tr_instantiateIterationOnPattern_non_None;
-      tr_instantiateIterationOnPattern_iterator := tr_instantiateIterationOnPattern_iterator;
       
       tr_instantiateElementOnPattern_inTypes := tr_instantiateElementOnPattern_inTypes;
-
+      tr_instantiateElementOnPattern_iterator := tr_instantiateElementOnPattern_iterator;
 
       tr_applyPattern_in := tr_applyPattern_in;
       tr_applyPattern_non_None := tr_applyPattern_non_None;
@@ -2336,7 +2286,6 @@ Section CoqTL.
 
       tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
       tr_applyIterationOnPattern_non_None := tr_applyIterationOnPattern_non_None;
-      tr_applyIterationOnPattern_iterator := tr_applyIterationOnPattern_iterator;
 
       tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
       tr_applyElementOnPattern_non_None := tr_applyElementOnPattern_non_None;
