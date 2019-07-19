@@ -1,4 +1,5 @@
 -R "core/utils" "core.utils"
+core/utils/PropUtils.v
 core/utils/ArithUtils.v
 core/utils/ListUtils.v
 core/utils/ConcatUtils.v
