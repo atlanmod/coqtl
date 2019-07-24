@@ -1,3 +1,5 @@
+-- @path HSM=/fr.inria.coqtl.experiment/HSM2FSM/HSM.ecore
+-- @path FSM=/fr.inria.coqtl.experiment/HSM2FSM/HSM.ecore
 module HSM2FSM;
 
 create OUT : FSM from IN : HSM;
@@ -10,6 +12,12 @@ rule SM2SM {
 rule RS2RS {
     from rs1 : HSM!RegularState
     to rs2 : FSM!RegularState ( name <- rs1.name,stateMachine <- rs1.stateMachine )
+}
+
+-- Initial states of non-composite states become intial states in the flattened SM
+rule IS2IS {
+    from is1 : HSM!InitialState (is1.compositeState.oclIsUndefined())
+    to   is2 : FSM!InitialState  ( stateMachine <- is1.stateMachine, name <- is1.name )
 }
 
 -- Initial states of composite states become regular states in the flattened SM
@@ -29,7 +37,7 @@ rule T2TA {
 rule T2TB { 
     from t1 : HSM!Transition, src : HSM!CompositeState, trg : HSM!AbstractState, c : HSM!AbstractState 
     ( t1.source = src and t1.target = trg and c.compositeState = src and
-    not c.oclIsTypeOf(HSM!CompositeState) and not trg.oclIsTypeOf(HSM!CompositeState) and src <> c)
+    not c.oclIsTypeOf(HSM!CompositeState) and not trg.oclIsTypeOf(HSM!CompositeState) and src <> c )
     to   t2 : FSM!Transition 
     ( label <- t1.label, stateMachine <- t1.stateMachine, source <- c, target <- trg ) } 
 
@@ -39,4 +47,5 @@ rule T2TC {
     ( t1.source = src and t1.target = trg and c.compositeState = trg  
       and not src.oclIsTypeOf(HSM!CompositeState) )
     to   t2 : FSM!Transition 
-    ( label <- t1.label, stateMachine <- t1.stateMachine, source <- src, target <- c  }	
+    ( label <- t1.label, stateMachine <- t1.stateMachine, source <- src, target <- c)  
+}	
