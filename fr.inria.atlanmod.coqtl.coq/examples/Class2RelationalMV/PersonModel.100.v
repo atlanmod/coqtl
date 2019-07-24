@@ -8,7 +8,7 @@ Require Import List.
 
 Require Import core.Model.
 
-Require Import examples.Class2Relational.ClassMetamodel.
+Require Import examples.Class2RelationalMV.ClassMetamodel.
 
 
 
