@@ -9,4 +9,4 @@ Require Import HSM2FSM.
 Require Import HSMModel.
 
 
-Compute execute HSM2FSM InputModel.
+Time Compute execute HSM2FSM InputModel.

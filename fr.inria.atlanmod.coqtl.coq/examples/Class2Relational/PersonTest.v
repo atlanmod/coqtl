@@ -9,4 +9,5 @@ Require Import examples.Class2Relational.RelationalMetamodel.
 Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.PersonModel.
 
-Compute execute Class2Relational PersonModel.
+Time Compute (execute Class2Relational InputModel).
+
