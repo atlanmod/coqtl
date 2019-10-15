@@ -2324,8 +2324,12 @@ Arguments resolveAll: default implicits.
 
 Arguments execute: default implicits.
 Arguments matchPattern: default implicits.
+Arguments matchRuleOnPattern': default implicits.
+Arguments matchRuleOnPattern : default implicits.
 Arguments instantiatePattern: default implicits.
 Arguments instantiateRuleOnPattern: default implicits.
+Arguments instantiateIterationOnPattern: default implicits.
+Arguments  instantiateElementOnPattern : default implicits.
 Arguments evalGuard: default implicits.
 Arguments evalIterator: default implicits.
 Arguments evalOutputPatternElement: default implicits.
