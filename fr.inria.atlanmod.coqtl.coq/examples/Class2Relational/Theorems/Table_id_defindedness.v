@@ -74,22 +74,69 @@ Proof.
              (* suggests missing theorem about evalOutputPatternElement and evalFunction *)
              unfold evalOutputPatternElement in H8. simpl in H8.
              destruct (Expressions.evalFunction ClassMetamodel cm [ClassEClass] Table
-                                                (fun (_ : ClassModel) (c : Class) => BuildTable (getClassId c) (getClassName c)) sp) eqn: f.
-             ++++ unfold Expressions.evalFunction in f.
-                  unfold Expressions.evalFunctionFix in f.
+                       (fun (_ : ClassModel) (c : Class) => BuildTable (getClassId c) (getClassName c)) sp) eqn: eval_fun.
+             ++++ unfold Expressions.evalFunction in eval_fun.
+                  unfold Expressions.evalFunctionFix in eval_fun.
                   destruct sp eqn: sp_ca.
-                  +++++ inversion f.
-                  +++++ destruct (toModelClass ClassEClass c) eqn: c_ca.
-                        destruct l.
-                        ++++++ inversion f.
+                  +++++ inversion eval_fun.
+                  +++++ destruct c eqn: c_ca.
+                        destruct c0 eqn: c0_ca.
+                         * simpl in eval_fun.
+                           destruct l.
+                           **  inversion eval_fun.
                                inversion H8.
                                rewrite <- H10.
                                simpl.
-                               admit.
-                        ++++++ inversion f.
-                        ++++++ inversion f.
+                               specialize (Hpre c).
+                               unfold incl in H0.
+                               specialize (H0 c). simpl in H0.
+                               assert (In c (allModelElements cm)). { crush. }
+                               specialize (Hpre H9).
+                               unfold ClassMetamodel_getId in Hpre.
+                               rewrite c_ca in Hpre. auto.
+                           **  inversion eval_fun.
+                         * simpl in eval_fun. inversion eval_fun.
              ++++ inversion H8.
          +++ crush.
     ++ crush.
-  + admit.
-Admitted.  
+  + destruct H3.
+    destruct (nth_error (evalIterator r cm sp) i).
+    ++   generalize dependent x.
+         generalize dependent r0.        
+         rewrite <- H3.
+         simpl.
+         intros.
+         destruct H7.
+         +++ rewrite <- H7 in H8.
+             (* suggests missing theorem about evalOutputPatternElement and evalFunction *)
+             unfold evalOutputPatternElement in H8. simpl in H8.
+             destruct (Expressions.evalFunction ClassMetamodel cm [AttributeEClass] Column
+         (fun (_ : ClassModel) (a : Attribute) =>
+          BuildColumn (getAttributeId a) (getAttributeName a)) sp) eqn: eval_fun.
+             ++++ unfold Expressions.evalFunction in eval_fun.
+                  unfold Expressions.evalFunctionFix in eval_fun.
+                  destruct sp eqn: sp_ca.
+                  +++++ inversion eval_fun.
+                  +++++ 
+                    destruct c0 eqn: c0_ca.
+                    destruct c1 eqn: c1_ca.
+                         * simpl in eval_fun. inversion eval_fun.
+                         * simpl in eval_fun.
+                           destruct l.
+                           **  inversion eval_fun.
+                               inversion H8.
+                               rewrite <- H10.
+                               simpl.
+                               specialize (Hpre c0).
+                               unfold incl in H0.
+                               specialize (H0 c0). simpl in H0.
+                               assert (In c0 (allModelElements cm)). { crush. }
+                               specialize (Hpre H9).
+                               unfold ClassMetamodel_getId in Hpre.
+                               rewrite c0_ca in Hpre. auto.      
+                           ** inversion eval_fun.
+             ++++ inversion H8.
+         +++ inversion H7.
+    ++ inversion H8.
+    ++ inversion H3.
+Qed.  
