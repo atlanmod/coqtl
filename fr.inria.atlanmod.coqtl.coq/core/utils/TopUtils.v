@@ -1,4 +1,5 @@
 Require Export List.
+Require Export core.utils.PropUtils.
 Require Export core.utils.ArithUtils.
 Require Export core.utils.ListUtils.
 Require Export core.utils.TupleUtils.

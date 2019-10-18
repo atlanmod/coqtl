@@ -40,6 +40,7 @@ Section Exp.
     evalFunctionFix intypes otype (f m) el.
 
 
+
   Lemma evalFunctionFix_intypes_el_neq:
     forall intypes otype f el,
       length intypes <> length el ->
@@ -66,7 +67,23 @@ Section Exp.
         * simpl. rewrite tmc. auto.
   Qed.
 
+  
 
+  
+  Lemma evalFunctionFix_intypes_el_neq_contraposition:
+    forall intypes otype f el,
+        evalFunctionFix intypes otype f el <> None ->
+          length intypes = length el.
+  Proof.
+    intros intypes otype f el.
+    specialize (evalFunctionFix_intypes_el_neq intypes otype f el).
+    intro.
+    specialize  (contraposition) with (q:=(evalFunctionFix intypes otype f el) = None) (p:=Datatypes.length intypes <> Datatypes.length el).
+    intros.
+    crush.
+  Qed.
+
+  
 End Exp.
 
 Arguments denoteFunction: default implicits.

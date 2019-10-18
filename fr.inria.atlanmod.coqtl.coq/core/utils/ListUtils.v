@@ -1,5 +1,5 @@
 Require Import List Omega.
-
+Require Import core.utils.CpdtTactics.
 
 Definition listToListList {A : Type} (l : list A) : list (list A) :=
   map (fun e:A => e::nil) l.
@@ -21,6 +21,17 @@ Definition optionListToList {A:Type} (o: option (list A)) : list A :=
 
 Definition optionList2List {A : Type} (l:list (option A)) : list A :=
   flat_map optionToList l.
+
+
+Theorem optionListToList_In:
+  forall (A:Type) (a: A) (l: option (list A)), (In a (optionListToList l)) -> l <> None.
+Proof.
+intros.
+destruct (l) eqn:l_ca.
+- simpl in H. crush.
+- simpl in H. omega.
+Qed.
+
 
 Theorem optionList2List_In :
   forall (A:Type) (a: A) (l: list (option A)), (In a (optionList2List l)) -> (In (Some a) l).
@@ -86,4 +97,54 @@ Fixpoint zipWith {A : Type} {B : Type} {C : Type} (f: A -> B -> C) (la: list A) 
   | nil, _ => nil
   | _, nil => nil
   end.
+
+Theorem in_flat_map_nil:
+  forall {A B : Type} (f : A -> list B) (l : list A),
+       (flat_map f l) = nil <-> (forall a: A, In a l -> f a = nil).
+Proof.
+split.
+* intros.
+  induction l.
+  - crush.
+  -  apply app_eq_nil in H. destruct H. destruct H0.
+    -- simpl in H. rewrite <- H0. assumption.
+    -- apply IHl. assumption. assumption.
+* intros.
+  induction l.
+  - crush.
+  - simpl.
+    assert (f a = nil). { crush. }
+    rewrite H0. simpl.
+    apply IHl. simpl in H. intros. specialize (H a0). apply H. right. assumption.
+Qed.
+
+Lemma filter_nil:
+    forall (A : Type) (f : A -> bool) (x : A) (l : list A),
+      (filter f l) = nil <->  (forall a: A, In a l -> f a = false).
+Proof.
+split.
+* intros.
+  induction l.
+  - crush. 
+  - simpl in H0.
+    destruct H0.
+    -- rewrite H0 in H.
+       unfold filter in H.
+       destruct (f a).
+       --- crush.
+       --- crush.
+    -- apply IHl.
+       --- simpl in H.
+           destruct (f a0).
+           ---- crush.
+           ---- crush.
+       --- assumption.
+* intros.
+  induction l.
+  - crush.
+  - simpl.
+    assert (f a = false). { crush. }
+    rewrite H0. simpl.
+    apply IHl. simpl in H. intros. specialize (H a0). apply H. right. assumption.
+Qed.
 

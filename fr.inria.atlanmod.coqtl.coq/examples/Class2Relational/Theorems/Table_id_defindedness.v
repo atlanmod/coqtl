@@ -25,103 +25,118 @@ Proof.
   intros cm rm H Hpre t1 Hintm.  
   remember H as tr.
   clear Heqtr.
-  apply tr_execute_surj_elements with (te:=t1) in H.
-  Focus 2. assumption.
-  Focus 1.
-  destruct H as [sp]. destruct H as [tp]. destruct H as [inst].
-  destruct H as [Hinsm]. destruct H as [Hintp]. rename H into Hincltp.
-  apply tr_instantiatePattern_surj_elements with (te:=t1) (tm:=rm) in inst.
-  - { 
-      destruct inst as [r]. destruct H as [Hrintr]. destruct H as [Hmatch]. rename H into Hinst.
-      destruct sp eqn:sp_ca.
-      -- assert ((matchPattern Class2Relational cm nil) = nil). {apply tr_matchPattern_sp_nil. }
-         rewrite H in Hmatch.
-         contradiction.
-      -- destruct l eqn:l_ca.
-         --- apply tr_instantiateRuleOnPattern_surj_elements with (te:=t1) (tm:=rm) (tr:=Class2Relational) in Hinst.  
-              ----  destruct Hinst as [HrinMatch].
-                    destruct H as [Hguard].
-                    destruct H as [out].
-                    destruct H as [it].
-                    destruct H as [Hit].
-                    destruct H as [Hout].
-                    rename H into Heval.
-                    destruct c eqn: c_ca;
+  rewrite tr in Hintm.
+  apply tr_execute_in_elements in Hintm.
+  destruct Hintm. destruct H0. destruct H0. destruct H1.
+  assert (exists tp : list RelationalMetamodel_EObject,
+             instantiatePattern Class2Relational cm x = return tp /\ In t1 tp).
+  { exists x0. split. crush. crush. }
+  apply tr_instantiatePattern_in in H3.
+  destruct H3. destruct H3. destruct H3.
+  rename x1 into r.
+  rename x2 into tp.
+  rename x into sp.
+  apply tr_matchPattern_in in H3.
+  destruct H3.
+  assert (exists tp : list  RelationalMetamodel_EObject,
+          instantiateRuleOnPattern r cm sp = return tp /\ In t1 tp).
+  { exists tp. crush. }
+  apply tr_instantiateRuleOnPattern_in with (tr:=Class2Relational) in H6.
+  destruct H6. destruct H6.
+  rename x into i.
+  rename x1 into tp1.
+  assert  (exists tp : list  RelationalMetamodel_EObject,
+          instantiateIterationOnPattern r cm sp i = return tp /\ In t1 tp).
+  { exists tp1. crush. }
+  apply tr_instantiateIterationOnPattern_in in H7.
+  destruct H7. destruct H7.
+  (* suggests missing theorem about instantiateElementonpattern and evalOutputpatternelement
+     but perhaps this is intended, since at some point, we will have a function interfaces
+     to functions defined in Expression.v
+   *)
+  unfold instantiateElementOnPattern in H8.
+  (* suggests missing theorem about adaptor function matchRuleOnpattern' and matchruleonpattern
+     although, in my opinion, we should avoid adaptor function in general.
+   *)
+  unfold matchRuleOnPattern' in H5.
+  rewrite H5 in H8.
+  unfold Class2Relational in H3.
+  simpl in H3.
+  destruct H3.
+  + destruct (nth_error (evalIterator r cm sp) i).
+    ++   generalize dependent x.
+         generalize dependent r0.        
+         rewrite <- H3.
+         simpl.
+         intros.
+         destruct H7.
+         +++ rewrite <- H7 in H8.
+             (* suggests missing theorem about evalOutputPatternElement and evalFunction *)
+             unfold evalOutputPatternElement in H8. simpl in H8.
+             destruct (Expressions.evalFunction ClassMetamodel cm [ClassEClass] Table
+                       (fun (_ : ClassModel) (c : Class) => BuildTable (getClassId c) (getClassName c)) sp) eqn: eval_fun.
+             ++++ unfold Expressions.evalFunction in eval_fun.
+                  unfold Expressions.evalFunctionFix in eval_fun.
+                  destruct sp eqn: sp_ca.
+                  +++++ inversion eval_fun.
+                  +++++ destruct c eqn: c_ca.
+                        destruct c0 eqn: c0_ca.
+                         * simpl in eval_fun.
+                           destruct l.
+                           **  inversion eval_fun.
+                               inversion H8.
+                               rewrite <- H10.
+                               simpl.
+                               specialize (Hpre c).
+                               unfold incl in H0.
+                               specialize (H0 c). simpl in H0.
+                               assert (In c (allModelElements cm)). { crush. }
+                               specialize (Hpre H9).
+                               unfold ClassMetamodel_getId in Hpre.
+                               rewrite c_ca in Hpre. auto.
+                           **  inversion eval_fun.
+                         * simpl in eval_fun. inversion eval_fun.
+             ++++ inversion H8.
+         +++ crush.
+    ++ crush.
+  + destruct H3.
+    destruct (nth_error (evalIterator r cm sp) i).
+    ++   generalize dependent x.
+         generalize dependent r0.        
+         rewrite <- H3.
+         simpl.
+         intros.
+         destruct H7.
+         +++ rewrite <- H7 in H8.
+             (* suggests missing theorem about evalOutputPatternElement and evalFunction *)
+             unfold evalOutputPatternElement in H8. simpl in H8.
+             destruct (Expressions.evalFunction ClassMetamodel cm [AttributeEClass] Column
+         (fun (_ : ClassModel) (a : Attribute) =>
+          BuildColumn (getAttributeId a) (getAttributeName a)) sp) eqn: eval_fun.
+             ++++ unfold Expressions.evalFunction in eval_fun.
+                  unfold Expressions.evalFunctionFix in eval_fun.
+                  destruct sp eqn: sp_ca.
+                  +++++ inversion eval_fun.
+                  +++++ 
                     destruct c0 eqn: c0_ca.
-                    ----- (* ClassEClass *)
-                          unfold Class2Relational in Hrintr.
-                          destruct Hrintr as [r1|rrest].
-                          ------  revert Hit.
-                                  revert Heval.
-                                  revert it.
-                                  revert Hout.
-                                  revert out.
-                                  rewrite <- r1.
-                                  intros.
-                                  simpl in Hout.
-                                  destruct Hout.
-                                  + rewrite <- H in Heval.
-                                    unfold evalOutputPatternElement in Heval.
-                                    simpl in Heval.
-                                    (* its ok to inversion here, or chose a better tactic*)
-                                    inversion Heval.
-                                    simpl.
-                                    assert (In c ([ClassMetamodel_BuildEObject ClassEClass c1])). { simpl. left. symmetry. assumption. }
-                                    apply Hinsm in H0. 
-                                    apply Hpre in H0.
-                                    unfold ClassMetamodel_getId in H0.
-                                    rewrite  c_ca in H0.
-                                    assumption.
-                                  + contradiction.
-                          ------ destruct rrest as [r2|ctrdct].
-                                 ------- rewrite <- r2 in Hguard.
-                                         unfold  evalGuard in Hguard.
-                                         simpl in Hguard.
-                                         (* its ok to inversion here, or chose a better tactic*)
-                                         inversion Hguard. 
-                                 ------- contradiction.
-                    ----- (* AttributeEClass *)
-                          unfold Class2Relational in Hrintr.
-                          destruct Hrintr as [r1|rrest].
-                          ------ rewrite <- r1 in Hguard.
-                                 unfold  evalGuard in Hguard.
-                                 simpl in Hguard.
-                                 (* its ok to inversion here, or chose a better tactic*)
-                                 inversion Hguard. 
-                          ------ destruct rrest as [r2|ctrdct].
-                                 ------- revert Hit.
-                                         revert Heval.
-                                         revert it.
-                                         revert Hout.
-                                         revert out.
-                                         rewrite <- r2.
-                                         intros.
-                                         simpl in Hout.
-                                         destruct Hout.
-                                         + rewrite <- H in Heval.
-                                           unfold evalOutputPatternElement in Heval.
-                                           simpl in Heval.
-                                           (* its ok to inversion here, or chose a better tactic*)
-                                           inversion Heval.
-                                           simpl.
-                                           assert (In c ([ClassMetamodel_BuildEObject AttributeEClass c1])). { simpl. left. symmetry. assumption. }
-                                           apply Hinsm in H0. 
-                                           apply Hpre in H0.
-                                           unfold ClassMetamodel_getId in H0.
-                                           rewrite  c_ca in H0.
-                                           assumption.
-                                         + contradiction.
-                                 ------- contradiction.
-              ---- assumption.
-              ---- assumption.
-              ---- assumption.
-         --- assert ((length sp) > (maxArity Class2Relational)). { rewrite sp_ca. unfold maxArity. simpl. apply gt_n_S. apply gt_Sn_O. }
-             apply tr_matchPattern_sp_gt_maxArity with (sm:=cm) in H.
-             rewrite sp_ca in H.
-             rewrite H in Hmatch.
-             contradiction.
-    }
-  - assumption.
-  - assumption.
-  - assumption.
-Qed.
+                    destruct c1 eqn: c1_ca.
+                         * simpl in eval_fun. inversion eval_fun.
+                         * simpl in eval_fun.
+                           destruct l.
+                           **  inversion eval_fun.
+                               inversion H8.
+                               rewrite <- H10.
+                               simpl.
+                               specialize (Hpre c0).
+                               unfold incl in H0.
+                               specialize (H0 c0). simpl in H0.
+                               assert (In c0 (allModelElements cm)). { crush. }
+                               specialize (Hpre H9).
+                               unfold ClassMetamodel_getId in Hpre.
+                               rewrite c0_ca in Hpre. auto.      
+                           ** inversion eval_fun.
+             ++++ inversion H8.
+         +++ inversion H7.
+    ++ inversion H8.
+    ++ inversion H3.
+Qed.  
