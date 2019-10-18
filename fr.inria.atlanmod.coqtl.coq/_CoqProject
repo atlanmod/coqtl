@@ -1,4 +1,5 @@
 -R "core/utils" "core.utils"
+core/utils/BoolUtils.v
 core/utils/PropUtils.v
 core/utils/ArithUtils.v
 core/utils/ListUtils.v
@@ -27,4 +28,3 @@ examples/Class2Relational/PersonModel.v
 examples/TT2BDD/BDD.v
 examples/TT2BDD/BDDv2.v
 examples/TT2BDD/TT.v
-examples/TT2BDD/tt.model.v
