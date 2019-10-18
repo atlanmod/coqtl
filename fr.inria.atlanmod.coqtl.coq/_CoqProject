@@ -22,7 +22,7 @@ core/Expressions.v
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
 examples/Class2Relational/Class2Relational.v
-examples/Class2Relational/PersonModel.v
+examples/Class2Relational/tests/PersonModel.v
 
 -R "examples/TT2BDD" examples.TT2BDD
 examples/TT2BDD/BDD.v
