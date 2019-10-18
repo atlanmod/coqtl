@@ -335,7 +335,7 @@ Section CoqTL.
       else
         None.
 
-  (*TODO changto:
+  (*TODO change to:
          match  (indexes (length (evalIterator r sm sp))) with *)
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
@@ -526,8 +526,8 @@ Section CoqTL.
     list (OutputPatternElementReference InElTypes IterType (OutputPatternElement_getOutType o)) :=
     OutputPatternElement_getOutputElementReferences o.
 
-
   (** ** maxArity **)
+
   Lemma maxArity_geq_rule_length :
     forall (tr: Transformation) (r: Rule),
       In r (Transformation_getRules tr) ->
@@ -1029,7 +1029,6 @@ Section CoqTL.
   }
   Qed.
 
-
   (** ** instantiateIterationOnPattern **)
 
   Theorem tr_instantiateIterationOnPattern_in : 
@@ -1507,7 +1506,6 @@ Section CoqTL.
           inversion H0.
   Qed.
 
-
   Theorem tr_applyRuleOnPattern_non_None : 
      forall  (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) ,
        applyRuleOnPattern r tr sm sp <> None <->
@@ -1762,9 +1760,6 @@ Section CoqTL.
   }
   Qed.
 
-
-
-  
   (** ** applyElementOnPattern **)
 
   Theorem tr_applyElementOnPattern_in : 
@@ -1938,7 +1933,6 @@ Section CoqTL.
   }
   Qed.
 
-
   (** ** applyReferenceOnPattern **)
 
   Theorem tr_applyReferenceOnPattern_inTypes : 
@@ -1973,7 +1967,6 @@ Section CoqTL.
       -- crush.
     - crush.
   Qed.
-
   
   Theorem tr_applyReferenceOnPattern_iterator : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
@@ -2028,10 +2021,7 @@ Section CoqTL.
       rewrite H0.
       reflexivity.
   Qed.
-
-
   
-
   Theorem tr_matchPattern_maxArity : forall t: TransformationEngine,
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         length sp > maxArity tr ->
