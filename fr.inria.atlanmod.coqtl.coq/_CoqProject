@@ -1,4 +1,5 @@
 -R "core/utils" "core.utils"
+core/utils/BoolUtils.v
 core/utils/PropUtils.v
 core/utils/ArithUtils.v
 core/utils/ListUtils.v
@@ -21,10 +22,9 @@ core/Expressions.v
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
 examples/Class2Relational/Class2Relational.v
-examples/Class2Relational/PersonModel.v
+examples/Class2Relational/tests/PersonModel.v
 
--R "examples/BDD2TT" examples.BDD2TT
-examples/BDD2TT/BDD.v
-examples/BDD2TT/BDDv2.v
-examples/BDD2TT/TT.v
-examples/BDD2TT/bdd.model.v
+-R "examples/TT2BDD" examples.TT2BDD
+examples/TT2BDD/BDD.v
+examples/TT2BDD/BDDv2.v
+examples/TT2BDD/TT.v

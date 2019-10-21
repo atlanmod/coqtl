@@ -2,7 +2,7 @@ Require Import String.
 Require Import List.
 
 Require Import core.CoqTL.
-Require Import core.utils.tPrint.
+Require Import core.utils.PrintUtils.
 
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.

@@ -39,8 +39,6 @@ Section Exp.
   Definition evalFunction (m: Model ModelElement ModelLink) (intypes: list ModelClass) (otype: Type) (f: (Model ModelElement ModelLink) -> (denoteFunction intypes otype)) (el: list ModelElement) : option otype :=
     evalFunctionFix intypes otype (f m) el.
 
-
-
   Lemma evalFunctionFix_intypes_el_neq:
     forall intypes otype f el,
       length intypes <> length el ->
@@ -66,9 +64,6 @@ Section Exp.
              exact H.            
         * simpl. rewrite tmc. auto.
   Qed.
-
-  
-
   
   Lemma evalFunctionFix_intypes_el_neq_contraposition:
     forall intypes otype f el,
@@ -83,7 +78,6 @@ Section Exp.
     crush.
   Qed.
 
-  
 End Exp.
 
 Arguments denoteFunction: default implicits.

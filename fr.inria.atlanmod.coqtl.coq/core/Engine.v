@@ -435,13 +435,11 @@ Theorem option_res_dec :
       (exists (b: B),
           f a = Some b).
 Proof.
-intros.
-induction (f a).
-- exists a0. crush.
-- crush.
+  intros.
+  induction (f a).
+  - exists a0. crush.
+  - crush.
 Qed.
-
-
     
 Theorem tr_applyElementOnPattern_inTypes : 
    forall eng: TransformationEngine,
@@ -449,17 +447,17 @@ Theorem tr_applyElementOnPattern_inTypes :
         length sp <> length (getInTypes r) ->
         applyElementOnPattern r ope tr sm sp i <> None -> False.
 Proof.
-intros.
-assert (exists (tl: list TargetModelLink), applyElementOnPattern r ope tr sm sp i = Some tl).
-{ specialize (option_res_dec (applyElementOnPattern r ope tr sm sp)). intros. 
-  specialize (H1 i H0). destruct H1. exists x. crush. }
-destruct H1.
-assert (exists oper,  In oper (getOutputElementReferences  (getInTypes r) (getIteratorType r) ope) /\  applyReferenceOnPattern r ope oper tr sm sp i <> None).
-{ specialize (tr_applyElementOnPattern_non_None tr r sm sp i ope). intros. crush. }
-destruct H2.
-assert ( applyReferenceOnPattern r ope x0 tr sm sp i = None).
-{ specialize (tr_applyReferenceOnPattern_inTypes tr sm r sp i ope x0). intros. crush. }
-crush.
+  intros.
+  assert (exists (tl: list TargetModelLink), applyElementOnPattern r ope tr sm sp i = Some tl).
+  { specialize (option_res_dec (applyElementOnPattern r ope tr sm sp)). intros. 
+    specialize (H1 i H0). destruct H1. exists x. crush. }
+  destruct H1.
+  assert (exists oper,  In oper (getOutputElementReferences  (getInTypes r) (getIteratorType r) ope) /\  applyReferenceOnPattern r ope oper tr sm sp i <> None).
+  { specialize (tr_applyElementOnPattern_non_None tr r sm sp i ope). intros. crush. }
+  destruct H2.
+  assert ( applyReferenceOnPattern r ope x0 tr sm sp i = None).
+  { specialize (tr_applyReferenceOnPattern_inTypes tr sm r sp i ope x0). intros. crush. }
+  crush.
 Qed.
 
 Theorem tr_applyIterationOnPattern_inTypes : 
@@ -468,19 +466,19 @@ Theorem tr_applyIterationOnPattern_inTypes :
         length sp <> length (getInTypes r) ->
         applyIterationOnPattern r tr sm sp i <> None -> False.
 Proof.
-intros.
-assert (exists (tl: list TargetModelLink), applyIterationOnPattern r tr sm sp i = Some tl).
-{ specialize (option_res_dec (applyIterationOnPattern r tr sm sp)). intros. 
-  specialize (H1 i H0). destruct H1. exists x. crush. }
-destruct H1.
-assert (exists  ope : OutputPatternElement (getInTypes r) (getIteratorType r),
-     In ope (getOutputPattern r) /\ applyElementOnPattern r ope tr sm sp i <> None).
-{ specialize (tr_applyIterationOnPattern_non_None tr r sm sp i). crush. }
-destruct H2.
-destruct H2.
-assert ( applyElementOnPattern r x0 tr sm sp i = None).
-{ specialize (tr_applyElementOnPattern_inTypes tr sm r sp i x0). intros. crush. }
-crush.
+  intros.
+  assert (exists (tl: list TargetModelLink), applyIterationOnPattern r tr sm sp i = Some tl).
+  { specialize (option_res_dec (applyIterationOnPattern r tr sm sp)). intros. 
+    specialize (H1 i H0). destruct H1. exists x. crush. }
+  destruct H1.
+  assert (exists  ope : OutputPatternElement (getInTypes r) (getIteratorType r),
+      In ope (getOutputPattern r) /\ applyElementOnPattern r ope tr sm sp i <> None).
+  { specialize (tr_applyIterationOnPattern_non_None tr r sm sp i). crush. }
+  destruct H2.
+  destruct H2.
+  assert ( applyElementOnPattern r x0 tr sm sp i = None).
+  { specialize (tr_applyElementOnPattern_inTypes tr sm r sp i x0). intros. crush. }
+  crush.
 Qed.
 
 Theorem tr_applyRuleOnPattern_inTypes : 
@@ -489,18 +487,18 @@ Theorem tr_applyRuleOnPattern_inTypes :
         length sp <> length (getInTypes r) ->
         applyRuleOnPattern r tr sm sp <>  None -> False.
 Proof.
-intros.
-assert (exists (tl: list TargetModelLink), applyRuleOnPattern r tr sm sp = Some tl).
-{ specialize (option_res_dec (applyRuleOnPattern r tr sm)). intros.
-  specialize (H1 sp H0). destruct H1. exists x. crush. }
-destruct H1.
-assert (exists (i: nat), i < length (evalIterator r sm sp) /\ applyIterationOnPattern r tr sm sp i <> None).
-{ specialize (tr_applyRuleOnPattern_non_None tr r sm sp). crush. }
-destruct H2.
-destruct H2.
-assert (applyIterationOnPattern r tr sm sp x0 = None).
-{ specialize (tr_applyIterationOnPattern_inTypes tr sm r sp x0). crush. }
-crush.
+  intros.
+  assert (exists (tl: list TargetModelLink), applyRuleOnPattern r tr sm sp = Some tl).
+  { specialize (option_res_dec (applyRuleOnPattern r tr sm)). intros.
+    specialize (H1 sp H0). destruct H1. exists x. crush. }
+  destruct H1.
+  assert (exists (i: nat), i < length (evalIterator r sm sp) /\ applyIterationOnPattern r tr sm sp i <> None).
+  { specialize (tr_applyRuleOnPattern_non_None tr r sm sp). crush. }
+  destruct H2.
+  destruct H2.
+  assert (applyIterationOnPattern r tr sm sp x0 = None).
+  { specialize (tr_applyIterationOnPattern_inTypes tr sm r sp x0). crush. }
+  crush.
 Qed.
 
 Theorem tr_instantiateIterationOnPattern_inTypes : 
@@ -509,19 +507,19 @@ Theorem tr_instantiateIterationOnPattern_inTypes :
         length sp <> length (getInTypes r) ->
         instantiateIterationOnPattern r sm sp i <> None -> False.
 Proof.
-intros.
-assert (exists (tp: list TargetModelElement), instantiateIterationOnPattern r sm sp i = Some tp).
-{ specialize (option_res_dec (instantiateIterationOnPattern r sm sp)). intros. 
-  specialize (H1 i H0). destruct H1. exists x. crush. }
-destruct H1.
-assert (exists  ope : OutputPatternElement (getInTypes r) (getIteratorType r),
-     In ope (getOutputPattern r) /\ instantiateElementOnPattern r ope sm sp i <> None).
-{ specialize (tr_instantiateIterationOnPattern_non_None r sm sp i). crush. }
-destruct H2.
-destruct H2.
-assert ( instantiateElementOnPattern r x0 sm sp i = None).
-{ specialize (tr_instantiateElementOnPattern_inTypes sm r sp i x0). intros. crush. }
-crush.
+  intros.
+  assert (exists (tp: list TargetModelElement), instantiateIterationOnPattern r sm sp i = Some tp).
+  { specialize (option_res_dec (instantiateIterationOnPattern r sm sp)). intros. 
+    specialize (H1 i H0). destruct H1. exists x. crush. }
+  destruct H1.
+  assert (exists  ope : OutputPatternElement (getInTypes r) (getIteratorType r),
+      In ope (getOutputPattern r) /\ instantiateElementOnPattern r ope sm sp i <> None).
+  { specialize (tr_instantiateIterationOnPattern_non_None r sm sp i). crush. }
+  destruct H2.
+  destruct H2.
+  assert ( instantiateElementOnPattern r x0 sm sp i = None).
+  { specialize (tr_instantiateElementOnPattern_inTypes sm r sp i x0). intros. crush. }
+  crush.
 Qed.
 
 Theorem tr_instantiateRuleOnPattern_inTypes : 
@@ -530,68 +528,66 @@ Theorem tr_instantiateRuleOnPattern_inTypes :
       length sp <> length (getInTypes r) ->
       instantiateRuleOnPattern r tr sm sp <> None -> False.
 Proof.
-intros.
-assert (exists (tp: list TargetModelElement), instantiateRuleOnPattern r tr sm sp = Some tp).
-{ specialize (option_res_dec (instantiateRuleOnPattern r tr sm)). intros.
-  specialize (H1 sp H0). destruct H1. exists x. crush. }
-destruct H1.
-assert (exists (i: nat), i < length (evalIterator r sm sp) /\ instantiateIterationOnPattern r sm sp i <> None).
-{ specialize (tr_instantiateRuleOnPattern_non_None tr r sm sp). crush. }
-destruct H2.
-destruct H2.
-assert (instantiateIterationOnPattern r sm sp x0 = None).
-{ specialize (tr_instantiateIterationOnPattern_inTypes sm r sp x0). crush. }
-crush.
+  intros.
+  assert (exists (tp: list TargetModelElement), instantiateRuleOnPattern r tr sm sp = Some tp).
+  { specialize (option_res_dec (instantiateRuleOnPattern r tr sm)). intros.
+    specialize (H1 sp H0). destruct H1. exists x. crush. }
+  destruct H1.
+  assert (exists (i: nat), i < length (evalIterator r sm sp) /\ instantiateIterationOnPattern r sm sp i <> None).
+  { specialize (tr_instantiateRuleOnPattern_non_None tr r sm sp). crush. }
+  destruct H2.
+  destruct H2.
+  assert (instantiateIterationOnPattern r sm sp x0 = None).
+  { specialize (tr_instantiateIterationOnPattern_inTypes sm r sp x0). crush. }
+  crush.
 Qed.
-
 
 Theorem tr_instantiateIterationOnPattern_iterator : 
  forall eng: TransformationEngine,
   forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       i >= length (evalIterator r sm sp) ->
       instantiateIterationOnPattern r sm sp i <> None -> False.
-  Proof.
-    intros.
-    specialize (tr_instantiateIterationOnPattern_non_None r sm sp i).
-    intros.
-    destruct H1.
-    specialize (H1 H0).
-    destruct H1. destruct H1.
-    specialize (tr_instantiateElementOnPattern_iterator sm r sp x H).
-    crush.
-  Qed.
+Proof.
+  intros.
+  specialize (tr_instantiateIterationOnPattern_non_None r sm sp i).
+  intros.
+  destruct H1.
+  specialize (H1 H0).
+  destruct H1. destruct H1.
+  specialize (tr_instantiateElementOnPattern_iterator sm r sp x H).
+  crush.
+Qed.
   
 Theorem tr_applyElementOnPattern_iterator :
   forall eng: TransformationEngine,
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
       i >= length (evalIterator r sm sp) ->
       applyElementOnPattern r ope tr sm sp i <> None -> False.
-  Proof.
-    intros.
-    specialize (tr_applyElementOnPattern_non_None tr r sm sp i ope).
-    intros.
-    destruct H1.
-    specialize (H1 H0).
-    destruct H1. destruct H1.
-    specialize (tr_applyReferenceOnPattern_iterator tr sm r sp).
-    intros.
-    specialize (H4 i ope x H).
-    crush.
-  Qed.
+Proof.
+  intros.
+  specialize (tr_applyElementOnPattern_non_None tr r sm sp i ope).
+  intros.
+  destruct H1.
+  specialize (H1 H0).
+  destruct H1. destruct H1.
+  specialize (tr_applyReferenceOnPattern_iterator tr sm r sp).
+  intros.
+  specialize (H4 i ope x H).
+  crush.
+Qed.
 
-   
 Theorem tr_applyIterationOnPattern_iterator :
    forall eng: TransformationEngine,
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       i >= length (evalIterator r sm sp) ->
       applyIterationOnPattern r tr sm sp i <> None -> False.
-  Proof.
-    intros.
-    specialize (tr_applyIterationOnPattern_non_None tr r sm sp i).
-    intros.
-    destruct H1.
-    specialize (H1 H0).
-    destruct H1. destruct H1.
-    specialize (tr_applyElementOnPattern_iterator tr sm r sp x H).
-    crush.
-  Qed.
+Proof.
+  intros.
+  specialize (tr_applyIterationOnPattern_non_None tr r sm sp i).
+  intros.
+  destruct H1.
+  specialize (H1 H0).
+  destruct H1. destruct H1.
+  specialize (tr_applyElementOnPattern_iterator tr sm r sp x H).
+  crush.
+Qed.
