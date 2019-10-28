@@ -29,4 +29,7 @@ Require Import examples.Class2Relational.tests.PersonModel.
      : TargetModel RelationalMetamodel_EObject RelationalMetamodel_ELink
  *)
 
+
+Compute (map (Metamodel.toModelClass ClassEClass) (Model.allModelElements PersonModel)).
+
 Compute execute Class2Relational PersonModel.
