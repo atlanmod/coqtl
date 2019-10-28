@@ -35,3 +35,4 @@ nra.cache
 */Makefile.conf
 */CoqMakefile.conf
 *.d
+*/.vscode/settings.json
