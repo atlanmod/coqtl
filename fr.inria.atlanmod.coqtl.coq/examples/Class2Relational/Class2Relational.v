@@ -11,8 +11,6 @@ Require Import core.Metamodel.
 Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
 
-
-
 Definition Class2Relational :=
   (BuildTransformation
      ClassMetamodel RelationalMetamodel
