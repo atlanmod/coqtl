@@ -36,7 +36,7 @@ Definition Class2Relational :=
         (BuildRule
            ClassMetamodel RelationalMetamodel
            "Attribute2Column"
-           [AttributeEClass] (fun (m: ClassModel) (a: Attribute) => negb (getAttributeDerived a))
+           [AttributeEClass] (fun (m: ClassModel) (a: Attribute) => true)
            unit (fun (m: ClassModel) (a: Attribute) => [tt])
            [(BuildOutputPatternElement
                ClassMetamodel RelationalMetamodel
