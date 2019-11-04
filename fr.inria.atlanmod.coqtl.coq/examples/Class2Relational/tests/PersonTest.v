@@ -30,10 +30,22 @@ Require Import examples.Class2Relational.tests.PersonModel.
      : TargetModel RelationalMetamodel_EObject RelationalMetamodel_ELink
  *)
 
-Compute executeOpt Class2Relational PersonModel.
+
+Definition RuleInTypes := ClassEClass :: AttributeEClass :: nil.
+
+Definition m :=  (Model.allModelElements PersonModel).
+
+Definition allInstances (t: ClassMetamodel_EClass) :=
+ map (Metamodel.toModelElement t)
+  (optionList2List (map (Metamodel.toModelClass t) m)).
+
+
+Definition TupleOfRule :=
+  map (allInstances) RuleInTypes.
+
+
+Compute (prod_cons hd_error(TupleOfRule) tl( TupleOfRule)).
+
+
+
 Compute execute Class2Relational PersonModel.
-
-
-
-
-
