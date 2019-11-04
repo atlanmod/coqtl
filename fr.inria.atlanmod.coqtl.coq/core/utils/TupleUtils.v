@@ -9,7 +9,6 @@ Fixpoint prod_cons {A : Type} (s1: list A) (s2 : list (list A)) : list (list A) 
   | (cons x1 xs1) => (map (fun l => cons x1 l) s2) ++ (prod_cons xs1 s2)
   end.
 
-
 Example prod_cons_test1:
   prod_cons (1::2::nil) ((3::4::nil)::(5::6::nil)::nil) = (1 :: 3 :: 4 :: nil) :: (1 :: 5 :: 6 :: nil) :: (2 :: 3 :: 4 :: nil) :: (2 :: 5 :: 6 :: nil) :: nil.
 Proof. reflexivity. Qed.
@@ -76,32 +75,6 @@ Proof.
       * assumption.
       * assumption.
 Qed.
-
-
-(** * cartesian_prod *)
-
-Fixpoint singleton_list {A :Type} (s: (list A)) : list (list A) :=
- match s with
- | nil => nil
- | a :: l => cons (a::nil) (singleton_list l) 
- end.
-
-(* Compute (singleton_list nil).
-Compute (singleton_list (1::2::nil)). *)
-
-Fixpoint cartesian_prod {A :Type} (s: list (list A)) : list (list A) :=
-  match s with
-  | nil => nil
-  | a :: nil => singleton_list a
-  | a :: c => flat_map (fun e => map (fun r => e::r) (cartesian_prod c)) a 
-  end.
-
-(* Compute (cartesian_prod nil).
-Compute (cartesian_prod ((3::4::nil) :: nil)).
-Compute (cartesian_prod ((1::2::5::6::nil) :: (3::4::nil) :: nil)).
-Compute (cartesian_prod ((1::2::nil) :: (3::4::nil) :: (5::6::nil) :: nil)). *)
-
-
 
 (** * tuples_of_length_n *)
 

@@ -508,31 +508,6 @@ Section CoqTL.
       (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuples tr sm))
       (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuples tr sm)).
 
-
-  (** ** Optimized Rule scheduling **)
-
-  (** *** Compute all instances of a type [t] in source model [sm]  ***)
-  Definition allInstances (t: SourceModelClass) (sm : SourceModel):=
-    (map (toModelElement t) (optionList2List (map (toModelClass t) (allModelElements sm)))).
-
-  (** *** Concate input types of each rule in the given transformation [tr]  ***)
-  (** **** ex: (R1a :: R1b ::nil) :: (R2a ::nil) :: nil **** **)
-  Definition allRule_InTypes (tr: Transformation) :=
-    (map Rule_getInTypes (Transformation_getRules tr)).
-
-  (** *** Compute all tuples from input model [sm] for each rule in the given transformation [tr]  ***)
-  Definition allTuplesOfRules (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
-    flat_map (fun rule_intypes => cartesian_prod (map (fun t => allInstances t sm) rule_intypes) )
-      (allRule_InTypes tr).
-
-  (** *** Schedule based on optimized tuples  ***)
-  Definition executeOpt (tr: Transformation) (sm : SourceModel) : TargetModel :=
-    Build_Model
-      (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuplesOfRules tr sm))
-      (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuplesOfRules tr sm)).
-
-
-
   (** * Certification **)
   
   Definition matchRuleOnPattern' (r: Rule) (t: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
@@ -2338,7 +2313,6 @@ Arguments resolveAllIter: default implicits.
 Arguments resolveAll: default implicits.
 
 Arguments execute: default implicits.
-Arguments executeOpt: default implicits.
 Arguments matchPattern: default implicits.
 Arguments matchRuleOnPattern': default implicits.
 Arguments matchRuleOnPattern : default implicits.
