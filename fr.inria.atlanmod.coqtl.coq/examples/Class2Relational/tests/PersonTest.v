@@ -3,8 +3,7 @@ Require Import List.
 
 Require Import core.CoqTL.
 Require Import core.utils.PrintUtils.
-Require Import core.utils.ListUtils.
-Require Import core.utils.TupleUtils.
+
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
 Require Import examples.Class2Relational.Class2Relational.
@@ -31,21 +30,6 @@ Require Import examples.Class2Relational.tests.PersonModel.
  *)
 
 
-Definition RuleInTypes := ClassEClass :: AttributeEClass :: nil.
-
-Definition m :=  (Model.allModelElements PersonModel).
-
-Definition allInstances (t: ClassMetamodel_EClass) :=
- map (Metamodel.toModelElement t)
-  (optionList2List (map (Metamodel.toModelClass t) m)).
-
-
-Definition TupleOfRule :=
-  map (allInstances) RuleInTypes.
-
-
-Compute (prod_cons hd_error(TupleOfRule) tl( TupleOfRule)).
-
-
+Compute (map (Metamodel.toModelClass ClassEClass) (Model.allModelElements PersonModel)).
 
 Compute execute Class2Relational PersonModel.
