@@ -30,7 +30,7 @@ Require Import examples.Class2Relational.tests.PersonModel.
      : TargetModel RelationalMetamodel_EObject RelationalMetamodel_ELink
  *)
 
-Compute executeOpt Class2Relational PersonModel.
+
 Compute execute Class2Relational PersonModel.
 
 
