@@ -2319,14 +2319,13 @@ Arguments matchRuleOnPattern : default implicits.
 Arguments instantiatePattern: default implicits.
 Arguments instantiateRuleOnPattern: default implicits.
 Arguments instantiateIterationOnPattern: default implicits.
-Arguments instantiateElementOnPattern : default implicits.
+Arguments  instantiateElementOnPattern : default implicits.
 Arguments evalGuard: default implicits.
 Arguments evalIterator: default implicits.
 Arguments evalOutputPatternElement: default implicits.
 
 Arguments Transformation: default implicits.
 Arguments Transformation_getRules: default implicits.
-Arguments allTuples: default implicits.
 Arguments maxArity: default implicits.
 
 Arguments Rule: default implicits.
