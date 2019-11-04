@@ -7,7 +7,7 @@ Require Import core.utils.PrintUtils.
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
 Require Import examples.Class2Relational.Class2Relational.
-Require Import examples.Class2Relational.tests.PersonModel.
+Require Import examples.Class2Relational.PersonModel.
 
 (* Require Import Class2RelationalVerif. *)
 
