@@ -17,10 +17,10 @@ Require Import examples.Class2Relational.RelationalMetamodel.
 
 
 Theorem Table_id_defindedness :
-  forall (cm : ClassModel) (rm : RelationalModel), 
-    rm = execute Class2Relational cm (* transformation *) ->
-      (forall (c1 : ClassMetamodel_EObject), In c1 (@allModelElements _ _ cm) -> ClassMetamodel_getId c1 > 0) (* precondition *) ->
-        (forall (t1 : RelationalMetamodel_EObject), In t1 (@allModelElements _ _ rm) -> RelationalMetamodel_getId t1 > 0). (* postcondition *)
+forall (cm : ClassModel) (rm : RelationalModel), 
+rm = execute Class2Relational cm (* transformation *) ->
+  (forall (c1 : ClassMetamodel_EObject), In c1 (allModelElements cm) -> ClassMetamodel_getId c1 > 0) (* precondition *) ->
+    (forall (t1 : RelationalMetamodel_EObject), In t1 (allModelElements rm) -> RelationalMetamodel_getId t1 > 0). (* postcondition *)
 Proof.
   intros cm rm H Hpre t1 Hintm.  
   remember H as tr.
