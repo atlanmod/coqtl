@@ -14,20 +14,55 @@ Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
 
+(** missing coercison on model links *)
+Definition ClassMetamodel_toELinkFromClassAttributes (cas :ClassAttributes) : ClassMetamodel_ELink :=
+  (ClassMetamodel_BuildELink ClassAttributesEReference cas).
+Coercion ClassMetamodel_toELinkFromClassAttributes : ClassAttributes >-> ClassMetamodel_ELink.
+
+Definition RelationalMetamodel_toELinkFromTableColumns (tcs : TableColumns) : RelationalMetamodel_ELink :=
+  (RelationalMetamodel_BuildELink TableColumnsReference tcs).
+Coercion RelationalMetamodel_toELinkFromTableColumns : TableColumns >-> RelationalMetamodel_ELink.
+
+(** potential helper to trigger coercison *)
 Definition IIn (A: Type) (a: A) (l : list A) :=
   In a l.
+
 
 Theorem Table_columns_name_uniqueness :
   forall (cm : ClassModel) (rm : RelationalModel), 
       (* transformation *) rm = execute Class2Relational cm ->
-      (* precondition *) (forall (c1 : Class), IIn ClassMetamodel_EObject c1 (allModelElements cm) -> 
-        forall (a1 a2: Attribute) (attrs: list Attribute), (getClassAttributes c1 cm) = Some attrs -> 
+      (* precondition *) (forall (cas : ClassAttributes), IIn ClassMetamodel_ELink cas (allModelLinks cm) -> 
+        forall (c: Class) (a1 a2: Attribute) (attrs: list Attribute), BuildClassAttributes c attrs = cas -> 
           In a1 attrs -> In a2 attrs -> a1 <> a2 ->
             (getAttributeName a1) <> (getAttributeName a2))  ->
-      (* postcondition *) (forall (t1 : Table), IIn RelationalMetamodel_EObject t1 (allModelElements rm) -> 
-        forall (col1 col2: Column) (cols: list Column), (getTableColumns t1 rm) = Some cols ->
+      (* postcondition *) (forall (tcs : TableColumns), IIn RelationalMetamodel_ELink tcs (allModelLinks rm) -> 
+        forall (t: Table) (col1 col2: Column) (cols: list Column), (BuildTableColumns t cols) = tcs ->
           In col1 cols -> In col2 cols -> col1 <> col2 ->
           (getColumnName col1) <> (getColumnName col2)) .
 Proof. 
-  intros cm rm tr pre t Hint col1 col2 tcols.
+  (** Clean context *)
+  intros cm rm tr pre.
+  intros tcs Hintm t col1 col2 tcols.
   intros Hcols HinCol1 HinCol2 HcolEq.
+  rewrite tr in Hintm.
+  apply tr_execute_in_links in Hintm.
+  destruct Hintm. rename x into sp.
+  destruct H. rename x into tpl.
+  destruct H. rename H into Hspincm.
+  destruct H0. rename H into Happly.
+  rename H0 into Htintpl.
+
+  (** Unfolding theorem tr_applyPattern_in *)
+  assert (exists tpl: list RelationalMetamodel_ELink, applyPattern Class2Relational cm sp = Some tpl /\ IIn RelationalMetamodel_ELink tcs tpl).
+  { exists tpl. crush. }
+  apply tr_applyPattern_in in H.
+  destruct H. rename x into rl.
+  destruct H. rename x into tpl1.
+  destruct H. rename H into Hrl.
+  destruct H0. rename H into Happly2. rename H0 into Hintpl1.  
+  
+  (** Unfolding theorem tr_matchPattern_in *)
+  apply tr_matchPattern_in in Hrl.
+  destruct Hrl. rename H into HrinTr. rename H0 into Hmatch.
+  
+  assert (exists tpl: list RelationalMetamodel_ELink, applyRuleOnPattern rl Class2Relational cm sp = Some tpl /\ In tcs tpl).
