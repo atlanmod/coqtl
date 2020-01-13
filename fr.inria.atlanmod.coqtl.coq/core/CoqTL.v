@@ -503,12 +503,12 @@ Section CoqTL.
   Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (allModelElements sm) (maxArity tr).
 
-(*   Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
+   Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
     Build_Model
       (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuples tr sm))
-      (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuples tr sm)). *)
+      (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuples tr sm)).
 
-
+  (*
   (** ** Optimized Rule scheduling **)
 
   (** *** Compute all instances of a type [t] in source model [sm]  ***)
@@ -531,6 +531,7 @@ Section CoqTL.
       (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuplesOfRules tr sm))
       (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuplesOfRules tr sm)).
 
+  *)
 
 
   (** * Certification **)
@@ -605,8 +606,8 @@ Section CoqTL.
           incl sp (allModelElements sm) /\
           instantiatePattern tr sm sp = Some tp /\
           In te tp).
-  Proof. Admitted.
-(*     intros.
+  Proof. 
+    intros.
     split.
     - intros.
       simpl in H.
@@ -649,7 +650,7 @@ Section CoqTL.
                   **** crush.
           *** crush.
       + crush.
-  Qed. *)
+  Qed. 
 
   Theorem tr_execute_in_links : 
     forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
@@ -658,8 +659,8 @@ Section CoqTL.
           incl sp (allModelElements sm) /\
           applyPattern tr sm sp = Some tpl /\
           In tl tpl).
-  Proof. Admitted.
-(*     intros.
+  Proof. 
+    intros.
     split.
     - intros.
       simpl in H.
@@ -702,7 +703,7 @@ Section CoqTL.
                   **** crush.
           *** crush.
       + crush.
-  Qed. *)
+  Qed. 
   
   (** ** instantiatePattern **)
 
