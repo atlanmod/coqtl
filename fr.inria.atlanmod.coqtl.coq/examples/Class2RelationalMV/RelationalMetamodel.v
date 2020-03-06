@@ -15,10 +15,10 @@ Require Import Omega.
 Require Import Coq.Logic.Eqdep_dec.
 
 (* CoqTL libraries *)
-Require Import core.utils.tTop.
+Require Import core.utils.TopUtils.
 Require Import core.Metamodel.
 Require Import core.Model.
-Require Import core.Object.
+
 
 (* Base types *)
 Inductive Table : Set :=
@@ -64,11 +64,6 @@ Definition getTableName (t : Table) : string :=
 Definition setTableId (c : Table) (s : string) : Table :=
   BuildTable s (getTableName c).
 
-Instance objectTable : Object Table :=
-  {
-    getId := getTableId;
-    setId := setTableId;
-  }.
 
 Definition getColumnId (c : Column) : string :=
   match c with BuildColumn id name  => id end.
@@ -78,11 +73,7 @@ Definition getColumnName (c : Column) : string :=
 Definition setColumnId (c : Column) (s : string) : Column :=
   BuildColumn s (getColumnName c).
 
-Instance objectColumn : Object Column :=
-  {
-    getId := getColumnId;
-    setId := setColumnId;
-  }.
+
 
 (* Equality for Types *)
 (**? We define eq for Eclass on their fist attribute **)
@@ -293,8 +284,6 @@ Instance RelationalMetamodel : Metamodel RelationalMetamodel_EObject RelationalM
     BuildModelElement := Build_RelationalMetamodel_EObject;
     BuildModelLink := Build_RelationalMetamodel_ELink;
 
-    getId := RelationalMetamodel_getId;
-    setId := RelationalMetamodel_setId;
   }.
   
 (* Useful lemmas *)

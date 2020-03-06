@@ -15,10 +15,10 @@ Require Import Omega.
 Require Import Coq.Logic.Eqdep_dec.
 
 (* CoqTL libraries *)
-Require Import core.utils.tTop.
+Require Import core.utils.TopUtils.
 Require Import core.Metamodel.
 Require Import core.Model.
-Require Import core.Object.
+
 
 (* Base types *)
 Inductive Class : Set :=
@@ -65,11 +65,7 @@ Definition getClassName (c : Class) : string :=
 Definition setClassId (c : Class) (s : string) : Class :=
   BuildClass s (getClassName c).
 
-Instance objectClass : Object Class :=
-  {
-    getId := getClassId;
-    setId := setClassId;
-  }.
+
  
 Definition getAttributeId (a : Attribute) : string :=
   match a with BuildAttribute id multiValued name  => id end.
@@ -81,12 +77,7 @@ Definition getAttributeName (a : Attribute) : string :=
 Definition setAttributeId (a : Attribute) (s : string) : Attribute :=
   BuildAttribute s (getAttributeMultiValued a) (getAttributeName a).
 
-Instance objectAttribute : Object Attribute :=
-  {
-    getId := getAttributeId;
-    setId := setAttributeId;
-  }.
- 
+
 
 (* Equality for Types *)
 (**? We define eq for Eclass on their fist attribute **)
@@ -297,8 +288,6 @@ Instance ClassMetamodel : Metamodel ClassMetamodel_EObject ClassMetamodel_ELink 
     BuildModelElement := Build_ClassMetamodel_EObject;
     BuildModelLink := Build_ClassMetamodel_ELink;
 
-    getId := ClassMetamodel_getId;
-    setId := ClassMetamodel_setId;
   }.
   
 (* Useful lemmas *)
