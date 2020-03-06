@@ -10,11 +10,13 @@ core/utils/TupleUtils.v
 core/utils/StringUtils.v
 core/utils/PrintUtils.v
 core/utils/NotationUtils.v
+core/utils/DatatypeUtils.v
 core/utils/TopUtils.v
 core/utils/CpdtTactics.v
 core/Metamodel.v
 core/Model.v
 core/Engine.v
+core/EngineProofs.v
 core/CoqTL.v
 core/Expressions.v
 examples/Class2Relational/ClassMetamodel.v
