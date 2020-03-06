@@ -313,6 +313,6 @@ Proof.
   destruct H1.
   specialize (H1 H0).
   destruct H1. destruct H1.
-  specialize (tr_applyElementOnPattern_None_iterator eng tr sm r sp x H).
+  specialize (tr_applyElementOnPattern_None_iterator eng tr sm r sp i x H).
   crush.
 Qed.
