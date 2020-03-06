@@ -15,7 +15,7 @@ Require Import Omega.
 Require Import Coq.Logic.Eqdep_dec.
 
 (* CoqTL libraries *)
-Require Import core.utils.tTop.
+Require Import core.utils.TopUtils.
 Require Import core.Metamodel.
 Require Import core.Model.
 
@@ -550,8 +550,6 @@ Instance HSMMetamodel : Metamodel HSMMetamodel_EObject HSMMetamodel_ELink HSMMet
     BuildModelElement := Build_HSMMetamodel_EObject;
     BuildModelLink := Build_HSMMetamodel_ELink;
     
-    getId := HSMMetamodel_getId;
-    setId := HSMMetamodel_setId;
   }.
   
 (* Useful lemmas *)

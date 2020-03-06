@@ -5,8 +5,7 @@ Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
 
-Require Import core.utils.tTop.
-Require Import core.Notations.
+Require Import core.utils.TopUtils.
 Require Import core.CoqTL.
 
 Require Import HSM.
