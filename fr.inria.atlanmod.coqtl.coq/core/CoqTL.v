@@ -554,7 +554,7 @@ Section CoqTL.
 
   (** ** maxArity **)
 
-  Lemma maxArity_geq_rule_length :
+  Lemma tr_maxArity_in :
     forall (tr: Transformation) (r: Rule),
       In r (Transformation_getRules tr) ->
       maxArity tr >= length (Rule_getInTypes r).
@@ -645,7 +645,7 @@ Section CoqTL.
                        assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes r) bool (Rule_getGuard r sm) x <> None).
                        { crush. }
                        apply evalFunctionFix_intypes_el_neq_contraposition in H4.
-                       apply maxArity_geq_rule_length in H2.
+                       apply tr_maxArity_in in H2.
                        crush.
                   **** crush.
           *** crush.
@@ -698,7 +698,7 @@ Section CoqTL.
                        assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes r) bool (Rule_getGuard r sm) x <> None).
                        { crush. }
                        apply evalFunctionFix_intypes_el_neq_contraposition in H4.
-                       apply maxArity_geq_rule_length in H2.
+                       apply tr_maxArity_in in H2.
                        crush.
                   **** crush.
           *** crush.
@@ -843,7 +843,7 @@ Section CoqTL.
        ++ crush.
   Qed.
 
-  Theorem tr_instantiatePattern_maxArity : 
+  Theorem tr_instantiatePattern_None : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       length sp > maxArity tr ->
       instantiatePattern tr sm sp = None.
@@ -862,7 +862,7 @@ Section CoqTL.
         * unfold matchRuleOnPattern in mtchP.
           unfold evalGuard in mtchP.
           unfold evalFunction in mtchP.
-          assert (maxArity tr >= length (Rule_getInTypes r)). { apply maxArity_geq_rule_length. assumption. }
+          assert (maxArity tr >= length (Rule_getInTypes r)). { apply tr_maxArity_in. assumption. }
           assert (length sp > length (Rule_getInTypes r)).  { omega. }
           assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes r) bool (Rule_getGuard r sm) sp = None).
           { apply evalFunctionFix_intypes_el_neq. crush. }
@@ -1212,7 +1212,7 @@ Section CoqTL.
 
   (** ** instantiateElementOnPattern **)
 
-  Theorem tr_instantiateElementOnPattern_inTypes : 
+  Theorem tr_instantiateElementOnPattern_None : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
       (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
         length sp <> length (Rule_getInTypes r) ->
@@ -1244,7 +1244,7 @@ Section CoqTL.
     - crush.
   Qed.
 
-  Theorem tr_instantiateElementOnPattern_iterator : 
+  Theorem tr_instantiateElementOnPattern_None_iterator : 
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
       (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
       i >= length (evalIterator r sm sp) ->
@@ -1407,7 +1407,7 @@ Section CoqTL.
        ++ crush.
   Qed.
   
-  Theorem tr_applyPattern_maxArity : 
+  Theorem tr_applyPattern_None : 
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       length sp > maxArity tr ->
       applyPattern tr sm sp = None.
@@ -1426,7 +1426,7 @@ Section CoqTL.
         * unfold matchRuleOnPattern in mtchP.
           unfold evalGuard in mtchP.
           unfold evalFunction in mtchP.
-          assert (maxArity tr >= length (Rule_getInTypes r)). { apply maxArity_geq_rule_length. assumption. }
+          assert (maxArity tr >= length (Rule_getInTypes r)). { apply tr_maxArity_in. assumption. }
           assert (length sp > length (Rule_getInTypes r)).  { omega. }
           assert (evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes r) bool (Rule_getGuard r sm) sp = None).
           { apply evalFunctionFix_intypes_el_neq. crush. }
@@ -1961,7 +1961,7 @@ Section CoqTL.
 
   (** ** applyReferenceOnPattern **)
 
-  Theorem tr_applyReferenceOnPattern_inTypes : 
+  Theorem tr_applyReferenceOnPattern_None : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
         (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
         (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
@@ -1994,7 +1994,7 @@ Section CoqTL.
     - crush.
   Qed.
   
-  Theorem tr_applyReferenceOnPattern_iterator : 
+  Theorem tr_applyReferenceOnPattern_None_iterator : 
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
       (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
       (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
@@ -2068,7 +2068,7 @@ Section CoqTL.
          
          rewrite <- rs in H0.
          assert (length (Rule_getInTypes a) <> length sp).
-         { specialize (maxArity_geq_rule_length tr a H0). crush. }
+         { specialize (tr_maxArity_in tr a H0). crush. }
          assert ( evalFunctionFix SourceModelElement SourceModelLink SourceModelClass SourceModelReference smm (Rule_getInTypes a) bool (Rule_getGuard a sm) sp = None).
          { apply (evalFunctionFix_intypes_el_neq).  crush. }
          crush.
@@ -2282,7 +2282,7 @@ Section CoqTL.
       
       tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_instantiatePattern_non_None := tr_instantiatePattern_non_None;
-      tr_instantiatePattern_maxArity := tr_instantiatePattern_maxArity;
+      tr_instantiatePattern_None := tr_instantiatePattern_None;
 
       tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
       tr_instantiateRuleOnPattern_non_None := tr_instantiateRuleOnPattern_non_None;
@@ -2290,12 +2290,12 @@ Section CoqTL.
       tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
       tr_instantiateIterationOnPattern_non_None := tr_instantiateIterationOnPattern_non_None;
       
-      tr_instantiateElementOnPattern_inTypes := tr_instantiateElementOnPattern_inTypes;
-      tr_instantiateElementOnPattern_iterator := tr_instantiateElementOnPattern_iterator;
+      tr_instantiateElementOnPattern_None := tr_instantiateElementOnPattern_None;
+      tr_instantiateElementOnPattern_None_iterator := tr_instantiateElementOnPattern_None_iterator;
 
       tr_applyPattern_in := tr_applyPattern_in;
       tr_applyPattern_non_None := tr_applyPattern_non_None;
-      tr_applyPattern_maxArity := tr_applyPattern_maxArity;
+      tr_applyPattern_None := tr_applyPattern_None;
 
       tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
       tr_applyRuleOnPattern_non_None := tr_applyRuleOnPattern_non_None;
@@ -2306,12 +2306,12 @@ Section CoqTL.
       tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
       tr_applyElementOnPattern_non_None := tr_applyElementOnPattern_non_None;
 
-      tr_applyReferenceOnPattern_inTypes := tr_applyReferenceOnPattern_inTypes;
-      tr_applyReferenceOnPattern_iterator := tr_applyReferenceOnPattern_iterator;
+      tr_applyReferenceOnPattern_None := tr_applyReferenceOnPattern_None;
+      tr_applyReferenceOnPattern_None_iterator := tr_applyReferenceOnPattern_None_iterator;
 
       tr_matchPattern_in := tr_matchPattern_in;
 
-      tr_maxArity_length := maxArity_geq_rule_length;
+      tr_maxArity_in := tr_maxArity_in;
     }.
   
 End CoqTL.
