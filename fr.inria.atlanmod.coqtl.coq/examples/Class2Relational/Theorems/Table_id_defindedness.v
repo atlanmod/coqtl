@@ -17,27 +17,32 @@ Require Import examples.Class2Relational.RelationalMetamodel.
 
 
 Theorem Table_id_defindedness :
-  forall (cm : ClassModel) (rm : RelationalModel), 
-    rm = execute Class2Relational cm (* transformation *) ->
-      (forall (c1 : ClassMetamodel_EObject), In c1 (@allModelElements _ _ cm) -> ClassMetamodel_getId c1 > 0) (* precondition *) ->
-        (forall (t1 : RelationalMetamodel_EObject), In t1 (@allModelElements _ _ rm) -> RelationalMetamodel_getId t1 > 0). (* postcondition *)
+forall (cm : ClassModel) (rm : RelationalModel), 
+rm = execute Class2Relational cm (* transformation *) ->
+  (forall (c1 : ClassMetamodel_EObject), In c1 (allModelElements cm) -> ClassMetamodel_getId c1 > 0) (* precondition *) ->
+    (forall (t1 : RelationalMetamodel_EObject), In t1 (allModelElements rm) -> RelationalMetamodel_getId t1 > 0). (* postcondition *)
 Proof.
+  (** Clean context *)
   intros cm rm H Hpre t1 Hintm.  
   remember H as tr.
   clear Heqtr.
   rewrite tr in Hintm.
   apply tr_execute_in_elements in Hintm.
   destruct Hintm. destruct H0. destruct H0. destruct H1.
+
+  (** Unfolding theorem tr_instantiatePattern_in *)
   assert (exists tp : list RelationalMetamodel_EObject,
              instantiatePattern Class2Relational cm x = return tp /\ In t1 tp).
   { exists x0. split. crush. crush. }
   apply tr_instantiatePattern_in in H3.
   destruct H3. destruct H3. destruct H3.
-  rename x1 into r.
-  rename x2 into tp.
-  rename x into sp.
+  rename x1 into r. rename x2 into tp. rename x into sp.
+
+  (** Unfolding theorem tr_matchPattern_in *)
   apply tr_matchPattern_in in H3.
   destruct H3.
+
+  (** Unfolding theorem tr_instantiateRuleOnPattern_in *)
   assert (exists tp : list  RelationalMetamodel_EObject,
           instantiateRuleOnPattern r cm sp = return tp /\ In t1 tp).
   { exists tp. crush. }
@@ -45,6 +50,8 @@ Proof.
   destruct H6. destruct H6.
   rename x into i.
   rename x1 into tp1.
+
+  (** Unfolding theorem tr_instantiateIterationOnPattern_in *)
   assert  (exists tp : list  RelationalMetamodel_EObject,
           instantiateIterationOnPattern r cm sp i = return tp /\ In t1 tp).
   { exists tp1. crush. }

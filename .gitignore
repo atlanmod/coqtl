@@ -37,3 +37,4 @@ nra.cache
 *.d
 *.vok
 *.vos
+*/.vscode/settings.json
