@@ -59,7 +59,7 @@ Section Exp.
           ** crush.
           ** crush.
           ** crush.
-          ** apply  IHintypes. simpl. simpl in H. Search (S _ <> S _).
+          ** apply  IHintypes. simpl. simpl in H.
              apply -> Nat.succ_inj_wd_neg in H.
              exact H.            
         * simpl. rewrite tmc. auto.
