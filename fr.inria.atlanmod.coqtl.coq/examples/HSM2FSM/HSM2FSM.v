@@ -8,7 +8,7 @@ Require Import Omega.
 Require Import core.utils.TopUtils.
 Require Import core.CoqTL.
 
-Require Import HSM.
+Require Import example.HSM2FSM.HSM.
 
 
 Set Implicit Arguments.
