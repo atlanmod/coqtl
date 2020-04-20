@@ -11,6 +11,28 @@ Require Import core.Metamodel.
 Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
 
+(* module Class2Relational; 
+   rule Class2Table {
+       from 
+         c : Class
+       to 
+         tab: Table (
+           id <- c.id,
+           name <- c.name,
+           columns <- c.attributes.resolve('col')
+         )
+    }
+    rule Attribute2Column {
+        from 
+          a : Attribute (not a.derived)
+        to 
+          col: Column (
+            id <- a.id,
+            name <- a.name,
+            reference <- a.type.resolve('tab')
+          )
+    }
+   } *)
 
 Definition Class2Relational :=
   (BuildTransformation
@@ -50,5 +72,3 @@ Definition Class2Relational :=
                       cl <- getAttributeType a m;
                             tb <- resolve tr m "tab" TableClass [ClassMetamodel_toEObject cl];
                             return BuildColumnReference c tb))])])]).
-
-(* Unset Printing Notations. *)
