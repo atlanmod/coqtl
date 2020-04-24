@@ -79,12 +79,12 @@ Section CoqTL.
   
   Inductive Rule : Type := 
     BuildRule :
-      string ->
-      forall (InElTypes: list SourceModelClass),
-        (SourceModel -> (guardTypes InElTypes))
-        -> forall (IterType: Type),
-        (SourceModel -> (iteratedListTypes InElTypes IterType))
-        -> list (OutputPatternElement InElTypes IterType)
+      (* name *) string ->
+      (* from *) forall (InElTypes: list SourceModelClass),
+                   (SourceModel -> (guardTypes InElTypes))
+      (* for *)  -> forall (IterType: Type),
+                   (SourceModel -> (iteratedListTypes InElTypes IterType))
+      (* to *) -> list (OutputPatternElement InElTypes IterType)
         -> Rule.
   
   Inductive Transformation : Type := 
@@ -505,8 +505,8 @@ Section CoqTL.
 
    Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
     Build_Model
-      (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuples tr sm))
-      (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuples tr sm)).
+      (* elements *) (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuples tr sm))
+      (* links *) (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuples tr sm)).
 
 
 
