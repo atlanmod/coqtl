@@ -3,7 +3,7 @@ Require Import List Omega.
 (** * prod_concat *)
 
 (* TODO: rewrite by using cartesian product and map cons *)
-Fixpoint prod_cons {A : Type} (s1: list A) (s2 : list (list A)) : list (list A) :=  
+Fixpoint prod_cons {A : Type} (s1: list A) (s2 : list (list A)) : list (list A) :=
   match s1 with
   | nil => nil
   | (cons x1 xs1) => (map (fun l => cons x1 l) s2) ++ (prod_cons xs1 s2)
@@ -30,25 +30,18 @@ Lemma prod_cons_in :
       (In se s1
        \/ ( exists (sp4 : list T), In sp4 s2 /\ In se sp4)).
 Proof.
-  induction s1.
-  - intros. contradiction H.
-  - intros. simpl in H. apply in_app_or in H. destruct H.
-    
-    Focus 2.
-    simpl. apply or_assoc. right. apply IHs1 with (sp3:=sp3). assumption. assumption.
-    Focus 1.
-    simpl. induction s2.
-    + contradiction H.
-    + simpl in H.
-      destruct H.
-      ++ rewrite <- H in H0. apply in_inv in H0. destruct H0.
-         +++ left. left. assumption.
-         +++ right. exists a0. split.
-             ++++ simpl. left. reflexivity.
-             ++++ assumption.
-      ++ apply IHs2 in H. destruct H.
-         +++ left. assumption.
-         +++ simpl. right. destruct H. exists x. split. right. destruct H. assumption. destruct H. assumption.
+  induction s1; intros.
+  - contradiction H.
+  - simpl in H. apply in_app_or in H. destruct H.
+    + induction s2; destruct H.
+      * destruct H. destruct H0; [left | right].
+        -- left. assumption.
+        -- exists a0. split; [left | ]; auto.
+      * apply IHs2 in H. destruct H; [left | right].
+        -- assumption.
+        -- destruct H as [sp4 [Hin Hin']].
+           exists sp4. split; [right | ]; auto.
+    + simpl. apply or_assoc. right. apply IHs1 with sp3; assumption.
 Qed.
 
 Lemma prod_cons_in_inv :
@@ -59,32 +52,22 @@ Proof.
   generalize dependent se.
   generalize dependent ss.
   generalize dependent s1.
-  induction s2.
-  - intros. inversion H0.
-  - intros. simpl.
-    apply in_or_app.
-    apply in_inv in H0.
-    destruct H0.
-    + left.
-      rewrite H0.
-      rewrite H.
-      apply in_map.
-      assumption.
-    + right.
-      apply IHs2 with (ss:=ss) (se:=se).
-      * assumption.
-      * assumption.
-      * assumption.
+  induction s2; intros.
+  - inversion H0.
+  - simpl. apply in_or_app.
+    simpl in H0. destruct H0.
+    + left. rewrite H0. rewrite H. apply in_map. assumption.
+    + right. apply IHs2 with (ss:=ss) (se:=se); assumption.
 Qed.
 
 
 (** * cartesian_prod *)
 
 Fixpoint singleton_list {A :Type} (s: (list A)) : list (list A) :=
- match s with
- | nil => nil
- | a :: l => cons (a::nil) (singleton_list l) 
- end.
+  match s with
+  | nil => nil
+  | a :: l => cons (a::nil) (singleton_list l)
+  end.
 
 (* Compute (singleton_list nil).
 Compute (singleton_list (1::2::nil)). *)
@@ -93,7 +76,7 @@ Fixpoint cartesian_prod {A :Type} (s: list (list A)) : list (list A) :=
   match s with
   | nil => nil
   | a :: nil => singleton_list a
-  | a :: c => flat_map (fun e => map (fun r => e::r) (cartesian_prod c)) a 
+  | a :: c => flat_map (fun e => map (fun r => e::r) (cartesian_prod c)) a
   end.
 
 (* Compute (cartesian_prod nil).
@@ -141,8 +124,8 @@ Proof.
 Qed.
 
 Lemma tuples_of_length_n_incl_length :
-    forall (T: Type) (n: nat) (sm: list T) (sp: list T),
-      incl sp sm -> length sp = n -> In sp (tuples_of_length_n sm n).
+  forall (T: Type) (n: nat) (sm: list T) (sp: list T),
+    incl sp sm -> length sp = n -> In sp (tuples_of_length_n sm n).
 Proof.
   induction n.
   - intros. simpl.
@@ -162,7 +145,7 @@ Proof.
         -- unfold incl. simpl. intros. right. assumption.
         -- assumption.
         -- inversion H0. trivial.
-Qed.        
+Qed.
 
 (** * tuples_up_to_n *)
 
@@ -240,23 +223,14 @@ Lemma tuples_up_to_n_incl_length :
     forall (T: Type) (n: nat) (sm: list T) (sp: list T),
       incl sp sm -> le (length sp) n -> In sp (tuples_up_to_n sm n).
 Proof.
-  induction n.
-  - intros.
-    simpl.
-    left.
-    symmetry.
-    apply length_zero_iff_nil.
-    apply le_n_0_eq in H0.
-    symmetry.
-    assumption.
-  - intros.
-    simpl.
-    apply in_or_app.
+  induction n; intros; simpl.
+  - left. destruct sp.
+    + reflexivity.
+    + inversion H0.
+  - apply in_or_app.
     inversion H0.
-    Focus 2. right. apply IHn. assumption. assumption.
-    Focus 1. left. apply tuples_of_length_n_incl_length with (n:= S n) in H.
-    + simpl in H. assumption.
-    + assumption.
+    + left. apply tuples_of_length_n_incl_length with (n:= S n) in H.
+      * simpl in H. assumption.
+      * assumption.
+    + right. apply IHn; assumption.
 Qed.
-    
-      

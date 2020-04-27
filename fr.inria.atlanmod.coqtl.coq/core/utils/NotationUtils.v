@@ -7,7 +7,7 @@ Notation "x <- e1 ; e2" :=
    | Some x => e2 end)
     (right associativity, at level 60).
 
-    
+
 Notation "'return' x" := ( Some x ) (no associativity, at level 60).
 
 (*Notation "'when' b 'perform' m" := (if b then m else None) (no associativity, at level 60).*)
