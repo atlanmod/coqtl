@@ -26,10 +26,10 @@ Definition optionList2List {A : Type} (l:list (option A)) : list A :=
 Theorem optionListToList_In:
   forall (A:Type) (a: A) (l: option (list A)), (In a (optionListToList l)) -> l <> None.
 Proof.
-intros.
-destruct (l) eqn:l_ca.
-- simpl in H. crush.
-- simpl in H. omega.
+  intros. intro H'.
+  destruct l.
+  - discriminate H'.
+  - assumption.
 Qed.
 
 
@@ -40,21 +40,10 @@ Proof.
   induction l.
   - inversion H.
   - destruct a0.
-    + simpl in H.
-      destruct H.
-      * rewrite H.
-        simpl.
-        left.
-        reflexivity.
-      * simpl.
-        right.
-        apply IHl.
-        assumption.
-    + simpl in H.
-      apply IHl in H.
-      simpl.
-      right.
-      assumption.
+    + destruct H.
+      * left. rewrite H. reflexivity.
+      * right. apply IHl. assumption.
+    + right. apply IHl. assumption.
 Qed.
 
 Theorem optionList2List_In_inv :
@@ -64,32 +53,22 @@ Proof.
   induction l.
   - inversion H.
   - destruct a0.
-    + simpl in H.
-      destruct H.
-      * rewrite H.
-        simpl.
-        left.
-        reflexivity.
-      * simpl.
-        right.
-        apply IHl.
-        assumption.
-    + simpl.
-      simpl in H.
-      destruct H.
+    + destruct H.
+      * rewrite H. left. reflexivity.
+      * right. apply IHl. assumption.
+    + apply IHl. destruct H.
       * inversion H.
-      * apply IHl.
-        assumption.
+      * assumption.
 Qed.
 
 Definition singletons {A: Type} (l : list A) : list (list A) :=
   listToListList l.
 
 Fixpoint mapWithIndex {A : Type} {B : Type} (f: nat -> A -> B) (n : nat) (l: list A) : list B :=
-    match l with
-      | nil => nil
-      | a :: t => (f n a) :: (mapWithIndex f (n + 1) t)
-    end.
+  match l with
+  | nil => nil
+  | a :: t => (f n a) :: (mapWithIndex f (S n) t)
+  end.
 
 Fixpoint zipWith {A : Type} {B : Type} {C : Type} (f: A -> B -> C) (la: list A) (lb: list B) : list C :=
   match la, lb with
@@ -100,86 +79,54 @@ Fixpoint zipWith {A : Type} {B : Type} {C : Type} (f: A -> B -> C) (la: list A) 
 
 Theorem in_flat_map_nil:
   forall {A B : Type} (f : A -> list B) (l : list A),
-       (flat_map f l) = nil <-> (forall a: A, In a l -> f a = nil).
+    (flat_map f l) = nil <-> (forall a: A, In a l -> f a = nil).
 Proof.
-split.
-* intros.
-  induction l.
-  - crush.
-  -  apply app_eq_nil in H. destruct H. destruct H0.
-    -- simpl in H. rewrite <- H0. assumption.
-    -- apply IHl. assumption. assumption.
-* intros.
-  induction l.
-  - crush.
-  - simpl.
-    assert (f a = nil). { crush. }
-    rewrite H0. simpl.
-    apply IHl. simpl in H. intros. specialize (H a0). apply H. right. assumption.
+  split.
+  - intros Hnil a Hin.
+    induction l.
+    + contradiction.
+    + simpl in Hnil. apply app_eq_nil in Hnil. destruct Hnil.
+      inversion Hin; subst; auto.
+  - intro H.
+    induction l.
+    + reflexivity.
+    + simpl. rewrite H by (left; reflexivity). simpl.
+      apply IHl. intros a0 H0. apply H. right. assumption.
 Qed.
 
-Theorem in_flat_map_exists: 
+Lemma lem_in_flat_map_exists :
+  forall (X Y:Type) (x:X) (y:Y) (f: X -> list Y),
+    In y (f x) <-> (exists ys:list Y, f x = ys /\ In y ys).
+Proof.
+  intros.
+  split; intro H.
+  - exists (f x). split; auto.
+  - destruct H as [_ [[] H']]. assumption.
+Qed.
+
+Theorem in_flat_map_exists:
   (forall (X Y:Type) (x:X) (y:Y) (f: X -> list Y) (B:Prop),
       (In y (f x) <-> B)) <->
   (forall (X Y:Type) (x:X) (y:Y) (f: X -> list Y) (B:Prop),
       (exists ys:list Y, f x = ys /\ In y ys) <-> B).
 Proof.
-  split.
-  + intros.
-    pose (H X Y x y f B).
-    destruct i.
-    split.
-    * intros.
-      destruct H2. destruct H2.
-      rewrite <- H2 in H3.
-      apply H0. assumption.
-    * intros.
-      apply H1 in H2.
-      remember (f x) as ys'.
-      exists ys'.
-      auto.
-  + intros.
-    pose (H X Y x y f B).
-    destruct i.
-    split.
-    * intros.
-      apply H0.
-      exists (f x).
-      auto.
-    * intros.
-      apply H1 in H2.
-      destruct H2. destruct H2.
-      rewrite <- H2 in H3.
-      assumption.
+  split; intros; specialize (H X Y x y f B); symmetry in H.
+  - rewrite H. rewrite lem_in_flat_map_exists. reflexivity.
+  - rewrite H. rewrite lem_in_flat_map_exists. reflexivity.
 Qed.
 
 Lemma filter_nil:
     forall (A : Type) (f : A -> bool) (x : A) (l : list A),
       (filter f l) = nil <->  (forall a: A, In a l -> f a = false).
 Proof.
-split.
-* intros.
-  induction l.
-  - crush. 
-  - simpl in H0.
-    destruct H0.
-    -- rewrite H0 in H.
-       unfold filter in H.
-       destruct (f a).
-       --- crush.
-       --- crush.
-    -- apply IHl.
-       --- simpl in H.
-           destruct (f a0).
-           ---- crush.
-           ---- crush.
-       --- assumption.
-* intros.
-  induction l.
-  - crush.
-  - simpl.
-    assert (f a = false). { crush. }
-    rewrite H0. simpl.
-    apply IHl. simpl in H. intros. specialize (H a0). apply H. right. assumption.
+  split; intros.
+  - induction l.
+    + destruct H0.
+    + simpl in H. destruct (f a0) eqn:Ha0; [discriminate H | ].
+      destruct H0; subst; auto.
+  - induction l.
+    + reflexivity.
+    + simpl. destruct (f a) eqn:Ha.
+      * rewrite H in Ha by (left; reflexivity). discriminate Ha.
+      * apply IHl. intros. apply H. right. assumption.
 Qed.
-
