@@ -1,132 +1,36 @@
-Require Import ZArith.
+Require Import Arith.
 Require Import NotationUtils.
 
-Fixpoint ble_nat (n m : nat) : bool :=
-  match n with
-  | O => true
-  | S n' =>
-      match m with
-      | O => false
-      | S m' => ble_nat n' m'
-      end
-  end.
+Definition ble_nat := leb.
 
-Lemma ge_trans : forall a b c,
-  a >= b -> b >= c -> a >= c.
-Proof.
-  intuition.
-Qed.
-
-Lemma O_le_n : forall n,
-  0 <= n.
-Proof.
-  intros. induction n.
-  apply le_n.
-  apply le_S. apply IHn.
-Qed.
-
-Lemma n_le_m__Sn_le_Sm : forall n m,
-  n <= m -> S n <= S m.
-Proof.
-  intros. induction H.
-  apply le_n.
-  apply le_S. apply IHle.
-Qed.
-
-
-Lemma ble_nat_true : forall n m,
-    ble_nat n m = true -> n <= m.
-Proof.
-  intros n m. generalize dependent n. induction m.
-  - destruct n.
-    -- intros. apply le_n.
-    -- simpl. intros. inversion H.
-  - intros. destruct n.
-    -- apply O_le_n.
-    -- apply n_le_m__Sn_le_Sm. apply IHm.
-                 simpl in H. apply H.
-Qed.
-
-
-Lemma ble_nat_false : forall n m,
-    ble_nat n m = false -> n > m.
-Proof.
-induction n; intros.
-- inversion H.
-- destruct m.
-  -- auto with arith.
-  -- apply lt_n_S.
-     apply IHn.
-     simpl in H.
-     assumption.
-Qed.
-
-
-
-Fixpoint max (l : list nat) : nat :=
-  match l with
-  | nil => 0
-  | a::m => let b:= max m in if ble_nat a b then b else a
-  end.
+Definition max (l : list nat) : nat :=
+  fold_right max 0 l.
 
 Lemma max_list_upperBound : forall l a ,
   In a l ->
   a <= max l.
 Proof.
   intros.
-  induction l.
+  induction l; simpl.
   - contradiction.
-  - case (ble_nat a0 (max l)) eqn: ca.
-    -- unfold max.
-       fold max.
-       rewrite ca.
-       inversion H.
-       --- rewrite  H0 in ca.
-           apply ble_nat_true in ca.
-           exact ca.
-       --- apply IHl. exact H0.
-    -- unfold max.
-       fold max.
-       rewrite ca.
-       inversion H.
-       --- omega.
-       --- apply IHl in H0.
-           apply ble_nat_false in ca.
-           omega.
+  - apply Nat.max_le_iff.
+    destruct H; subst; auto.
 Qed.
-         
+
 Fixpoint indexes (length: nat): list nat :=
   match length with
   | 0 => nil
   | S length' => (length') :: indexes(length')
   end.
 
-
 Lemma indexes_nat_upperBound:
-  forall x len,
-    In x (indexes len) <->
-    x < len.
+  forall x len, In x (indexes len) <-> x < len.
 Proof.
-  split.
-  + intros.
-    induction len.
-    - simpl in H. contradiction.
-    - simpl in H.
-      inversion H.
-      -- omega.
-      -- apply IHlen in H0.
-         omega.
-  + intros.
-    induction len.
-    - omega.
-    - simpl.
-      inversion H.
-      -- left. omega.
-      -- right.
-         apply IHlen.
-         omega.
-  Qed.
-
-
-
- 
+  split; intros.
+  - induction len; inversion H.
+    + subst len. auto.
+    + transitivity len; auto.
+  - induction len; inversion H.
+    + left. reflexivity.
+    + right. auto.
+Qed.
