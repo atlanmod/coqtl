@@ -517,7 +517,7 @@ Section CoqTL.
 
   (** *** Concate input types of each rule in the given transformation [tr]  ***)
   (** **** ex: (R1a :: R1b ::nil) :: (R2a ::nil) :: nil **** **)
-  Definition allRule_InTypes (tr: Transformation) :=
+  Definition allRule_InTypes (tr: Transformation) : list (list SourceModelClass) :=
     (map Rule_getInTypes (Transformation_getRules tr)).
 
   (** *** Compute all tuples from input model [sm] for each rule in the given transformation [tr]  ***)
@@ -531,17 +531,53 @@ Section CoqTL.
       (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuplesOfRules tr sm))
       (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuplesOfRules tr sm)).
 
+Theorem allTuplesOfRules_nil : 
+   forall (tr: Transformation) (sm : SourceModel),
+   allTuples tr sm = nil -> allTuplesOfRules tr sm = nil.
+Admitted.
 
-  Theorem exe_preserv:
+Theorem allTuplesOfRules_nil_inv : 
+   forall (tr: Transformation) (sm : SourceModel),
+   allTuplesOfRules tr sm = nil -> flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuples tr sm) = nil.
+Admitted.
+
+Theorem allTuplesOfRules_nil_inv' : 
+   forall (tr: Transformation) (sm : SourceModel),
+   allTuplesOfRules tr sm = nil -> 
+   (forall ( t: list SourceModelElement ), In t (allTuples tr sm) -> instantiatePattern tr sm t = None).
+Admitted.
+
+  Theorem exe_preserve:
     forall (tr: Transformation) (sm : SourceModel),
       execute tr sm = execute' tr sm.
   Proof.
     intros.
     unfold execute, execute'.
-    simpl.
     f_equal.
-    * unfold allTuplesOfRules.
-  Abort.
+    * induction (allTuples tr sm) eqn:eqnt, (allTuplesOfRules tr sm) eqn:eqntr.
+      + reflexivity.
+      + rewrite allTuplesOfRules_nil in eqntr.
+        - inversion eqntr.
+        - assumption.
+      + assert (forall ( t: list SourceModelElement ), In t (allTuples tr sm) -> instantiatePattern tr sm t = None). {
+          apply allTuplesOfRules_nil_inv'.
+          assumption.
+        }
+        simpl.
+        remember H as H1.
+        clear HeqH1.
+        specialize (H a).
+        rewrite eqnt in H.
+        simpl in H.
+        crush.
+        symmetry.
+        rewrite in_flat_map_nil.
+        intros.
+        specialize (H1 a0).
+        rewrite eqnt in H1.
+        crush.
+     + 
+Admitted.
 
 
   (** * Certification **)

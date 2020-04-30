@@ -64,5 +64,4 @@ Proof.
   (** Unfolding theorem tr_matchPattern_in *)
   apply tr_matchPattern_in in Hrl.
   destruct Hrl. rename H into HrinTr. rename H0 into Hmatch.
-  
-  assert (exists tpl: list RelationalMetamodel_ELink, applyRuleOnPattern rl Class2Relational cm sp = Some tpl /\ In tcs tpl).
+Admitted.
