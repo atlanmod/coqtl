@@ -503,12 +503,47 @@ Section CoqTL.
   Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (allModelElements sm) (maxArity tr).
 
-   Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
+  Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
     Build_Model
       (* elements *) (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuples tr sm))
       (* links *) (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuples tr sm)).
 
-
+   Definition execute' (tr: Transformation) (sm : SourceModel) : TargetModel :=
+      let matchedTuples := (filter (fun t => match (matchPattern tr sm t) with nil => false | _ => true end) (allTuples tr sm)) in
+      Build_Model
+        (* elements *) (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) matchedTuples)
+        (* links *) (flat_map (fun t => optionListToList (applyPattern tr sm t)) matchedTuples).
+  
+   Theorem exe_preserv:
+      forall (tr: Transformation) (sm : SourceModel),
+          execute tr sm = execute' tr sm.
+   Proof.
+    intros.
+    unfold execute, execute'.
+    simpl.
+    f_equal.
+    * induction (allTuples tr sm).
+      ** simpl. reflexivity.
+      ** simpl. rewrite IHl. unfold instantiatePattern at 1. destruct (matchPattern tr sm a) eqn:Hmatch.
+        ***  reflexivity.
+        ***  simpl. f_equal. f_equal. unfold instantiatePattern. rewrite Hmatch. simpl. reflexivity.
+    * induction (allTuples tr sm).
+    ** simpl. reflexivity.
+    ** simpl. rewrite IHl. unfold applyPattern at 1. destruct (matchPattern tr sm a) eqn:Hmatch.
+      ***  reflexivity.
+      ***  simpl. f_equal. f_equal. unfold applyPattern. rewrite Hmatch. simpl. reflexivity.
+  Qed.
+    
+   (* Definition execute'' (tr: Transformation) (sm : SourceModel) : TargetModel :=
+        let matchedTuples := nil (* map(tuple, matching rules), memoization *) in
+        Build_Model
+          (* elements *) (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) matchedTuples)
+          (* links *) (flat_map (fun t => optionListToList (applyPattern tr sm t)) matchedTuples). 
+          
+     Theorem exe_preserv'':
+      forall (tr: Transformation) (sm : SourceModel),
+          execute tr sm = execute'' tr sm.
+          *)
 
   (** * Certification **)
   
@@ -572,6 +607,8 @@ Section CoqTL.
         remember (Datatypes.length (Rule_getInTypes r)) as z.
         apply (@ge_trans x y z); assumption.
   Qed.
+
+
   
   (** ** execute **)
 
@@ -679,7 +716,9 @@ Section CoqTL.
                   **** crush.
           *** crush.
       + crush.
-  Qed. 
+  Qed.
+  
+  
   
   (** ** instantiatePattern **)
 
