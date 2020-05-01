@@ -29,3 +29,4 @@ examples/Class2RelationalMV/RelationalMetamodel.v
 examples/Class2RelationalMV/Class2Relational.v
 examples/Class2RelationalMV/tests/PersonModel.v
 examples/HSM2FSM/HSM.v
+examples/HSM2FSM/HSM2FSM.v
