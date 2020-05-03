@@ -6,8 +6,8 @@ Require Import ListSet.
 Require Import Omega.
 
 Require Import core.utils.TopUtils.
-Require Import core.CoqTL.
-
+(* Require Import core.CoqTL. *)
+Require Import core.CoqTL_v2.
 Require Import examples.HSM2FSM.HSM.
 
 
@@ -99,7 +99,7 @@ Definition HSM2FSM :=
                        return BuildAbstractStateStateMachine as2 fsm_sm   ))])]);
             (BuildRule
               HSMMetamodel HSMMetamodel
-              "IS2IS"
+              "IS2RS"
               [AbstractStateEClass] (fun (m: HSMModel) (is1:AbstractState) => (andb (AbstractState_instanceOfEClass InitialStateEClass is1)
                                                                                     (negb (isNone (AbstractState_getCompositeState is1 m)))))
               unit (fun (m: HSMModel) (is1:AbstractState) => [tt])
@@ -165,7 +165,7 @@ Definition HSM2FSM :=
               [(BuildOutputPatternElement
                   HSMMetamodel HSMMetamodel 
                   [TransitionEClass; AbstractStateEClass; AbstractStateEClass; AbstractStateEClass] "t2" TransitionEClass
-                  (fun _ (m: HSMModel) (t1:Transition) (src:AbstractState) (trg: AbstractState) (c: AbstractState) => BuildTransition ((Transition_getLabel t1) ++ "_from_" ++ (AbstractState_getName c) ++ "_to_" ++ (AbstractState_getName trg)) (Transition_getTransitionID t1))
+                  (fun _ (m: HSMModel) (t1:Transition) (src:AbstractState) (trg: AbstractState) (c: AbstractState) => BuildTransition (Transition_getLabel t1) (Transition_getTransitionID t1))
                   [(BuildOutputPatternElementReference
                       HSMMetamodel HSMMetamodel
                       [TransitionEClass; AbstractStateEClass; AbstractStateEClass; AbstractStateEClass] TransitionEClass TransitionStateMachineEReference
@@ -205,7 +205,7 @@ Definition HSM2FSM :=
                   HSMMetamodel HSMMetamodel 
                   [TransitionEClass; AbstractStateEClass; AbstractStateEClass; AbstractStateEClass] "t2" TransitionEClass
                   (fun _ (m: HSMModel) (t1:Transition) (src:AbstractState) (trg: AbstractState) (c: AbstractState) => 
-                     BuildTransition ((Transition_getLabel t1) ++ "_from_" ++ (AbstractState_getName src) ++ "_to_" ++ (AbstractState_getName c)) (Transition_getTransitionID t1))
+                     BuildTransition (Transition_getLabel t1) (Transition_getTransitionID t1))
                   [(BuildOutputPatternElementReference
                       HSMMetamodel HSMMetamodel
                       [TransitionEClass; AbstractStateEClass; AbstractStateEClass; AbstractStateEClass] TransitionEClass TransitionStateMachineEReference

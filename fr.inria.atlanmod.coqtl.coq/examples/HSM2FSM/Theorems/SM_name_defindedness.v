@@ -7,7 +7,8 @@ Require Import String.
 Require Import core.utils.TopUtils.
 Require Import core.utils.CpdtTactics.
 
-Require Import core.CoqTL.
+(* Require Import core.CoqTL. *)
+Require Import core.CoqTL_v2. 
 Require Import core.Metamodel.
 Require Import core.Model.
 
@@ -16,6 +17,13 @@ Require Import examples.HSM2FSM.HSM2FSM.
 
 Open Scope string_scope.
 
+Ltac solve_eq :=
+  try reflexivity;
+  match goal with
+  | |- match ?x with _ => _ end
+       = match ?x with _ => _ end =>
+    destruct x; auto
+  end.
 
 Theorem Table_id_defindedness :
 forall (cm : HSMModel) (rm : HSMModel), 
@@ -85,24 +93,46 @@ Proof.
                   unfold Expressions.evalFunctionFix in eval_fun.
                   destruct sp eqn: sp_ca.
                   +++++ inversion eval_fun.
-                  +++++ (*destruct s eqn: s_ca.
-                        destruct c0 eqn: c0_ca.
-                         * simpl in eval_fun.
-                           destruct l.
-                           **  inversion eval_fun.
-                               inversion H8.
-                               rewrite <- H10.
-                               simpl.
-                               specialize (Hpre c).
-                               unfold incl in H0.
-                               specialize (H0 c). simpl in H0.
-                               assert (In c (allModelElements cm)). { crush. }
-                               specialize (Hpre H9).
-                               unfold ClassMetamodel_getId in Hpre.
-                               rewrite c_ca in Hpre. auto.
-                           **  inversion eval_fun.
-                         * simpl in eval_fun. inversion eval_fun.*) 
-                        admit.
+                  +++++ destruct (toModelClass StateMachineEClass h) eqn: sm_ca.
+                        * destruct l.
+                          **  clear H1 H3 H4 H5 H6 H7.
+                              (*TODO make a lemma*)
+                              assert (s = t1). 
+                              {
+                                unfold HSMMetamodel_toEObjectFromStateMachine in H8.
+                                unfold HSMMetamodel_toEObjectOfEClass in H8.
+                                (* must be a bug start *)
+                                remember (Build_HSMMetamodel_EObject StateMachineEClass s) as a1.
+                                remember (Build_HSMMetamodel_EObject StateMachineEClass t1) as a2.
+                                inversion H8.
+                                rewrite Heqa1 in H3.
+                                rewrite Heqa2 in H3.
+                                (* must be a bug end *)
+                                apply HSM_invert in H3.
+                                auto.
+                              }
+                              rewrite <- H1.
+                              inversion eval_fun.
+                              simpl.
+                              specialize (Hpre d).
+                              assert (In (HSMMetamodel_toEObjectFromStateMachine d) (allModelElements cm)). 
+                              { 
+                                (*TODO make a lemma*)
+                                assert ((HSMMetamodel_toEObjectFromStateMachine d) = h). 
+                                { 
+                                  destruct h.
+                                  simpl in sm_ca.
+                                  destruct (HSMMetamodel_eqEClass_dec hsec_arg StateMachineEClass) eqn:tp_ca.
+                                  * crush.
+                                  * crush.
+                                }
+                                crush. 
+                              }
+                              specialize (H0 d). simpl in H0.
+                              specialize (Hpre H3).
+                              auto.
+                          **  inversion eval_fun.
+                        * inversion eval_fun.
              ++++ inversion H8.
          +++ crush.
     ++ crush.
@@ -130,8 +160,127 @@ Proof.
              ++++ inversion H8.
          +++ inversion H7.
     ++ inversion H8.
-    ++ inversion H3.
-admit.
-admit.
-Abort.
+    ++ destruct H3.
+       destruct (nth_error (evalIterator r cm sp) i).
+        +++  generalize dependent x.
+             generalize dependent r0.        
+             rewrite <- H3.
+             simpl.
+             intros.
+             destruct H7.
+             ++++ rewrite <- H7 in H8.
+                 unfold evalOutputPatternElement in H8. simpl in H8.
+                 destruct (Expressions.evalFunction HSMMetamodel cm 
+            [AbstractStateEClass] AbstractState
+            (fun (_ : HSMModel) (is1 : AbstractState) =>
+             BuildAbstractState InitialStateEClass
+               (BuildInitialState (AbstractState_getName is1)
+                  (AbstractState_getAbstractStateID is1))) 
+            (sp)) eqn: eval_fun.
+                 +++++ unfold Expressions.evalFunction in eval_fun.
+                      unfold Expressions.evalFunctionFix in eval_fun.
+                      destruct sp eqn: sp_ca.
+                      ++++++ inversion eval_fun.
+                      ++++++ inversion H8.
+                 +++++ inversion H8.
+             ++++ inversion H7.
+        +++ inversion H8.
+        +++  destruct H3.
+             destruct (nth_error (evalIterator r cm sp) i).
+              ++++  generalize dependent x.
+                   generalize dependent r0.        
+                   rewrite <- H3.
+                   simpl.
+                   intros.
+                   destruct H7.
+                   +++++ rewrite <- H7 in H8.
+                       unfold evalOutputPatternElement in H8. simpl in H8.
+                       destruct (Expressions.evalFunction HSMMetamodel cm 
+                                  [AbstractStateEClass] AbstractState
+                                  (fun (_ : HSMModel) (is1 : AbstractState) =>
+                                   BuildAbstractState RegularStateEClass
+                                     (BuildRegularState (AbstractState_getName is1)
+                                        (AbstractState_getAbstractStateID is1))) 
+                                  (sp)) eqn: eval_fun.
+                       ++++++ unfold Expressions.evalFunction in eval_fun.
+                            unfold Expressions.evalFunctionFix in eval_fun.
+                            destruct sp eqn: sp_ca.
+                            +++++++ inversion eval_fun.
+                            +++++++ inversion H8.
+                       ++++++ inversion H8.
+                   +++++ inversion H7.
+              ++++ inversion H8.
+              ++++ destruct H3.
+                   destruct (nth_error (evalIterator r cm sp) i).
+                    *    generalize dependent x.
+                         generalize dependent r0.        
+                         rewrite <- H3.
+                         simpl.
+                         intros.
+                         destruct H7.
+                         **  rewrite <- H7 in H8.
+                             unfold evalOutputPatternElement in H8. simpl in H8.
+                             destruct (Expressions.evalFunction HSMMetamodel cm [TransitionEClass]
+                                       Transition
+                                       (fun (_ : HSMModel) (t1 : Transition) =>
+                                        BuildTransition (Transition_getLabel t1)
+                                          (Transition_getTransitionID t1)) sp) eqn: eval_fun.
+                             ***  unfold Expressions.evalFunction in eval_fun.
+                                  unfold Expressions.evalFunctionFix in eval_fun.
+                                  destruct sp eqn: sp_ca.
+                                  **** inversion eval_fun.
+                                  **** inversion H8.
+                             *** inversion H8.
+                         ** inversion H7.
+                    * inversion H8.
+                    *  destruct H3.
+                       destruct (nth_error (evalIterator r cm sp) i).
+                        **   generalize dependent x.
+                             generalize dependent r0.        
+                             rewrite <- H3.
+                             simpl.
+                             intros.
+                             destruct H7.
+                             *** rewrite <- H7 in H8.
+                                 unfold evalOutputPatternElement in H8. simpl in H8.
+                                 destruct (Expressions.evalFunction HSMMetamodel cm
+                                 [TransitionEClass; AbstractStateEClass; AbstractStateEClass;
+                                 AbstractStateEClass] Transition
+                                 (fun (_ : HSMModel) (t1 : Transition) (_ _ _ : AbstractState) =>
+                                  BuildTransition (Transition_getLabel t1)
+                                    (Transition_getTransitionID t1)) sp) eqn: eval_fun.
+                                 ****  unfold Expressions.evalFunction in eval_fun.
+                                      unfold Expressions.evalFunctionFix in eval_fun.
+                                      destruct sp eqn: sp_ca.
+                                      ***** inversion eval_fun.
+                                      ***** inversion H8.
+                                 **** inversion H8.
+                             *** inversion H7.
+                        ** inversion H8.
+                        ** destruct H3.
+                           destruct (nth_error (evalIterator r cm sp) i).
+                            ***   generalize dependent x.
+                                 generalize dependent r0.        
+                                 rewrite <- H3.
+                                 simpl.
+                                 intros.
+                                 destruct H7.
+                                 **** rewrite <- H7 in H8.
+                                     unfold evalOutputPatternElement in H8. simpl in H8.
+                                     destruct (Expressions.evalFunction HSMMetamodel cm
+                                     [TransitionEClass; AbstractStateEClass; AbstractStateEClass;
+                                     AbstractStateEClass] Transition
+                                     (fun (_ : HSMModel) (t1 : Transition) (_ _ _ : AbstractState) =>
+                                      BuildTransition (Transition_getLabel t1)
+                                        (Transition_getTransitionID t1)) sp) eqn: eval_fun.
+                                     *****  unfold Expressions.evalFunction in eval_fun.
+                                          unfold Expressions.evalFunctionFix in eval_fun.
+                                          destruct sp eqn: sp_ca.
+                                          ****** inversion eval_fun.
+                                          ****** inversion H8.
+                                     ***** inversion H8.
+                                 **** inversion H7.
+                        *** inversion H8.
+                        *** inversion H3.
+Qed.
 
