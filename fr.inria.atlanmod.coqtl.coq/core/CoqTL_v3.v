@@ -1,3 +1,16 @@
+(* 
+  CoqTL v3
+
+  Optimize CoqTL by renewing tuple creation based on rule guards, see execute'' function for more detail.
+
+  As a reminder, this increases performance because:
+
+  1. ?
+
+  Working in Progress. Unfinished certification.
+ 
+*)
+
 Require Import String.
 Require Import List.
 Require Import Multiset.

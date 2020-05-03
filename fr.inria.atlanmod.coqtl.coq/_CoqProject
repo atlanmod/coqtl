@@ -18,6 +18,7 @@ core/Model.v
 core/Engine.v
 core/EngineProofs.v
 core/CoqTL.v
+core/CoqTL_v2.v
 core/Expressions.v
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
@@ -28,3 +29,4 @@ examples/Class2RelationalMV/RelationalMetamodel.v
 examples/Class2RelationalMV/Class2Relational.v
 examples/Class2RelationalMV/tests/PersonModel.v
 examples/HSM2FSM/HSM.v
+examples/HSM2FSM/HSM2FSM.v
