@@ -553,19 +553,42 @@ Section CoqTL.
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       instantiatePattern' tr sm sp = instantiatePattern'' tr sm sp.
   Proof.
-  Admitted.
+    intros.
+    unfold instantiatePattern', instantiatePattern''.
+    destruct (matchPattern tr sm sp).
+    - reflexivity.
+    - reflexivity.
+  Qed.
 
   Theorem applyPattern_preserv:
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       applyPattern' tr sm sp = applyPattern'' tr sm sp.
   Proof.
-  Admitted.
+    intros.
+    unfold applyPattern', applyPattern''.
+    destruct (matchPattern tr sm sp).
+    - reflexivity.
+    - reflexivity.
+  Qed.
 
   Theorem exe_preserv:
     forall (tr: Transformation) (sm : SourceModel),
       execute tr sm = execute' tr sm.
   Proof.
-  Admitted.
+    intros.
+    unfold execute, execute'.
+    f_equal.
+    - induction (allTuples tr sm).
+      + simpl. reflexivity.
+      + simpl. rewrite IHl. f_equal. clear IHl.
+        f_equal. unfold instantiatePattern'.
+        destruct (matchPattern tr sm a); reflexivity.
+    - induction (allTuples tr sm).
+      + simpl. reflexivity.
+      + simpl. rewrite IHl. f_equal. clear IHl.
+        f_equal. unfold applyPattern'.
+        destruct (matchPattern tr sm a); reflexivity.
+  Qed.
 
   (** * Certification **)
 
