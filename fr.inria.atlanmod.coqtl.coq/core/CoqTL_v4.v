@@ -378,6 +378,9 @@ Section CoqTL.
          end
   end.
 
+  Definition instantiatePattern'' (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelElement) :=
+    instantiatePattern tr sm (sp, (matchPattern tr sm sp)).
+
   Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (name: string): option (TargetModelElement) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
@@ -472,6 +475,9 @@ Section CoqTL.
            end
     end.
 
+  Definition applyPattern'' (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
+    applyPattern tr sm (sp, matchPattern tr sm sp).
+
   Definition applyElementsOnPattern (r: Rule) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) : option (list TargetModelLink) :=
     m <- matchRuleOnPattern r sm sp;
       if m then
@@ -543,20 +549,23 @@ Section CoqTL.
           (* elements *) (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) matchedTuples)
           (* links *) (flat_map (fun t => optionListToList (applyPattern tr sm t)) matchedTuples). 
 
-  Theorem exe_preserv''':
-    forall (tr: Transformation) (sm : SourceModel),
-      applyPattern tr sm = execute' tr sm.
+  Theorem instantiatePattern_preserv:
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      instantiatePattern' tr sm sp = instantiatePattern'' tr sm sp.
   Proof.
+  Admitted.
 
-  Theorem exe_preserv''':
+  Theorem applyPattern_preserv:
+    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
+      applyPattern' tr sm sp = applyPattern'' tr sm sp.
+  Proof.
+  Admitted.
+
+  Theorem exe_preserv:
     forall (tr: Transformation) (sm : SourceModel),
       execute tr sm = execute' tr sm.
   Proof.
-
-  Theorem exe_preserv''':
-    forall (tr: Transformation) (sm : SourceModel),
-      execute tr sm = execute' tr sm.
-  Proof.
+  Admitted.
 
   (** * Certification **)
 
