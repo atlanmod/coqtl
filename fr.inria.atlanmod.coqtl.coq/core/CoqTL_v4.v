@@ -622,13 +622,15 @@ Section CoqTL.
 
   Theorem tr_execute_in_elements :
     forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-      In te (allModelElements (execute tr sm)) <->
+      In te (allModelElements (execute' tr sm)) <->
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
           incl sp (allModelElements sm) /\
-          instantiatePattern tr sm sp = Some tp /\
+          instantiatePattern'' tr sm sp = Some tp /\
           In te tp).
   Proof.
     intros.
+    rewrite exe_preserv.
+    setoid_rewrite instantiatePattern_preserv.
     split.
     - intros.
       simpl in H.
@@ -675,13 +677,15 @@ Section CoqTL.
 
   Theorem tr_execute_in_links :
     forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
-      In tl (allModelLinks (execute tr sm)) <->
+      In tl (allModelLinks (execute' tr sm)) <->
       (exists (sp : list SourceModelElement) (tpl : list TargetModelLink),
           incl sp (allModelElements sm) /\
-          applyPattern tr sm sp = Some tpl /\
+          applyPattern'' tr sm sp = Some tpl /\
           In tl tpl).
   Proof.
     intros.
+    rewrite exe_preserv.
+    setoid_rewrite applyPattern_preserv.
     split.
     - intros.
       simpl in H.
@@ -730,13 +734,14 @@ Section CoqTL.
 
   Theorem tr_instantiatePattern_in :
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
-      (exists tp: list TargetModelElement, instantiatePattern tr sm sp = Some tp /\
+      (exists tp: list TargetModelElement, instantiatePattern'' tr sm sp = Some tp /\
        In te tp) <->
       (exists (r : Rule) (tp1 : list TargetModelElement),
           In r (matchPattern tr sm sp) /\
           instantiateRuleOnPattern r sm sp = Some tp1 /\
           In te tp1).
   Proof.
+   setoid_rewrite instantiatePattern_preserv.
    split.
     - intros.
       unfold instantiatePattern in H.
@@ -796,11 +801,13 @@ Section CoqTL.
 
   Theorem tr_instantiatePattern_ :
      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-      instantiatePattern tr sm sp <> None <->
+      instantiatePattern'' tr sm sp <> None <->
       (exists (r: Rule),
           In r (matchPattern tr sm sp) /\
           instantiateRuleOnPattern' r tr sm sp <> None).
   Proof.
+  intros.
+  rewrite instantiatePattern_preserv.
   split.
   - intros.
     specialize (option_res_dec (instantiatePattern tr sm) sp H).
@@ -867,9 +874,10 @@ Section CoqTL.
   Theorem tr_instantiatePattern_None :
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       length sp > maxArity tr ->
-      instantiatePattern tr sm sp = None.
+      instantiatePattern'' tr sm sp = None.
   Proof.
     intros.
+    rewrite instantiatePattern_preserv.
     unfold instantiatePattern.
     destruct (matchPattern tr sm sp ) eqn:mtch.
     - auto.
@@ -1291,13 +1299,14 @@ Section CoqTL.
 
   Theorem tr_applyPattern_in :
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
-      (exists tpl: list TargetModelLink, applyPattern tr sm sp = Some tpl /\
+      (exists tpl: list TargetModelLink, applyPattern'' tr sm sp = Some tpl /\
        In tl tpl) <->
       (exists (r : Rule) (tpl1 : list TargetModelLink),
           In r (matchPattern tr sm sp) /\
           applyRuleOnPattern r tr sm sp = Some tpl1 /\
           In tl tpl1).
   Proof.
+   setoid_rewrite applyPattern_preserv.
    split.
     - intros.
       unfold applyPattern in H.
@@ -1365,11 +1374,13 @@ Section CoqTL.
 
   Theorem tr_applyPattern_ :
      forall  (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) ,
-       applyPattern tr sm sp <> None <->
+       applyPattern'' tr sm sp <> None <->
       (exists  (r : Rule),
          In r (matchPattern tr sm sp) /\
          applyRuleOnPattern r tr sm sp <> None).
   Proof.
+    intros.
+    rewrite applyPattern_preserv.
     split.
   - intros.
     specialize (option_res_dec (applyPattern tr sm) sp H).
@@ -1431,9 +1442,10 @@ Section CoqTL.
   Theorem tr_applyPattern_None :
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       length sp > maxArity tr ->
-      applyPattern tr sm sp = None.
+      applyPattern'' tr sm sp = None.
   Proof.
     intros.
+    rewrite applyPattern_preserv.
     unfold applyPattern.
     destruct (matchPattern tr sm sp ) eqn:mtch.
     - auto.
@@ -2279,10 +2291,10 @@ Section CoqTL.
       getOutType := OutputPatternElement_getOutType';
       getOutputElementReferences := OutputPatternElement_getOutputElementReferences';
 
-      execute := execute;
+      execute := execute';
       matchPattern := matchPattern;
-      instantiatePattern := instantiatePattern;
-      applyPattern := applyPattern;
+      instantiatePattern := instantiatePattern'';
+      applyPattern := applyPattern'';
 
       matchRuleOnPattern := matchRuleOnPattern';
       instantiateRuleOnPattern := instantiateRuleOnPattern';
@@ -2302,30 +2314,30 @@ Section CoqTL.
       tr_execute_in_links := tr_execute_in_links;
 
       tr_instantiatePattern_in := tr_instantiatePattern_in;
-      tr_instantiatePattern_ := tr_instantiatePattern_;
+      tr_instantiatePattern_non_None := tr_instantiatePattern_;
       tr_instantiatePattern_None := tr_instantiatePattern_None;
 
       tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
-      tr_instantiateRuleOnPattern_ := tr_instantiateRuleOnPattern_;
+      tr_instantiateRuleOnPattern_non_None := tr_instantiateRuleOnPattern_;
 
       tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
-      tr_instantiateIterationOnPattern_ := tr_instantiateIterationOnPattern_;
+      tr_instantiateIterationOnPattern_non_None := tr_instantiateIterationOnPattern_;
 
       tr_instantiateElementOnPattern_None := tr_instantiateElementOnPattern_None;
       tr_instantiateElementOnPattern_None_iterator := tr_instantiateElementOnPattern_None_iterator;
 
       tr_applyPattern_in := tr_applyPattern_in;
-      tr_applyPattern_ := tr_applyPattern_;
+      tr_applyPattern_non_None := tr_applyPattern_;
       tr_applyPattern_None := tr_applyPattern_None;
 
       tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
-      tr_applyRuleOnPattern_ := tr_applyRuleOnPattern_;
+      tr_applyRuleOnPattern_non_None := tr_applyRuleOnPattern_;
 
       tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
-      tr_applyIterationOnPattern_ := tr_applyIterationOnPattern_;
+      tr_applyIterationOnPattern_non_None := tr_applyIterationOnPattern_;
 
       tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
-      tr_applyElementOnPattern_ := tr_applyElementOnPattern_;
+      tr_applyElementOnPattern_non_None := tr_applyElementOnPattern_;
 
       tr_applyReferenceOnPattern_None := tr_applyReferenceOnPattern_None;
       tr_applyReferenceOnPattern_None_iterator := tr_applyReferenceOnPattern_None_iterator;
