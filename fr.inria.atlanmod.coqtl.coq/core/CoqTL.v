@@ -645,66 +645,6 @@ Section CoqTL.
       + crush.
   Qed.
 
-  Theorem tr_execute_non_Nil_elements :
-    forall (tr: Transformation) (sm : SourceModel),
-      (allModelElements (execute tr sm)) <> nil <->
-      (exists (te : TargetModelElement) (sp : list SourceModelElement) (tp : list TargetModelElement),
-          incl sp (allModelElements sm) /\
-          instantiatePattern tr sm sp = Some tp /\
-          In te tp).
-  Proof.
-    intros.
-    split.
-    + intro. 
-      assert (exists (te: TargetModelElement), In te (allModelElements (execute tr sm))).
-      { 
-        destruct (allModelElements (execute tr sm)). 
-        ++ crush.
-        ++ exists t.
-           crush.
-      }
-      destruct H0.
-      rename x into te.
-      exists te.
-      apply tr_execute_in_elements. auto.
-    + intro.
-      destruct H.
-      apply tr_execute_in_elements in H.
-      destruct (allModelElements (execute tr sm)).
-      ++ inversion H.
-      ++ crush.
-  Qed.
-
-  Theorem tr_execute_non_Nil_links :
-    forall (tr: Transformation) (sm : SourceModel) ,
-      (allModelLinks (execute tr sm)) <> nil <->
-      (exists (tl : TargetModelLink) (sp : list SourceModelElement) (tpl : list TargetModelLink),
-          incl sp (allModelElements sm) /\
-          applyPattern tr sm sp = Some tpl /\
-          In tl tpl).
-  Proof.
-    intros.
-    split.
-    + intro. 
-      assert (exists (tl: TargetModelLink), In tl (allModelLinks (execute tr sm))).
-      { 
-        destruct (allModelLinks (execute tr sm)). 
-        ++ crush.
-        ++ exists t.
-           crush.
-      }
-      destruct H0.
-      rename x into tl.
-      exists tl.
-      apply tr_execute_in_links. auto.
-    + intro.
-      destruct H.
-      apply tr_execute_in_links in H.
-      destruct (allModelLinks (execute tr sm)).
-      ++ inversion H.
-      ++ crush.
-  Qed.
-
   (** ** instantiatePattern **)
 
   Theorem tr_instantiatePattern_in :
@@ -2046,36 +1986,6 @@ Section CoqTL.
       unfold matchRuleOnPattern' in H0.
       rewrite H0.
       reflexivity.
-  Qed.
-
-  Theorem tr_matchPattern_non_Nil :
-    forall (tr: Transformation) (sm : SourceModel),
-    forall (sp : list SourceModelElement),
-      (matchPattern tr sm sp) <> nil <->
-      (exists (r: Rule), 
-        In r (Transformation_getRules tr) /\
-        matchRuleOnPattern' r tr sm sp = return true).
-  Proof.
-    intros.
-    split.
-    + intro. 
-      assert (exists (r: Rule), In r (matchPattern tr sm sp)).
-      { 
-        destruct (matchPattern tr sm sp). 
-        ++ crush.
-        ++ exists r.
-           crush.
-      }
-      destruct H0.
-      rename x into r.
-      exists r.
-      apply tr_matchPattern_in. auto.
-    + intro.
-      destruct H.
-      apply tr_matchPattern_in in H.
-      destruct (matchPattern tr sm sp).
-      ++ inversion H.
-      ++ crush.
   Qed.
 
   Theorem tr_matchPattern_None : 
