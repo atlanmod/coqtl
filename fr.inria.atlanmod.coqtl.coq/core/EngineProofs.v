@@ -141,7 +141,7 @@ Proof.
   - left. reflexivity.
 Qed.
 
-Theorem tr_execute_None_tr : forall t: TransformationEngine, 
+Theorem tr_execute_None_tr_elements : forall t: TransformationEngine, 
     forall (tr: Transformation) (sm : SourceModel),
       getRules tr = nil ->
       allModelElements (execute tr sm) = nil.
@@ -165,7 +165,32 @@ Proof.
        rewrite H in H3.
        contradiction.
 Qed.
-    
+
+Theorem tr_execute_None_tr_links : forall t: TransformationEngine, 
+    forall (tr: Transformation) (sm : SourceModel),
+      getRules tr = nil ->
+      allModelLinks (execute tr sm) = nil.
+Proof.
+  intros.
+  destruct (allModelLinks (execute tr sm)) eqn:aml.
+  - reflexivity.
+  - exfalso.
+    pose (tr_execute_in_links tr sm t0).
+    pose (in_eq t0 l).
+    rewrite <- aml in i0.
+    apply i in i0.
+    destruct i0. destruct H0. destruct H0. destruct H1.
+    pose (tr_applyPattern_in tr sm x t0).
+    apply tr_matchPattern_None_tr with (sm:=sm) (sp:=x) in H.
+    destruct i0. destruct H3.
+    -- exists x0.
+       split. assumption. assumption.
+    -- destruct H3.
+       destruct H3.
+       rewrite H in H3.
+       contradiction.
+Qed.
+
 Theorem tr_applyElementOnPattern_None : 
    forall eng: TransformationEngine,
       forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
