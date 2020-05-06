@@ -2081,7 +2081,7 @@ Section CoqTL.
       reflexivity.
   Qed.
 
-  Theorem tr_matchPattern_maxArity : forall t: TransformationEngine,
+  Theorem tr_matchPattern_None : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         length sp > maxArity tr ->
         matchPattern tr sm sp = nil.
@@ -2118,7 +2118,7 @@ Section CoqTL.
     crush.
   Qed.
 
-  Theorem tr_matchRuleOnPattern_inTypes :
+  Theorem tr_matchRuleOnPattern_None :
       forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
         length sp <> length (Rule_getInTypes r) ->
         matchRuleOnPattern r sm sp = None.
@@ -2343,6 +2343,9 @@ Section CoqTL.
       tr_applyReferenceOnPattern_None_iterator := tr_applyReferenceOnPattern_None_iterator;
 
       tr_matchPattern_in := tr_matchPattern_in;
+      tr_matchPattern_None := tr_matchPattern_None;
+
+      tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
 
       tr_maxArity_in := tr_maxArity_in;
     }.

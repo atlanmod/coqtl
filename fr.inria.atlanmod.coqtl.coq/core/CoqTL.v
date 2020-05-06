@@ -2250,6 +2250,9 @@ Section CoqTL.
       tr_applyReferenceOnPattern_None_iterator := tr_applyReferenceOnPattern_None_iterator;
 
       tr_matchPattern_in := tr_matchPattern_in;
+      tr_matchPattern_None := tr_matchPattern_None;
+
+      tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
 
       tr_maxArity_in := tr_maxArity_in;
     }.
