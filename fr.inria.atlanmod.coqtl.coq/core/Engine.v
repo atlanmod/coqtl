@@ -110,11 +110,23 @@ Class TransformationEngine :=
             In tl tpl);
 
     tr_matchPattern_in :
-            forall (tr: Transformation) (sm : SourceModel),
-            forall (sp : list SourceModelElement)(r : Rule),
-              In r (matchPattern tr sm sp) <->
-              In r (getRules tr) /\
-              matchRuleOnPattern r tr sm sp = return true;
+       forall (tr: Transformation) (sm : SourceModel),
+         forall (sp : list SourceModelElement)(r : Rule),
+           In r (matchPattern tr sm sp) <->
+             In r (getRules tr) /\
+             matchRuleOnPattern r tr sm sp = return true;
+
+    tr_matchPattern_None : 
+        forall (tr: Transformation) (sm : SourceModel) 
+          (sp: list SourceModelElement),
+            length sp > maxArity tr ->
+              matchPattern tr sm sp = nil;
+
+    tr_matchRuleOnPattern_None :
+        forall (tr: Transformation) (sm : SourceModel) 
+          (r: Rule) (sp: list SourceModelElement),
+           length sp <> length (getInTypes r) ->
+            matchRuleOnPattern r tr sm sp = None;
 
     tr_instantiatePattern_in :
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),

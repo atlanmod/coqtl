@@ -508,42 +508,6 @@ Section CoqTL.
       (* elements *) (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuples tr sm))
       (* links *) (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuples tr sm)).
 
-   Definition execute' (tr: Transformation) (sm : SourceModel) : TargetModel :=
-      let matchedTuples := (filter (fun t => match (matchPattern tr sm t) with nil => false | _ => true end) (allTuples tr sm)) in
-      Build_Model
-        (* elements *) (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) matchedTuples)
-        (* links *) (flat_map (fun t => optionListToList (applyPattern tr sm t)) matchedTuples).
-  
-   Theorem exe_preserv:
-      forall (tr: Transformation) (sm : SourceModel),
-          execute tr sm = execute' tr sm.
-   Proof.
-    intros.
-    unfold execute, execute'.
-    simpl.
-    f_equal.
-    * induction (allTuples tr sm).
-      ** simpl. reflexivity.
-      ** simpl. rewrite IHl. unfold instantiatePattern at 1. destruct (matchPattern tr sm a) eqn:Hmatch.
-        ***  reflexivity.
-        ***  simpl. f_equal. f_equal. unfold instantiatePattern. rewrite Hmatch. simpl. reflexivity.
-    * induction (allTuples tr sm).
-    ** simpl. reflexivity.
-    ** simpl. rewrite IHl. unfold applyPattern at 1. destruct (matchPattern tr sm a) eqn:Hmatch.
-      ***  reflexivity.
-      ***  simpl. f_equal. f_equal. unfold applyPattern. rewrite Hmatch. simpl. reflexivity.
-  Qed.
-    
-   (* Definition execute'' (tr: Transformation) (sm : SourceModel) : TargetModel :=
-        let matchedTuples := nil (* map(tuple, matching rules), memoization *) in
-        Build_Model
-          (* elements *) (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) matchedTuples)
-          (* links *) (flat_map (fun t => optionListToList (applyPattern tr sm t)) matchedTuples). 
-          
-     Theorem exe_preserv'':
-      forall (tr: Transformation) (sm : SourceModel),
-          execute tr sm = execute'' tr sm.
-          *)
 
   (** * Certification **)
 
@@ -2024,7 +1988,7 @@ Section CoqTL.
       reflexivity.
   Qed.
 
-  Theorem tr_matchPattern_maxArity : forall t: TransformationEngine,
+  Theorem tr_matchPattern_None : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         length sp > maxArity tr ->
         matchPattern tr sm sp = nil.
@@ -2061,7 +2025,7 @@ Section CoqTL.
     crush.
   Qed.
 
-  Theorem tr_matchRuleOnPattern_inTypes :
+  Theorem tr_matchRuleOnPattern_None :
       forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
         length sp <> length (Rule_getInTypes r) ->
         matchRuleOnPattern r sm sp = None.
@@ -2286,6 +2250,9 @@ Section CoqTL.
       tr_applyReferenceOnPattern_None_iterator := tr_applyReferenceOnPattern_None_iterator;
 
       tr_matchPattern_in := tr_matchPattern_in;
+      tr_matchPattern_None := tr_matchPattern_None;
+
+      tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
 
       tr_maxArity_in := tr_maxArity_in;
     }.
