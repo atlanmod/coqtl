@@ -42,7 +42,7 @@
   Proof.
     intros. apply max_list_upperBound. do 2 apply in_map. exact H.
   Qed.
-  
+
 Theorem incl_equiv_to_surj:
   forall (eng: TransformationEngine),
     (forall (tr: Transformation) (sm : SourceModel)
@@ -314,6 +314,24 @@ Proof.
   { specialize (tr_applyReferenceOnPattern_None tr sm r sp i ope x0). intros. crush. }
   crush.
 Qed.
+
+Theorem tr_applyElementOnPattern_None' : 
+   forall eng: TransformationEngine,
+      forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+        length sp <> length (getInTypes r) ->
+        applyElementOnPattern r ope tr sm sp i = None.
+Proof.
+  intros.
+  destruct (applyElementOnPattern r ope tr sm sp i) eqn:Ha.
+  * exfalso. apply (tr_applyElementOnPattern_None eng tr sm r sp i
+  ope). 
+  ** assumption.
+  ** rewrite Ha. discriminate.
+  * reflexivity.
+Qed.
+
+
+
 
 Theorem tr_applyIterationOnPattern_None : 
    forall eng: TransformationEngine,
