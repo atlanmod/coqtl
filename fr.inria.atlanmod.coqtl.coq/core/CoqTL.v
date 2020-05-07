@@ -527,16 +527,6 @@ Section CoqTL.
     list (OutputPatternElementReference InElTypes IterType (OutputPatternElement_getOutType o)) :=
     OutputPatternElement_getOutputElementReferences o.
 
-  (** ** maxArity **)
-
-  Lemma tr_maxArity_in :
-    forall (tr: Transformation) (r: Rule),
-      In r (Transformation_getRules tr) ->
-      maxArity tr >= length (Rule_getInTypes r).
-  Proof.
-    intros. apply max_list_upperBound. do 2 apply in_map. exact H.
-  Qed.
-
   (** ** execute **)
 
   Theorem tr_execute_in_elements :
