@@ -230,6 +230,12 @@ Definition ClassMetamodel_getId (c : ClassMetamodel_EObject) : nat :=
   | (ClassMetamodel_BuildEObject AttributeEClass a) => getAttributeId a
   end.
 
+Definition ClassMetamodel_getName (c : ClassMetamodel_EObject) : string :=
+  match c with
+  | (ClassMetamodel_BuildEObject ClassEClass c) => getClassName c
+  | (ClassMetamodel_BuildEObject AttributeEClass a) => getAttributeName a
+  end.
+
 (*Definition allClasses (m : ClassModel) : list Class :=
   match m with BuildClassModel l _ => optionList2List (map (ClassMetamodel_toEClass ClassEClass) l) end.*)
 
