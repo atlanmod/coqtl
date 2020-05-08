@@ -262,7 +262,11 @@ Definition RelationalMetamodel_getId (r : RelationalMetamodel_EObject) : nat :=
   | (RelationalMetamodel_BuildEObject ColumnClass a) => getColumnId a
   end.
 
-
+Definition RelationalMetamodel_getName (r : RelationalMetamodel_EObject) : string :=
+  match r with
+  | (RelationalMetamodel_BuildEObject TableClass c) => getTableName c
+  | (RelationalMetamodel_BuildEObject ColumnClass a) => getColumnName a
+  end.
 
 (*Definition allTables (m : RelationalModel) : list Table :=
   match m with BuildRelationalModel l _  => optionList2List (map (toRelationalMetamodel_EClass TableClass) l) end.
