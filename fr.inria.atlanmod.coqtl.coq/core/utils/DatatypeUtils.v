@@ -10,3 +10,11 @@ Proof.
   - exists fa. reflexivity.
   - congruence.
 Qed.
+
+Theorem None_is_not_non_None :
+  forall {T : Type} (x : option T), not (x <> None) -> x = None.
+Proof.
+  intros. destruct x.
+  - destruct H. discriminate.
+  - reflexivity.
+Qed.

@@ -1,14 +1,14 @@
-(* 
+(*
   CoqTL v4
 
   Optimize CoqTL_v2 by memorization, see execute''' function for more detail.
 
   As a reminder, this increases performance because:
 
-  1. reduce recomputation of matchedTuples 
+  1. reduce recomputation of matchedTuples
 
   Unfinished implementation. Working in progress.
- 
+
 *)
 Require Import String.
 Require Import List.
@@ -1241,13 +1241,13 @@ Section CoqTL.
 
   (** ** instantiateElementOnPattern **)
 
-  Theorem tr_instantiateElementOnPattern_None_contra :
+  Theorem tr_instantiateElementOnPattern_None :
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
       (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
         length sp <> length (Rule_getInTypes r) ->
-        instantiateElementOnPattern r ope sm sp i <> None -> False.
+        instantiateElementOnPattern r ope sm sp i = None.
   Proof.
-    intros.
+    intros. apply None_is_not_non_None. intro H0.
     assert (exists (te: TargetModelElement), instantiateElementOnPattern r ope sm sp i = Some te).
     { specialize (option_res_dec (instantiateElementOnPattern r ope sm sp)). intros.
       specialize (H1 i H0). destruct H1. exists x. crush. }
@@ -1273,28 +1273,13 @@ Section CoqTL.
     - crush.
   Qed.
 
-  Theorem tr_instantiateElementOnPattern_None :
-    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
-        length sp <> length (Rule_getInTypes r) ->
-        instantiateElementOnPattern r ope sm sp i = None.
-  Proof.
-    intros.
-    destruct (instantiateElementOnPattern r ope sm sp i) eqn: Hins.
-    - exfalso.
-      apply (tr_instantiateElementOnPattern_None_contra sm r sp i ope).
-      -- exact H.
-      -- rewrite Hins. discriminate.
-    - auto.
-  Qed.
-
-  Theorem tr_instantiateElementOnPattern_None_iterator_contra :
+  Theorem tr_instantiateElementOnPattern_None_iterator :
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
       (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
       i >= length (evalIterator r sm sp) ->
-      instantiateElementOnPattern r ope sm sp i <> None -> False.
+      instantiateElementOnPattern r ope sm sp i = None.
   Proof.
-      intros.
+      intros. apply None_is_not_non_None. intro H0.
       assert (exists (te: TargetModelElement), instantiateElementOnPattern r ope sm sp i = Some te).
     { specialize (option_res_dec (instantiateElementOnPattern r ope sm sp)). intros.
       specialize (H1 i H0). destruct H1. exists x. crush. }
@@ -1308,21 +1293,6 @@ Section CoqTL.
          --- crush.
       -- crush.
     - crush.
-  Qed.
-
-  Theorem tr_instantiateElementOnPattern_None_iterator:
-    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
-      i >= length (evalIterator r sm sp) ->
-      instantiateElementOnPattern r ope sm sp i = None.
-  Proof.
-    intros.
-    destruct (instantiateElementOnPattern r ope sm sp i) eqn: Hins.
-    - exfalso.
-      apply (tr_instantiateElementOnPattern_None_iterator_contra sm r sp i ope).
-      -- exact H.
-      -- rewrite Hins. discriminate.
-    - auto.
   Qed.
 
   (** ** applyPattern **)
@@ -2024,14 +1994,14 @@ Section CoqTL.
 
   (** ** applyReferenceOnPattern **)
 
-  Theorem tr_applyReferenceOnPattern_None_contra :
+  Theorem tr_applyReferenceOnPattern_None :
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
         (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
         (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
         length sp <> length (Rule_getInTypes r) ->
-        applyReferenceOnPattern r ope oper tr sm sp i <> None -> False.
+        applyReferenceOnPattern r ope oper tr sm sp i = None.
   Proof.
-    intros.
+    intros. apply None_is_not_non_None. intro H0.
     assert (exists (tl: TargetModelLink), applyReferenceOnPattern r ope oper tr sm sp i  = Some tl).
     { specialize (option_res_dec (applyReferenceOnPattern r ope oper tr sm sp)). intros.
       specialize (H1 i H0). destruct H1. exists x. crush. }
@@ -2057,30 +2027,14 @@ Section CoqTL.
     - crush.
   Qed.
 
-  Theorem tr_applyReferenceOnPattern_None :
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-        (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
-        (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
-        length sp <> length (Rule_getInTypes r) ->
-        applyReferenceOnPattern r ope oper tr sm sp i = None.
-  Proof.
-    intros.
-    destruct (applyReferenceOnPattern r ope oper tr sm sp i) eqn: Ha.
-    - exfalso.
-      apply (tr_applyReferenceOnPattern_None_contra tr sm r sp i ope oper).
-      -- exact H.
-      -- rewrite Ha. discriminate.
-    - auto.
-  Qed.
-
-  Theorem tr_applyReferenceOnPattern_None_iterator_contra :
+  Theorem tr_applyReferenceOnPattern_None_iterator :
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
       (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
       (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
       i >= length (evalIterator r sm sp) ->
-      applyReferenceOnPattern r ope oper tr sm sp i <> None -> False.
+      applyReferenceOnPattern r ope oper tr sm sp i = None.
   Proof.
-    intros.
+    intros. apply None_is_not_non_None. intro H0.
     assert (exists (tl: TargetModelLink), applyReferenceOnPattern r ope oper tr sm sp i = Some tl).
     { specialize (option_res_dec (applyReferenceOnPattern r ope oper tr sm sp)). intros.
       specialize (H1 i H0). destruct H1. exists x. crush. }
@@ -2094,22 +2048,6 @@ Section CoqTL.
          --- crush.
       -- crush.
     - crush.
-  Qed.
-
-  Theorem tr_applyReferenceOnPattern_None_iterator :
-    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
-      (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
-      i >= length (evalIterator r sm sp) ->
-      applyReferenceOnPattern r ope oper tr sm sp i = None.
-  Proof.
-    intros.
-    destruct (applyReferenceOnPattern r ope oper tr sm sp i) eqn: Ha.
-    - exfalso.
-      apply (tr_applyReferenceOnPattern_None_iterator_contra tr sm r sp i ope oper).
-      -- exact H.
-      -- rewrite Ha. discriminate.
-    - auto.
   Qed.
 
   (** ** matchPattern **)
@@ -2143,7 +2081,7 @@ Section CoqTL.
       reflexivity.
   Qed.
 
-  Theorem tr_matchPattern_None : 
+  Theorem tr_matchPattern_None :
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         length sp > maxArity tr ->
         matchPattern tr sm sp = nil.
