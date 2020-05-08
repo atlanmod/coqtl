@@ -129,47 +129,34 @@ Qed.
 Theorem tr_instantiatePattern_None_tr : forall t: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       getRules tr = nil ->
-      (instantiatePattern tr sm sp = None \/
-       instantiatePattern tr sm sp = Some nil).
+      (instantiatePattern tr sm sp = None).
 Proof.
   intros.
   destruct (instantiatePattern tr sm sp) eqn:dst.
   - apply tr_matchPattern_None_tr with (sm:=sm) (sp:=sp) in H.
-    destruct l.
-    * right. reflexivity.
-    * exfalso.
-      pose (tr_instantiatePattern_in tr sm sp t0).
-      destruct i. destruct H0.
-      -- exists (t0 :: l).
-         split. assumption. simpl. left. reflexivity.
-      -- destruct H0.
-         destruct H0.
-         rewrite H in H0.
-         contradiction.
-  - left. reflexivity.
+    assert (instantiatePattern tr sm sp <> None). { rewrite dst. discriminate. }
+    apply tr_instantiatePattern_non_None in H0.
+    destruct H0. destruct H0.
+    rewrite H in H0.
+    destruct H0.
+  - reflexivity.
 Qed.
 
-Theorem tr_applyPattern_None_tr : forall t: TransformationEngine,
+Theorem tr_applyPattern_None_tr : 
+  forall t: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         getRules tr = nil ->
-        (applyPattern tr sm sp = None \/
-         applyPattern tr sm sp = Some nil).
+        (applyPattern tr sm sp = None).
 Proof.
   intros.
   destruct (applyPattern tr sm sp) eqn:dst.
   - apply tr_matchPattern_None_tr with (sm:=sm) (sp:=sp) in H.
-    destruct l.
-    * right. reflexivity.
-    * exfalso.
-      pose (tr_applyPattern_in tr sm sp t0).
-      destruct i. destruct H0.
-      -- exists (t0 :: l).
-         split. assumption. simpl. left. reflexivity.
-      -- destruct H0.
-         destruct H0.
-         rewrite H in H0.
-         contradiction.
-  - left. reflexivity.
+    assert (applyPattern tr sm sp <> None). { rewrite dst. discriminate. }
+    apply tr_applyPattern_non_None in H0.
+    destruct H0. destruct H0.
+    rewrite H in H0.
+    destruct H0.
+  - reflexivity.
 Qed.
 
 Theorem tr_execute_None_tr_elements : forall t: TransformationEngine, 
