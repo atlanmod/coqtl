@@ -538,12 +538,12 @@ Section CoqTL.
   Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (allModelElements sm) (maxArity tr).
 
- Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
+ Definition execute' (tr: Transformation) (sm : SourceModel) : TargetModel :=
     Build_Model
       (* elements *) (flat_map (fun t => optionListToList (instantiatePattern tr sm t)) (allTuples tr sm))
       (* links *) (flat_map (fun t => optionListToList (applyPattern tr sm t)) (allTuples tr sm)).
 
- Definition execute' (tr: Transformation) (sm : SourceModel) : TargetModel :=
+ Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
         let matchedTuples :=  map (fun t => (t, (matchPattern tr sm t))) (allTuples tr sm) in
         Build_Model
           (* elements *) (flat_map (fun t => optionListToList (instantiatePattern' tr sm t)) matchedTuples)
@@ -573,10 +573,10 @@ Section CoqTL.
 
   Theorem exe_preserv:
     forall (tr: Transformation) (sm : SourceModel),
-      execute' tr sm = execute tr sm.
+      execute tr sm = execute' tr sm.
   Proof.
     intros.
-    unfold execute', execute.
+    unfold execute, execute'.
     f_equal.
     - induction (allTuples tr sm).
       + simpl. reflexivity.
@@ -622,7 +622,7 @@ Section CoqTL.
 
   Theorem tr_execute_in_elements :
     forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-      In te (allModelElements (execute' tr sm)) <->
+      In te (allModelElements (execute tr sm)) <->
       (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
           incl sp (allModelElements sm) /\
           instantiatePattern'' tr sm sp = Some tp /\
@@ -648,7 +648,7 @@ Section CoqTL.
       + contradiction.
     - intros.
       destruct H. destruct H. destruct H. destruct H0.
-      unfold execute. simpl.
+      unfold execute'. simpl.
       apply in_flat_map.
       exists x. split.
       + apply tuples_up_to_n_incl_length.
@@ -677,7 +677,7 @@ Section CoqTL.
 
   Theorem tr_execute_in_links :
     forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
-      In tl (allModelLinks (execute' tr sm)) <->
+      In tl (allModelLinks (execute tr sm)) <->
       (exists (sp : list SourceModelElement) (tpl : list TargetModelLink),
           incl sp (allModelElements sm) /\
           applyPattern'' tr sm sp = Some tpl /\
@@ -703,7 +703,7 @@ Section CoqTL.
       + contradiction.
     - intros.
       destruct H. destruct H. destruct H. destruct H0.
-      unfold execute. simpl.
+      unfold execute'. simpl.
       apply in_flat_map.
       exists x. split.
       + apply tuples_up_to_n_incl_length.
@@ -2291,7 +2291,7 @@ Section CoqTL.
       getOutType := OutputPatternElement_getOutType';
       getOutputElementReferences := OutputPatternElement_getOutputElementReferences';
 
-      execute := execute';
+      execute := execute;
       matchPattern := matchPattern;
       instantiatePattern := instantiatePattern'';
       applyPattern := applyPattern'';
