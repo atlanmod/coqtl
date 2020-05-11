@@ -32,6 +32,17 @@
 (** * Metatheorems for relational Transformation Engines *)
 (*********************************************************)
 
+(** ** maxArity **)
+
+Lemma tr_maxArity_in :
+  forall (eng: TransformationEngine),
+    forall (tr: Transformation) (r: Rule),
+      In r (getRules tr) ->
+      maxArity tr >= length (getInTypes r).
+Proof.
+  intros. apply max_list_upperBound. do 2 apply in_map. exact H.
+Qed.
+
 Theorem incl_equiv_to_surj:
   forall (eng: TransformationEngine),
     (forall (tr: Transformation) (sm : SourceModel)
