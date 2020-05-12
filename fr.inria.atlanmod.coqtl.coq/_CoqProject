@@ -17,6 +17,9 @@ core/Metamodel.v
 core/Model.v
 core/Engine.v
 core/EngineProofs.v
+core/Syntax.v
+core/Semantics.v
+core/Certification.v
 core/CoqTL.v
 core/CoqTL_v2.v
 core/CoqTL_v4.v
