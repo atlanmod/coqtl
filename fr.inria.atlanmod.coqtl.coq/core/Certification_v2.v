@@ -24,6 +24,8 @@ Section Certification.
 
   (** * Certification **)
 
+  (** ** execute **)
+
   Theorem exe_preserv:
     forall (tr: Transformation) (sm : SourceModel),
       Semantics.execute tr sm = Semantics_v2.execute tr sm.
