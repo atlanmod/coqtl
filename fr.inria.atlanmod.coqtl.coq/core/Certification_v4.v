@@ -6,7 +6,7 @@ Require Import core.Engine.
 Require Import core.Syntax.
 
 Require Import core.Semantics.
-Require Import core.Certification.
+Require Export core.Certification.
 
 Require Import core.Semantics_v4.
 
