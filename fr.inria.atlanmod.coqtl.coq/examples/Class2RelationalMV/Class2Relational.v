@@ -5,7 +5,8 @@ Require Import ListSet.
 Require Import Omega.
 
 Require Import core.utils.TopUtils.
-Require Import core.CoqTL.
+Require Import core.Syntax.
+Require Import core.Semantics.
 Require Import core.Metamodel.
 
 Require Import examples.Class2RelationalMV.ClassMetamodel.
@@ -21,7 +22,7 @@ Definition Class2Relational :=
          [ClassEClass] (fun (m: ClassModel) (c:Class) => true)
          unit (fun (m: ClassModel) (c:Class) => [tt])
          [(BuildOutputPatternElement
-             ClassMetamodel RelationalMetamodel 
+             ClassMetamodel RelationalMetamodel
              [ClassEClass] "tab" TableEClass
              (fun _ (m: ClassModel) (c:Class) => BuildTable (getClassId c) (getClassName c))
              [(BuildOutputPatternElementReference
@@ -35,10 +36,10 @@ Definition Class2Relational :=
                     key <- resolve tr m "key" ColumnEClass [ClassMetamodel_toEObject c];
                     return BuildTableColumns t (key::cols)))]);
            (BuildOutputPatternElement
-             ClassMetamodel RelationalMetamodel 
+             ClassMetamodel RelationalMetamodel
              [ClassEClass] "key" ColumnEClass
              (fun _ (m: ClassModel) (c:Class) => BuildColumn (getClassId c) (getClassName c ++ "id")) (* which id unique might not hold *)
-             nil)  
+             nil)
          ]);
         (BuildRule
            ClassMetamodel RelationalMetamodel
@@ -102,5 +103,3 @@ Definition Class2Relational :=
                             cl <- getAttributeType a m;
                             tb <- resolve tr m "tab" TableEClass [ClassMetamodel_toEObject cl];
                             return BuildColumnReference c tb))])])]).
-
-
