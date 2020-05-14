@@ -4,9 +4,8 @@ Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
 
-Require Import core.utils.tTop.
-Require Import core.Notations.
-Require Import core.CoqTL.
+Require Import core.utils.TopUtils.
+Require Import core.Semantics.
 Require Import core.Model.
 Require Import core.utils.CpdtTactics.
 
