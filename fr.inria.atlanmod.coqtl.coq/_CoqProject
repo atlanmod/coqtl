@@ -22,6 +22,8 @@ core/Semantics.v
 core/Certification.v
 core/Semantics_v2.v
 core/Certification_v2.v
+core/Semantics_v4.v
+core/Certification_v4.v
 core/CoqTL_v4.v
 core/Expressions.v
 examples/Class2Relational/ClassMetamodel.v
