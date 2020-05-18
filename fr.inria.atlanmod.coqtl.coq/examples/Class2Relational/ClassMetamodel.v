@@ -4,6 +4,7 @@ Require Import List.      (* sequence *)
 Require Import Multiset.  (* bag *)
 Require Import ListSet.   (* set *)
 Require Import Omega.
+Require Import Coq.Logic.Eqdep_dec.
 
 
 Require Import core.utils.TopUtils.
@@ -316,3 +317,16 @@ Instance ClassMetamodel : Metamodel ClassMetamodel_EObject ClassMetamodel_ELink 
   }.
 
 Definition ClassModel := Model ClassMetamodel_EObject ClassMetamodel_ELink.
+
+(* Useful lemmas *)
+Lemma Class_invert : 
+  forall (clec_arg: ClassMetamodel_EClass) (t1 t2: ClassMetamodel_getTypeByEClass clec_arg), ClassMetamodel_BuildEObject clec_arg t1 = ClassMetamodel_BuildEObject clec_arg t2 -> t1 = t2.
+Proof.
+  intros.
+  inversion H.
+  apply inj_pair2_eq_dec in H1.
+  exact H1.
+  apply ClassMetamodel_eqEClass_dec.
+Qed.
+
+
