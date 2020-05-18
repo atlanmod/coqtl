@@ -1,7 +1,9 @@
 Require Import String.
 
 Require Import core.utils.TopUtils.
-Require Import core.CoqTL_v2.
+Require Import core.Syntax.
+Require Import core.Semantics.
+Require Import core.Certification.
 Require Import core.Metamodel.
 Require Import core.Model.
 
