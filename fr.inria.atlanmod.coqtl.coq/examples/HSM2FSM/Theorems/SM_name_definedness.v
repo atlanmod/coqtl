@@ -7,8 +7,10 @@ Require Import String.
 Require Import core.utils.TopUtils.
 Require Import core.utils.CpdtTactics.
 
-(* Require Import core.CoqTL. *)
-Require Import core.CoqTL_v2. 
+(*Require Import core.Semantics.
+Require Import core.Certification.*)
+Require Import core.Semantics_v2.
+Require Import core.Certification_v2.
 Require Import core.Metamodel.
 Require Import core.Model.
 
@@ -57,7 +59,7 @@ Proof.
           instantiateRuleOnPattern r cm sp = return tp /\ 
           In (HSMMetamodel_toEObjectFromStateMachine t1) tp).
   { exists tp. crush. }
-  apply tr_instantiateRuleOnPattern_in with (tr:=HSM2FSM) in H6.
+  apply tr_instantiateRuleOnPattern_in with (tr0:=HSM2FSM) in H6.
   destruct H6. destruct H6.
   rename x into i.
   rename x1 into tp1.

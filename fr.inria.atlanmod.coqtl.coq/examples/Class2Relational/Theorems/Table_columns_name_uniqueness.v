@@ -6,7 +6,8 @@ Require Import List.
 Require Import core.utils.TopUtils.
 Require Import core.utils.CpdtTactics.
 
-Require Import core.CoqTL.
+Require Import core.Semantics.
+Require Import core.Certification.
 Require Import core.Metamodel.
 Require Import core.Model.
 

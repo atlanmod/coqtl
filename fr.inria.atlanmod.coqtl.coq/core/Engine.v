@@ -15,7 +15,7 @@
     generally have. We also introduce several useful theorems enforced on these 
     functions in order to certify instaniated transformation engines.
 
- An example instaniated transformation engine is [core.CoqTL].                   **)
+ An example instaniated transformation engine is in [core.Certification].        **)
 
 
 (*********************************************************)

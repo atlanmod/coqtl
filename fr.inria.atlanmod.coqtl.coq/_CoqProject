@@ -17,9 +17,13 @@ core/Metamodel.v
 core/Model.v
 core/Engine.v
 core/EngineProofs.v
-core/CoqTL.v
-core/CoqTL_v2.v
-core/CoqTL_v4.v
+core/Syntax.v
+core/Semantics.v
+core/Certification.v
+core/Semantics_v2.v
+core/Certification_v2.v
+core/Semantics_v4.v
+core/Certification_v4.v
 core/Expressions.v
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
