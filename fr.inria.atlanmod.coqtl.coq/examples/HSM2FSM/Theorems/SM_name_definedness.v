@@ -19,13 +19,6 @@ Require Import examples.HSM2FSM.HSM2FSM.
 
 Open Scope string_scope.
 
-Ltac solve_eq :=
-  try reflexivity;
-  match goal with
-  | |- match ?x with _ => _ end
-       = match ?x with _ => _ end =>
-    destruct x; auto
-  end.
 
 Theorem Table_id_defindedness :
 forall (cm : HSMModel) (rm : HSMModel), 
