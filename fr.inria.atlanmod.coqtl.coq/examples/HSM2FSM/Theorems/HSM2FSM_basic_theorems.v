@@ -63,7 +63,7 @@ Proof.
   - left. reflexivity.
 Qed.
 
-Theorem Concrete_rs_instantiate' :
+Theorem RegularState_instantiate' :
   forall (cm : HSMModel) (s: AbstractState),
         (AbstractState_instanceOfEClass RegularStateEClass s) = true ->
     exists (t: AbstractState) tp,
@@ -91,3 +91,65 @@ Proof.
     simpl. reflexivity.
   - left. reflexivity.
 Qed.
+
+
+Theorem InitialState_of_NoneCompositeState_instantiate' :
+  forall (cm : HSMModel) (s: AbstractState),
+        (andb (AbstractState_instanceOfEClass InitialStateEClass s)
+              (isNone (AbstractState_getCompositeState s cm))) = true ->
+    exists (t: AbstractState) tp,
+      instantiatePattern HSM2FSM cm [HSMMetamodel_toEObject s] = Some tp /\
+      In (HSMMetamodel_toEObject t) tp.
+Proof.
+  intros.
+  eexists.
+  apply tr_instantiatePattern_in.
+  do 2 eexists.
+  repeat split.
+  - apply tr_matchPattern_in.
+    split.
+    + right. right. left. reflexivity.
+    + (* rewrite tr_matchRuleOnPattern. *)
+      unfold matchRuleOnPattern'. unfold matchRuleOnPattern. unfold evalGuard.
+      unfold Expressions.evalFunction. simpl. rewrite H. auto.
+  - (* rewrite tr_instantiateRuleOnPattern. *)
+    unfold instantiateRuleOnPattern. unfold matchRuleOnPattern. unfold evalGuard.
+    unfold Expressions.evalFunction. simpl Expressions.evalFunctionFix. rewrite H.
+    unfold instantiateIterationOnPattern. unfold matchRuleOnPattern. unfold evalGuard.
+    unfold Expressions.evalFunction. simpl Expressions.evalFunctionFix. rewrite H.
+    unfold instantiateElementOnPattern. unfold matchRuleOnPattern. unfold evalGuard.
+    unfold Expressions.evalFunction. simpl Expressions.evalFunctionFix. rewrite H.
+    simpl. reflexivity.
+  - left. reflexivity.
+Qed.
+
+Theorem InitialState_of_CompositeState_instantiate' :
+  forall (cm : HSMModel) (s: AbstractState),
+        (andb (AbstractState_instanceOfEClass InitialStateEClass s)
+              (negb (isNone (AbstractState_getCompositeState s cm)))) = true ->
+    exists (t: AbstractState) tp,
+      instantiatePattern HSM2FSM cm [HSMMetamodel_toEObject s] = Some tp /\
+      In (HSMMetamodel_toEObject t) tp.
+Proof.
+  intros.
+  eexists.
+  apply tr_instantiatePattern_in.
+  do 2 eexists.
+  repeat split.
+  - apply tr_matchPattern_in.
+    split.
+    + right. right. right. left. reflexivity.
+    + (* rewrite tr_matchRuleOnPattern. *)
+      unfold matchRuleOnPattern'. unfold matchRuleOnPattern. unfold evalGuard.
+      unfold Expressions.evalFunction. simpl. rewrite H. auto.
+  - (* rewrite tr_instantiateRuleOnPattern. *)
+    unfold instantiateRuleOnPattern. unfold matchRuleOnPattern. unfold evalGuard.
+    unfold Expressions.evalFunction. simpl Expressions.evalFunctionFix. rewrite H.
+    unfold instantiateIterationOnPattern. unfold matchRuleOnPattern. unfold evalGuard.
+    unfold Expressions.evalFunction. simpl Expressions.evalFunctionFix. rewrite H.
+    unfold instantiateElementOnPattern. unfold matchRuleOnPattern. unfold evalGuard.
+    unfold Expressions.evalFunction. simpl Expressions.evalFunctionFix. rewrite H.
+    simpl. reflexivity.
+  - left. reflexivity.
+Qed.
+
