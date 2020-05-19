@@ -598,6 +598,23 @@ Definition HSMMetamodel_getEObjectFromEAttributeValues (hsec_arg : HSMMetamodel_
     (fun (p: AbstractState_EClass * AbstractState)=> (Build_HSMMetamodel_EObject AbstractStateEClass (snd p)))
 end.
 
+Definition AbstractState_instanceOfEClass_optional (hsec_arg: AbstractState_EClass) (hseo_arg : option AbstractState): bool :=
+ match hseo_arg with
+  | None => false
+  | Some e => AbstractState_instanceOfEClass hsec_arg e
+ end.
+
+Definition beq_AbstractState_option (tr_arg1 : option AbstractState) (tr_arg2 : option AbstractState) : bool :=
+ match tr_arg1, tr_arg2 with
+  | Some a1, Some a2 => beq_AbstractState a1 a2
+  | _, _ => false
+ end.
+
+Definition beq_CompositeState_option (tr_arg1 : option CompositeState) (tr_arg2 : option CompositeState) : bool :=
+ match tr_arg1, tr_arg2 with
+  | Some a1, Some a2 => beq_CompositeState a1 a2
+  | _, _ => false
+ end.
 
 (* 
 
