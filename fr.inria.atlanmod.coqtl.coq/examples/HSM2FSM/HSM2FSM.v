@@ -64,7 +64,7 @@ Definition HSM2FSM :=
               HSMMetamodel HSMMetamodel
               "IS2IS"
               [AbstractStateEClass] (fun (m: HSMModel) (is1:AbstractState) => (andb (AbstractState_instanceOfEClass InitialStateEClass is1)
-                                                                                    (isNone (AbstractState_getCompositeState is1 m))))
+                                                                                    (isNone _ (AbstractState_getCompositeState is1 m))))
               unit (fun (m: HSMModel) (is1:AbstractState) => [tt])
               [(BuildOutputPatternElement
                   HSMMetamodel HSMMetamodel 
@@ -82,7 +82,7 @@ Definition HSM2FSM :=
               HSMMetamodel HSMMetamodel
               "IS2RS"
               [AbstractStateEClass] (fun (m: HSMModel) (is1:AbstractState) => (andb (AbstractState_instanceOfEClass InitialStateEClass is1)
-                                                                                    (negb (isNone (AbstractState_getCompositeState is1 m)))))
+                                                                                    (negb (isNone _ (AbstractState_getCompositeState is1 m)))))
               unit (fun (m: HSMModel) (is1:AbstractState) => [tt])
               [(BuildOutputPatternElement
                   HSMMetamodel HSMMetamodel 
