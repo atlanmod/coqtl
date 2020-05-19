@@ -21,7 +21,7 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem All_classes_match' :
+Theorem All_classes_match_in :
   forall (cm : ClassModel) (c : Class),
   exists (r : Rule ClassMetamodel RelationalMetamodel),
     In r (matchPattern Class2Relational cm [ClassMetamodel_toEObject c]).
@@ -35,7 +35,6 @@ Proof.
     unfold matchRuleOnPattern'.
     unfold matchRuleOnPattern.
     unfold evalGuard.
-
     unfold Expressions.evalFunction. simpl. reflexivity.
 Qed.
 
@@ -49,7 +48,7 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem All_classes_instantiate' :
+Theorem All_classes_instantiate_in :
   forall (cm : ClassModel) (c: Class),
   exists (t: Table) tp,
     instantiatePattern Class2Relational cm [ClassMetamodel_toEObject c] = Some tp /\
@@ -84,7 +83,7 @@ Proof.
   reflexivity.
 Qed.
 
-Theorem Concrete_attributes_instantiate' :
+Theorem Concrete_attributes_instantiate_in :
   forall (cm : ClassModel) (a: Attribute),
     getAttributeDerived a = false ->
     exists (c: Column) tp,
