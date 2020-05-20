@@ -62,8 +62,12 @@ Proof.
       rewrite <- Htp in Hin. clear Htp.
       destruct a, c. simpl in *.
       destruct Hin as [Hte | Hfalse].
-      * (* Should be trivial, but stuck because of some typing issue. To investigate. *)
-        admit.
+      * unfold RelationalMetamodel_toEObjectOfEClass in Hte.
+        unfold RelationalMetamodel_toEObject in Hte.
+        unfold RelationalMetamodel_toEObjectFromColumn in Hte.
+        apply rel_invert in Hte.
+        inversion Hte.
+        reflexivity.
       * destruct Hfalse.
     + destruct Hfalse.
-Admitted.
+Qed.
