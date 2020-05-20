@@ -42,12 +42,25 @@ Qed.
 
 Theorem All_classes_instantiate :
   forall (cm : ClassModel) (c: Class),
-  exists (t: RelationalMetamodel_EObject),
-    instantiatePattern Class2Relational cm [ClassMetamodel_toEObject c] = Some [t].
+  exists (t: Table),
+    instantiatePattern Class2Relational cm [ClassMetamodel_toEObject c] = Some [RelationalMetamodel_toEObject t].
 Proof.
   intros.
   eexists _.
   reflexivity.
+Qed.
+
+Theorem All_classes_instantiate_aux :
+  forall (cm : ClassModel) (c: Class),
+  exists (t: RelationalMetamodel_EObject),
+    instantiatePattern Class2Relational cm [ClassMetamodel_toEObject c] = Some [t].
+Proof.
+  intros.
+  specialize (All_classes_instantiate cm c).
+  intro.
+  destruct H.
+  eexists (RelationalMetamodel_toEObject x).
+  auto.
 Qed.
 
 Theorem All_classes_instantiate' :
@@ -69,8 +82,8 @@ Qed.
 Theorem Concrete_attributes_instantiate :
   forall (cm : ClassModel) (a: Attribute),
     getAttributeDerived a = false ->
-    exists (c: RelationalMetamodel_EObject),
-      instantiatePattern Class2Relational cm [ClassMetamodel_toEObject a] = Some [c].
+    exists (c: Column),
+      instantiatePattern Class2Relational cm [ClassMetamodel_toEObject a] = Some [RelationalMetamodel_toEObject c].
 Proof.
   intros.
   eexists _.
@@ -83,6 +96,20 @@ Proof.
   unfold instantiateElementOnPattern. simpl.
   rewrite H. simpl.
   reflexivity.
+Qed.
+
+Theorem Concrete_attributes_instantiate_aux :
+  forall (cm : ClassModel) (a: Attribute),
+    getAttributeDerived a = false ->
+    exists (c: RelationalMetamodel_EObject),
+      instantiatePattern Class2Relational cm [ClassMetamodel_toEObject a] = Some [c].
+Proof.
+  intros.
+  specialize (Concrete_attributes_instantiate cm a).
+  intro.
+  destruct H0. auto.
+  eexists (RelationalMetamodel_toEObject x).
+  auto.
 Qed.
 
 Theorem Concrete_attributes_instantiate' :
@@ -127,7 +154,7 @@ Proof.
   + destruct (ClassMetamodel_toEClass ClassEClass a) eqn: a_ca.
     ++  assert ((ClassMetamodel_toEObject c) = a). { apply Class_Object_cast; auto. }
         rewrite <- H0.
-        apply All_classes_instantiate.
+        apply All_classes_instantiate_aux.
     ++  unfold ClassMetamodel_instanceOfEClass in H.
         unfold ClassMetamodel_toEClass in a_ca.
         destruct a.
@@ -137,7 +164,7 @@ Proof.
   + destruct H.
     assert ((ClassMetamodel_toEObject att) = a). { apply Attribute_Object_cast; auto. }
     rewrite <- H1.
-    apply Concrete_attributes_instantiate. exact H0.
+    apply Concrete_attributes_instantiate_aux. exact H0.
 Qed.
 
 Theorem Class_Object_instantiate' :
@@ -166,6 +193,5 @@ Proof.
     rewrite <- H1.
     apply Concrete_attributes_instantiate'. exact H0.
 Qed.
-
 
 
