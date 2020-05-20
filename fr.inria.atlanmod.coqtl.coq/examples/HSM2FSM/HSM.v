@@ -20,6 +20,8 @@ Require Import core.Metamodel.
 Require Import core.Model.
 
 
+Require Import core.utils.CpdtTactics.
+
 	
 (* Base types *)
 Inductive StateMachine : Set :=
@@ -286,9 +288,39 @@ Definition AbstractState_getEClass (hseo_arg : AbstractState) : AbstractState_EC
 Definition AbstractState_instanceOfEClass (hsec_arg: AbstractState_EClass) (hseo_arg : AbstractState): bool :=
   if AbstractState_eqEClass_dec (AbstractState_getEClass hseo_arg) hsec_arg then true else false.
 
+Lemma HSM_AbstractState_f_equal: 
+  forall a e1 e2,  
+    AbstractState_instanceOfEClass e1 a = true -> AbstractState_instanceOfEClass e2 a = true -> e1 = e2.
+Proof.
+  intros.
+  assert (AbstractState_getEClass a = e1). {
+    unfold AbstractState_instanceOfEClass in H.
+    destruct (AbstractState_eqEClass_dec (AbstractState_getEClass a) e1).
+    + crush.
+    + crush.
+  } 
+  assert (AbstractState_getEClass a = e2). {
+    unfold AbstractState_instanceOfEClass in H0.
+    destruct (AbstractState_eqEClass_dec (AbstractState_getEClass a) e2).
+    + crush.
+    + crush.
+  }
+  crush.
+Qed. 
 
-
-
+Lemma HSM_AbstractState_dec: 
+  forall (a: AbstractState),
+    (AbstractState_instanceOfEClass RegularStateEClass a) = true
+ \/ (AbstractState_instanceOfEClass InitialStateEClass a) = true
+ \/ (AbstractState_instanceOfEClass CompositeStateEClass a) = true.
+Proof.
+  intros.
+  destruct a.
+  destruct hsec_arg.
+  + right. left. crush.
+  + left. crush.
+  + right. right. crush.
+Qed.
 
 
 (** Helper of building ELink for model **)
