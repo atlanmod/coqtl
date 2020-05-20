@@ -1,5 +1,11 @@
 Require Import core.utils.CpdtTactics.
 
+Definition isNone (A: Type) (e : option A) : bool :=
+ match e with
+  | None => true
+  | Some a => false
+ end.
+
 Lemma option_res_dec :
    forall {A B: Type} (f: A -> option B),
       forall a: A, f a <> None ->

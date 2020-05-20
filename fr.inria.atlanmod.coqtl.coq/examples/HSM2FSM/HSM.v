@@ -20,6 +20,8 @@ Require Import core.Metamodel.
 Require Import core.Model.
 
 
+Require Import core.utils.CpdtTactics.
+
 	
 (* Base types *)
 Inductive StateMachine : Set :=
@@ -286,9 +288,39 @@ Definition AbstractState_getEClass (hseo_arg : AbstractState) : AbstractState_EC
 Definition AbstractState_instanceOfEClass (hsec_arg: AbstractState_EClass) (hseo_arg : AbstractState): bool :=
   if AbstractState_eqEClass_dec (AbstractState_getEClass hseo_arg) hsec_arg then true else false.
 
+Lemma HSM_AbstractState_f_equal: 
+  forall a e1 e2,  
+    AbstractState_instanceOfEClass e1 a = true -> AbstractState_instanceOfEClass e2 a = true -> e1 = e2.
+Proof.
+  intros.
+  assert (AbstractState_getEClass a = e1). {
+    unfold AbstractState_instanceOfEClass in H.
+    destruct (AbstractState_eqEClass_dec (AbstractState_getEClass a) e1).
+    + crush.
+    + crush.
+  } 
+  assert (AbstractState_getEClass a = e2). {
+    unfold AbstractState_instanceOfEClass in H0.
+    destruct (AbstractState_eqEClass_dec (AbstractState_getEClass a) e2).
+    + crush.
+    + crush.
+  }
+  crush.
+Qed. 
 
-
-
+Lemma HSM_AbstractState_dec: 
+  forall (a: AbstractState),
+    (AbstractState_instanceOfEClass RegularStateEClass a) = true
+ \/ (AbstractState_instanceOfEClass InitialStateEClass a) = true
+ \/ (AbstractState_instanceOfEClass CompositeStateEClass a) = true.
+Proof.
+  intros.
+  destruct a.
+  destruct hsec_arg.
+  + right. left. crush.
+  + left. crush.
+  + right. right. crush.
+Qed.
 
 
 (** Helper of building ELink for model **)
@@ -598,6 +630,23 @@ Definition HSMMetamodel_getEObjectFromEAttributeValues (hsec_arg : HSMMetamodel_
     (fun (p: AbstractState_EClass * AbstractState)=> (Build_HSMMetamodel_EObject AbstractStateEClass (snd p)))
 end.
 
+Definition AbstractState_instanceOfEClass_optional (hsec_arg: AbstractState_EClass) (hseo_arg : option AbstractState): bool :=
+ match hseo_arg with
+  | None => false
+  | Some e => AbstractState_instanceOfEClass hsec_arg e
+ end.
+
+Definition beq_AbstractState_option (tr_arg1 : option AbstractState) (tr_arg2 : option AbstractState) : bool :=
+ match tr_arg1, tr_arg2 with
+  | Some a1, Some a2 => beq_AbstractState a1 a2
+  | _, _ => false
+ end.
+
+Definition beq_CompositeState_option (tr_arg1 : option CompositeState) (tr_arg2 : option CompositeState) : bool :=
+ match tr_arg1, tr_arg2 with
+  | Some a1, Some a2 => beq_CompositeState a1 a2
+  | _, _ => false
+ end.
 
 (* 
 
