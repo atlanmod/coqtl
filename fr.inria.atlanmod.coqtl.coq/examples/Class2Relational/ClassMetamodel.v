@@ -10,7 +10,7 @@ Require Import Coq.Logic.Eqdep_dec.
 Require Import core.utils.TopUtils.
 Require Import core.Metamodel.
 Require Import core.Model.
-
+Require Import core.utils.CpdtTactics.
 (* Base types *)
 
 Inductive Class : Set :=
@@ -329,4 +329,41 @@ Proof.
   apply ClassMetamodel_eqEClass_dec.
 Qed.
 
+Lemma Object_dec: 
+  forall (a: ClassMetamodel_EObject),
+    (ClassMetamodel_instanceOfEClass ClassEClass a) = true
+ \/ (ClassMetamodel_instanceOfEClass AttributeEClass a) = true.
+Proof.
+  intros.
+  destruct a.
+  destruct c.
+  + left. crush.
+  + right. crush.
+Qed.
+
+Lemma Class_Object_cast:
+  forall a c,
+    ClassMetamodel_toEClass ClassEClass a = return c ->
+      ClassMetamodel_toEObject c = a.
+Proof.
+  intros.
+  unfold ClassMetamodel_toEClass in H.
+  destruct a.
+  unfold ClassMetamodel_instanceOfEClass in H.
+  simpl in H.
+  destruct (ClassMetamodel_eqEClass_dec c0 ClassEClass); crush.
+Qed.
+
+Lemma Attribute_Object_cast:
+  forall a c,
+    ClassMetamodel_toEClass AttributeEClass a = return c ->
+      ClassMetamodel_toEObject c = a.
+Proof.
+  intros.
+  unfold ClassMetamodel_toEClass in H.
+  destruct a.
+  unfold ClassMetamodel_instanceOfEClass in H.
+  simpl in H.
+  destruct (ClassMetamodel_eqEClass_dec c0 AttributeEClass); crush.
+Qed.
 
