@@ -87,7 +87,7 @@ Section Semantics.
   (*TODO change to:
          match  (indexes (length (evalIterator r sm sp))) with *)
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) :  list TargetModelElement :=
-    flat_map (fun i:nat => instantiateIterationOnPattern r sm sp i)
+    flat_map (instantiateIterationOnPattern r sm sp)
       (indexes (length (evalIterator r sm sp))).
 
   Definition instantiatePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TargetModelElement :=
@@ -125,22 +125,22 @@ Section Semantics.
              (tr: Transformation)
              (sm: SourceModel)
              (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
-    flat_map ( fun oper => optionToList (applyReferenceOnPattern r ope oper tr sm sp iter))
-                    (OutputPatternElement_getOutputElementReferences ope).
+    flat_map (fun oper => optionToList (applyReferenceOnPattern r ope oper tr sm sp iter))
+      (OutputPatternElement_getOutputElementReferences ope).
 
   Definition applyIterationOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
     flat_map (fun o => applyElementOnPattern r o tr sm sp iter)
       (Rule_getOutputPattern r).
 
   Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): list TargetModelLink :=
-    flat_map (fun i:nat => applyIterationOnPattern r tr sm sp i)
+    flat_map (applyIterationOnPattern r tr sm sp)
       (indexes (length (evalIterator r sm sp))).
 
   Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TargetModelLink :=
     flat_map (fun r => applyRuleOnPattern r tr sm sp) (matchPattern tr sm sp).
 
   Definition applyElementsOnPattern (r: Rule) (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) : list TargetModelLink :=
-    flat_map (fun iter => applyElementOnPattern r ope tr sm sp iter)
+    flat_map (applyElementOnPattern r ope tr sm sp)
       (indexes (length (evalIterator r sm sp))).
 
   (** ** Resolution **)
@@ -197,7 +197,7 @@ Section Semantics.
 
   Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
     Build_Model
-      (* elements *) (flat_map (fun t => instantiatePattern tr sm t) (allTuples tr sm))
-      (* links *) (flat_map (fun t => applyPattern tr sm t) (allTuples tr sm)).
+      (* elements *) (flat_map (instantiatePattern tr sm) (allTuples tr sm))
+      (* links *) (flat_map (applyPattern tr sm) (allTuples tr sm)).
 
 End Semantics.
