@@ -19,13 +19,11 @@ core/Engine.v
 core/EngineProofs.v
 core/Syntax.v
 core/Semantics.v
-core/Certification.v
 core/Expressions.v
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
 examples/Class2Relational/Class2Relational.v
 examples/Class2Relational/tests/PersonModel.v
-examples/Class2Relational/Theorems/Class2Relational_basic_theorems.v
 examples/Class2RelationalMV/ClassMetamodel.v
 examples/Class2RelationalMV/RelationalMetamodel.v
 examples/Class2RelationalMV/Class2Relational.v
