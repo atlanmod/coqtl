@@ -1581,7 +1581,7 @@ Section Certification.
 
 
 
-  Theorem tr_matchRuleOnPattern_eval :
+  Theorem tr_matchRuleOnPattern_Leaf :
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       matchRuleOnPattern r sm sp =
       evalFunction smm sm (Rule_getInTypes r) bool (Rule_getGuard r) sp.
