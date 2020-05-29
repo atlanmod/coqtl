@@ -29,6 +29,7 @@ Require Import ListSet.
 Require Import Omega.
 
 Require Import core.utils.TopUtils.
+Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Expressions.
 Require Import core.utils.CpdtTactics.
@@ -46,6 +47,9 @@ Class TransformationEngine :=
     TargetModelLink: Type;
     TargetModelReference: Type;
 
+    smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference;
+    tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference;
+
     SourceModel := Model SourceModelElement SourceModelLink;
     TargetModel := Model TargetModelElement TargetModelLink;
     
@@ -61,6 +65,8 @@ Class TransformationEngine :=
     getIteratorType: Rule -> Type;
     getOutputPattern: forall x:Rule, list (OutputPatternElement (getInTypes x) (getIteratorType x));
     getOutType (InElTypes: list SourceModelClass) (IterType: Type) (o: OutputPatternElement InElTypes IterType) : TargetModelClass;
+    getOutPatternElement: forall (InElTypes:list SourceModelClass) (IterType: Type) (o:OutputPatternElement InElTypes IterType),
+      IterType -> SourceModel -> (denoteFunction smm InElTypes (denoteModelClass (getOutType o)));
     getOutputElementReferences: forall (InElTypes:list SourceModelClass) (IterType: Type) (o:OutputPatternElement InElTypes IterType),
         list (OutputPatternElementReference InElTypes IterType (getOutType o));
 
