@@ -20,7 +20,7 @@ Require Import examples.HSM2FSM.HSM2FSM.
 Open Scope string_scope.
 
 
-Theorem Table_id_defindedness :
+Theorem SM_name_defindedness :
 forall (cm : HSMModel) (rm : HSMModel), 
 rm = execute HSM2FSM cm (* transformation *) ->
   (forall (s1 : StateMachine), In (HSMMetamodel_toEObjectFromStateMachine s1) (allModelElements cm) -> StateMachine_getName s1 <> "") (* precondition *) ->
