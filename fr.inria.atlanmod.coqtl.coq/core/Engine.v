@@ -369,7 +369,7 @@ Class TransformationEngine :=
 
     (** ** resolveAll *)
 
-    tr_resolveAllIter_in:
+    tr_resolveAll_in:
     forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
       (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
       (te: denoteModelClass type),
