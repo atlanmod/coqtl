@@ -108,6 +108,13 @@ Class TransformationEngine :=
     evalIterator: forall r:Rule, SourceModel -> list SourceModelElement -> list (getIteratorType r);
 
     matchTransformation: Transformation -> MatchedTransformation;
+    unmatchTransformation: MatchedTransformation -> Transformation;
+
+    resolveAll: forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
+             (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat),
+        option (list (denoteModelClass type));
+    resolve: forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
+             (type: TargetModelClass) (sp: list SourceModelElement) (iter : nat), option (denoteModelClass type);
 
     (** ** Theorems *)
 
@@ -360,6 +367,27 @@ Class TransformationEngine :=
       In r (getRules tr) ->
       maxArity tr >= length (getInTypes r);
 
+    (** ** resolveAll *)
+
+    tr_resolveAllIter_in:
+    forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
+      (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
+      (te: denoteModelClass type),
+      (exists tes: list (denoteModelClass type),
+          resolveAll tr sm name type sps iter = Some tes /\ In te tes) <->
+      (exists (sp: list SourceModelElement),
+          In sp sps /\
+          resolve tr sm name type sp iter = Some te);
+
+    (** ** resolve *)
+
+    tr_resolve_Leaf:
+    forall (tr: MatchedTransformation) (sm : SourceModel) (name: string) (type: TargetModelClass)
+      (sp: list SourceModelElement) (iter: nat) (te: (denoteModelClass type)),
+      resolve tr sm name type sp iter = return te ->
+       (exists (r: Rule) (o: OutputPatternElement (getInTypes r) (getIteratorType r)) (e: TargetModelElement), 
+          In r (getRules (unmatchTransformation tr)) /\ In o (getOutputPattern r)
+            /\ (instantiateElementOnPattern o sm sp iter = Some e)
+            /\ (toModelClass type e = Some te));
+
   }.
-
-
