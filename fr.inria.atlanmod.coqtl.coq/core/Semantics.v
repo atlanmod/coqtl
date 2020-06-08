@@ -418,40 +418,9 @@ Check evalGuard.
     destruct (matchRuleOnPattern r sm0 sp0) eqn: mt_ca.
     destruct b eqn:b_ca.
     + destruct (nth_error (evalIterator r sm0 sp0) iter) eqn: it_ca.
-      ++ destruct (evalFunction smm sm0 (Rule_getInTypes r)
-                    (denoteModelClass (OutputPatternElement_getOutType ope))
-                    (OutputPatternElement_getOutPatternElement ope r0) sp0) eqn: o_ca.
-         +++ destruct (    evalFunction smm sm0 (Rule_getInTypes r)
-      (denoteModelClass (OutputPatternElement_getOutType ope) ->
-       option
-         (denoteModelReference
-            (OutputPatternElementReference_getRefType oper)))
-      (OutputPatternElementReference_getOutputReference oper
-         (matchTransformation tr) r0) sp0) eqn: ref_ca.
-             ++++ destruct (toModelClass (OutputPatternElement_getOutType ope)
-      (toModelElement (OutputPatternElement_getOutType ope) d)) eqn: res_ca.
-                  * destruct (o d0) eqn: r_ca.
-                    **  unfold evalOutputPatternElementReference.
-                        rewrite ref_ca.
-                        rewrite res_ca.
-                        rewrite r_ca.
-                        simpl. auto.
-                    **  unfold evalOutputPatternElementReference.
-                        rewrite ref_ca.
-                        rewrite res_ca.
-                        rewrite r_ca.
-                        simpl. auto.
-                  * unfold evalOutputPatternElementReference.
-                    rewrite ref_ca.
-                    rewrite res_ca.
-                    simpl. auto.
-            ++++ unfold evalOutputPatternElementReference.
-                 rewrite ref_ca.
-                 simpl. auto.
-        +++ unfold evalOutputPatternElementReference.
-            simpl. auto.
+      ++ admit.
       ++ simpl. auto.
     + simpl. auto.
     + simpl. auto.
-  Qed.
+  Admitted.
 End Semantics.
