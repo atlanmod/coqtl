@@ -1455,32 +1455,25 @@ Section Certification.
   Theorem tr_applyReferenceOnPattern_Leaf :
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
         (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
-        (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope))
-        (it: (Rule_getIteratorType r)) (l: TargetModelElement) 
-        (r0: (denoteModelClass (OutputPatternElement_getOutType ope) -> 
-               option (denoteModelReference (OutputPatternElementReference_getRefType oper))))
-        (t: (denoteModelClass (OutputPatternElement_getOutType ope)))
-        (s: (denoteModelReference (OutputPatternElementReference_getRefType oper))),
-          matchRuleOnPattern r sm sp = Some true ->
-          (nth_error (evalIterator r sm sp) i) = Some it ->
-            (evalOutputPatternElement sm sp it ope) = Some l ->
-              evalFunction smm sm (Rule_getInTypes r)
-                           (denoteModelClass (OutputPatternElement_getOutType ope) -> option (denoteModelReference (OutputPatternElementReference_getRefType oper)))
-                           (OutputPatternElementReference_getOutputReference oper (matchTransformation tr) it) sp = Some r0 ->
-                toModelClass (OutputPatternElement_getOutType ope) l = Some t->
-                  r0 t = Some s ->
-                    applyReferenceOnPattern r ope oper tr sm sp i = Some (toModelLink (OutputPatternElementReference_getRefType oper) s).
+        (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
+      applyReferenceOnPattern r ope oper tr sm sp i =
+      m <- matchRuleOnPattern r sm sp;
+        matched <- if m then Some true else None;
+      it <- nth_error (evalIterator r sm sp) i;
+      l <- evalOutputPatternElement sm sp it ope;
+      r0 <- evalFunction smm sm (Rule_getInTypes r)
+         (denoteModelClass (OutputPatternElement_getOutType ope) -> option (denoteModelReference (OutputPatternElementReference_getRefType oper)))
+         (OutputPatternElementReference_getOutputReference oper (matchTransformation tr) it) sp;
+      t <- toModelClass (OutputPatternElement_getOutType ope) l;
+      s <- r0 t;
+      Some (toModelLink (OutputPatternElementReference_getRefType oper) s).
   Proof.
-    intros. 
+    intros.
     unfold applyReferenceOnPattern.
-    rewrite H.
-    rewrite H0.
-    rewrite H1.
+    destruct matchRuleOnPattern; [ | reflexivity].
+    destruct b; [ | reflexivity].
     unfold evalOutputPatternElementReference.
-    rewrite H2.
-    rewrite H3.
-    rewrite H4.
-    auto.
+    reflexivity.
   Qed.
 
   Theorem tr_applyReferenceOnPattern_None :
