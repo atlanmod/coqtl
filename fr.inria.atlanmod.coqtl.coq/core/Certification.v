@@ -687,13 +687,13 @@ Section Certification.
     forall (sm : SourceModel) (tr: Transformation) (r: Rule) (sp: list SourceModelElement) (i : nat)
       (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
       instantiateElementOnPattern r ope sm sp i =
-        m <- matchRuleOnPattern r sm sp;
-        matched <- if m then Some true else None;
-        it <- nth_error (evalIterator r sm sp) i;
-        r0 <- evalFunction smm sm (Rule_getInTypes r)
-           (denoteModelClass (OutputPatternElement_getOutType ope))
-           (OutputPatternElement_getOutPatternElement ope it) sp;
-        Some (toModelElement (OutputPatternElement_getOutType ope) r0).
+      m <- matchRuleOnPattern r sm sp;
+      matched <- if m then Some true else None;
+      it <- nth_error (evalIterator r sm sp) i;
+      r0 <- evalFunction smm sm (Rule_getInTypes r)
+         (denoteModelClass (OutputPatternElement_getOutType ope))
+         (OutputPatternElement_getOutPatternElement ope it) sp;
+      Some (toModelElement (OutputPatternElement_getOutType ope) r0).
   Proof.
     intros.
     unfold instantiateElementOnPattern.
@@ -1453,11 +1453,11 @@ Section Certification.
 
   Theorem tr_applyReferenceOnPattern_Leaf :
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-        (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
-        (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
+      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
+      (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope)),
       applyReferenceOnPattern r ope oper tr sm sp i =
       m <- matchRuleOnPattern r sm sp;
-        matched <- if m then Some true else None;
+      matched <- if m then Some true else None;
       it <- nth_error (evalIterator r sm sp) i;
       l <- evalOutputPatternElement sm sp it ope;
       r0 <- evalFunction smm sm (Rule_getInTypes r)
