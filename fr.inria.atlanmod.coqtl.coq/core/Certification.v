@@ -699,7 +699,6 @@ Section Certification.
     unfold instantiateElementOnPattern.
     destruct matchRuleOnPattern; [ | reflexivity].
     destruct b; [ | reflexivity].
-    destruct nth_error; [ | reflexivity].
     unfold evalOutputPatternElement.
     reflexivity.
   Qed.
