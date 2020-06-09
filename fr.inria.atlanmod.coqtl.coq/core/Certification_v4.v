@@ -250,6 +250,29 @@ Section Certification.
       tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
 
       tr_maxArity_in := tr_maxArity_in;
+
+      smm := smm;
+      tmm := tmm;
+
+      getGuard := Rule_getGuard;
+      getRefType := OutputPatternElementReference_getRefType';
+      getOutputReference := OutputPatternElementReference_getOutputReference';
+      getOutPatternElement := OutputPatternElement_getOutPatternElement';
+
+      matchTransformation := matchTransformation ;
+      unmatchTransformation := unmatchTransformation; 
+
+      resolveAll := resolveAllIter;
+      resolve := resolveIter;      
+      evalOutputPatternElement := evalOutputPatternElement';
+
+      tr_instantiateElementOnPattern_Leaf := tr_instantiateElementOnPattern_Leaf;
+      tr_applyReferenceOnPattern_Leaf := tr_applyReferenceOnPattern_Leaf;
+      tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
+
+      tr_resolveAll_in := tr_resolveAllIter_in;
+      tr_resolve_Leaf := tr_resolveIter_Leaf';
+
     }.
 
 End Certification.

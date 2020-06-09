@@ -33,12 +33,30 @@ Section Certification.
   Definition applyRuleOnPattern' (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): option (list TargetModelLink) :=
     applyRuleOnPattern r tr sm sp.
 
+  Definition OutputPatternElement_getOutPatternElement' (InElTypes:list SourceModelClass) (IterType: Type) (o:OutputPatternElement InElTypes IterType):
+      IterType -> SourceModel -> (outputPatternElementTypes InElTypes (OutputPatternElement_getOutType o)) :=
+  OutputPatternElement_getOutPatternElement o.
+
+  Definition OutputPatternElementReference_getRefType' (InElTypes: list SourceModelClass) 
+    (IterType: Type) (OutType:TargetModelClass) (o: OutputPatternElementReference InElTypes IterType OutType) : TargetModelReference :=
+    OutputPatternElementReference_getRefType o.
+
   Definition OutputPatternElement_getOutType' (InElTypes: list SourceModelClass) (IterType: Type) (o: OutputPatternElement InElTypes IterType) : TargetModelClass :=
     OutputPatternElement_getOutType o.
+
+  Definition OutputPatternElementReference_getOutputReference' (InElTypes: list SourceModelClass) 
+    (IterType: Type) {OutType:TargetModelClass} (o: OutputPatternElementReference InElTypes IterType OutType) :
+    MatchedTransformation -> IterType -> SourceModel -> (outputReferenceTypes InElTypes OutType (OutputPatternElementReference_getRefType o)) :=
+  OutputPatternElementReference_getOutputReference o.
 
   Definition OutputPatternElement_getOutputElementReferences' (InElTypes: list SourceModelClass) (IterType: Type) (o: OutputPatternElement InElTypes IterType) :
     list (OutputPatternElementReference InElTypes IterType (OutputPatternElement_getOutType o)) :=
     OutputPatternElement_getOutputElementReferences o.
+
+  Definition evalOutputPatternElement' (InElTypes: list SourceModelClass) (IterType: Type) (sm: SourceModel) 
+    (sp: list SourceModelElement) (iter: IterType) (ope: OutputPatternElement InElTypes IterType)
+    : option TargetModelElement :=
+    evalOutputPatternElement sm sp iter ope.
 
   (** ** maxArity **)
 
@@ -664,6 +682,26 @@ Section Certification.
   Qed.
 
   (** ** instantiateElementOnPattern **)
+
+  Theorem tr_instantiateElementOnPattern_Leaf :
+    forall (sm : SourceModel) (tr: Transformation) (r: Rule) (sp: list SourceModelElement) (i : nat)
+      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
+        (it: Rule_getIteratorType r) (r0: (denoteModelClass (OutputPatternElement_getOutType ope))),
+          matchRuleOnPattern r sm sp = Some true ->
+          (nth_error (evalIterator r sm sp) i) = Some it ->
+           evalFunction smm sm (Rule_getInTypes r)
+                        (denoteModelClass (OutputPatternElement_getOutType ope))
+                        (OutputPatternElement_getOutPatternElement ope it) sp = Some r0 ->
+             instantiateElementOnPattern r ope sm sp i = Some (toModelElement (OutputPatternElement_getOutType ope) r0).
+  Proof.
+    intros. 
+    unfold instantiateElementOnPattern.
+    rewrite H.
+    rewrite H0.
+    unfold evalOutputPatternElement.
+    rewrite H1.
+    auto.
+  Qed.
 
   Theorem tr_instantiateElementOnPattern_None :
     forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
@@ -1413,6 +1451,37 @@ Section Certification.
 
   (** ** applyReferenceOnPattern **)
 
+  Theorem tr_applyReferenceOnPattern_Leaf :
+    forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
+        (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
+        (oper: OutputPatternElementReference (Rule_getInTypes r) (Rule_getIteratorType r) (OutputPatternElement_getOutType ope))
+        (it: (Rule_getIteratorType r)) (l: TargetModelElement) 
+        (r0: (denoteModelClass (OutputPatternElement_getOutType ope) -> 
+               option (denoteModelReference (OutputPatternElementReference_getRefType oper))))
+        (t: (denoteModelClass (OutputPatternElement_getOutType ope)))
+        (s: (denoteModelReference (OutputPatternElementReference_getRefType oper))),
+          matchRuleOnPattern r sm sp = Some true ->
+          (nth_error (evalIterator r sm sp) i) = Some it ->
+            (evalOutputPatternElement sm sp it ope) = Some l ->
+              evalFunction smm sm (Rule_getInTypes r)
+                           (denoteModelClass (OutputPatternElement_getOutType ope) -> option (denoteModelReference (OutputPatternElementReference_getRefType oper)))
+                           (OutputPatternElementReference_getOutputReference oper (matchTransformation tr) it) sp = Some r0 ->
+                toModelClass (OutputPatternElement_getOutType ope) l = Some t->
+                  r0 t = Some s ->
+                    applyReferenceOnPattern r ope oper tr sm sp i = Some (toModelLink (OutputPatternElementReference_getRefType oper) s).
+  Proof.
+    intros. 
+    unfold applyReferenceOnPattern.
+    rewrite H.
+    rewrite H0.
+    rewrite H1.
+    unfold evalOutputPatternElementReference.
+    rewrite H2.
+    rewrite H3.
+    rewrite H4.
+    auto.
+  Qed.
+
   Theorem tr_applyReferenceOnPattern_None :
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
         (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
@@ -1528,13 +1597,18 @@ Section Certification.
 
   (** ** matchRuleOnPattern **)
 
-  Theorem tr_matchRuleOnPattern_eval :
-    forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+
+
+  Theorem tr_matchRuleOnPattern_Leaf :
+    forall (tr : Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       matchRuleOnPattern r sm sp =
       evalFunction smm sm (Rule_getInTypes r) bool (Rule_getGuard r) sp.
   Proof.
     crush.
   Qed.
+
+
+
 
   Theorem tr_matchRuleOnPattern_None :
       forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
@@ -1601,7 +1675,7 @@ Section Certification.
 
   (** ** Resolve **)
 
-  Theorem tr_resolveIter_in:
+  Theorem tr_resolveIter_Leaf:
     forall (tr:MatchedTransformation) (sm : SourceModel) (name: string) (type: TargetModelClass)
       (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
       resolveIter tr sm name type sp iter = return x <->
@@ -1637,6 +1711,41 @@ Section Certification.
       reflexivity.
     }
   Qed.
+
+  Lemma  tr_resolveIter_Leaf':
+        forall (tr:MatchedTransformation) (sm : Model SourceModelElement SourceModelLink) (name: string) (type: TargetModelClass)
+      (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
+      resolveIter tr sm name type sp iter = return x ->
+       (exists (r: Rule) (o: OutputPatternElement (Rule_getInTypes r) 
+               (Rule_getIteratorType r)) (e: TargetModelElement),
+        In r (Transformation_getRules (unmatchTransformation tr)) /\ In o (Rule_getOutputPattern r)
+        /\ (instantiateElementOnPattern r o sm sp iter = Some e)
+        /\ (toModelClass type e = Some x) ).
+  Proof.
+  intros.
+      unfold resolveIter in H.
+      destruct ( find (fun r => isMatchedRule sm r name sp iter)
+                      (Transformation_getRules (unmatchTransformation tr))) eqn: find.
+      - destruct (instantiateRuleOnPatternIterName r sm sp iter name) eqn: inst.
+        --  exists r.
+            unfold instantiateRuleOnPatternIterName in inst.
+            destruct (matchRuleOnPattern r sm sp) eqn:mth.
+            --- destruct b.
+                destruct (Rule_findOutputPatternElement r name) eqn: pat.
+                ---- exists o,t.
+                     repeat split.
+                     + apply find_some in find. crush.
+                     + unfold Rule_findOutputPatternElement in pat.
+                       apply find_some in pat. crush.
+                     + auto.
+                     + auto.
+                ---- crush.
+                ---- crush.
+            --- crush.
+        -- crush.
+      - crush.
+  Qed.
+
 
   Theorem tr_resolveIter_None:
     forall (tr:MatchedTransformation) (sm : SourceModel) (name: string) (type: TargetModelClass)
@@ -1710,7 +1819,7 @@ Section Certification.
       getOutputPattern := Rule_getOutputPattern;
       getOutType := OutputPatternElement_getOutType';
       getOutputElementReferences := OutputPatternElement_getOutputElementReferences';
-
+   
       execute := execute;
       matchPattern := matchPattern;
       instantiatePattern := instantiatePattern;
@@ -1728,7 +1837,10 @@ Section Certification.
 
       applyReferenceOnPattern := applyReferenceOnPattern;
 
+
       evalIterator := evalIterator;
+
+
 
       tr_execute_in_elements := tr_execute_in_elements;
       tr_execute_in_links := tr_execute_in_links;
@@ -1768,6 +1880,30 @@ Section Certification.
       tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
 
       tr_maxArity_in := tr_maxArity_in;
-    }.
+
+
+      smm := smm;
+      tmm := tmm;
+
+      getGuard := Rule_getGuard;
+      getRefType := OutputPatternElementReference_getRefType';
+      getOutputReference := OutputPatternElementReference_getOutputReference';
+      getOutPatternElement := OutputPatternElement_getOutPatternElement';
+
+      matchTransformation := matchTransformation ;
+      unmatchTransformation := unmatchTransformation; 
+
+      resolveAll := resolveAllIter;
+      resolve := resolveIter;      
+      evalOutputPatternElement := evalOutputPatternElement';
+
+      tr_instantiateElementOnPattern_Leaf := tr_instantiateElementOnPattern_Leaf;
+      tr_applyReferenceOnPattern_Leaf := tr_applyReferenceOnPattern_Leaf;
+      tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
+
+      tr_resolveAll_in := tr_resolveAllIter_in;
+      tr_resolve_Leaf := tr_resolveIter_Leaf';
+    }. 
+
 
 End Certification.
