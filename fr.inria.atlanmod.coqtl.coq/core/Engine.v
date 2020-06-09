@@ -231,16 +231,17 @@ Class TransformationEngine :=
     (** ** instantiateElementOnPattern *)
 
     tr_instantiateElementOnPattern_Leaf :
-      forall (sm : SourceModel) 
-           (tr: Transformation) (r: Rule) (sp: list SourceModelElement) (i : nat)
-           (ope: OutputPatternElement (getInTypes r) (getIteratorType r))
-           (it: (getIteratorType r)) (r0: (Metamodel.denoteModelClass (getOutType ope))),
-              matchRuleOnPattern r tr sm sp = Some true ->
-              (nth_error (evalIterator r sm sp) i) = Some it ->
-               evalFunction smm sm (getInTypes r)
-                           (denoteModelClass (getOutType ope))
-                           (getOutPatternElement ope it) sp = Some r0 ->
-                 instantiateElementOnPattern ope sm sp i = Some (toModelElement (getOutType ope) r0);
+      forall (sm : SourceModel)
+        (tr: Transformation) (r: Rule) (sp: list SourceModelElement) (i : nat)
+        (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+        instantiateElementOnPattern ope sm sp i =
+        m <- matchRuleOnPattern r tr sm sp;
+        matched <- if m then Some true else None;
+        it <- nth_error (evalIterator r sm sp) i;
+        r0 <- evalFunction smm sm (getInTypes r)
+           (denoteModelClass (getOutType ope))
+           (getOutPatternElement ope it) sp;
+        Some (toModelElement (getOutType ope) r0);
 
     tr_instantiateElementOnPattern_None_iterator : 
       forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
