@@ -685,22 +685,23 @@ Section Certification.
 
   Theorem tr_instantiateElementOnPattern_Leaf :
     forall (sm : SourceModel) (tr: Transformation) (r: Rule) (sp: list SourceModelElement) (i : nat)
-      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r))
-        (it: Rule_getIteratorType r) (r0: (denoteModelClass (OutputPatternElement_getOutType ope))),
-          matchRuleOnPattern r sm sp = Some true ->
-          (nth_error (evalIterator r sm sp) i) = Some it ->
-           evalFunction smm sm (Rule_getInTypes r)
-                        (denoteModelClass (OutputPatternElement_getOutType ope))
-                        (OutputPatternElement_getOutPatternElement ope it) sp = Some r0 ->
-             instantiateElementOnPattern r ope sm sp i = Some (toModelElement (OutputPatternElement_getOutType ope) r0).
+      (ope: OutputPatternElement (Rule_getInTypes r) (Rule_getIteratorType r)),
+      instantiateElementOnPattern r ope sm sp i =
+        m <- matchRuleOnPattern r sm sp;
+        matched <- if m then Some true else None;
+        it <- nth_error (evalIterator r sm sp) i;
+        r0 <- evalFunction smm sm (Rule_getInTypes r)
+           (denoteModelClass (OutputPatternElement_getOutType ope))
+           (OutputPatternElement_getOutPatternElement ope it) sp;
+        Some (toModelElement (OutputPatternElement_getOutType ope) r0).
   Proof.
-    intros. 
+    intros.
     unfold instantiateElementOnPattern.
-    rewrite H.
-    rewrite H0.
+    destruct matchRuleOnPattern; [ | reflexivity].
+    destruct b; [ | reflexivity].
+    destruct nth_error; [ | reflexivity].
     unfold evalOutputPatternElement.
-    rewrite H1.
-    auto.
+    reflexivity.
   Qed.
 
   Theorem tr_instantiateElementOnPattern_None :
