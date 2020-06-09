@@ -330,21 +330,18 @@ Class TransformationEngine :=
     tr_applyReferenceOnPattern_Leaf :
       forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
         (ope: OutputPatternElement (getInTypes r) (getIteratorType r))
-        (oper: OutputPatternElementReference (getInTypes r) (getIteratorType r) (getOutType ope))
-        (it: (getIteratorType r)) (l: TargetModelElement) 
-        (r0: (denoteModelClass (getOutType ope) -> 
-               option (denoteModelReference (getRefType oper))))
-        (t: (denoteModelClass (getOutType ope)))
-        (s: (denoteModelReference (getRefType oper))),
-          matchRuleOnPattern r tr sm sp = Some true ->
-          (nth_error (evalIterator r sm sp) i) = Some it ->
-          (evalOutputPatternElement sm sp it ope) = Some l -> 
-          evalFunction smm sm (getInTypes r)
-                           (denoteModelClass (getOutType ope) -> option (denoteModelReference (getRefType oper)))
-                           (getOutputReference oper (matchTransformation tr) it) sp = Some r0 ->
-          toModelClass (getOutType ope) l = Some t-> 
-          r0 t = Some s -> 
-            applyReferenceOnPattern oper tr sm sp i = Some (toModelLink (getRefType oper) s);
+        (oper: OutputPatternElementReference (getInTypes r) (getIteratorType r) (getOutType ope)),
+        applyReferenceOnPattern oper tr sm sp i =
+        m <- matchRuleOnPattern r tr sm sp;
+        matched <- if m then Some true else None;
+        it <- nth_error (evalIterator r sm sp) i;
+        l <- evalOutputPatternElement sm sp it ope;
+        r0 <- evalFunction smm sm (getInTypes r)
+           (denoteModelClass (getOutType ope) -> option (denoteModelReference (getRefType oper)))
+           (getOutputReference oper (matchTransformation tr) it) sp;
+        t <- toModelClass (getOutType ope) l;
+        s <- r0 t;
+        Some (toModelLink (getRefType oper) s);
 
 
     tr_applyReferenceOnPattern_None : 
