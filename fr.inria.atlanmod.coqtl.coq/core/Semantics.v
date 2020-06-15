@@ -49,17 +49,13 @@ Section Semantics.
     let val :=
       evalFunction smm sm InElTypes ((denoteModelClass TargetType) -> option (denoteModelReference (OutputPatternElementReference_getRefType o)))
         ((OutputPatternElementReference_getOutputReference o) tr iter) sp in
-    match val with
-    | None => None
-    | Some r =>
-      match toModelClass TargetType oe with
+    match val, toModelClass TargetType oe with
+    | Some r, Some t =>
+      match r t with
       | None => None
-      | Some t =>
-        match r t with
-        | None => None
-        | Some s => Some (toModelLink (OutputPatternElementReference_getRefType o) s)
-        end
+      | Some s => Some (toModelLink (OutputPatternElementReference_getRefType o) s)
       end
+    | _, _ => None
     end.
 
   (** ** Rule application **)
