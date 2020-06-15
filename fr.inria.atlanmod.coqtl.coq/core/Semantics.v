@@ -147,17 +147,9 @@ Section Semantics.
   Definition isMatchedRule
     (sm : SourceModel) (r: Rule) (name: string)
     (sp: list SourceModelElement) (iter: nat) : bool :=
-    match matchRuleOnPattern r sm sp with
-    | Some true =>
-        match nth_error (evalIterator r sm sp) iter with
-        | Some x =>
-            match Rule_findOutputPatternElement r name with
-            | Some x => true
-            | None => false
-            end
-        | None => false
-        end
-    | _ => false
+    match matchRuleOnPattern r sm sp, nth_error (evalIterator r sm sp) iter, Rule_findOutputPatternElement r name with
+    | Some true, Some _, Some _ => true
+    | _, _, _ => false
     end.
 
   Definition resolveIter (tr: MatchedTransformation) (sm: SourceModel) (name: string)
