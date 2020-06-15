@@ -20,32 +20,21 @@ core/Engine.v
 core/EngineProofs.v
 core/Syntax.v
 core/Semantics.v
-<<<<<<< HEAD
-core/Expressions.v
-=======
 core/Certification.v
 core/Semantics_v2.v
 core/Certification_v2.v
 core/Semantics_v4.v
 core/Certification_v4.v
 
->>>>>>> 2f4f145032845accad24f1a00624edcffd89de9e
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
 examples/Class2Relational/Class2Relational.v
 examples/Class2Relational/tests/PersonModel.v
-<<<<<<< HEAD
-examples/Class2RelationalMV/ClassMetamodel.v
-examples/Class2RelationalMV/RelationalMetamodel.v
-examples/Class2RelationalMV/Class2Relational.v
-examples/Class2RelationalMV/tests/PersonModel.v
-=======
 examples/Class2Relational/Theorems/Concrete_attributes_instantiate_impl.v
 examples/Class2Relational/Theorems/Concrete_attributes_instantiate_spec.v
 examples/Class2Relational/Theorems/All_classes_instantiate_impl.v
 examples/Class2Relational/Theorems/Concrete_attributes_instantiate_impl.v
 examples/Class2Relational/Theorems/All_classes_instantiate_spec.v
 examples/Class2Relational/Theorems/Concrete_attributes_instantiate_spec.v
->>>>>>> 2f4f145032845accad24f1a00624edcffd89de9e
 examples/HSM2FSM/HSM.v
 examples/HSM2FSM/HSM2FSM.v
