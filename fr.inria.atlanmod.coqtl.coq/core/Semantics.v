@@ -18,9 +18,7 @@ Section Semantics.
           (Transformation := Transformation smm tmm)
           (MatchedTransformation := MatchedTransformation smm tmm).
 
-  (** * Semantics *)
-
-  (** ** Expression Evaluation **)
+  (** * Expression Evaluation **)
 
   Definition evalGuard (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
     evalFunction smm sm (Rule_getInTypes r) bool (Rule_getGuard r) sp.
@@ -58,7 +56,7 @@ Section Semantics.
     | _, _ => None
     end.
 
-  (** ** Rule application **)
+  (** * Rule application **)
 
   Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceModelElement) : option bool :=
     evalGuard r sm sp.
@@ -80,8 +78,6 @@ Section Semantics.
     flat_map (fun o => optionToList (instantiateElementOnPattern r o sm sp iter))
       (Rule_getOutputPattern r).
 
-  (*TODO change to:
-         match  (indexes (length (evalIterator r sm sp))) with *)
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) :  list TargetModelElement :=
     flat_map (instantiateIterationOnPattern r sm sp)
       (indexes (length (evalIterator r sm sp))).
@@ -139,7 +135,7 @@ Section Semantics.
     flat_map (applyElementOnPattern r ope tr sm sp)
       (indexes (length (evalIterator r sm sp))).
 
-  (** ** Resolution **)
+  (** * Resolution **)
   Definition isMatchedRule
     (sm : SourceModel) (r: Rule) (name: string)
     (sp: list SourceModelElement) (iter: nat) : bool :=
@@ -175,7 +171,7 @@ Section Semantics.
              (type: TargetModelClass) (sps: list(list SourceModelElement)) : option (list (denoteModelClass type)) :=
     resolveAllIter tr sm name type sps 0.
 
-  (** ** Rule scheduling **)
+  (** * Rule scheduling **)
 
   Definition maxArity (tr: Transformation) : nat :=
     max (map (length (A:=SourceModelClass)) (map Rule_getInTypes (Transformation_getRules tr))).
