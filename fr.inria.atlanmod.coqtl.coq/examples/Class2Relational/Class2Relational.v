@@ -8,7 +8,6 @@ Require Import core.utils.TopUtils.
 
 Require Import core.Syntax.
 (* Require Import core.Semantics. *)
-Require Import core.Semantics.
 Require Import core.Metamodel.
 
 Require Import Class2Relational.ClassMetamodel.
@@ -38,6 +37,26 @@ Require Import Class2Relational.RelationalMetamodel.
    } *)
 
 Definition Class2Relational :=
+  (@BuildTransformation ClassMetamodel_EObject ClassMetamodel_ELink RelationalMetamodel_EObject RelationalMetamodel_ELink
+    [(BuildRule "Class2Table" 
+      (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => true)
+      (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => [0])
+      [(BuildOutputPatternElement "tab"
+        (fun _ (m: ClassModel) (c:list ClassMetamodel_EObject) => RelationalMetamodel_toEObjectFromTable (BuildTable 1 ""))
+        [(BuildOutputPatternElementReference
+          (fun (tr: MatchedTransformation) _ (m: ClassModel) (c:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
+                    None))])]);
+      (BuildRule "Attribute2Column" 
+        (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => true)
+        (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => [0])
+        [(BuildOutputPatternElement "col"
+          (fun _ (m: ClassModel) (c:list ClassMetamodel_EObject) => RelationalMetamodel_toEObjectFromTable (BuildTable 1 ""))
+          [(BuildOutputPatternElementReference
+            (fun (tr: MatchedTransformation) _ (m: ClassModel) (c:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
+                      None))])])]).
+
+
+(*Definition Class2Relational :=
   (BuildTransformation
      ClassMetamodel RelationalMetamodel
      [(BuildRule
@@ -74,4 +93,4 @@ Definition Class2Relational :=
                       _ (m: ClassModel) (a: Attribute) (c: Column) =>
                       cl <- getAttributeType a m;
                             tb <- resolve tr m "tab" TableClass [ClassMetamodel_toEObject cl];
-                            return BuildColumnReference c tb))])])]).
+                            return BuildColumnReference c tb))])])]).*)

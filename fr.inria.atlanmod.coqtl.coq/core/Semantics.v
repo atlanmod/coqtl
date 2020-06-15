@@ -6,6 +6,7 @@ Require Import core.Model.
 Require Import core.Expressions.
 Require Import core.Syntax.
 
+Print Rule.
 Section Semantics.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}
@@ -14,9 +15,7 @@ Section Semantics.
           {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}
           (SourceModel := Model SourceModelElement SourceModelLink)
           (TargetModel := Model TargetModelElement TargetModelLink)
-          (Rule := Rule smm tmm)
-          (Transformation := Transformation smm tmm)
-          (MatchedTransformation := MatchedTransformation smm tmm).
+          (Rule := @Rule SourceModelElement SourceModelLink TargetModelElement SourceModelReference).
 
   (** * Expression Evaluation **)
 
