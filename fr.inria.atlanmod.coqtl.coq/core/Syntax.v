@@ -27,7 +27,7 @@ Section Syntax.
   Inductive MatchedRule : Type :=
     BuildMatchedRule :
       (* name *) string
-      (* from *) -> (SourceModel -> (list SourceModelElement) -> bool)
+      (* from *) -> (SourceModel -> (list SourceModelElement) -> option bool)
       (* for *) -> (SourceModel -> (list SourceModelElement) -> list IteratorType)
       (* to *) -> (list MatchedOutputPatternElement)
       -> MatchedRule.
@@ -51,7 +51,7 @@ Section Syntax.
   Inductive Rule : Type :=
     BuildRule :
       (* name *) string
-      (* from *) -> (SourceModel -> (list SourceModelElement) -> bool)
+      (* from *) -> (SourceModel -> (list SourceModelElement) -> option bool)
       (* for *) -> (SourceModel -> (list SourceModelElement) -> list IteratorType)
       (* to *) -> (list OutputPatternElement)
       -> Rule.
@@ -90,7 +90,7 @@ Section Syntax.
       BuildRule y _ _ _ => y
     end.
   
-  Definition Rule_getGuardExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> bool :=
+  Definition Rule_getGuardExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> option bool :=
     match x with
       BuildRule _ y _ _ => y
     end.

@@ -15,7 +15,7 @@ Section Semantics.
           (TargetModel := Model TargetModelElement TargetModelLink)
           (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
 
-  Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : bool :=
+  Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
     (@Rule_getGuardExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp.
 
   Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
@@ -23,8 +23,8 @@ Section Semantics.
     (@Rule_getIteratorExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp.
 
   Definition evalOutputPatternElementExpr (sm: SourceModel) (sp: list SourceModelElement) (iter: IteratorType) (o: OutputPatternElement)
-  : option TargetModelElement := 
-  (@OutputPatternElement_getElementExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) iter sm sp.
+    : option TargetModelElement := 
+    (@OutputPatternElement_getElementExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) iter sm sp.
 
   Definition evalOutputPatternLinkExpr
              (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: IteratorType) (tr: MatchedTransformation)
@@ -35,7 +35,7 @@ Section Semantics.
   (** * Rule application **)
 
   Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceModelElement) : bool :=
-    evalGuardExpr r sm sp.
+    match evalGuardExpr r sm sp with Some true => true | _ => false end.
 
   Definition matchPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list Rule :=
     filter (fun (r:Rule) => matchRuleOnPattern r sm sp) (Transformation_getRules tr).
@@ -147,8 +147,7 @@ Section Semantics.
 
   (** * Rule scheduling **)
 
-  Definition maxArity (tr: Transformation) : nat :=
-    1.
+  Definition maxArity (tr: Transformation) : nat := 1.
 
   Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (allModelElements sm) (maxArity tr).
