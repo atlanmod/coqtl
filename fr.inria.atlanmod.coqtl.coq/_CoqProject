@@ -15,7 +15,6 @@ core/utils/DatatypeUtils.v
 core/utils/TopUtils.v
 core/Model.v
 core/Metamodel.v
-core/Expressions.v
 core/Engine.v
 core/EngineProofs.v
 core/Syntax.v

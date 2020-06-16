@@ -7,7 +7,7 @@ Require Import Omega.
 Require Import core.utils.TopUtils.
 
 Require Import core.Syntax.
-(* Require Import core.Semantics. *)
+Require Import core.Semantics.
 Require Import core.Metamodel.
 
 Require Import Class2Relational.ClassMetamodel.
@@ -42,7 +42,7 @@ Definition Class2Relational :=
       (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => true)
       (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => [0])
       [(BuildOutputPatternElement "tab"
-        (fun _ (m: ClassModel) (c:list ClassMetamodel_EObject) => RelationalMetamodel_toEObjectFromTable (BuildTable 1 ""))
+        (fun _ (m: ClassModel) (c:list ClassMetamodel_EObject) => None)
         [(BuildOutputPatternElementReference
           (fun (tr: MatchedTransformation) _ (m: ClassModel) (c:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
                     None))])]);
@@ -50,7 +50,7 @@ Definition Class2Relational :=
         (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => true)
         (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => [0])
         [(BuildOutputPatternElement "col"
-          (fun _ (m: ClassModel) (c:list ClassMetamodel_EObject) => RelationalMetamodel_toEObjectFromTable (BuildTable 1 ""))
+          (fun _ (m: ClassModel) (c:list ClassMetamodel_EObject) => None)
           [(BuildOutputPatternElementReference
             (fun (tr: MatchedTransformation) _ (m: ClassModel) (c:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
                       None))])])]).

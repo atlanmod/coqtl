@@ -21,7 +21,7 @@ Section Syntax.
   Inductive MatchedOutputPatternElement : Type :=
     BuildMatchedOutputPatternElement :
       string ->
-        (IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement)
+        (IteratorType -> SourceModel -> (list SourceModelElement) -> option TargetModelElement)
         -> MatchedOutputPatternElement.
 
   Inductive MatchedRule : Type :=
@@ -45,7 +45,7 @@ Section Syntax.
   Inductive OutputPatternElement : Type :=
     BuildOutputPatternElement :
       string 
-      -> (IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement) 
+      -> (IteratorType -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
       -> (list OutputPatternElementReference) -> OutputPatternElement.
 
   Inductive Rule : Type :=
@@ -74,7 +74,7 @@ Section Syntax.
       BuildOutputPatternElement y _ _ => y
     end.
 
-  Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement :=
+  Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : IteratorType -> SourceModel -> (list SourceModelElement) -> option TargetModelElement :=
     match o with
       BuildOutputPatternElement _ y _ => y
     end.
@@ -172,6 +172,7 @@ Section Syntax.
 
 End Syntax.
 
+Arguments Transformation {_ _ _ _}.
 Arguments Rule {_ _ _ _}.
 Arguments BuildRule {_ _ _ _}.
 
