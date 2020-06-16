@@ -50,7 +50,9 @@ Definition Class2Relational :=
                     None))])]);
       (BuildRule "Attribute2Column" 
         (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => 
-          return true)
+          a <- hd_error c;
+          a' <- ClassMetamodel_toEClass AttributeEClass a;
+          return negb (getAttributeDerived a'))
         (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => nil)
         [(BuildOutputPatternElement "col"
           (fun _ (m: ClassModel) (c:list ClassMetamodel_EObject) => 
