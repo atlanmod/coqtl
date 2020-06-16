@@ -3,7 +3,6 @@ Require Import String.
 Require Import core.utils.TopUtils.
 Require Import core.Metamodel.
 Require Import core.Model.
-Require Import core.Expressions.
 
 Definition IteratorType := nat.
 

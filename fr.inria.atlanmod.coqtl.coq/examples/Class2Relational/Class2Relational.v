@@ -44,7 +44,7 @@ Definition Class2Relational :=
       (fun (m:ClassModel) (sp:list ClassMetamodel_EObject) => [0])
       [(BuildOutputPatternElement "tab"
         (fun _ (m: ClassModel) (sp:list ClassMetamodel_EObject) => 
-          c <- hd_error sp;
+          c <- match sp with [ c ] => Some c | _ => None end;
           c' <- ClassMetamodel_toEClass ClassEClass c;
           return (RelationalMetamodel_BuildEObject TableClass (BuildTable (getClassId c') (getClassName c')))) 
         [(BuildOutputPatternElementReference
