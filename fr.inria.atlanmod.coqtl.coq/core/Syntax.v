@@ -18,35 +18,35 @@ Section Syntax.
 
   (** ** Syntax Types **)
 
-Inductive MatchedOutputPatternElement : Type :=
-  BuildMatchedOutputPatternElement :
-    string ->
-      (IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement)
-      -> MatchedOutputPatternElement.
+  Inductive MatchedOutputPatternElement : Type :=
+    BuildMatchedOutputPatternElement :
+      string ->
+        (IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement)
+        -> MatchedOutputPatternElement.
 
- Inductive MatchedRule : Type :=
-      BuildMatchedRule :
-        (* name *) string
-        (* from *) -> (SourceModel -> (list SourceModelElement) -> bool)
-        (* for *) -> (SourceModel -> (list SourceModelElement) -> list IteratorType)
-        (* to *) -> (list MatchedOutputPatternElement)
-        -> MatchedRule.
+  Inductive MatchedRule : Type :=
+    BuildMatchedRule :
+      (* name *) string
+      (* from *) -> (SourceModel -> (list SourceModelElement) -> bool)
+      (* for *) -> (SourceModel -> (list SourceModelElement) -> list IteratorType)
+      (* to *) -> (list MatchedOutputPatternElement)
+      -> MatchedRule.
 
- Inductive MatchedTransformation : Type :=
-  BuildMatchedTransformation :
-    list MatchedRule ->
-    MatchedTransformation.
+  Inductive MatchedTransformation : Type :=
+    BuildMatchedTransformation :
+      list MatchedRule 
+      -> MatchedTransformation.
 
   Inductive OutputPatternElementReference : Type :=
     BuildOutputPatternElementReference :
-        (MatchedTransformation -> IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink) ->
-        OutputPatternElementReference.
+      (MatchedTransformation -> IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink) 
+      -> OutputPatternElementReference.
 
   Inductive OutputPatternElement : Type :=
-        BuildOutputPatternElement :
-          string ->
-            (IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement) ->
-            (list OutputPatternElementReference) -> OutputPatternElement.
+    BuildOutputPatternElement :
+      string 
+      -> (IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement) 
+      -> (list OutputPatternElementReference) -> OutputPatternElement.
 
   Inductive Rule : Type :=
     BuildRule :
@@ -56,10 +56,10 @@ Inductive MatchedOutputPatternElement : Type :=
       (* to *) -> (list OutputPatternElement)
       -> Rule.
 
- Inductive Transformation : Type :=
+  Inductive Transformation : Type :=
     BuildTransformation :
-      list Rule ->
-      Transformation.
+      list Rule
+      -> Transformation.
 
   (** ** Accessors **)
 
