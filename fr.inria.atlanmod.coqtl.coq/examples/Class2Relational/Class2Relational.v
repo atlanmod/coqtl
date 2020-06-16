@@ -39,26 +39,30 @@ Require Import Class2Relational.RelationalMetamodel.
 Definition Class2Relational :=
   (@BuildTransformation ClassMetamodel_EObject ClassMetamodel_ELink RelationalMetamodel_EObject RelationalMetamodel_ELink
     [(BuildRule "Class2Table" 
-      (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => 
+      (fun (m:ClassModel) (sp:list ClassMetamodel_EObject) => 
         return true)
-      (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => nil)
+      (fun (m:ClassModel) (sp:list ClassMetamodel_EObject) => [0])
       [(BuildOutputPatternElement "tab"
-        (fun _ (m: ClassModel) (c:list ClassMetamodel_EObject) => 
-          None)
+        (fun _ (m: ClassModel) (sp:list ClassMetamodel_EObject) => 
+          c <- hd_error sp;
+          c' <- ClassMetamodel_toEClass ClassEClass c;
+          return (RelationalMetamodel_BuildEObject TableClass (BuildTable (getClassId c') (getClassName c')))) 
         [(BuildOutputPatternElementReference
           (fun (tr: MatchedTransformation) _ (m: ClassModel) (c:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
                     None))])]);
       (BuildRule "Attribute2Column" 
-        (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => 
-          a <- hd_error c;
+        (fun (m:ClassModel) (sp:list ClassMetamodel_EObject) => 
+          a <- hd_error sp;
           a' <- ClassMetamodel_toEClass AttributeEClass a;
           return negb (getAttributeDerived a'))
-        (fun (m:ClassModel) (c:list ClassMetamodel_EObject) => nil)
+        (fun (m:ClassModel) (sp:list ClassMetamodel_EObject) => [0])
         [(BuildOutputPatternElement "col"
-          (fun _ (m: ClassModel) (c:list ClassMetamodel_EObject) => 
-            None)
+          (fun _ (m: ClassModel) (sp:list ClassMetamodel_EObject) => 
+            a <- hd_error sp;
+            a' <- ClassMetamodel_toEClass AttributeEClass a;
+            return (RelationalMetamodel_BuildEObject ColumnClass (BuildColumn (getAttributeId a') (getAttributeName a')))) 
           [(BuildOutputPatternElementReference
-            (fun (tr: MatchedTransformation) _ (m: ClassModel) (c:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
+            (fun (tr: MatchedTransformation) _ (m: ClassModel) (sp:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
                       None))])])]).
 
 (*Definition Class2Relational :=
