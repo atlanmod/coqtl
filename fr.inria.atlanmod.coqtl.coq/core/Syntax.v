@@ -63,9 +63,20 @@ Section Syntax.
 
   (** ** Accessors **)
 
+  Definition OutputPatternElementReference_getLinkExpr (o: OutputPatternElementReference) : 
+    MatchedTransformation -> IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink :=
+    match o with
+      BuildOutputPatternElementReference y => y
+    end.
+
   Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
     match o with
       BuildOutputPatternElement y _ _ => y
+    end.
+
+  Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement :=
+    match o with
+      BuildOutputPatternElement _ y _ => y
     end.
 
   Definition OutputPatternElement_getOutputElementReferences (o: OutputPatternElement) :
@@ -77,6 +88,16 @@ Section Syntax.
   Definition Rule_getName (x : Rule) : string :=
     match x with
       BuildRule y _ _ _ => y
+    end.
+  
+  Definition Rule_getGuardExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> bool :=
+    match x with
+      BuildRule _ y _ _ => y
+    end.
+
+  Definition Rule_getIteratorExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> list IteratorType :=
+    match x with
+      BuildRule _ _ y _ => y
     end.
 
   Definition Rule_getOutputPatternElements (x : Rule) :

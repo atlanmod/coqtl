@@ -14,46 +14,7 @@ Section Semantics.
           {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}
           {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}
           (SourceModel := Model SourceModelElement SourceModelLink)
-          (TargetModel := Model TargetModelElement TargetModelLink)
-          (Rule := @Rule SourceModelElement SourceModelLink TargetModelElement SourceModelReference).
-
-  (** * Expression Evaluation **)
-
-  Definition evalGuard (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    evalFunction smm sm (Rule_getInTypes r) bool (Rule_getGuard r) sp.
-
-  Definition evalIterator (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
-    list (Rule_getIteratorType r) :=
-    optionListToList
-      (evalFunction
-         smm sm
-         (Rule_getInTypes r) (list (Rule_getIteratorType r)) (Rule_getIteratedList r) sp).
-
-  Definition evalOutputPatternElement {InElTypes: list SourceModelClass} {IterType: Type} (sm: SourceModel) (sp: list SourceModelElement) (iter: IterType) (o: OutputPatternElement InElTypes IterType)
-    : option TargetModelElement :=
-    let val :=
-        evalFunction smm sm InElTypes (denoteModelClass (OutputPatternElement_getOutType o)) ((OutputPatternElement_getOutPatternElement o) iter) sp in
-    match val with
-    | None => None
-    | Some r => Some (toModelElement (OutputPatternElement_getOutType o) r)
-    end.
-
-  Definition evalOutputPatternElementReference
-             {InElTypes: list SourceModelClass} {IterType: Type} {TargetType: TargetModelClass}
-             (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: IterType) (tr: MatchedTransformation)
-             (o: OutputPatternElementReference InElTypes IterType TargetType)
-    : option TargetModelLink :=
-    let val :=
-      evalFunction smm sm InElTypes ((denoteModelClass TargetType) -> option (denoteModelReference (OutputPatternElementReference_getRefType o)))
-        ((OutputPatternElementReference_getOutputReference o) tr iter) sp in
-    match val, toModelClass TargetType oe with
-    | Some r, Some t =>
-      match r t with
-      | None => None
-      | Some s => Some (toModelLink (OutputPatternElementReference_getRefType o) s)
-      end
-    | _, _ => None
-    end.
+          (TargetModel := Model TargetModelElement TargetModelLink).
 
   (** * Rule application **)
 
