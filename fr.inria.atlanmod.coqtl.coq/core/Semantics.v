@@ -64,10 +64,6 @@ Section Semantics.
     | None => None
     end.
 
-  Definition instantiateElementsOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (name: string) : list TargetModelElement :=
-    flat_map (fun it : nat => optionToList (instantiateRuleOnPatternIterName r sm sp it name))
-      (indexes (length (evalIteratorExpr r sm sp))).
-
   Definition applyReferenceOnPattern
              (r: Rule)
              (ope: OutputPatternElement)
@@ -104,10 +100,6 @@ Section Semantics.
 
   Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TargetModelLink :=
     flat_map (fun r => applyRuleOnPattern r tr sm sp) (matchPattern tr sm sp).
-
-  Definition applyElementsOnPattern (r: Rule) (ope: OutputPatternElement) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) : list TargetModelLink :=
-    flat_map (applyElementOnPattern r ope tr sm sp)
-      (indexes (length (evalIteratorExpr r sm sp))).
 
   (** * Resolution **)
   Definition isMatchedRule
