@@ -5,6 +5,7 @@
  ********************************************************************)
 		 
 Require Import List.
+Require Import String.
 Require Import core.Model.
 Require Import HSM.
 
