@@ -11,8 +11,8 @@ Repository structure
 
 Requirements
 ------
-* CoqTL is developed under **Coq v.8.11.1**.
-* The code generator from EMF metamodel/model to CoqTL is developed on top of Eclipse Modelling Project (Neon), and mainly requires **EMF v.2.12** and **XTEND v.2.10** to build, please refer its manefest.MF for detail.
+* CoqTL - **Coq v.8.11.1**.
+* EMF2Coq code generator - **EMF v.2.12** and **XTEND v.2.10**.
 
 Contacts
 ------
