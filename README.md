@@ -11,8 +11,12 @@ Repository structure
 
 Requirements
 ------
-* CoqTL - **Coq v.8.11.1**.
-* EMF2Coq code generator - **EMF v.2.12** and **XTEND v.2.10**.
+CoqTL
+* **Coq v.8.11.1**
+
+EMF2Coq Code Generator
+* **EMF v.2.12** 
+* **XTEND v.2.10**
 
 Contacts
 ------
