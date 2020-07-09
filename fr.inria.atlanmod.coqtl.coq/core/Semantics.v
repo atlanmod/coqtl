@@ -6,6 +6,8 @@ Require Import core.Model.
 Require Import core.Syntax.
 Require Import Bool.
 Require Import Arith.
+Scheme Equality for list.
+
 
 Section Semantics.
 
@@ -118,7 +120,8 @@ Section Semantics.
   let tl := find (fun tl: @TraceLink SourceModelElement TargetModelElement => 
     match tl with 
      buildTraceLink (sp', iter', name') _ => 
-       (iter' =? iter) && (name =? name')%string (* TODO *)
+       (list_beq SourceModelElement beq_ModelElement sp' sp) && 
+       (iter' =? iter) && (name =? name')%string
     end) tls in
   match tl with
     | Some tl' => toModelClass type (TraceLink_getTargetElement tl')
