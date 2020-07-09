@@ -36,87 +36,35 @@ Require Import Class2Relational.RelationalMetamodel.
     }
    } *)
 
- Notation "r1 ':::' t1" :=
-   (ClassMetamodel_BuildEObject t1 r1)
-     (right associativity, at level 9).
-
 Definition Class2Relational :=
-  (@BuildTransformation ClassMetamodel_EObject ClassMetamodel_ELink RelationalMetamodel_EObject RelationalMetamodel_ELink
-    [(BuildRule "Class2Table"
-      (fun (m:ClassModel) (sp:list ClassMetamodel_EObject) =>
-        return true)
-      (fun (m:ClassModel) (sp:list ClassMetamodel_EObject) => [0])
-      [(BuildOutputPatternElement "tab"
-        (fun _ (m: ClassModel) (sp:list ClassMetamodel_EObject) =>
-          match sp with [ c ::: ClassEClass ] =>
-            return (RelationalMetamodel_BuildEObject TableClass (BuildTable (getClassId c) (getClassName c)))
-          | _ => None end)
-        [(BuildOutputPatternElementReference
-          (fun (tr: list TraceLink) _ (m: ClassModel) (sp:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
-            match sp with [ c ::: ClassEClass ] =>
-              t' <- toRelationalMetamodel_EClass TableClass t;
-              attrs <- getClassAttributes c m;
-              cols <- resolveAll tr m "col" ColumnClass
-                (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
-              return (RelationalMetamodel_BuildELink TableColumnsReference (BuildTableColumns t' cols))
-          | _ => None end)
-          )])]);
-      (BuildRule "Attribute2Column" 
-        (fun (m:ClassModel) (sp:list ClassMetamodel_EObject) => 
-          match sp with [ a ::: AttributeEClass ] => 
-            return negb (getAttributeDerived a)
-          | _ => None end)
-        (fun (m:ClassModel) (sp:list ClassMetamodel_EObject) => [0])
-        [(BuildOutputPatternElement "col"
-          (fun _ (m: ClassModel) (sp:list ClassMetamodel_EObject) =>
-            match sp with [ a ::: AttributeEClass ] =>
-              return (RelationalMetamodel_BuildEObject ColumnClass (BuildColumn (getAttributeId a) (getAttributeName a)))
-            | _ => None end)
-        [(BuildOutputPatternElementReference
-            (fun (tr: list TraceLink) _ (m: ClassModel) (sp:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
-              match sp with [ a ::: AttributeEClass ] =>
-                c <- toRelationalMetamodel_EClass ColumnClass t;
+  @BuildTransformation ClassMetamodel_EObject ClassMetamodel_ELink RelationalMetamodel_EObject RelationalMetamodel_ELink
+    [
+      BuildRule "Class2Table"
+        (makeGuard [ClassEClass] (fun (m:ClassModel) c => return true))
+        (makeIterator [ClassEClass] (fun (m:ClassModel) c => [0]))
+        [BuildOutputPatternElement "tab"
+          (makeElement [ClassEClass] TableClass
+            (fun _ (m: ClassModel) c => return BuildTable (getClassId c) (getClassName c)))
+          [BuildOutputPatternElementReference
+            (makeLink [ClassEClass] TableClass TableColumnsReference
+              (fun (tr: list TraceLink) _ (m: ClassModel) c t =>
+                 attrs <- getClassAttributes c m;
+                 cols <- resolveAll tr m "col" ColumnClass (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
+                 return BuildTableColumns t cols))
+          ]
+        ];
+      BuildRule "Attribute2Column"
+        (makeGuard [AttributeEClass] (fun (m:ClassModel) a => return negb (getAttributeDerived a)))
+        (makeIterator [AttributeEClass] (fun (m:ClassModel) a => [0]))
+        [BuildOutputPatternElement "col"
+          (makeElement [AttributeEClass] ColumnClass
+            (fun _ (m: ClassModel) a => return (BuildColumn (getAttributeId a) (getAttributeName a))))
+          [BuildOutputPatternElementReference
+            (makeLink [AttributeEClass] ColumnClass ColumnReferenceReference
+              (fun (tr: list TraceLink) _ (m: ClassModel) a c =>
                 cl <- getAttributeType a m;
                 tb <- resolve tr m "tab" TableClass [ClassMetamodel_toEObject cl];
-                return (RelationalMetamodel_BuildELink ColumnReferenceReference (BuildColumnReference c tb))
-              | _ => None end)
-            )])])]).
-
-(*Definition Class2Relational :=
-  (BuildTransformation
-     ClassMetamodel RelationalMetamodel
-     [(BuildRule
-         ClassMetamodel RelationalMetamodel
-         "Class2Table"
-         [ClassEClass] (fun (m: ClassModel) (c:Class) => true)
-         unit (fun (m: ClassModel) (c:Class) => [tt])
-         [(BuildOutputPatternElement
-             ClassMetamodel RelationalMetamodel 
-             [ClassEClass] "tab" TableClass
-             (fun _ (m: ClassModel) (c:Class) => BuildTable (getClassId c) (getClassName c))
-             [(BuildOutputPatternElementReference
-                 ClassMetamodel RelationalMetamodel
-                 [ClassEClass] TableClass TableColumnsReference
-                 (fun (tr: MatchedTransformation ClassMetamodel RelationalMetamodel)
-                    _ (m: ClassModel) (c:Class) (t: Table) =>
-                    attrs <- getClassAttributes c m;
-                    cols <- resolveAll tr m "col" ColumnClass
-                            (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
-                    return BuildTableColumns t cols))])]);
-        (BuildRule
-           ClassMetamodel RelationalMetamodel
-           "Attribute2Column"
-           [AttributeEClass] (fun (m: ClassModel) (a: Attribute) => negb (getAttributeDerived a))
-           unit (fun (m: ClassModel) (a: Attribute) => [tt])
-           [(BuildOutputPatternElement
-               ClassMetamodel RelationalMetamodel
-               [AttributeEClass] "col" ColumnClass
-               (fun _ (m: ClassModel) (a: Attribute) => BuildColumn (getAttributeId a) (getAttributeName a))
-               [(BuildOutputPatternElementReference
-                   ClassMetamodel RelationalMetamodel
-                   [AttributeEClass] ColumnClass ColumnReferenceReference
-                   (fun (tr: MatchedTransformation ClassMetamodel RelationalMetamodel)
-                      _ (m: ClassModel) (a: Attribute) (c: Column) =>
-                      cl <- getAttributeType a m;
-                            tb <- resolve tr m "tab" TableClass [ClassMetamodel_toEObject cl];
-                            return BuildColumnReference c tb))])])]).*)
+                return BuildColumnReference c tb))
+          ]
+        ]
+    ].
