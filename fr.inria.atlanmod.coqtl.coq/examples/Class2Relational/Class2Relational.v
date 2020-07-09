@@ -37,15 +37,15 @@ Require Import Class2Relational.RelationalMetamodel.
    } *)
 
 Definition Class2Relational :=
-  @BuildTransformation ClassMetamodel_EObject ClassMetamodel_ELink RelationalMetamodel_EObject RelationalMetamodel_ELink
+  @buildTransformation ClassMetamodel_EObject ClassMetamodel_ELink RelationalMetamodel_EObject RelationalMetamodel_ELink
     [
-      BuildRule "Class2Table"
+      buildRule "Class2Table"
         (makeGuard [ClassEClass] (fun (m:ClassModel) c => return true))
         (makeIterator [ClassEClass] (fun (m:ClassModel) c => [0]))
-        [BuildOutputPatternElement "tab"
+        [buildOutputPatternElement "tab"
           (makeElement [ClassEClass] TableClass
             (fun _ (m: ClassModel) c => return BuildTable (getClassId c) (getClassName c)))
-          [BuildOutputPatternElementReference
+          [buildOutputPatternElementReference
             (makeLink [ClassEClass] TableClass TableColumnsReference
               (fun (tr: list TraceLink) _ (m: ClassModel) c t =>
                  attrs <- getClassAttributes c m;
@@ -53,13 +53,13 @@ Definition Class2Relational :=
                  return BuildTableColumns t cols))
           ]
         ];
-      BuildRule "Attribute2Column"
+      buildRule "Attribute2Column"
         (makeGuard [AttributeEClass] (fun (m:ClassModel) a => return negb (getAttributeDerived a)))
         (makeIterator [AttributeEClass] (fun (m:ClassModel) a => [0]))
-        [BuildOutputPatternElement "col"
+        [buildOutputPatternElement "col"
           (makeElement [AttributeEClass] ColumnClass
             (fun _ (m: ClassModel) a => return (BuildColumn (getAttributeId a) (getAttributeName a))))
-          [BuildOutputPatternElementReference
+          [buildOutputPatternElementReference
             (makeLink [AttributeEClass] ColumnClass ColumnReferenceReference
               (fun (tr: list TraceLink) _ (m: ClassModel) a c =>
                 cl <- getAttributeType a m;

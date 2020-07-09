@@ -18,46 +18,46 @@ Section Syntax.
   (** ** Traces **)
 
   Inductive TraceLink : Type :=
-    BuildTraceLink : 
+    buildTraceLink : 
       (list SourceModelElement * nat * string)
       -> TargetModelElement
       -> TraceLink.
 
   Definition TraceLink_getSourcePattern (tl: TraceLink):=
     match tl with 
-      BuildTraceLink (sp, i, n) te => sp
+      buildTraceLink (sp, i, n) te => sp
     end.
 
   Definition TraceLink_getIterator (tl: TraceLink):=
     match tl with 
-      BuildTraceLink (sp, i, n) te => i
+      buildTraceLink (sp, i, n) te => i
     end.
 
   Definition TraceLink_getName (tl: TraceLink):=
     match tl with 
-      BuildTraceLink (sp, i, n) te => n
+      buildTraceLink (sp, i, n) te => n
     end.
 
   Definition TraceLink_getTargetElement (tl: TraceLink):=
     match tl with 
-      BuildTraceLink (sp, i, n) te => te
+      buildTraceLink (sp, i, n) te => te
     end.
 
   (** ** Syntax **)
 
   Inductive OutputPatternElementReference : Type :=
-    BuildOutputPatternElementReference :
+    buildOutputPatternElementReference :
       (list TraceLink -> IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink) 
       -> OutputPatternElementReference.
 
   Inductive OutputPatternElement : Type :=
-    BuildOutputPatternElement :
+    buildOutputPatternElement :
       string 
       -> (IteratorType -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
       -> (list OutputPatternElementReference) -> OutputPatternElement.
 
   Inductive Rule : Type :=
-    BuildRule :
+    buildRule :
       (* name *) string
       (* from *) -> (SourceModel -> (list SourceModelElement) -> option bool)
       (* for *) -> (SourceModel -> (list SourceModelElement) -> list IteratorType)
@@ -65,7 +65,7 @@ Section Syntax.
       -> Rule.
 
   Inductive Transformation : Type :=
-    BuildTransformation :
+    buildTransformation :
       list Rule
       -> Transformation.
 
@@ -74,44 +74,44 @@ Section Syntax.
   Definition OutputPatternElementReference_getLinkExpr (o: OutputPatternElementReference) : 
     list TraceLink -> IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink :=
     match o with
-      BuildOutputPatternElementReference y => y
+      buildOutputPatternElementReference y => y
     end.
 
   Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
     match o with
-      BuildOutputPatternElement y _ _ => y
+      buildOutputPatternElement y _ _ => y
     end.
 
   Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : IteratorType -> SourceModel -> (list SourceModelElement) -> option TargetModelElement :=
     match o with
-      BuildOutputPatternElement _ y _ => y
+      buildOutputPatternElement _ y _ => y
     end.
 
   Definition OutputPatternElement_getOutputElementReferences (o: OutputPatternElement) :
     list OutputPatternElementReference :=
     match o with
-      BuildOutputPatternElement _ _ y => y
+      buildOutputPatternElement _ _ y => y
     end.
 
   Definition Rule_getName (x : Rule) : string :=
     match x with
-      BuildRule y _ _ _ => y
+      buildRule y _ _ _ => y
     end.
   
   Definition Rule_getGuardExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> option bool :=
     match x with
-      BuildRule _ y _ _ => y
+      buildRule _ y _ _ => y
     end.
 
   Definition Rule_getIteratorExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> list IteratorType :=
     match x with
-      BuildRule _ _ y _ => y
+      buildRule _ _ y _ => y
     end.
 
   Definition Rule_getOutputPatternElements (x : Rule) :
     list OutputPatternElement :=
     match x with
-      BuildRule _ _ _ y => y
+      buildRule _ _ _ y => y
     end.
 
   Definition Rule_findOutputPatternElement (r: Rule) (name: string) : option OutputPatternElement :=
@@ -119,7 +119,7 @@ Section Syntax.
          (Rule_getOutputPatternElements r).
 
   Definition Transformation_getRules (x : Transformation) : list Rule :=
-    match x with BuildTransformation y => y end.
+    match x with buildTransformation y => y end.
 
   (** ** Generic functions generation *)
 
@@ -215,9 +215,9 @@ Arguments TraceLink {_ _}.
 
 Arguments Transformation {_ _ _ _}.
 Arguments Rule {_ _ _ _}.
-Arguments BuildRule {_ _ _ _}.
+Arguments buildRule {_ _ _ _}.
 
-Arguments BuildTransformation {_ _ _ _}.
+Arguments buildTransformation {_ _ _ _}.
 
-Arguments BuildOutputPatternElement {_ _ _ _}.
-Arguments BuildOutputPatternElementReference {_ _ _ _}.
+Arguments buildOutputPatternElement {_ _ _ _}.
+Arguments buildOutputPatternElementReference {_ _ _ _}.

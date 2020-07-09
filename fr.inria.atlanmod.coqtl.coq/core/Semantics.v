@@ -71,7 +71,7 @@ Section Semantics.
   Definition traceElementOnPattern (r: Rule) (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat)
     : option TraceLink :=
     match (instantiateElementOnPattern r o sm sp iter) with
-    | Some e => Some (BuildTraceLink (sp, iter, OutputPatternElement_getName o) e)
+    | Some e => Some (buildTraceLink (sp, iter, OutputPatternElement_getName o) e)
     | None => None
     end.
 
@@ -101,7 +101,7 @@ Section Semantics.
              (iter : nat) : option (denoteModelClass type) :=
   let tl := find (fun tl: @TraceLink SourceModelElement TargetModelElement => 
     match tl with 
-     BuildTraceLink (sp', iter', name') _ => 
+     buildTraceLink (sp', iter', name') _ => 
        (iter' =? iter) && (name =? name')%string (* TODO *)
     end) tls in
   match tl with
