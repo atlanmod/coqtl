@@ -114,19 +114,18 @@ Class TransformationEngine :=
       In te (allModelElements (execute tr sm)) <->
       (exists (sp : list SourceModelElement),
           In sp (allTuples tr sm) /\
-          In te (instantiatePattern tr sm sp)); (*
+          In te (instantiatePattern tr sm sp));
 
     tr_execute_in_links :
       forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
         In tl (allModelLinks (execute tr sm)) <->
-        (exists (sp : list SourceModelElement) (tpl : list TargetModelLink),
-            incl sp (allModelElements sm) /\
-            applyPattern tr sm sp = Some tpl /\
-            In tl tpl);
+        (exists (sp : list SourceModelElement),
+            In sp (allTuples tr sm) /\
+            In tl (applyPattern tr sm sp));
 
     (** ** matchPattern *)
 
-    tr_matchPattern_in :
+    (*tr_matchPattern_in :
        forall (tr: Transformation) (sm : SourceModel),
          forall (sp : list SourceModelElement)(r : Rule),
            In r (matchPattern tr sm sp) <->

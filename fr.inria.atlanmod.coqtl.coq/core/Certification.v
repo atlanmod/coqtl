@@ -31,6 +31,17 @@ Section Certification.
     apply in_flat_map.
   Qed.
 
+  Lemma tr_execute_in_links :
+  forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
+    In tl (allModelLinks (execute tr sm)) <->
+    (exists (sp : list SourceModelElement),
+        In sp (allTuples tr sm) /\
+        In tl (applyPattern tr sm sp)).
+  Proof.
+    intros.
+    apply in_flat_map.
+  Qed.
+
   Instance CoqTLEngine :
     TransformationEngine :=
     {
@@ -80,10 +91,10 @@ Section Certification.
       resolveAll := resolveAllIter;
       resolve := resolveIter;
 
-      tr_execute_in_elements := tr_execute_in_elements;(*
+      tr_execute_in_elements := tr_execute_in_elements;
       tr_execute_in_links := tr_execute_in_links;
 
-      tr_instantiatePattern_in := tr_instantiatePattern_in;
+      (*tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_instantiatePattern_non_None := tr_instantiatePattern_non_None;
       tr_instantiatePattern_None := tr_instantiatePattern_None;
 
