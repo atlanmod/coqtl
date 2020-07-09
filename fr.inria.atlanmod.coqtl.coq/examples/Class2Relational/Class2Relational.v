@@ -9,6 +9,7 @@ Require Import core.utils.TopUtils.
 Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.Metamodel.
+Require Import core.Expressions.
 
 Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
