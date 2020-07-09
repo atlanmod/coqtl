@@ -15,14 +15,14 @@ Section Semantics.
           {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}
           (SourceModel := Model SourceModelElement SourceModelLink)
           (TargetModel := Model TargetModelElement TargetModelLink)
-          (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
+          (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
 
   Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    (@Rule_getGuardExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp.
+    (@Rule_getGuardExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp.
 
   Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
     nat :=
-    match (@Rule_getIteratorExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp with
+    match (@Rule_getIteratorExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp with
     | Some n => n
     | _ => 0
     end.
@@ -88,7 +88,8 @@ Section Semantics.
   Definition tracePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TraceLink :=
     flat_map (fun r => traceRuleOnPattern r sm sp) (matchPattern tr sm sp).
 
-  Definition maxArity (tr: Transformation) : nat := 1.
+  Definition maxArity (tr: Transformation) : nat := 
+    max (map (length (A:=SourceModelClass)) (map Rule_getInTypes (Transformation_getRules tr))).
 
   Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (allModelElements sm) (maxArity tr).

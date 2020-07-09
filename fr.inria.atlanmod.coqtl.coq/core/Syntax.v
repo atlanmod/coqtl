@@ -57,6 +57,7 @@ Section Syntax.
   Inductive Rule : Type :=
     buildRule :
       (* name *) string
+      (* types *) -> (list SourceModelClass)
       (* from *) -> (SourceModel -> (list SourceModelElement) -> option bool)
       (* for *) -> (SourceModel -> (list SourceModelElement) -> option nat)
       (* to *) -> (list OutputPatternElement)
@@ -91,23 +92,28 @@ Section Syntax.
 
   Definition Rule_getName (x : Rule) : string :=
     match x with
-      buildRule y _ _ _ => y
+      buildRule y _ _ _ _ => y
     end.
   
   Definition Rule_getGuardExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> option bool :=
     match x with
-      buildRule _ y _ _ => y
+      buildRule _ _ y _ _ => y
+    end.
+
+  Definition Rule_getInTypes (x : Rule) : list SourceModelClass :=
+    match x with
+      buildRule _ y _ _ _ => y
     end.
 
   Definition Rule_getIteratorExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> option nat :=
     match x with
-      buildRule _ _ y _ => y
+      buildRule _ _ _ y _ => y
     end.
 
   Definition Rule_getOutputPatternElements (x : Rule) :
     list OutputPatternElement :=
     match x with
-      buildRule _ _ _ y => y
+      buildRule _ _ _ _ y => y
     end.
 
   Definition Rule_findOutputPatternElement (r: Rule) (name: string) : option OutputPatternElement :=
@@ -121,11 +127,11 @@ End Syntax.
 
 Arguments TraceLink {_ _}.
 
-Arguments Transformation {_ _ _ _}.
-Arguments Rule {_ _ _ _}.
-Arguments buildRule {_ _ _ _}.
+Arguments Transformation {_ _ _ _ _}.
+Arguments Rule {_ _ _ _ _}.
+Arguments buildRule {_ _ _ _ _}.
 
-Arguments buildTransformation {_ _ _ _}.
+Arguments buildTransformation {_ _ _ _ _}.
 
 Arguments buildOutputPatternElement {_ _ _ _}.
 Arguments buildOutputPatternElementReference {_ _ _ _}.

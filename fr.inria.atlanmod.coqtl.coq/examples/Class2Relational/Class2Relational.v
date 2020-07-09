@@ -40,7 +40,7 @@ Require Import Class2Relational.RelationalMetamodel.
 Definition Class2Relational :=
   buildTransformation
     [
-      buildRule "Class2Table"
+      buildRule "Class2Table" [ClassEClass]
         (makeGuard [ClassEClass] (fun m c => return true))
         (makeIterator [ClassEClass] (fun m c => return 1))
         [buildOutputPatternElement "tab"
@@ -54,7 +54,7 @@ Definition Class2Relational :=
                  return BuildTableColumns t cols))
           ]
         ];
-      buildRule "Attribute2Column"
+      buildRule "Attribute2Column" [AttributeEClass]
         (makeGuard [AttributeEClass] (fun m a => return negb (getAttributeDerived a)))
         (makeIterator [AttributeEClass] (fun m a => return 1))
         [buildOutputPatternElement "col"
