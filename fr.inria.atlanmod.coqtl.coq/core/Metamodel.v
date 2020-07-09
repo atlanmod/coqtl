@@ -19,9 +19,12 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
     toModelElement: forall (t: ModelClass), (denoteModelClass t) -> ModelElement;
     toModelLink: forall (t: ModelReference), (denoteModelReference t) -> ModelLink;
     
-    (* Decidability of equality *)
+    (* Decidability of equality for classes *)
     eqModelClass_dec: forall (c1:ModelClass) (c2:ModelClass), { c1 = c2 } + { c1 <> c2 };
     eqModelReference_dec: forall (c1:ModelReference) (c2:ModelReference), { c1 = c2 } + { c1 <> c2 };
+
+    (* Decidable equality for objects *)
+    beq_ModelElement:  ModelElement -> ModelElement -> bool;
 
     (* Constructors *)
     BuildModelElement: forall (r: ModelClass), (denoteModelClass r) -> ModelElement;

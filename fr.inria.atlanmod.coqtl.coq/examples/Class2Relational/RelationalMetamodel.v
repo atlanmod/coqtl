@@ -143,6 +143,13 @@ Definition RelationalMetamodel_getTypeByEReference (type : RelationalMetamodel_E
 Inductive RelationalMetamodel_EObject : Set :=
 | RelationalMetamodel_BuildEObject : forall (c:RelationalMetamodel_EClass), (RelationalMetamodel_getTypeByEClass c) -> RelationalMetamodel_EObject.
 
+Definition beq_RelationalMetamodel_EObject (c1 : RelationalMetamodel_EObject) (c2 : RelationalMetamodel_EObject) : bool :=
+  match c1, c2 with
+  | RelationalMetamodel_BuildEObject TableClass o1, RelationalMetamodel_BuildEObject TableClass o2 => beq_Table o1 o2
+  | RelationalMetamodel_BuildEObject ColumnClass o1, RelationalMetamodel_BuildEObject ColumnClass o2 => beq_Column o1 o2
+  | _, _ => false
+  end.
+
 Inductive RelationalMetamodel_ELink : Set :=
 | RelationalMetamodel_BuildELink : forall (c:RelationalMetamodel_EReference), (RelationalMetamodel_getTypeByEReference c) -> RelationalMetamodel_ELink.
 
@@ -333,6 +340,7 @@ Instance RelationalMetamodel : Metamodel RelationalMetamodel_EObject RelationalM
     toModelElement := RelationalMetamodel_toEObjectOfEClass;
     toModelLink := RelationalMetamodel_toELinkOfEReference;
     bottomModelClass := bottomRelationalMetamodel_EClass;
+    beq_ModelElement := beq_RelationalMetamodel_EObject;
 
     (* Theorems *)
     eqModelClass_dec := RelationalMetamodel_eqEClass_dec;

@@ -50,7 +50,8 @@ Definition Class2Relational :=
             (makeLink [ClassEClass] TableClass TableColumnsReference
               (fun tls i m c t =>
                  attrs <- getClassAttributes c m;
-                 cols <- resolveAll tls m "col" ColumnClass (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
+                 cols <- resolveAll tls m "col" ColumnClass 
+                   (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
                  return BuildTableColumns t cols))
           ]
         ];
