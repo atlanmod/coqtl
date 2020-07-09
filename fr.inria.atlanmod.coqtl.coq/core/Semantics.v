@@ -105,22 +105,9 @@ Section Semantics.
        (iter' =? iter) && (name =? name')%string (* TODO *)
     end) tls in
   match tl with
-    | Some tl' => None (* TODO *)
+    | Some tl' => toModelClass type (TraceLink_getTargetElement tl')
     | None => None
   end.
-
- (*  Definition resolveIter (tr: list) (sm: SourceModel) (name: string)
-             (type: TargetModelClass) (sp: list SourceModelElement)
-             (iter : nat) : option (denoteModelClass type) :=
-    let matchedRule := find (fun r:Rule => isMatchedRule sm r name sp iter)
-                            (Transformation_getRules tr) in
-    match matchedRule with
-    | Some r => match instantiateRuleOnPatternIterName r sm sp iter name with
-               | Some e => toModelClass type e
-               | None => None
-               end
-    | None => None
-    end.*)
 
   Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
