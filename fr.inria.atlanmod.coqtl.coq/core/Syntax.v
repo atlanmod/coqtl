@@ -4,8 +4,6 @@ Require Import core.utils.TopUtils.
 Require Import core.Metamodel.
 Require Import core.Model.
 
-Definition IteratorType := nat.
-
 Section Syntax.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}
@@ -47,20 +45,20 @@ Section Syntax.
 
   Inductive OutputPatternElementReference : Type :=
     buildOutputPatternElementReference :
-      (list TraceLink -> IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink) 
+      (list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink) 
       -> OutputPatternElementReference.
 
   Inductive OutputPatternElement : Type :=
     buildOutputPatternElement :
       string 
-      -> (IteratorType -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
+      -> (nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
       -> (list OutputPatternElementReference) -> OutputPatternElement.
 
   Inductive Rule : Type :=
     buildRule :
       (* name *) string
       (* from *) -> (SourceModel -> (list SourceModelElement) -> option bool)
-      (* for *) -> (SourceModel -> (list SourceModelElement) -> list IteratorType)
+      (* for *) -> (SourceModel -> (list SourceModelElement) -> option nat)
       (* to *) -> (list OutputPatternElement)
       -> Rule.
 
@@ -70,7 +68,7 @@ Section Syntax.
       -> Transformation.
 
   Definition OutputPatternElementReference_getLinkExpr (o: OutputPatternElementReference) : 
-    list TraceLink -> IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink :=
+    list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink :=
     match o with
       buildOutputPatternElementReference y => y
     end.
@@ -80,7 +78,7 @@ Section Syntax.
       buildOutputPatternElement y _ _ => y
     end.
 
-  Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : IteratorType -> SourceModel -> (list SourceModelElement) -> option TargetModelElement :=
+  Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement :=
     match o with
       buildOutputPatternElement _ y _ => y
     end.
@@ -101,7 +99,7 @@ Section Syntax.
       buildRule _ y _ _ => y
     end.
 
-  Definition Rule_getIteratorExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> list IteratorType :=
+  Definition Rule_getIteratorExpr (x : Rule) : SourceModel -> (list SourceModelElement) -> option nat :=
     match x with
       buildRule _ _ y _ => y
     end.

@@ -21,15 +21,18 @@ Section Semantics.
     (@Rule_getGuardExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp.
 
   Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
-    list IteratorType :=
-    (@Rule_getIteratorExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp.
+    nat :=
+    match (@Rule_getIteratorExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp with
+    | Some n => n
+    | _ => 0
+    end.
 
-  Definition evalOutputPatternElementExpr (sm: SourceModel) (sp: list SourceModelElement) (iter: IteratorType) (o: OutputPatternElement)
+  Definition evalOutputPatternElementExpr (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (o: OutputPatternElement)
     : option TargetModelElement := 
     (@OutputPatternElement_getElementExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) iter sm sp.
 
   Definition evalOutputPatternLinkExpr
-             (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: IteratorType) (tr: list TraceLink)
+             (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: nat) (tr: list TraceLink)
              (o: OutputPatternElementReference)
     : option TargetModelLink :=
   (@OutputPatternElementReference_getLinkExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) tr iter sm sp oe.
@@ -44,10 +47,9 @@ Section Semantics.
 
   Definition instantiateElementOnPattern (r: Rule) (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat)
     : option TargetModelElement :=
-    match (nth_error (evalIteratorExpr r sm sp) iter) with
-    | Some i => evalOutputPatternElementExpr sm sp iter o
-    | None => None
-    end.
+    if (iter <? (evalIteratorExpr r sm sp)) 
+    then evalOutputPatternElementExpr sm sp iter o
+    else None.
 
   Definition instantiateIterationOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) :  list TargetModelElement :=
     flat_map (fun o => optionToList (instantiateElementOnPattern r o sm sp iter))
@@ -55,7 +57,7 @@ Section Semantics.
 
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) :  list TargetModelElement :=
     flat_map (instantiateIterationOnPattern r sm sp)
-      (indexes (length (evalIteratorExpr r sm sp))).
+      (indexes (evalIteratorExpr r sm sp)).
 
   Definition instantiatePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TargetModelElement :=
     flat_map (fun r => instantiateRuleOnPattern r sm sp) (matchPattern tr sm sp).
@@ -81,7 +83,7 @@ Section Semantics.
 
   Definition traceRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) :  list TraceLink :=
     flat_map (traceIterationOnPattern r sm sp)
-      (indexes (length (evalIteratorExpr r sm sp))).
+      (indexes (evalIteratorExpr r sm sp)).
 
   Definition tracePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TraceLink :=
     flat_map (fun r => traceRuleOnPattern r sm sp) (matchPattern tr sm sp).
@@ -131,14 +133,13 @@ Section Semantics.
              (tr: Transformation)
              (sm: SourceModel)
              (sp: list SourceModelElement) (iter: nat) : option TargetModelLink :=
-    match (nth_error (evalIteratorExpr r sm sp) iter) with
-    | Some i =>
-      match (evalOutputPatternElementExpr sm sp i ope) with
-      | Some l => evalOutputPatternLinkExpr sm sp l i (trace tr sm) oper
+    if (iter <? (evalIteratorExpr r sm sp)) 
+    then 
+      match (evalOutputPatternElementExpr sm sp iter ope) with
+      | Some l => evalOutputPatternLinkExpr sm sp l iter (trace tr sm) oper
       | None => None
       end
-    | None => None
-    end.
+    else None.
 
   Definition applyElementOnPattern
              (r: Rule)
@@ -155,7 +156,7 @@ Section Semantics.
 
   Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): list TargetModelLink :=
     flat_map (applyIterationOnPattern r tr sm sp)
-      (indexes (length (evalIteratorExpr r sm sp))).
+      (indexes (evalIteratorExpr r sm sp)).
 
   Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TargetModelLink :=
     flat_map (fun r => applyRuleOnPattern r tr sm sp) (matchPattern tr sm sp).

@@ -42,7 +42,7 @@ Definition Class2Relational :=
     [
       buildRule "Class2Table"
         (makeGuard [ClassEClass] (fun m c => return true))
-        (makeIterator [ClassEClass] (fun m c => [0]))
+        (makeIterator [ClassEClass] (fun m c => return 1))
         [buildOutputPatternElement "tab"
           (makeElement [ClassEClass] TableClass
             (fun i m c => return BuildTable (getClassId c) (getClassName c)))
@@ -56,7 +56,7 @@ Definition Class2Relational :=
         ];
       buildRule "Attribute2Column"
         (makeGuard [AttributeEClass] (fun m a => return negb (getAttributeDerived a)))
-        (makeIterator [AttributeEClass] (fun m a => [0]))
+        (makeIterator [AttributeEClass] (fun m a => return 1))
         [buildOutputPatternElement "col"
           (makeElement [AttributeEClass] ColumnClass
             (fun i m a => return (BuildColumn (getAttributeId a) (getAttributeName a))))

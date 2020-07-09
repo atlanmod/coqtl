@@ -83,24 +83,24 @@ Section Expressions.
     fun sm => wrapOption l (imp sm).
 
   Definition IteratorFunction : Type :=
-    SourceModel -> (list SourceModelElement) -> list IteratorType.
+    SourceModel -> (list SourceModelElement) -> option nat.
   Definition makeIterator (l : list SourceModelClass)
-    (imp : SourceModel -> denoteSignature l (list IteratorType)) :
+    (imp : SourceModel -> denoteSignature l (option nat)) :
     IteratorFunction :=
-    fun sm => wrapList l (imp sm).
+    fun sm => wrapOption l (imp sm).
 
   Definition ElementFunction : Type :=
-    IteratorType -> SourceModel -> (list SourceModelElement) -> option TargetModelElement.
+    nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement.
   Definition makeElement (l : list SourceModelClass) (t : TargetModelClass)
-    (imp : IteratorType -> SourceModel -> denoteSignature l (option (denoteModelClass t))) :
+    (imp : nat -> SourceModel -> denoteSignature l (option (denoteModelClass t))) :
     ElementFunction :=
     fun it sm => wrapOptionElement l t (imp it sm).
 
   Definition LinkFunction : Type :=
     list (@TraceLink SourceModelElement TargetModelElement)
-    -> IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink.
+    -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink.
   Definition makeLink (l : list SourceModelClass) (t : TargetModelClass) (r : TargetModelReference)
-    (imp : list TraceLink -> IteratorType -> SourceModel -> denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
+    (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
     LinkFunction :=
     fun mt it sm => wrapOptionLink l t r (imp mt it sm).
 
