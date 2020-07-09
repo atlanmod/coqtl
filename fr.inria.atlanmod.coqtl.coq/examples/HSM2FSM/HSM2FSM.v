@@ -8,7 +8,7 @@ Require Import Omega.
 Require Import core.utils.TopUtils.
 Require Import core.Syntax.
 (* Require Import core.Semantics. *)
-Require Import core.Semantics_v2.
+Require Import core.Semantics.
 Require Import examples.HSM2FSM.HSM.
 
 

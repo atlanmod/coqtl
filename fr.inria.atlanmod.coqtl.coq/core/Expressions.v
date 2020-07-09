@@ -1,85 +1,107 @@
 Require Import String.
-Require Import List.
-Require Import Multiset.
-Require Import ListSet.
-Require Import Omega.
 
+Require Import core.utils.TopUtils.
+Require Import core.Syntax.
 Require Import core.Metamodel.
 Require Import core.Model.
-Require Import core.utils.TopUtils.
-Require Import core.utils.CpdtTactics.
 
-Section Exp.
+Section Expressions.
 
-  Variables (ModelElement ModelLink ModelClass ModelReference: Type)
-            (mm: Metamodel ModelElement ModelLink ModelClass ModelReference).
-    
-  Fixpoint denoteFunction (sclasses : list ModelClass) (otype: Type) :=
-    match sclasses with
-    | nil => otype
-    | cons class classes' => (denoteModelClass class) -> denoteFunction classes' otype
+  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}
+          {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}
+          {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}
+          {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}
+          (SourceModel := Model SourceModelElement SourceModelLink)
+          (TargetModel := Model TargetModelElement TargetModelLink).
+
+  (** ** Generic functions generation *)
+
+  Fixpoint denoteSignature (l : list SourceModelClass) (r : Type) : Type :=
+    match l with
+    | nil => r
+    | l0 :: l' => denoteModelClass l0 -> denoteSignature l' r
     end.
 
-  Fixpoint evalFunctionFix (intypes: list ModelClass) (otype: Type) (f: denoteFunction intypes otype) (el: list ModelElement) : option otype.
+  Definition wrapOption {T : Type}
+    (l : list SourceModelClass)
+    (imp : denoteSignature l (option T)) :
+    (list SourceModelElement) -> option T.
   Proof.
-    destruct intypes eqn:intypes1, el eqn:el1.
-    - exact (Some f).
+    revert l imp. fix Hl 1. intros l imp sl.
+    destruct l as [ | l0 l'], sl as [ | s0 sl'].
+    - exact imp.
     - exact None.
     - exact None.
-    - destruct (toModelClass m m0) eqn:tmc.
-      + destruct l eqn:intypes2, l0 eqn:el2.
-        * exact (Some (f d)).
-        * exact None.
-        * exact None.
-        * rewrite <- intypes2 in f.
-          exact (evalFunctionFix l otype (f d) l0).
-      + exact None.
+    - exact (x <- toModelClass l0 s0; Hl l' (imp x) sl').
   Defined.
 
-  Definition evalFunction (m: Model ModelElement ModelLink) (intypes: list ModelClass) (otype: Type) (f: (Model ModelElement ModelLink) -> (denoteFunction intypes otype)) (el: list ModelElement) : option otype :=
-    evalFunctionFix intypes otype (f m) el.
-
-  Lemma evalFunctionFix_intypes_el_neq:
-    forall intypes otype f el,
-      length intypes <> length el ->
-        evalFunctionFix intypes otype f el = None.
+  Definition wrapList {T : Type} (l : list SourceModelClass)
+    (imp : denoteSignature l (list T)) :
+    (list SourceModelElement) -> list T.
   Proof.
-    intros.
-    generalize dependent el.
-    induction intypes.        
-    - intros. destruct el.
-      + crush.
-      + crush.  
-    - intros.
-      induction el.
-      + crush.
-      + destruct (toModelClass a a0) eqn:tmc.
-        * simpl. rewrite tmc.
-          destruct intypes eqn:intypes2, el eqn:el2.
-          ** crush.
-          ** crush.
-          ** crush.
-          ** apply  IHintypes. simpl. simpl in H.
-             apply -> Nat.succ_inj_wd_neg in H.
-             exact H.            
-        * simpl. rewrite tmc. auto.
-  Qed.
-  
-  Lemma evalFunctionFix_intypes_el_neq_contraposition:
-    forall intypes otype f el,
-        evalFunctionFix intypes otype f el <> None ->
-          length intypes = length el.
+    revert l imp. fix Hl 1. intros l imp sl.
+    destruct l as [ | l0 l'], sl as [ | s0 sl'].
+    - exact imp.
+    - exact nil.
+    - exact nil.
+    - destruct (toModelClass l0 s0) as [x | ].
+      + exact (Hl l' (imp x) sl').
+      + exact nil.
+  Defined.
+
+  Definition wrapOptionElement
+    (l : list SourceModelClass) (t : TargetModelClass)
+    (imp : denoteSignature l (option (denoteModelClass t))) :
+    (list SourceModelElement) -> option TargetModelElement.
   Proof.
-    intros intypes otype f el.
-    specialize (evalFunctionFix_intypes_el_neq intypes otype f el).
-    intro.
-    specialize  (contraposition) with (q:=(evalFunctionFix intypes otype f el) = None) (p:=Datatypes.length intypes <> Datatypes.length el).
-    intros.
-    crush.
-  Qed.
+    revert l imp. fix Hl 1. intros l imp sl.
+    destruct l as [ | l0 l'], sl as [ | s0 sl'].
+    - exact (x <- imp ; return (toModelElement t x)).
+    - exact None.
+    - exact None.
+    - exact (x0 <- toModelClass l0 s0; Hl l' (imp x0) sl').
+  Defined.
 
-End Exp.
+  Definition wrapOptionLink
+    (l : list SourceModelClass) (t : TargetModelClass) (r : TargetModelReference)
+    (imp : denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
+    (list SourceModelElement) -> TargetModelElement -> option TargetModelLink.
+  Proof.
+    revert l imp. fix Hl 1. intros l imp sl v.
+    destruct l as [ | l0 l'], sl as [ | s0 sl'].
+    - refine (xv <- toModelClass t v; xr <- imp xv; return (toModelLink r xr)).
+    - exact None.
+    - exact None.
+    - exact (x0 <- toModelClass l0 s0; Hl l' (imp x0) sl' v).
+  Defined.
 
-Arguments denoteFunction: default implicits.
-Arguments evalFunction: default implicits.
+  Definition GuardFunction : Type :=
+    SourceModel -> (list SourceModelElement) -> option bool.
+  Definition makeGuard (l : list SourceModelClass)
+    (imp : SourceModel -> denoteSignature l (option bool)) :
+    GuardFunction :=
+    fun sm => wrapOption l (imp sm).
 
+  Definition IteratorFunction : Type :=
+    SourceModel -> (list SourceModelElement) -> option nat.
+  Definition makeIterator (l : list SourceModelClass)
+    (imp : SourceModel -> denoteSignature l (option nat)) :
+    IteratorFunction :=
+    fun sm => wrapOption l (imp sm).
+
+  Definition ElementFunction : Type :=
+    nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement.
+  Definition makeElement (l : list SourceModelClass) (t : TargetModelClass)
+    (imp : nat -> SourceModel -> denoteSignature l (option (denoteModelClass t))) :
+    ElementFunction :=
+    fun it sm => wrapOptionElement l t (imp it sm).
+
+  Definition LinkFunction : Type :=
+    list (@TraceLink SourceModelElement TargetModelElement)
+    -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink.
+  Definition makeLink (l : list SourceModelClass) (t : TargetModelClass) (r : TargetModelReference)
+    (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
+    LinkFunction :=
+    fun mt it sm => wrapOptionLink l t r (imp mt it sm).
+
+End Expressions.

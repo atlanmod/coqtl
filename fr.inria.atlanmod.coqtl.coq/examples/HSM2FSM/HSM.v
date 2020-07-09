@@ -194,7 +194,7 @@ Definition HSMMetamodel_getTypeByEClass (hsec_arg : HSMMetamodel_EClass) : Set :
     | AbstractStateEClass => AbstractState
   end.
 
-Check (fun (c : AbstractState_EClass) => (AbstractState_getEAttributeTypesByEClass c)) .
+(*Check (fun (c : AbstractState_EClass) => (AbstractState_getEAttributeTypesByEClass c)) .*)
 
 
 
@@ -243,7 +243,7 @@ Inductive HSMMetamodel_ELink : Set :=
     forall (hser_arg:HSMMetamodel_EReference), (HSMMetamodel_getTypeByEReference hser_arg) -> HSMMetamodel_ELink.
 
 
-Check Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState InitialStateEClass (BuildInitialState "A" "05")).
+(*Check Build_HSMMetamodel_EObject AbstractStateEClass (BuildAbstractState InitialStateEClass (BuildInitialState "A" "05")).*)
 
 
 
@@ -354,7 +354,7 @@ Proof.
  -  exact None.
 Defined.
 
-Compute (HSMMetamodel_AbstractState_downcast InitialStateEClass (BuildAbstractState InitialStateEClass (BuildInitialState "A" "05")) ).
+(*Compute (HSMMetamodel_AbstractState_downcast InitialStateEClass (BuildAbstractState InitialStateEClass (BuildInitialState "A" "05")) ).*)
 
 Definition HSMMetamodel_toEReference (hser_arg : HSMMetamodel_EReference) (hsel_arg : HSMMetamodel_ELink) : option (HSMMetamodel_getTypeByEReference hser_arg).
 Proof.
@@ -606,7 +606,7 @@ Definition HSMMetamodel_getEAttributeTypesByEClass (hsec_arg : HSMMetamodel_ECla
     (AbstractState_EClass * AbstractState) 
   end.
 
-Compute (HSMMetamodel_getEAttributeTypesByEClass AbstractStateEClass).
+(*Compute (HSMMetamodel_getEAttributeTypesByEClass AbstractStateEClass).*)
 
 (*TODO*)
 Definition AbstractState_getEObjectFromEAttributeValues (hsec_arg : AbstractState_EClass) : (AbstractState_getEAttributeTypesByEClass hsec_arg) -> AbstractState :=

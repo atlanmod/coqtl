@@ -128,14 +128,21 @@ Definition ClassMetamodel_getERoleTypesByEReference (c: ClassMetamodel_EReferenc
   | AttributeTypeEReference => (Attribute * Class)
   end.
 
-
 (* Generic types *)
 
 Inductive ClassMetamodel_EObject : Set :=
 | ClassMetamodel_BuildEObject : forall (c:ClassMetamodel_EClass), (ClassMetamodel_getTypeByEClass c) -> ClassMetamodel_EObject.
 
+Definition beq_ClassMetamodel_EObject (c1 : ClassMetamodel_EObject) (c2 : ClassMetamodel_EObject) : bool :=
+  match c1, c2 with
+  | ClassMetamodel_BuildEObject ClassEClass o1, ClassMetamodel_BuildEObject ClassEClass o2 => beq_Class o1 o2
+  | ClassMetamodel_BuildEObject AttributeEClass o1, ClassMetamodel_BuildEObject AttributeEClass o2 => beq_Attribute o1 o2
+  | _, _ => false
+  end.
+
 Inductive ClassMetamodel_ELink : Set :=
 | ClassMetamodel_BuildELink : forall (c:ClassMetamodel_EReference), (ClassMetamodel_getTypeByEReference c) -> ClassMetamodel_ELink.
+
 
 (* Reflective functions *)
 
@@ -306,6 +313,7 @@ Instance ClassMetamodel : Metamodel ClassMetamodel_EObject ClassMetamodel_ELink 
     toModelElement := ClassMetamodel_toEObjectOfEClass;
     toModelLink := ClassMetamodel_toELinkOfEReference;
     bottomModelClass := ClassMetamodel_defaultInstanceOfEClass;
+    beq_ModelElement := beq_ClassMetamodel_EObject;
 
     (* Theorems *)
     eqModelClass_dec := ClassMetamodel_eqEClass_dec;
