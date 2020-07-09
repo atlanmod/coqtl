@@ -42,6 +42,17 @@ Section Certification.
     apply in_flat_map.
   Qed.
 
+  Lemma tr_matchPattern_in :
+  forall (tr: Transformation) (sm : SourceModel),
+    forall (sp : list SourceModelElement)(r : Rule),
+      In r (matchPattern tr sm sp) <->
+        In r (Transformation_getRules tr) /\
+        matchRuleOnPattern r sm sp = true.
+  Proof.
+    intros.
+    apply filter_In.
+  Qed.
+
   Instance CoqTLEngine :
     TransformationEngine :=
     {
@@ -94,7 +105,12 @@ Section Certification.
       tr_execute_in_elements := tr_execute_in_elements;
       tr_execute_in_links := tr_execute_in_links;
 
-      (*tr_instantiatePattern_in := tr_instantiatePattern_in;
+      tr_matchPattern_in := tr_matchPattern_in;
+      (*tr_matchPattern_None := tr_matchPattern_None;
+
+      tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
+
+      tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_instantiatePattern_non_None := tr_instantiatePattern_non_None;
       tr_instantiatePattern_None := tr_instantiatePattern_None;
 
@@ -123,28 +139,7 @@ Section Certification.
       tr_applyReferenceOnPattern_None := tr_applyReferenceOnPattern_None;
       tr_applyReferenceOnPattern_None_iterator := tr_applyReferenceOnPattern_None_iterator;
 
-      tr_matchPattern_in := tr_matchPattern_in;
-      tr_matchPattern_None := tr_matchPattern_None;
-
-      tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
-
       tr_maxArity_in := tr_maxArity_in;
-
-
-      smm := smm;
-      tmm := tmm;
-
-      getGuard := Rule_getGuard;
-      getRefType := OutputPatternElementReference_getRefType';
-      getOutputReference := OutputPatternElementReference_getOutputReference';
-      getOutPatternElement := OutputPatternElement_getOutPatternElement';
-
-      matchTransformation := matchTransformation ;
-      unmatchTransformation := unmatchTransformation; 
-
-      resolveAll := resolveAllIter;
-      resolve := resolveIter;      
-      evalOutputPatternElement := evalOutputPatternElement';
 
       tr_instantiateElementOnPattern_Leaf := tr_instantiateElementOnPattern_Leaf;
       tr_applyReferenceOnPattern_Leaf := tr_applyReferenceOnPattern_Leaf;

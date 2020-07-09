@@ -125,14 +125,14 @@ Class TransformationEngine :=
 
     (** ** matchPattern *)
 
-    (*tr_matchPattern_in :
+    tr_matchPattern_in :
        forall (tr: Transformation) (sm : SourceModel),
          forall (sp : list SourceModelElement)(r : Rule),
            In r (matchPattern tr sm sp) <->
              In r (getRules tr) /\
-             matchRuleOnPattern r tr sm sp = return true;
+             matchRuleOnPattern r sm sp = true;
 
-    tr_matchPattern_None : 
+    (*tr_matchPattern_None : 
         forall (tr: Transformation) (sm : SourceModel) 
           (sp: list SourceModelElement),
             length sp > maxArity tr ->
