@@ -118,15 +118,15 @@ Section Certification.
 
       tr_matchPattern_in := tr_matchPattern_in;
       tr_instantiatePattern_in := tr_instantiatePattern_in;
+      (*tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
 
-      (*tr_matchPattern_None := tr_matchPattern_None;
+      tr_matchPattern_None := tr_matchPattern_None;
 
       tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
 
       tr_instantiatePattern_non_None := tr_instantiatePattern_non_None;
       tr_instantiatePattern_None := tr_instantiatePattern_None;
 
-      tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
       tr_instantiateRuleOnPattern_non_None := tr_instantiateRuleOnPattern_non_None;
 
       tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;

@@ -141,7 +141,16 @@ Class TransformationEngine :=
             In r (matchPattern tr sm sp) /\
             In te (instantiateRuleOnPattern r sm sp));
 
-    (*tr_matchPattern_None : 
+    (** ** instantiateRuleOnPattern *)
+
+    (*tr_instantiateRuleOnPattern_in :
+    forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+      In te (instantiateRuleOnPattern r sm sp) <->
+      (exists (i: nat),
+          i < evalIterator r sm sp /\
+          In te (instantiateIterationOnPattern r sm sp i));
+
+    tr_matchPattern_None : 
         forall (tr: Transformation) (sm : SourceModel) 
           (sp: list SourceModelElement),
             length sp > maxArity tr ->
@@ -171,17 +180,6 @@ Class TransformationEngine :=
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         length sp > maxArity tr ->
         instantiatePattern tr sm sp = None;
-
-    (** ** instantiateRuleOnPattern *)
-
-    tr_instantiateRuleOnPattern_in :
-      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
-        (exists tp: list TargetModelElement, instantiateRuleOnPattern r tr sm sp = Some tp /\
-         In te tp) <->
-        (exists (i: nat) (tp1: list TargetModelElement),
-            i < length (evalIterator r sm sp) /\
-            instantiateIterationOnPattern r sm sp i = Some tp1 /\
-            In te tp1);
 
      tr_instantiateRuleOnPattern_non_None : 
      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement),
