@@ -52,7 +52,7 @@ Definition Class2Relational :=
             return (RelationalMetamodel_BuildEObject TableClass (BuildTable (getClassId c) (getClassName c)))
           | _ => None end)
         [(BuildOutputPatternElementReference
-          (fun (tr: MatchedTransformation) _ (m: ClassModel) (sp:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
+          (fun (tr: list TraceLink) _ (m: ClassModel) (sp:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
             match sp with [ c ::: ClassEClass ] =>
               t' <- toRelationalMetamodel_EClass TableClass t;
               attrs <- getClassAttributes c m;
@@ -73,7 +73,7 @@ Definition Class2Relational :=
               return (RelationalMetamodel_BuildEObject ColumnClass (BuildColumn (getAttributeId a) (getAttributeName a)))
             | _ => None end)
         [(BuildOutputPatternElementReference
-            (fun (tr: MatchedTransformation) _ (m: ClassModel) (sp:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
+            (fun (tr: list TraceLink) _ (m: ClassModel) (sp:list ClassMetamodel_EObject) (t: RelationalMetamodel_EObject) =>
               match sp with [ a ::: AttributeEClass ] =>
                 c <- toRelationalMetamodel_EClass ColumnClass t;
                 cl <- getAttributeType a m;

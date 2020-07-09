@@ -15,30 +15,39 @@ Section Syntax.
           (SourceModel := Model SourceModelElement SourceModelLink)
           (TargetModel := Model TargetModelElement TargetModelLink).
 
-  (** ** Syntax Types **)
+  (** ** Traces **)
 
-  Inductive MatchedOutputPatternElement : Type :=
-    BuildMatchedOutputPatternElement :
-      string ->
-        (IteratorType -> SourceModel -> (list SourceModelElement) -> option TargetModelElement)
-        -> MatchedOutputPatternElement.
+  Inductive TraceLink : Type :=
+    BuildTraceLink : 
+      (list SourceModelElement * nat * string)
+      -> TargetModelElement
+      -> TraceLink.
 
-  Inductive MatchedRule : Type :=
-    BuildMatchedRule :
-      (* name *) string
-      (* from *) -> (SourceModel -> (list SourceModelElement) -> option bool)
-      (* for *) -> (SourceModel -> (list SourceModelElement) -> list IteratorType)
-      (* to *) -> (list MatchedOutputPatternElement)
-      -> MatchedRule.
+  Definition TraceLink_getSourcePattern (tl: TraceLink):=
+    match tl with 
+      BuildTraceLink (sp, i, n) te => sp
+    end.
 
-  Inductive MatchedTransformation : Type :=
-    BuildMatchedTransformation :
-      list MatchedRule 
-      -> MatchedTransformation.
+  Definition TraceLink_getIterator (tl: TraceLink):=
+    match tl with 
+      BuildTraceLink (sp, i, n) te => i
+    end.
+
+  Definition TraceLink_getName (tl: TraceLink):=
+    match tl with 
+      BuildTraceLink (sp, i, n) te => n
+    end.
+
+  Definition TraceLink_getTargetElement (tl: TraceLink):=
+    match tl with 
+      BuildTraceLink (sp, i, n) te => te
+    end.
+
+  (** ** Syntax **)
 
   Inductive OutputPatternElementReference : Type :=
     BuildOutputPatternElementReference :
-      (MatchedTransformation -> IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink) 
+      (list TraceLink -> IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink) 
       -> OutputPatternElementReference.
 
   Inductive OutputPatternElement : Type :=
@@ -63,7 +72,7 @@ Section Syntax.
   (** ** Accessors **)
 
   Definition OutputPatternElementReference_getLinkExpr (o: OutputPatternElementReference) : 
-    MatchedTransformation -> IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink :=
+    list TraceLink -> IteratorType -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink :=
     match o with
       BuildOutputPatternElementReference y => y
     end.
@@ -112,74 +121,15 @@ Section Syntax.
   Definition Transformation_getRules (x : Transformation) : list Rule :=
     match x with BuildTransformation y => y end.
 
-  Definition MatchedOutputPatternElement_getName (o: MatchedOutputPatternElement) : string :=
-    match o with
-      BuildMatchedOutputPatternElement y _ => y
-    end.
-
-  Definition MatchedRule_getName (x : MatchedRule) : string :=
-    match x with
-      BuildMatchedRule y _ _ _ => y
-    end.
-
-  Definition MatchedRule_getOutputPatternElements (x : MatchedRule) :
-    list MatchedOutputPatternElement :=
-    match x with
-      BuildMatchedRule _ _ _ y => y
-    end.
-
-  Definition MatchedRule_findOutputPatternElement (r: MatchedRule) (name: string) : option MatchedOutputPatternElement :=
-    find (fun (o:MatchedOutputPatternElement) => beq_string name (MatchedOutputPatternElement_getName o))
-         (MatchedRule_getOutputPatternElements r).
-
-  Definition MatchedTransformation_getRules (x : MatchedTransformation) : list MatchedRule :=
-    match x with BuildMatchedTransformation y => y end.
-
-  (** ** Copying Matched Transformation *)
-
-  Definition matchOutputPatternElement (x: OutputPatternElement)
-    : MatchedOutputPatternElement :=
-    match x with
-    | BuildOutputPatternElement a b c  => BuildMatchedOutputPatternElement a b
-    end.
-
-  Definition matchRule (x: Rule) : MatchedRule :=
-    match x with
-    | BuildRule a b c d => BuildMatchedRule a b c (map matchOutputPatternElement d)
-    end.
-
-  Definition matchTransformation (x: Transformation) : MatchedTransformation :=
-    match x with
-    | BuildTransformation a => BuildMatchedTransformation (map matchRule a)
-    end.
-
-  Definition unmatchOutputPatternElement (x: MatchedOutputPatternElement)
-    : OutputPatternElement :=
-    match x with
-    | BuildMatchedOutputPatternElement a b => BuildOutputPatternElement a b nil
-    end.
-
-  Definition unmatchRule (x: MatchedRule) : Rule :=
-    match x with
-    | BuildMatchedRule a b c d => BuildRule a b c (map unmatchOutputPatternElement d)
-    end.
-
-  Definition unmatchTransformation (x: MatchedTransformation) : Transformation :=
-    match x with
-    | BuildMatchedTransformation a => BuildTransformation (map unmatchRule a)
-    end.
-
 End Syntax.
+
+Arguments TraceLink {_ _}.
 
 Arguments Transformation {_ _ _ _}.
 Arguments Rule {_ _ _ _}.
 Arguments BuildRule {_ _ _ _}.
 
-Arguments MatchedRule {_ _ _}.
-
 Arguments BuildTransformation {_ _ _ _}.
-
-Arguments MatchedTransformation {_ _ _}.
 
 Arguments BuildOutputPatternElement {_ _ _ _}.
 Arguments BuildOutputPatternElementReference {_ _ _ _}.
