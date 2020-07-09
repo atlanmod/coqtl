@@ -39,8 +39,21 @@ Section Semantics.
 
   (** * Instantiate **)
 
+  Fixpoint checkTypes (ses: list SourceModelElement) (scs: list SourceModelClass) : bool :=
+    match ses, scs with
+    | se::ses', sc::scs' => 
+      match (toModelClass sc se) with
+      | Some c => checkTypes ses' scs'
+      | _ => false
+      end
+    | nil, nil => true
+    | _, _ => false
+    end.
+
   Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceModelElement) : bool :=
-    match evalGuardExpr r sm sp with Some true => true | _ => false end.
+    if (checkTypes sp (Rule_getInTypes r)) then
+      match evalGuardExpr r sm sp with Some true => true | _ => false end
+    else false.
 
   Definition matchPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list Rule :=
     filter (fun (r:Rule) => matchRuleOnPattern r sm sp) (Transformation_getRules tr).
