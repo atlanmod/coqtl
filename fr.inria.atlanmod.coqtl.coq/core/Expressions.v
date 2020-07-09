@@ -5,8 +5,6 @@ Require Import core.Syntax.
 Require Import core.Metamodel.
 Require Import core.Model.
 
-Definition IteratorType := nat.
-
 Section Expressions.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}
