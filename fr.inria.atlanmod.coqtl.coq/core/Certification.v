@@ -17,7 +17,19 @@ Section Certification.
           {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}
           {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}
           (SourceModel := Model SourceModelElement SourceModelLink)
-          (TargetModel := Model TargetModelElement TargetModelLink).
+          (TargetModel := Model TargetModelElement TargetModelLink)
+          (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
+
+  Lemma tr_execute_in_elements :
+  forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
+    In te (allModelElements (execute tr sm)) <->
+    (exists (sp : list SourceModelElement),
+        In sp (allTuples tr sm) /\
+        In te (instantiatePattern tr sm sp)).
+  Proof.
+    intros.
+    apply in_flat_map.
+  Qed.
 
   Instance CoqTLEngine :
     TransformationEngine :=
@@ -68,7 +80,7 @@ Section Certification.
       resolveAll := resolveAllIter;
       resolve := resolveIter;
 
-      (*tr_execute_in_elements := tr_execute_in_elements;
+      tr_execute_in_elements := tr_execute_in_elements;(*
       tr_execute_in_links := tr_execute_in_links;
 
       tr_instantiatePattern_in := tr_instantiatePattern_in;
@@ -130,6 +142,5 @@ Section Certification.
       tr_resolveAll_in := tr_resolveAllIter_in;
       tr_resolve_Leaf := tr_resolveIter_Leaf';*)
     }. 
-
 
 End Certification.

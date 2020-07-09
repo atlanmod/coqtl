@@ -75,6 +75,9 @@ Class TransformationEngine :=
     maxArity (tr: Transformation) : nat :=
       max (map (length (A:=SourceModelClass)) (map getInTypes (getRules tr)));
 
+    allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
+      tuples_up_to_n (allModelElements sm) (maxArity tr);
+
     (** ** Functions *)
     
     execute: Transformation -> SourceModel -> TargetModel;
@@ -106,12 +109,12 @@ Class TransformationEngine :=
 
     (** ** execute *)
 
-    (*tr_execute_in_elements :
+    tr_execute_in_elements :
       forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-        In te (allModelElements (execute tr sm)) <->
-        (exists (sp : list SourceModelElement),
-            incl sp (allModelElements sm) /\
-            In te (instantiatePattern tr sm sp));
+      In te (allModelElements (execute tr sm)) <->
+      (exists (sp : list SourceModelElement),
+          In sp (allTuples tr sm) /\
+          In te (instantiatePattern tr sm sp)); (*
 
     tr_execute_in_links :
       forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
