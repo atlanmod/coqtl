@@ -142,23 +142,22 @@ Section Semantics.
   (** * Apply **)
 
   Definition applyReferenceOnPattern
-             (ope: OutputPatternElement)
              (oper: OutputPatternElementReference)
              (tr: Transformation)
              (sm: SourceModel)
-             (sp: list SourceModelElement) (iter: nat) : option TargetModelLink :=
-    match (evalOutputPatternElementExpr sm sp iter ope) with
-    | Some l => evalOutputPatternLinkExpr sm sp l iter (trace tr sm) oper
-    | None => None
-    end.
+             (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) : option TargetModelLink :=
+    evalOutputPatternLinkExpr sm sp te iter (trace tr sm) oper.
 
   Definition applyElementOnPattern
              (ope: OutputPatternElement)
              (tr: Transformation)
              (sm: SourceModel)
              (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
-    flat_map (fun oper => optionToList (applyReferenceOnPattern ope oper tr sm sp iter))
-      (OutputPatternElement_getOutputElementReferences ope).
+    flat_map (fun oper => 
+      match (evalOutputPatternElementExpr sm sp iter ope) with 
+      | Some l => optionToList (applyReferenceOnPattern oper tr sm sp iter l)
+      | None => nil
+      end) (OutputPatternElement_getOutputElementReferences ope).
 
   Definition applyIterationOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
     flat_map (fun o => applyElementOnPattern o tr sm sp iter)

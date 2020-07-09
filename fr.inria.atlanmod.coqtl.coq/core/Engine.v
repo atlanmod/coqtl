@@ -65,7 +65,7 @@ Class TransformationEngine :=
     getRules: Transformation -> list Rule;
 
     getInTypes: Rule -> list SourceModelClass;    
-    getGuard: Rule -> (SourceModel -> (list SourceModelElement) -> option bool);
+    getGuardExpr: Rule -> (SourceModel -> (list SourceModelElement) -> option bool);
     getOutputPattern: Rule -> list OutputPatternElement;
 
     getOutputElementReferences: OutputPatternElement -> list OutputPatternElementReference;
@@ -91,7 +91,7 @@ Class TransformationEngine :=
     applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> list TargetModelLink;
     applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
     applyElementOnPattern: OutputPatternElement -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
-    applyReferenceOnPattern: OutputPatternElement -> OutputPatternElementReference -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option TargetModelLink;
+    applyReferenceOnPattern: OutputPatternElementReference -> Transformation -> SourceModel -> list SourceModelElement -> nat -> TargetModelElement -> option TargetModelLink;
     
     evalOutputPatternElement: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
     evalIterator: Rule -> SourceModel -> list SourceModelElement -> nat;

@@ -41,7 +41,7 @@ Section Certification.
       getRules := Transformation_getRules;
 
       getInTypes := Rule_getInTypes;
-      getGuard := Rule_getGuardExpr;
+      getGuardExpr := Rule_getGuardExpr;
       getOutputPattern := Rule_getOutputPatternElements;
 
       getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
