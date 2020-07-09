@@ -53,6 +53,17 @@ Section Certification.
     apply filter_In.
   Qed.
 
+  Lemma tr_instantiatePattern_in :
+  forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+    In te (instantiatePattern tr sm sp) <->
+    (exists (r : Rule),
+        In r (matchPattern tr sm sp) /\
+        In te (instantiateRuleOnPattern r sm sp)).
+  Proof.
+    intros.
+    apply in_flat_map.
+  Qed.
+
   Instance CoqTLEngine :
     TransformationEngine :=
     {
@@ -106,11 +117,12 @@ Section Certification.
       tr_execute_in_links := tr_execute_in_links;
 
       tr_matchPattern_in := tr_matchPattern_in;
+      tr_instantiatePattern_in := tr_instantiatePattern_in;
+
       (*tr_matchPattern_None := tr_matchPattern_None;
 
       tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
 
-      tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_instantiatePattern_non_None := tr_instantiatePattern_non_None;
       tr_instantiatePattern_None := tr_instantiatePattern_None;
 
