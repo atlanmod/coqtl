@@ -109,10 +109,9 @@ Class TransformationEngine :=
     (*tr_execute_in_elements :
       forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
         In te (allModelElements (execute tr sm)) <->
-        (exists (sp : list SourceModelElement) (tp : list TargetModelElement),
+        (exists (sp : list SourceModelElement),
             incl sp (allModelElements sm) /\
-            instantiatePattern tr sm sp = Some tp /\
-            In te tp);
+            In te (instantiatePattern tr sm sp));
 
     tr_execute_in_links :
       forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
