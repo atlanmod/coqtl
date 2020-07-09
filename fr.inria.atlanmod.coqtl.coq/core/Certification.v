@@ -36,31 +36,37 @@ Section Certification.
       OutputPatternElement := OutputPatternElement;
       OutputPatternElementReference := OutputPatternElementReference;
 
-      
+      TraceLink := TraceLink;
+
       getRules := Transformation_getRules;
+
       getInTypes := Rule_getInTypes;
+      getGuard := Rule_getGuardExpr;
+      getOutputPattern := Rule_getOutputPatternElements;
+
       getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
    
       execute := execute;
+
       matchPattern := matchPattern;
-      instantiatePattern := instantiatePattern;
-      applyPattern := applyPattern;
-
       matchRuleOnPattern := matchRuleOnPattern;
+
+      instantiatePattern := instantiatePattern;
       instantiateRuleOnPattern := instantiateRuleOnPattern;
-      applyRuleOnPattern := applyRuleOnPattern;
-
       instantiateIterationOnPattern := instantiateIterationOnPattern;
-      applyIterationOnPattern := applyIterationOnPattern;
-
       instantiateElementOnPattern := instantiateElementOnPattern;
-      applyElementOnPattern := applyElementOnPattern;
 
+      applyPattern := applyPattern;
+      applyRuleOnPattern := applyRuleOnPattern;
+      applyIterationOnPattern := applyIterationOnPattern;
+      applyElementOnPattern := applyElementOnPattern;
       applyReferenceOnPattern := applyReferenceOnPattern;
 
+      evalOutputPatternElement := evalOutputPatternElementExpr;
+      evalIterator := evalIteratorExpr;
 
-      evalIterator := evalIterator;
-
+      resolveAll := resolveAllIter;
+      resolve := resolveIter;
 
       (*tr_execute_in_elements := tr_execute_in_elements;
       tr_execute_in_links := tr_execute_in_links;

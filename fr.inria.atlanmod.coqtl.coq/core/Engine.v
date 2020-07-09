@@ -54,18 +54,23 @@ Class TransformationEngine :=
     TargetModel := Model TargetModelElement TargetModelLink;
 
     Transformation: Type;
-    MatchedTransformation: Type;
     Rule: Type;
     OutputPatternElement: Type;
     OutputPatternElementReference: Type;
 
+    TraceLink: Type;
+
     (** ** Accessors *)
 
     getRules: Transformation -> list Rule;
+
     getInTypes: Rule -> list SourceModelClass;    
     getGuard: Rule -> (SourceModel -> (list SourceModelElement) -> option bool);
     getOutputPattern: Rule -> list OutputPatternElement;
+
     getOutputElementReferences: OutputPatternElement -> list OutputPatternElementReference;
+
+    (** ** maxArity *)
 
     maxArity (tr: Transformation) : nat :=
       max (map (length (A:=SourceModelClass)) (map getInTypes (getRules tr)));
@@ -80,7 +85,7 @@ Class TransformationEngine :=
     instantiatePattern: Transformation -> SourceModel -> list SourceModelElement -> list TargetModelElement;
     instantiateRuleOnPattern: Rule -> SourceModel -> list SourceModelElement -> list TargetModelElement; 
     instantiateIterationOnPattern: Rule -> SourceModel -> list SourceModelElement -> nat -> list TargetModelElement;
-    instantiateElementOnPattern: Rule -> OutputPatternElement -> SourceModel -> list SourceModelElement -> nat -> option TargetModelElement;
+    instantiateElementOnPattern: OutputPatternElement -> SourceModel -> list SourceModelElement -> nat -> option TargetModelElement;
     
     applyPattern: Transformation -> SourceModel -> list SourceModelElement -> list TargetModelLink;
     applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> list TargetModelLink;
@@ -88,16 +93,13 @@ Class TransformationEngine :=
     applyElementOnPattern: OutputPatternElement -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
     applyReferenceOnPattern: OutputPatternElement -> OutputPatternElementReference -> Transformation -> SourceModel -> list SourceModelElement -> nat -> option TargetModelLink;
     
-    evalOutputPatternElement: OutputPatternElement -> option TargetModelElement;
-    evalIterator: forall r:Rule, SourceModel -> list SourceModelElement -> nat;
+    evalOutputPatternElement: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
+    evalIterator: Rule -> SourceModel -> list SourceModelElement -> nat;
 
-    matchTransformation: Transformation -> MatchedTransformation;
-    unmatchTransformation: MatchedTransformation -> Transformation;
-
-    resolveAll: forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
+    resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat),
         option (list (denoteModelClass type));
-    resolve: forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
+    resolve: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sp: list SourceModelElement) (iter : nat), option (denoteModelClass type);
 
     (** ** Theorems *)

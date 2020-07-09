@@ -19,6 +19,7 @@ core/Syntax.v
 core/Semantics.v
 core/Expressions.v
 core/Engine.v
+core/Certification.v
 
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
