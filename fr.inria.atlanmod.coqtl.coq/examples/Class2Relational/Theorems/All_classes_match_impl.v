@@ -15,7 +15,7 @@ Require Import core.utils.CpdtTactics.
 
 Theorem All_classes_match_impl :
   forall (cm : ClassModel) (c : Class),
-  exists (r : Rule ClassMetamodel RelationalMetamodel),
+  exists (r : Rule),
     matchPattern Class2Relational cm [ClassMetamodel_toEObject c] = [r].
 Proof.
   intros.
