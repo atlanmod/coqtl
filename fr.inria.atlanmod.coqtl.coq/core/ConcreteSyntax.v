@@ -123,6 +123,27 @@ Section ConcreteSyntax.
 
 End ConcreteSyntax.
 
+Declare Scope coqtl.
+
+(* Transformation *)
+Notation "'transformation' 'from' sinstance 'to' tinstance 'with' transformationbody" :=
+  (buildConcreteTransformation 
+    (smm:=sinstance)
+    (tmm:=tinstance)
+    transformationbody)
+    (right associativity,
+     at level 60).
+          
+(* Rules *)
+Notation "'[' r1 ; .. ; r2 ']'" :=
+     (cons r1 .. (cons r2 nil) ..)
+       (right associativity, at level 9).
+
+(* Rule *)
+Notation "'rule' rulename 'from' types 'having' guard 'for' iterator 'to' outputpattern " :=
+  (buildConcreteRule rulename types guard iterator outputpattern)
+    (right associativity, at level 60).
+  
 Arguments buildTransformation {_ _ _ _ _}.
 Arguments buildConcreteRule {_ _ _ _ _ _ _ _ _ _}.
 Arguments buildConcreteOutputPatternElement {_ _ _ _ _ _ _ _ _ _}.
