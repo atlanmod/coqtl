@@ -40,7 +40,7 @@ Require Import Class2Relational.RelationalMetamodel.
 Open Scope coqtl.
 
 Definition Class2Relational :=
-  transformation from ClassMetamodel to RelationalMetamodel with
+  transformation from ClassMetamodel to RelationalMetamodel by
     [
       rule "Class2Table" 
       from [ClassEClass] having (fun m c => return true)

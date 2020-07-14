@@ -126,18 +126,13 @@ End ConcreteSyntax.
 Declare Scope coqtl.
 
 (* Transformation *)
-Notation "'transformation' 'from' sinstance 'to' tinstance 'with' transformationbody" :=
+Notation "'transformation' 'from' sinstance 'to' tinstance 'by' transformationbody" :=
   (buildConcreteTransformation 
     (smm:=sinstance)
     (tmm:=tinstance)
     transformationbody)
     (right associativity,
      at level 60).
-          
-(* Rules *)
-Notation "'[' r1 ; .. ; r2 ']'" :=
-     (cons r1 .. (cons r2 nil) ..)
-       (right associativity, at level 9).
 
 (* Rule *)
 Notation "'rule' rulename 'from' types 'having' guard 'for' iterator 'to' outputpattern " :=
