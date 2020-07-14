@@ -64,6 +64,49 @@ Section Certification.
     apply in_flat_map.
   Qed.
 
+  Lemma tr_instantiateRuleOnPattern_in :
+  forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+    In te (instantiateRuleOnPattern r sm sp) <->
+    (exists (i: nat),
+        In i (indexes (evalIteratorExpr r sm sp)) /\
+        In te (@instantiateIterationOnPattern SourceModelElement SourceModelLink
+        SourceModelClass TargetModelElement TargetModelLink r sm sp i)).
+  Proof.
+   intros.
+   apply in_flat_map.
+  Qed.
+
+  Lemma tr_instantiateIterationOnPattern_in : 
+  forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement) (i:nat),
+    In te (instantiateIterationOnPattern r sm sp i)
+    <->
+    (exists (ope: OutputPatternElement),
+        In ope (Rule_getOutputPatternElements (SourceModelClass := SourceModelClass) r) /\ 
+        instantiateElementOnPattern (TargetModelLink:=TargetModelLink) ope sm sp i = Some te).
+  Proof.
+    split.
+    * intros.
+      apply in_flat_map in H.
+      destruct H.
+      exists x.
+      unfold optionToList in H.
+      destruct H.
+      split. 
+      - assumption.
+      - destruct (instantiateElementOnPattern x sm sp i).
+        ** crush.
+        ** contradiction.
+    * intros.
+      apply in_flat_map.
+      destruct H.
+      exists x.
+      unfold optionToList.
+      destruct H.
+      split.
+      - assumption.
+      - crush.
+  Qed.
+
   Instance CoqTLEngine :
     TransformationEngine :=
     {
@@ -107,8 +150,8 @@ Section Certification.
       applyElementOnPattern := applyElementOnPattern;
       applyReferenceOnPattern := applyReferenceOnPattern;
 
-      evalOutputPatternElement := evalOutputPatternElementExpr;
-      evalIterator := evalIteratorExpr;
+      evalOutputPatternElementExpr := evalOutputPatternElementExpr;
+      evalIteratorExpr := evalIteratorExpr;
 
       resolveAll := resolveAllIter;
       resolve := resolveIter;
@@ -118,9 +161,10 @@ Section Certification.
 
       tr_matchPattern_in := tr_matchPattern_in;
       tr_instantiatePattern_in := tr_instantiatePattern_in;
-      (*tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
+      tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
+      tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
 
-      tr_matchPattern_None := tr_matchPattern_None;
+      (*tr_matchPattern_None := tr_matchPattern_None;
 
       tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
 
@@ -129,7 +173,6 @@ Section Certification.
 
       tr_instantiateRuleOnPattern_non_None := tr_instantiateRuleOnPattern_non_None;
 
-      tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
       tr_instantiateIterationOnPattern_non_None := tr_instantiateIterationOnPattern_non_None;
 
       tr_instantiateElementOnPattern_None := tr_instantiateElementOnPattern_None;
