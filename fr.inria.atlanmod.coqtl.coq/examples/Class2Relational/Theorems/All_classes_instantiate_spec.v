@@ -16,7 +16,7 @@ Require Import core.utils.CpdtTactics.
 Theorem All_classes_instantiate_spec:
   forall (cm : ClassModel) (c: Class),
   exists (t: RelationalMetamodel_EObject) tp,
-    instantiatePattern Class2Relational cm [ClassMetamodel_toEObject c] = Some tp /\
+    instantiatePattern Class2Relational cm [ClassMetamodel_toEObject c] = tp /\
     In t tp.
 Proof.
   intros.

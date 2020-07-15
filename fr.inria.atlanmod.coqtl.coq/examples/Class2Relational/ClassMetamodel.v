@@ -312,16 +312,11 @@ Instance ClassMetamodel : Metamodel ClassMetamodel_EObject ClassMetamodel_ELink 
     toModelReference := ClassMetamodel_toEReference;
     toModelElement := ClassMetamodel_toEObjectOfEClass;
     toModelLink := ClassMetamodel_toELinkOfEReference;
-    bottomModelClass := ClassMetamodel_defaultInstanceOfEClass;
     beq_ModelElement := beq_ClassMetamodel_EObject;
 
     (* Theorems *)
     eqModelClass_dec := ClassMetamodel_eqEClass_dec;
     eqModelReference_dec := ClassMetamodel_eqEReference_dec;
-
-    (* Constructors *)
-    BuildModelElement := ClassMetamodel_BuildEObject;
-    BuildModelLink := ClassMetamodel_BuildELink;
   }.
 
 Definition ClassModel := Model ClassMetamodel_EObject ClassMetamodel_ELink.

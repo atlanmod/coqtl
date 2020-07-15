@@ -15,7 +15,7 @@ Require Import core.utils.CpdtTactics.
 
 Theorem All_classes_match_spec :
   forall (cm : ClassModel) (c : Class),
-  exists (r : Rule ClassMetamodel RelationalMetamodel),
+  exists (r : Rule),
     In r (matchPattern Class2Relational cm [ClassMetamodel_toEObject c]).
 Proof.
   intros.
@@ -24,8 +24,6 @@ Proof.
   split.
   - left. reflexivity.
   - (* rewrite tr_matchRuleOnPattern. *)
-    unfold matchRuleOnPattern'.
-    unfold matchRuleOnPattern.
-    unfold evalGuard.
-    unfold Expressions.evalFunction. simpl. reflexivity.
+    unfold matchRuleOnPattern. 
+    reflexivity.
 Qed.
