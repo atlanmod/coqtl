@@ -107,6 +107,75 @@ Section Certification.
       - crush.
   Qed.
 
+  Lemma tr_applyPattern_in :
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
+        In tl (applyPattern tr sm sp) <->
+        (exists (r : Rule),
+            In r (matchPattern tr sm sp) /\
+            In tl (applyRuleOnPattern r tr sm sp)).
+  Proof.
+    intros.
+    apply in_flat_map.
+  Qed.
+
+  Lemma tr_applyRuleOnPattern_in : 
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
+        In tl (applyRuleOnPattern r tr sm sp) <->
+        (exists (i: nat),
+            In i (indexes (evalIteratorExpr r sm sp)) /\
+            In tl (applyIterationOnPattern r tr sm sp i)).
+  Proof.
+   intros.
+   apply in_flat_map.
+  Qed.
+
+  Lemma tr_applyIterationOnPattern_in : 
+      forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat),
+        In tl (applyIterationOnPattern r tr sm sp i) <->
+        (exists (ope: OutputPatternElement),
+            In ope (Rule_getOutputPatternElements (SourceModelClass := SourceModelClass) r) /\ 
+            In tl (applyElementOnPattern ope tr sm sp i)).
+  Proof.
+    intros.
+    apply in_flat_map.
+  Qed.
+
+  Lemma tr_applyElementOnPattern_in : 
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) 
+             (i:nat) (ope: OutputPatternElement),
+        In tl (applyElementOnPattern ope tr sm sp i ) <->
+        (exists (oper: OutputPatternElementReference) (te: TargetModelElement),
+            In oper (OutputPatternElement_getOutputElementReferences ope) /\ 
+            (evalOutputPatternElementExpr sm sp i ope) = Some te /\
+            applyReferenceOnPattern oper tr sm sp i te = Some tl).
+  Proof.
+    split.
+    * intros.
+      apply in_flat_map in H.
+      destruct H.
+      exists x.
+      unfold optionToList in H.
+      destruct H.
+      destruct (evalOutputPatternElementExpr sm sp i ope) eqn: eval_ca.
+      - destruct (applyReferenceOnPattern x tr sm sp i t) eqn: ref_ca.
+        -- eexists t.
+           split; crush.
+        -- contradiction.
+      - contradiction.
+    * intros.
+      apply in_flat_map.
+      destruct H.
+      exists x.
+      unfold optionToList.
+      destruct H.
+      destruct H.
+      destruct H0.
+      split.
+      - assumption.
+      - crush.
+  Qed.
+
+
   Instance CoqTLEngine :
     TransformationEngine :=
     {
@@ -164,6 +233,11 @@ Section Certification.
       tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
       tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
 
+      tr_applyPattern_in := tr_applyPattern_in;
+      tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
+      tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
+      tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
+
       (*tr_matchPattern_None := tr_matchPattern_None;
 
       tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
@@ -178,17 +252,13 @@ Section Certification.
       tr_instantiateElementOnPattern_None := tr_instantiateElementOnPattern_None;
       tr_instantiateElementOnPattern_None_iterator := tr_instantiateElementOnPattern_None_iterator;
 
-      tr_applyPattern_in := tr_applyPattern_in;
       tr_applyPattern_non_None := tr_applyPattern_non_None;
       tr_applyPattern_None := tr_applyPattern_None;
 
-      tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
       tr_applyRuleOnPattern_non_None := tr_applyRuleOnPattern_non_None;
 
-      tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
       tr_applyIterationOnPattern_non_None := tr_applyIterationOnPattern_non_None;
 
-      tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
       tr_applyElementOnPattern_non_None := tr_applyElementOnPattern_non_None;
 
       tr_applyReferenceOnPattern_None := tr_applyReferenceOnPattern_None;
