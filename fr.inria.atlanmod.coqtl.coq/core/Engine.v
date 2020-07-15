@@ -143,9 +143,9 @@ Class TransformationEngine :=
     (*tr_matchRuleOnPattern_Leaf :
     forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       matchRuleOnPattern r tr sm sp =
-      evalFunction smm sm (getInTypes r) bool (getGuard r) sp;
+      evalFunction smm sm (getInTypes r) bool (getGuard r) sp;*)
 
-    tr_matchRuleOnPattern_None :
+    (*tr_matchRuleOnPattern_None :
         forall (tr: Transformation) (sm : SourceModel) 
           (r: Rule) (sp: list SourceModelElement),
            length sp <> length (getInTypes r) ->

@@ -339,16 +339,11 @@ Instance RelationalMetamodel : Metamodel RelationalMetamodel_EObject RelationalM
     toModelReference := toRelationalMetamodel_EReference;
     toModelElement := RelationalMetamodel_toEObjectOfEClass;
     toModelLink := RelationalMetamodel_toELinkOfEReference;
-    bottomModelClass := bottomRelationalMetamodel_EClass;
     beq_ModelElement := beq_RelationalMetamodel_EObject;
 
     (* Theorems *)
     eqModelClass_dec := RelationalMetamodel_eqEClass_dec;
     eqModelReference_dec := RelationalMetamodel_eqEReference_dec;
-
-    (* Constructors *)
-    BuildModelElement := RelationalMetamodel_BuildEObject;
-    BuildModelLink := RelationalMetamodel_BuildELink;
   }.
   
 
