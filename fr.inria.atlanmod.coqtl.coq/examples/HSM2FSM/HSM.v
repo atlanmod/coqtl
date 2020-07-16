@@ -1,3 +1,8 @@
+(**
+
+ CoqTL user metamodel: HSM
+
+ **)
 
 (********************************************************************
 	@name Coq declarations for metamodel: <HSM>
