@@ -25,6 +25,8 @@ core/Certification.v
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
 examples/Class2Relational/Class2Relational.v
+examples/Class2Relational/Class2RelationalConcrete.v
+examples/Class2Relational/Class2RelationalNotation.v
 examples/Class2Relational/tests/PersonModel.v
 examples/Class2Relational/tests/PersonTest.v
 #examples/Class2Relational/Theorems/Concrete_attributes_instantiate_impl.v

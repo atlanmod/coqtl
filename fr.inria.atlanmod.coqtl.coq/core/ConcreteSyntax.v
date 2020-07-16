@@ -141,5 +141,5 @@ Notation "'rule' rulename 'from' types 'where' guard 'for' iterator 'to' outputp
   
 Arguments buildTransformation {_ _ _ _ _}.
 Arguments buildConcreteRule {_ _ _ _ _ _ _ _ _ _}.
-Arguments buildConcreteOutputPatternElement {_ _ _ _ _ _ _ _ _ _}.
-Arguments buildConcreteOutputPatternElementReference {_ _ _ _ _ _ _ _ _ _ _}.
+Arguments buildConcreteOutputPatternElement {_ _ _ _ _ _ _ _ _ _ _}.
+Arguments buildConcreteOutputPatternElementReference {_ _ _ _ _ _ _ _ _ _ _ _}.

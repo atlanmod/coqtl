@@ -38,14 +38,14 @@ Require Import Class2Relational.RelationalMetamodel.
    } *)
 
 Definition Class2Relational :=
-  buildConcreteTransformation
+  buildConcreteTransformation (smm:=ClassMetamodel) (tmm:=RelationalMetamodel)
     [
       buildConcreteRule "Class2Table" 
         [ClassEClass] (fun m c => return true)
         (fun m c => return 1)
-        [  "tab" 
+        [ buildConcreteOutputPatternElement (InTypes:=[ClassEClass]) "tab" 
             TableClass (fun i m c => return BuildTable (getClassId c) (getClassName c))
-          [buildConcreteOutputPatternElementReference TableColumnsReference  
+          [buildConcreteOutputPatternElementReference (InTypes:=[ClassEClass]) (OutType:=TableClass) TableColumnsReference  
               (fun tls i m c t =>
                  attrs <- getClassAttributes c m;
                  cols <- resolveAll tls m "col" ColumnClass 
@@ -56,9 +56,9 @@ Definition Class2Relational :=
       buildConcreteRule "Attribute2Column" 
         [AttributeEClass] (fun m a => return negb (getAttributeDerived a))
         (fun m a => return 1)
-        [buildConcreteOutputPatternElement "col" 
+        [buildConcreteOutputPatternElement (InTypes:=[AttributeEClass]) "col" 
             ColumnClass (fun i m a => return (BuildColumn (getAttributeId a) (getAttributeName a)))
-          [buildConcreteOutputPatternElementReference ColumnReferenceReference
+          [buildConcreteOutputPatternElementReference (InTypes:=[AttributeEClass]) (OutType:=ColumnClass) ColumnReferenceReference
               (fun tls i m a c =>
                 cl <- getAttributeType a m;
                 tb <- resolve tls m "tab" TableClass [ClassMetamodel_toEObject cl];
