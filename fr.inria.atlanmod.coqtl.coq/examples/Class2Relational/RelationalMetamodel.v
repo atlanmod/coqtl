@@ -1,3 +1,9 @@
+(**
+
+ CoqTL user metamodel: relational
+
+ **)
+
 Require Import String.
 Require Import List.      (* sequence *)
 Require Import Multiset.  (* bag *)

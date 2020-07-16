@@ -1,3 +1,9 @@
+(**
+
+ CoqTL user metamodel: Class
+
+ **)
+
 Require Import String.
 Require Import Bool.
 Require Import List.      (* sequence *)

@@ -1,3 +1,9 @@
+(**
+
+ CoqTL user transformation: Class2Relational
+
+ **)
+
 Require Import String.
 Require Import List.
 Require Import Multiset.
