@@ -1,3 +1,13 @@
+(**
+
+ CoqTL user theorem: All_classes_instantiate
+
+ Def: all classes in the source model will create table in the target model
+
+ Proved with engine specification
+
+ **)
+
 Require Import String.
 
 Require Import core.utils.TopUtils.

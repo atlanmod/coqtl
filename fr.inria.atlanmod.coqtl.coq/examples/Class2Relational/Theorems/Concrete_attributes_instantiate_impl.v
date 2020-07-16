@@ -1,3 +1,14 @@
+(**
+
+ CoqTL user theorem: Concrete_attributes_instantiate
+
+ Def: all non-derived attribute in the source model will 
+      be instantiated to element contained by target pattern
+
+ Proved with engine implementation
+
+ **)
+
 Require Import String.
 
 Require Import core.utils.TopUtils.

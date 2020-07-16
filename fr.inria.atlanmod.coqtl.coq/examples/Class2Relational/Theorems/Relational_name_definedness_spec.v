@@ -1,3 +1,15 @@
+(**
+
+ CoqTL user theorem: Relational_name_definedness
+
+ Def: if all objects in the source model have name defined,
+      then the target objects generated in the target model
+      have name defined.
+
+ Proved with engine specification
+ 
+ **)
+
 Require Import String.
 Require Import Coq.Logic.Eqdep_dec.
 Require Import Coq.Arith.Gt.

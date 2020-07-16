@@ -1,3 +1,13 @@
+(**
+
+ CoqTL user theorem: Class_Object_instantiate
+
+ Def: all objects in the source model will instantiate some element contained by the target element
+
+ Proved with engine implementation
+
+ **)
+
 Require Import String.
 
 Require Import core.utils.TopUtils.
