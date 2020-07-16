@@ -53,11 +53,11 @@ Section ConcreteSyntaxB.
       -> (list (ConcreteOutputPatternElementReference InTypes OutType)) -> ConcreteOutputPatternElement InTypes.
 
   Inductive ConcreteRule : Type :=
-    rule :
+    concreteRule :
       (* name *) string
       (* from *) -> forall (InTypes: list SourceModelClass),
-        (SourceModel -> (guardTypes InTypes))
-      (* for *) -> (SourceModel -> (iteratedListTypes InTypes))
+        option (SourceModel -> (guardTypes InTypes))
+      (* for *) -> option (SourceModel -> (iteratedListTypes InTypes))
       (* to *) -> (list (ConcreteOutputPatternElement InTypes))
       -> ConcreteRule.
 
@@ -124,7 +124,7 @@ Section ConcreteSyntaxB.
 End ConcreteSyntaxB.
 
 Arguments transformation {_ _ _ _} _ {_ _ _ _} _.
-Arguments rule {_ _ _ _ _ _ _ _ _ _}.
+Arguments concreteRule {_ _ _ _ _ _ _ _ _ _}.
 Arguments elem {_ _ _ _ _ _ _ _ _ _}.
 Arguments link {_ _ _ _ _ _ _ _ _ _}.
 
@@ -132,5 +132,20 @@ Declare Scope coqtlb.
 
 (* Rule *)
 Notation "'rule' rulename 'from' types 'where' guard 'for' iterator 'to' outputpattern " :=
-  (rule rulename types guard iterator outputpattern)
+  (concreteRule rulename types (Some guard) (Some iterator) outputpattern)
+    (right associativity, at level 60):coqtlb.
+
+(* Rule without guard *)
+Notation "'rule' rulename 'from' types 'for' iterator 'to' outputpattern " :=
+  (concreteRule rulename types (None) (Some iterator) outputpattern)
+    (right associativity, at level 60):coqtlb.
+
+(* Rule without iterator *)
+Notation "'rule' rulename 'from' types 'where' guard 'to' outputpattern " :=
+  (concreteRule rulename types (Some guard) (None) outputpattern)
+    (right associativity, at level 60):coqtlb.
+
+(* Rule without guard and iterator *)
+Notation "'rule' rulename 'from' types 'to' outputpattern " :=
+  (concreteRule rulename types (None) (None) outputpattern)
     (right associativity, at level 60):coqtlb.
