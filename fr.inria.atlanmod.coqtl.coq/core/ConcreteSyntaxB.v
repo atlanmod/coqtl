@@ -62,7 +62,7 @@ Section ConcreteSyntaxB.
       -> ConcreteRule.
 
   Inductive ConcreteTransformation : Type :=
-    transform :
+    transformation :
       list ConcreteRule
       -> ConcreteTransformation.
 
@@ -123,7 +123,7 @@ Section ConcreteSyntaxB.
 
 End ConcreteSyntaxB.
 
-Arguments transform {_ _ _ _} _ {_ _ _ _} _.
+Arguments transformation {_ _ _ _} _ {_ _ _ _} _.
 Arguments rule {_ _ _ _ _ _ _ _ _ _}.
 Arguments elem {_ _ _ _ _ _ _ _ _ _}.
 Arguments link {_ _ _ _ _ _ _ _ _ _}.
