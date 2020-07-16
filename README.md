@@ -27,4 +27,4 @@ If you experience issues installing or using CoqTL, you can submit an issue on [
 
 License
 ------
-CoqTL itself is licensed under Eclipse Public License (v2). See LICENSE.md in the root directory for details.
+CoqTL itself is licensed under Eclipse Public License (v2). See LICENSE.md in the root directory for details. Third party libraries are under independent licenses, see their source files for details.
