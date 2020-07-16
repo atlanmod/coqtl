@@ -12,6 +12,17 @@ Repository structure
 ------
 * The CoqTL language and its examples are contained by [fr.inria.atlanmod.coqtl.coq](/fr.inria.atlanmod.coqtl.coq/)
   * language aspect is contained by [core](/fr.inria.atlanmod.coqtl.coq/core/), which modularized into:
+    * Specification
+      * [CoqTL engine specification](/fr.inria.atlanmod.coqtl.coq/core/Engine.v)
+      * [CoqTL engine derived specification](/fr.inria.atlanmod.coqtl.coq/core/EngineProofs.v)
+      * [Metamodel interface](/fr.inria.atlanmod.coqtl.coq/core/Metamodel.v)
+      * [Model interface](/fr.inria.atlanmod.coqtl.coq/core/Model.v)
+    * Implementation
+      * [Abstract Syntax](/fr.inria.atlanmod.coqtl.coq/core/Syntax.v)
+      * Semantic functions [(v1)](/fr.inria.atlanmod.coqtl.coq/core/Semantics.v) [(v2)](/fr.inria.atlanmod.coqtl.coq/core/Semantics_v2.v) [(v3)](/fr.inria.atlanmod.coqtl.coq/core/Semantics_v3.v)
+      * [Expression Evaluation](/fr.inria.atlanmod.coqtl.coq/core/Expressions.v)
+    * Certification 
+      * Implementation against specification [(v1)](/fr.inria.atlanmod.coqtl.coq/core/Certification.v) [(v2)](/fr.inria.atlanmod.coqtl.coq/core/Certification_v2.v) [(v3)](/fr.inria.atlanmod.coqtl.coq/core/Certification_v3.v)
   * examples is contained by [examples](/fr.inria.atlanmod.coqtl.coq/examples/):
     * [Class2Relational](/fr.inria.atlanmod.coqtl.coq/examples/Class2Relational/)
     * [HSM2FSM](/fr.inria.atlanmod.coqtl.coq/examples/HSM2FSM)
