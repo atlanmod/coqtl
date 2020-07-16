@@ -15,11 +15,11 @@ Repository structure
 
 Setup
 ------
-See [](installation) on the wiki.
+See [installation]() on the wiki.
 
 Issues
 ------
-If you experience issues installing or using CoqTL, you can submit an issue on [https://github.com/atlanmod/CoqTL/issues](github) or contact us at:
+If you experience issues installing or using CoqTL, you can submit an issue on [github](https://github.com/atlanmod/CoqTL/issues) or contact us at:
 
 > Massimo Tisi: massimo.tisi@imt-atlantique.fr
 
