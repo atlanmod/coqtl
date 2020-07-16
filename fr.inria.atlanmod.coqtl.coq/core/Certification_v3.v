@@ -1,3 +1,17 @@
+(**
+
+ Certifying the implementation of CoqTL against the Engine specification.
+
+ The implementation refers to commit:
+ 
+ [c7f6526](https://github.com/atlanmod/CoqTL/commit/c7f6526)
+
+ The specification refers to:
+
+ Engine.v
+
+ **)
+
 Require Import core.utils.TopUtils.
 Require Import core.Metamodel.
 Require Import core.Model.

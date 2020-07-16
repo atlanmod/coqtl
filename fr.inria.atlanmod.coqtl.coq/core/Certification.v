@@ -1,3 +1,17 @@
+(**
+
+ Certifying the implementation of CoqTL against the Engine specification.
+
+ The implementation refers to commit:
+ 
+ [41875ed](https://github.com/atlanmod/CoqTL/commit/41875ed)
+
+ The specification refers to:
+
+ Engine.v
+
+ **)
+
 Require Import String.
 Require Import Omega.
 
