@@ -42,15 +42,36 @@ Open Scope coqtl.
 Definition Class2Relational :=
   transformation from ClassMetamodel to RelationalMetamodel by
     [
-      rule "Class2Table" 
+      rule "Class2Table"
       from [ClassEClass] where (fun m c => return true)
       for (fun m c => return 1)
-      to nil;
+      to [ 
+        "tab" : [ClassEClass] => TableClass :=
+          (fun i m c => return BuildTable (getClassId c) (getClassName c)) with
+            [
+              ref [ClassEClass] => TableClass => TableColumnsReference :=
+                (fun tls i m c t =>
+                  attrs <- getClassAttributes c m;
+                  cols <- resolveAll tls m "col" ColumnClass 
+                    (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
+                  return BuildTableColumns t cols)
+            ]
+      ];
 
-      rule "Attribute2Column" 
+      rule "Attribute2Column"
       from [AttributeEClass] where (fun m a => return negb (getAttributeDerived a))
       for (fun m a => return 1)
-      to nil
+      to [
+        "col" : [AttributeEClass] => ColumnClass :=
+          (fun i m a => return (BuildColumn (getAttributeId a) (getAttributeName a))) with
+            [
+              ref [AttributeEClass] => ColumnClass => ColumnReferenceReference :=
+                (fun tls i m a c =>
+                  cl <- getAttributeType a m;
+                  tb <- resolve tls m "tab" TableClass [ClassMetamodel_toEObject cl];
+                  return BuildColumnReference c tb)
+            ]
+      ]
     ].
 
 Close Scope coqtl.

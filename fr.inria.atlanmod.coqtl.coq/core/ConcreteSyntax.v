@@ -123,6 +123,11 @@ Section ConcreteSyntax.
 
 End ConcreteSyntax.
 
+Arguments buildTransformation {_ _ _ _ _}.
+Arguments buildConcreteRule {_ _ _ _ _ _ _ _ _ _}.
+Arguments buildConcreteOutputPatternElement {_ _ _ _ _ _ _ _ _ _ _}.
+Arguments buildConcreteOutputPatternElementReference {_ _ _ _ _ _ _ _ _ _ _ _}.
+
 Declare Scope coqtl.
 
 (* Transformation *)
@@ -138,8 +143,13 @@ Notation "'transformation' 'from' sinstance 'to' tinstance 'by' transformationbo
 Notation "'rule' rulename 'from' types 'where' guard 'for' iterator 'to' outputpattern " :=
   (buildConcreteRule rulename types guard iterator outputpattern)
     (right associativity, at level 60).
-  
-Arguments buildTransformation {_ _ _ _ _}.
-Arguments buildConcreteRule {_ _ _ _ _ _ _ _ _ _}.
-Arguments buildConcreteOutputPatternElement {_ _ _ _ _ _ _ _ _ _ _}.
-Arguments buildConcreteOutputPatternElementReference {_ _ _ _ _ _ _ _ _ _ _ _}.
+
+(* OutputPatternElement *)
+Notation "elid ':' intypes => eltype := eldef 'with' refdef" :=
+  (buildConcreteOutputPatternElement (InTypes:=intypes) elid eltype eldef refdef)
+    (right associativity, at level 60): coqtl.
+
+Notation "'ref' intypes => eltype => reftype ':=' refends" :=
+  (buildConcreteOutputPatternElementReference (InTypes:=intypes) (OutType:=eltype) reftype refends)
+    (right associativity, at level 60,
+      reftype at next level): coqtl.
