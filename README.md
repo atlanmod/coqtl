@@ -10,12 +10,12 @@ We illustrate the structure of the deep specification theorems, we produce a mac
 
 Repository structure
 ------
-* The CoqTL language and its examples are contained by **fr.inria.atlanmod.coqtl.coq**
-  * language aspect is contained by [core](/core/), which modularized into:
-  * examples is contained by *examples*:
-    * Class2Relational
-    * HSM2FSM
-* The code generator from EMF metamodel/model to CoqTL is contained by **fr.inria.atlanmod.coqtl.generators** (experimental).
+* The CoqTL language and its examples are contained by [fr.inria.atlanmod.coqtl.coq](/fr.inria.atlanmod.coqtl.coq/)
+  * language aspect is contained by [core](/fr.inria.atlanmod.coqtl.coq/core/), which modularized into:
+  * examples is contained by [examples](/fr.inria.atlanmod.coqtl.coq/examples/):
+    * [Class2Relational](/fr.inria.atlanmod.coqtl.coq/examples/Class2Relational/)
+    * [HSM2FSM](/fr.inria.atlanmod.coqtl.coq/examples/HSM2FSM)
+* The code generator from EMF metamodel/model to CoqTL is contained by [fr.inria.atlanmod.coqtl.generators](/fr.inria.atlanmod.coqtl.generators/) (experimental).
 
 Compilation
 ------
