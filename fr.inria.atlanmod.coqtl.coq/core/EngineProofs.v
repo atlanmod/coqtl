@@ -1,18 +1,8 @@
-(************************************************************************)
-(*         *   The NaoMod Development Team                              *)
-(*  v      *   INRIA, CNRS and contributors - Copyright 2017-2019       *)
-(* <O___,, *       (see CREDITS file for the list of authors)           *)
-(*   \VV/  **************************************************************)
-(*    //   *    This file is distributed under the terms of the         *)
-(*         *     GNU Lesser General Public License Version 2.1          *)
-(*         *     (see LICENSE file for the text of the license)         *)
-(************************************************************************)
-
 (**
- This file is an auxilary file for type class for relational transformation
-    engine.
 
- We give here lemmas that can be directly derived from type class [core.Engine]
+ This file contains lemmas that are directly 
+ 
+ derivable from the specification for CoqTL.
 
  **)
 
@@ -28,9 +18,6 @@
  Require Import core.utils.CpdtTactics.
  Require Import core.Engine.
 
-(*********************************************************)
-(** * Metatheorems for relational Transformation Engines *)
-(*********************************************************)
 
 (** ** maxArity **)
 
@@ -43,7 +30,7 @@ Proof.
   intros. apply max_list_upperBound. do 2 apply in_map. exact H.
 Qed.
 
-Theorem incl_equiv_to_surj:
+Lemma incl_equiv_to_surj:
   forall (eng: TransformationEngine),
     (forall (tr: Transformation) (sm : SourceModel)
        (sp : list SourceModelElement) (tp: list TargetModelElement) (tp1: list TargetModelElement)
@@ -77,7 +64,7 @@ Proof.
     assumption.
 Qed.
 
-Theorem tr_match_functionality :
+Lemma tr_match_functionality :
   forall (eng: TransformationEngine)
     (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (r1: list Rule) (r2: list Rule),
           matchPattern tr sm sp  = r1 -> matchPattern tr sm sp = r2 -> r1 = r2.
@@ -88,7 +75,7 @@ Proof.
     reflexivity.
 Qed.
 
-Theorem tr_matchPattern_None_tr : forall t: TransformationEngine,
+Lemma tr_matchPattern_None_tr : forall t: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       getRules tr = nil ->
       matchPattern tr sm sp = nil.
@@ -106,7 +93,7 @@ Proof.
   contradiction.
 Qed.
 
-  Theorem tr_matchPattern_non_Nil :
+Lemma tr_matchPattern_non_Nil :
     forall eng: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel),
     forall (sp : list SourceModelElement),
@@ -137,7 +124,7 @@ Qed.
       ++ crush.
   Qed.
 
-Theorem tr_instantiatePattern_None_tr : forall t: TransformationEngine,
+Lemma tr_instantiatePattern_None_tr : forall t: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
       getRules tr = nil ->
       (instantiatePattern tr sm sp = None).
@@ -153,7 +140,7 @@ Proof.
   - reflexivity.
 Qed.
 
-Theorem tr_applyPattern_None_tr :
+Lemma tr_applyPattern_None_tr :
   forall t: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
         getRules tr = nil ->
@@ -170,7 +157,7 @@ Proof.
   - reflexivity.
 Qed.
 
-Theorem tr_execute_None_tr_elements : forall t: TransformationEngine,
+Lemma tr_execute_None_tr_elements : forall t: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel),
       getRules tr = nil ->
       allModelElements (execute tr sm) = nil.
@@ -195,7 +182,7 @@ Proof.
        contradiction.
 Qed.
 
-  Theorem tr_execute_non_Nil_elements :
+Lemma tr_execute_non_Nil_elements :
    forall eng: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel),
       (allModelElements (execute tr sm)) <> nil <->
@@ -227,7 +214,7 @@ Qed.
   Qed.
 
 
-  Theorem tr_execute_non_Nil_links :
+Lemma tr_execute_non_Nil_links :
    forall eng: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel) ,
       (allModelLinks (execute tr sm)) <> nil <->
@@ -258,7 +245,7 @@ Qed.
       ++ crush.
   Qed.
 
-Theorem tr_execute_None_tr_links : forall t: TransformationEngine,
+Lemma tr_execute_None_tr_links : forall t: TransformationEngine,
     forall (tr: Transformation) (sm : SourceModel),
       getRules tr = nil ->
       allModelLinks (execute tr sm) = nil.
@@ -283,7 +270,7 @@ Proof.
        contradiction.
 Qed.
 
-Theorem tr_applyElementOnPattern_None :
+Lemma tr_applyElementOnPattern_None :
    forall eng: TransformationEngine,
       forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
         length sp <> length (getInTypes r) ->
@@ -302,7 +289,7 @@ Proof.
   crush.
 Qed.
 
-Theorem tr_applyIterationOnPattern_None :
+Lemma tr_applyIterationOnPattern_None :
    forall eng: TransformationEngine,
       forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
         length sp <> length (getInTypes r) ->
@@ -323,7 +310,7 @@ Proof.
   crush.
 Qed.
 
-Theorem tr_applyRuleOnPattern_None :
+Lemma tr_applyRuleOnPattern_None :
    forall eng: TransformationEngine,
       forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
         length sp <> length (getInTypes r) ->
@@ -343,7 +330,7 @@ Proof.
   crush.
 Qed.
 
-Theorem tr_instantiateIterationOnPattern_None :
+Lemma tr_instantiateIterationOnPattern_None :
    forall eng: TransformationEngine,
      forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
         length sp <> length (getInTypes r) ->
@@ -364,7 +351,7 @@ Proof.
   crush.
 Qed.
 
-Theorem tr_instantiateRuleOnPattern_None :
+Lemma tr_instantiateRuleOnPattern_None :
   forall eng: TransformationEngine,
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       length sp <> length (getInTypes r) ->
@@ -384,7 +371,7 @@ Proof.
   crush.
 Qed.
 
-Theorem tr_instantiateIterationOnPattern_None_iterator :
+Lemma tr_instantiateIterationOnPattern_None_iterator :
  forall eng: TransformationEngine,
   forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       i >= length (evalIterator r sm sp) ->
@@ -400,7 +387,7 @@ Proof.
   crush.
 Qed.
 
-Theorem tr_applyElementOnPattern_None_iterator :
+Lemma tr_applyElementOnPattern_None_iterator :
   forall eng: TransformationEngine,
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
       i >= length (evalIterator r sm sp) ->
@@ -418,7 +405,7 @@ Proof.
   crush.
 Qed.
 
-Theorem tr_applyIterationOnPattern_None_iterator :
+Lemma tr_applyIterationOnPattern_None_iterator :
    forall eng: TransformationEngine,
     forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat),
       i >= length (evalIterator r sm sp) ->
