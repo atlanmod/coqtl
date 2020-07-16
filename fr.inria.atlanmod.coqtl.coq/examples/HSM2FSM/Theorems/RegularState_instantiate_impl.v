@@ -1,3 +1,13 @@
+(**
+
+ CoqTL user theorem: RegularState_instantiate
+
+ Def: all regular state in the source model will be instantiated
+
+ Proved with engine implementation
+
+ **)
+
 Require Import String.
 Require Import Coq.Logic.Eqdep_dec.
 

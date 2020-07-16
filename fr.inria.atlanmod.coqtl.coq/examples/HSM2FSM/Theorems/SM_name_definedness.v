@@ -1,3 +1,13 @@
+(**
+
+ CoqTL user theorem: SM_name_defindedness
+
+ Def: all statemachine in the target model has name defined.
+
+ Proved with engine specification
+
+ **)
+
 Require Import Coq.Logic.Eqdep_dec.
 Require Import Coq.Arith.Gt.
 Require Import Coq.Arith.EqNat.

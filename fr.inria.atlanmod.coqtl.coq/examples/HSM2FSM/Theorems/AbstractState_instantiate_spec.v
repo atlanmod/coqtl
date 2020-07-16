@@ -1,3 +1,13 @@
+(**
+
+ CoqTL user theorem: AbstractState_instantiate
+
+ Def: all abstract state except composite state in the source model will be instantiated
+
+ Proved with engine specification
+
+ **)
+
 Require Import String.
 Require Import Coq.Logic.Eqdep_dec.
 
