@@ -10,7 +10,7 @@ We illustrate the structure of the deep specification theorems, we produce a mac
 
 Repository structure
 ------
-* The main example and proofs of CoqTL is contained by **fr.inria.atlanmod.coqtl.coq**.
+* The CoqTL language and its examples are contained by **fr.inria.atlanmod.coqtl.coq**
 * The code generator from EMF metamodel/model to CoqTL is contained by **fr.inria.atlanmod.coqtl.generators** (experimental).
 
 Setup
