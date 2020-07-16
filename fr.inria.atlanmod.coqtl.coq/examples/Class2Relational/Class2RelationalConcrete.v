@@ -37,8 +37,6 @@ Require Import Class2Relational.RelationalMetamodel.
     }
    } *)
 
-   Compute (outputPatternElementTypes [ClassEClass] TableClass).
-
 Definition Class2Relational :=
   buildConcreteTransformation
     [

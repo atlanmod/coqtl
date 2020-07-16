@@ -135,7 +135,7 @@ Notation "'transformation' 'from' sinstance 'to' tinstance 'by' transformationbo
      at level 60).
 
 (* Rule *)
-Notation "'rule' rulename 'from' types 'having' guard 'for' iterator 'to' outputpattern " :=
+Notation "'rule' rulename 'from' types 'where' guard 'for' iterator 'to' outputpattern " :=
   (buildConcreteRule rulename types guard iterator outputpattern)
     (right associativity, at level 60).
   
