@@ -1,15 +1,19 @@
-(*
-  CoqTL semantics v2
+(**
 
-  Optimize CoqTL by filtering match result, see execute function for more detail.
+ Improved Implementation of CoqTL semantic functions over [41875ed]
 
-  As a reminder, this increases performance because:
+ This implementation refers to commit:
+ 
+ [118eefa](https://github.com/atlanmod/CoqTL/commit/118eefa)
+
+ It optimizes [41875ed] by filtering match result in the execute function:
 
   1. For each pattern that is matched, the matchPattern function is called 3 times (instead of 2),
   2. For each pattern that is not matched, the matchPattern function is called 1 time (instead of 2).
 
-  In a realistic case the patterns that are matched are much less than the patterns that are not matched.
-*)
+ In a realistic case, the patterns that are matched are much less than the patterns that are not matched.
+
+ **)
 
 Require Import String.
 
