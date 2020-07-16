@@ -45,7 +45,7 @@ Definition Class2Relational :=
       buildConcreteRule "Class2Table" 
         [ClassEClass] (fun m c => return true)
         (fun m c => return 1)
-        [buildConcreteOutputPatternElement [ClassEClass] "tab" 
+        [  "tab" 
             TableClass (fun i m c => return BuildTable (getClassId c) (getClassName c))
           [buildConcreteOutputPatternElementReference TableColumnsReference  
               (fun tls i m c t =>
@@ -58,7 +58,7 @@ Definition Class2Relational :=
       buildConcreteRule "Attribute2Column" 
         [AttributeEClass] (fun m a => return negb (getAttributeDerived a))
         (fun m a => return 1)
-        [buildConcreteOutputPatternElement [AttributeEClass] "col" 
+        [buildConcreteOutputPatternElement "col" 
             ColumnClass (fun i m a => return (BuildColumn (getAttributeId a) (getAttributeName a)))
           [buildConcreteOutputPatternElementReference ColumnReferenceReference
               (fun tls i m a c =>

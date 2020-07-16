@@ -43,12 +43,12 @@ Definition Class2Relational :=
   transformation from ClassMetamodel to RelationalMetamodel by
     [
       rule "Class2Table" 
-      from [ClassEClass] having (fun m c => return true)
+      from [ClassEClass] where (fun m c => return true)
       for (fun m c => return 1)
       to nil;
 
       rule "Attribute2Column" 
-      from [AttributeEClass] having (fun m a => return negb (getAttributeDerived a))
+      from [AttributeEClass] where (fun m a => return negb (getAttributeDerived a))
       for (fun m a => return 1)
       to nil
     ].
