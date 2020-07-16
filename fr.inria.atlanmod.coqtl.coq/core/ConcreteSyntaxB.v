@@ -127,3 +127,10 @@ Arguments transform {_ _ _ _} _ {_ _ _ _} _.
 Arguments rule {_ _ _ _ _ _ _ _ _ _}.
 Arguments elem {_ _ _ _ _ _ _ _ _ _}.
 Arguments link {_ _ _ _ _ _ _ _ _ _}.
+
+Declare Scope coqtlb.
+
+(* Rule *)
+Notation "'rule' rulename 'from' types 'where' guard 'for' iterator 'to' outputpattern " :=
+  (rule rulename types guard iterator outputpattern)
+    (right associativity, at level 60):coqtlb.

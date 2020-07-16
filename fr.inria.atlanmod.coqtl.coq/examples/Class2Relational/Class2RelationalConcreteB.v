@@ -37,14 +37,16 @@ Require Import Class2Relational.RelationalMetamodel.
     }
    } *)
 
+Open Scope coqtlb.
+
 Definition Class2Relational :=
   transform ClassMetamodel RelationalMetamodel
     [
       rule "Class2Table" 
-      [ClassEClass] 
-      (fun m c => return true)
-      (fun m c => return 1) 
-      [elem [ClassEClass] TableClass "tab"
+      from [ClassEClass] 
+      where (fun m c => return true)
+      for (fun m c => return 1) 
+      to [elem [ClassEClass] TableClass "tab"
         (fun i m c => return BuildTable (getClassId c) (getClassName c))
         [link [ClassEClass] TableClass TableColumnsReference  
           (fun tls i m c t =>
@@ -55,10 +57,10 @@ Definition Class2Relational :=
         ]
       ];
       rule "Attribute2Column" 
-      [AttributeEClass] 
-      (fun m a => return negb (getAttributeDerived a))
-      (fun m a => return 1)
-      [elem [AttributeEClass] ColumnClass "col"
+      from [AttributeEClass] 
+      where (fun m a => return negb (getAttributeDerived a))
+      for (fun m a => return 1)
+      to [elem [AttributeEClass] ColumnClass "col"
         (fun i m a => return (BuildColumn (getAttributeId a) (getAttributeName a)))
         [link [AttributeEClass] ColumnClass ColumnReferenceReference
           (fun tls i m a c =>
@@ -68,3 +70,5 @@ Definition Class2Relational :=
         ]
       ]
     ].
+
+  Close Scope coqtlb.
