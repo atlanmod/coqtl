@@ -149,7 +149,8 @@ Notation "elid ':' intypes => eltype := eldef 'with' refdef" :=
   (buildConcreteOutputPatternElement (InTypes:=intypes) elid eltype eldef refdef)
     (right associativity, at level 60): coqtl.
 
-Notation "'ref' intypes => eltype => reftype ':=' refends" :=
+(* OutputPatternLink *)
+Notation "':' intypes => eltype => reftype ':=' refends" :=
   (buildConcreteOutputPatternElementReference (InTypes:=intypes) (OutType:=eltype) reftype refends)
     (right associativity, at level 60,
       reftype at next level): coqtl.

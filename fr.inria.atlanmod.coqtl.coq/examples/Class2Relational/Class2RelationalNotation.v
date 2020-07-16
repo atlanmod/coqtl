@@ -46,31 +46,31 @@ Definition Class2Relational :=
       from [ClassEClass] where (fun m c => return true)
       for (fun m c => return 1)
       to [ 
-        "tab" : [ClassEClass] => TableClass :=
-          (fun i m c => return BuildTable (getClassId c) (getClassName c)) with
-            [
-              ref [ClassEClass] => TableClass => TableColumnsReference :=
-                (fun tls i m c t =>
-                  attrs <- getClassAttributes c m;
-                  cols <- resolveAll tls m "col" ColumnClass 
-                    (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
-                  return BuildTableColumns t cols)
-            ]
+         "tab": [ClassEClass] => TableClass :=
+                (fun i m c => return BuildTable (getClassId c) (getClassName c)) 
+                with [
+                    : [ClassEClass] => TableClass => TableColumnsReference :=
+                    (fun tls i m c t =>
+                    attrs <- getClassAttributes c m;
+                    cols <- resolveAll tls m "col" ColumnClass 
+                      (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
+                    return BuildTableColumns t cols)
+                ]
       ];
 
       rule "Attribute2Column"
       from [AttributeEClass] where (fun m a => return negb (getAttributeDerived a))
       for (fun m a => return 1)
       to [
-        "col" : [AttributeEClass] => ColumnClass :=
-          (fun i m a => return (BuildColumn (getAttributeId a) (getAttributeName a))) with
-            [
-              ref [AttributeEClass] => ColumnClass => ColumnReferenceReference :=
-                (fun tls i m a c =>
-                  cl <- getAttributeType a m;
-                  tb <- resolve tls m "tab" TableClass [ClassMetamodel_toEObject cl];
-                  return BuildColumnReference c tb)
-            ]
+         "col": [AttributeEClass] => ColumnClass :=
+                (fun i m a => return (BuildColumn (getAttributeId a) (getAttributeName a))) 
+                with [
+                    : [AttributeEClass] => ColumnClass => ColumnReferenceReference :=
+                    (fun tls i m a c =>
+                    cl <- getAttributeType a m;
+                    tb <- resolve tls m "tab" TableClass [ClassMetamodel_toEObject cl];
+                    return BuildColumnReference c tb)
+                ]
       ]
     ].
 
