@@ -1,6 +1,6 @@
 (**
 
- Specification for CoqTL
+ Specification of CoqTL
 
  This specification contains:
 
