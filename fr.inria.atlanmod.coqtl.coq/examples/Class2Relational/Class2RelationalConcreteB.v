@@ -40,12 +40,12 @@ Require Import Class2Relational.RelationalMetamodel.
 Open Scope coqtlb.
 
 Definition Class2Relational :=
-  transformation ClassMetamodel RelationalMetamodel 
+  transformation ClassMetamodel RelationalMetamodel
   [
-    rule "Class2Table" 
-    from [ClassEClass] 
+    rule "Class2Table"
+    from [ClassEClass]
     where (fun m c => return true)
-    for (fun m c => return 1) 
+    for (fun m c => return 1)
     to [elem [ClassEClass] TableClass "tab"
         (fun i m c => return BuildTable (getClassId c) (getClassName c))
         [link [ClassEClass] TableClass TableColumnsReference
@@ -55,8 +55,8 @@ Definition Class2Relational :=
               (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
             return BuildTableColumns t cols)]]
     ;
-    rule "Attribute2Column" 
-    from [AttributeEClass] 
+    rule "Attribute2Column"
+    from [AttributeEClass]
     where (fun m a => return negb (getAttributeDerived a))
     for (fun m a => return 1)
     to [elem [AttributeEClass] ColumnClass "col"
