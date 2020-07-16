@@ -2,6 +2,10 @@
 
  Implementation of CoqTL semantic functions
 
+ This implementation refers to commit:
+ 
+ [41875ed](https://github.com/atlanmod/CoqTL/commit/41875ed)
+
  **)
 
 Require Import String.
