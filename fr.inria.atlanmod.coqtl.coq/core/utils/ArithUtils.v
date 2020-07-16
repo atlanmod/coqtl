@@ -1,3 +1,9 @@
+(**
+
+ Utility to Arithmetics
+
+ **)
+
 Require Import Arith.
 Require Import NotationUtils.
 

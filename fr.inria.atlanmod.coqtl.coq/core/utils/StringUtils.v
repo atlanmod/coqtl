@@ -1,3 +1,9 @@
+(**
+
+ Utility to manipulate strings
+
+ **)
+
 Require Import String List Omega.
 
 Definition beq_string : string -> string -> bool := eqb.

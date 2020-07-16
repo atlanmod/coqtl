@@ -1,3 +1,9 @@
+(**
+
+ Utility to notations
+
+ **)
+
 Require Export List.
 
 (* if e1 is successfully evaluated to x, then evaluate e2, otherwise stop *)

@@ -1,3 +1,9 @@
+(**
+
+ Utility to manipulate tuples
+
+ **)
+
 Require Import List Omega.
 
 (** * prod_concat *)

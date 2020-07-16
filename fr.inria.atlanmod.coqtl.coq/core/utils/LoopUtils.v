@@ -1,3 +1,9 @@
+(**
+
+ Utility to high order transformations
+
+ **)
+
 Require Import String.
 Require Import List.
 Require Import Multiset.

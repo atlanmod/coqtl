@@ -1,3 +1,9 @@
+(**
+
+ Utility to proof automation, 3rd party
+
+ **)
+
 (* Copyright (c) 2008-2012, Adam Chlipala
  * 
  * This work is licensed under a

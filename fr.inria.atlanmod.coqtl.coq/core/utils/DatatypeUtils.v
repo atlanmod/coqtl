@@ -1,3 +1,9 @@
+(**
+
+ Utility to additional datatypes
+
+ **)
+
 Require Import core.utils.CpdtTactics.
 
 Definition isNone (A: Type) (e : option A) : bool :=
