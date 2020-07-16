@@ -1,15 +1,18 @@
-(* 
-  CoqTL v3
+(**
 
-  Optimize CoqTL by renewing tuple creation based on rule guards, see execute'' function for more detail.
+ Certifying the implementation of CoqTL against the Engine specification.
 
-  As a reminder, this increases performance because:
+ This is a working in progress.
 
-  1. ?
+ The implementation aims to improve [41875ed], by:
 
-  Working in Progress. Unfinished certification.
- 
-*)
+   *  renewing tuple creation based on rule guards
+
+ The specification refers to:
+
+ Engine.v
+
+ **)
 
 Require Import String.
 Require Import List.
