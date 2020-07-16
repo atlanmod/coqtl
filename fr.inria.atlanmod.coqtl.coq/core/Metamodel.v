@@ -1,4 +1,10 @@
-(** * Metamodel **)
+(**
+
+ Definition of Metamodel
+
+ **)
+
+
 Require Import core.Model.
 
 
