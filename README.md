@@ -13,9 +13,9 @@ Repository structure
 * The CoqTL language and its examples are contained by **fr.inria.atlanmod.coqtl.coq**
 * The code generator from EMF metamodel/model to CoqTL is contained by **fr.inria.atlanmod.coqtl.generators** (experimental).
 
-Setup
+Compilation
 ------
-See [installation]() on the wiki.
+See [compilation]() on the wiki.
 
 Issues
 ------
