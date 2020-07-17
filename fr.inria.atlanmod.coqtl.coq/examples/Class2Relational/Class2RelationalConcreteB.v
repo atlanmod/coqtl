@@ -15,6 +15,8 @@ Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
 
 (* module Class2Relational; 
+   create OUT : RelationalMetamodel from IN : ClassMetamodel;
+
    rule Class2Table {
        from 
          c : Class
@@ -22,7 +24,7 @@ Require Import Class2Relational.RelationalMetamodel.
          tab: Table (
            id <- c.id,
            name <- c.name,
-           columns <- c.attributes.resolve('col')
+           columns <- c.attributes->collect(a | a.resolve('col'))->flatten()
          )
     }
     rule Attribute2Column {
