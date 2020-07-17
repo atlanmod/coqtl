@@ -34,7 +34,7 @@ Require Import Class2Relational.RelationalMetamodel.
           col: Column (
             id <- a.id,
             name <- a.name,
-            reference <- a.type.resolve('tab')
+            reference <- thisModule.resolve(a.type, 'tab')
           )
     }
    } *)
