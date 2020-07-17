@@ -24,7 +24,7 @@ Require Import Class2Relational.RelationalMetamodel.
          tab: Table (
            id <- c.id,
            name <- c.name,
-           columns <- c.attributes->collect(a | a.resolve('col'))
+           columns <- c.attributes->collect(a | thisModule.resolve(a, 'col'))
          )
     }
     rule Attribute2Column {
@@ -54,6 +54,9 @@ Definition Class2Relational :=
             cols <- resolveAll tls m "col" ColumnClass 
               (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
             return BuildTableColumns t cols)]]
+            (*
+            return (map (resolve tls m "col" ColumnClass) (singletons (getClassAttributes c m)))
+             *)
     ;
     rule "Attribute2Column"
     from [AttributeEClass]
