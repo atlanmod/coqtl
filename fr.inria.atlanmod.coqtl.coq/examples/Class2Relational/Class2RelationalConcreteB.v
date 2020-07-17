@@ -24,7 +24,7 @@ Require Import Class2Relational.RelationalMetamodel.
          tab: Table (
            id <- c.id,
            name <- c.name,
-           columns <- c.attributes->collect(a | a.resolve('col'))->flatten()
+           columns <- c.attributes->collect(a | a.resolve('col'))
          )
     }
     rule Attribute2Column {
