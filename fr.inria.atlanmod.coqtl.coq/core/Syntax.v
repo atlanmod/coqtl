@@ -1,3 +1,9 @@
+(**
+
+ Implementation of CoqTL abstract syntax
+
+ **)
+
 Require Import String.
 
 Require Import core.utils.TopUtils.

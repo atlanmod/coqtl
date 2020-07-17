@@ -1,14 +1,16 @@
-(*
-  CoqTL semantics v4
+(**
 
-  Optimize CoqTL by memorization, see execute function for more detail.
+ Improved Implementation of CoqTL semantic functions over [118eefa]
 
-  As a reminder, this increases performance because:
+ This implementation refers to commit:
+ 
+ [c7f6526](https://github.com/atlanmod/CoqTL/commit/c7f6526)
+
+ It optimizes [118eefa] by memorization:
 
   1. reduce recomputation of matchedTuples
 
-  Unfinished implementation. Working in progress.
-*)
+ **)
 
 Require Import String.
 

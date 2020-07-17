@@ -1,26 +1,16 @@
-(************************************************************************)
-(*         *   The NaoMod Development Team                              *)
-(*  v      *   INRIA, CNRS and contributors - Copyright 2017-2019       *)
-(* <O___,, *       (see CREDITS file for the list of authors)           *)
-(*   \VV/  **************************************************************)
-(*    //   *    This file is distributed under the terms of the         *)
-(*         *     GNU Lesser General Public License Version 2.1          *)
-(*         *     (see LICENSE file for the text of the license)         *)
-(************************************************************************)
-
 (**
- This file is the type class for relational transformation engine.
- 
- We give functions signatures that instaniated transformation engines should
-    generally have. We also introduce several useful theorems enforced on these 
-    functions in order to certify instaniated transformation engines.
 
- An example instaniated transformation engine is in [core.Certification].        **)
+ Specification of CoqTL
 
+ This specification contains:
 
-(*********************************************************)
-(** * Type Class for relational Transformation Engines   *)
-(*********************************************************)
+ - abstract syntax of CoqTL
+
+ - signatures of semantic functions that build CoqTL
+
+ - lemmas of semantic functions that build CoqTL
+
+ **)
 
 Require Import String.
 Require Import List.
@@ -59,7 +49,7 @@ Class TransformationEngine :=
     OutputPatternElement: list SourceModelClass -> Type -> Type;
     OutputPatternElementReference: list SourceModelClass -> Type -> TargetModelClass -> Type;
 
-    (** ** Accessors *)
+    (** * Abstract Syntax *)
 
     getRules: Transformation -> list Rule;
     getInTypes: Rule -> list SourceModelClass;    
@@ -81,7 +71,7 @@ Class TransformationEngine :=
     maxArity (tr: Transformation) : nat :=
       max (map (length (A:=SourceModelClass)) (map getInTypes (getRules tr)));
 
-    (** ** Functions *)
+    (** * Signature of Semantic Functions *)
     
     execute: Transformation -> SourceModel -> TargetModel;
     
@@ -116,7 +106,7 @@ Class TransformationEngine :=
     resolve: forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sp: list SourceModelElement) (iter : nat), option (denoteModelClass type);
 
-    (** ** Theorems *)
+    (** *  Lemmas of Semantic Functions *)
 
     (** ** execute *)
 

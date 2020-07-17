@@ -1,0 +1,21 @@
+-- @path Class=/fr.inria.coqtl.experiment/Class2Relational/Class.ecore
+-- @path Relational=/fr.inria.coqtl.experiment/Class2Relational/Relational.ecore
+module Class2Relational;
+
+create OUT : Relational from IN : Class;
+
+rule Class2Table { 
+    from c : Class!Class
+    to tab : Relational!Table (
+    	id <- c.id,
+		name <- c.name,
+		columns <- c.attributes->select(a|not a.derive))
+}
+
+rule Attribute2Column {
+    from a : Class!Attribute (not a.derive)
+    to c : Relational!Column ( 
+    	id <- a.id,
+		name <- a.name )
+}
+

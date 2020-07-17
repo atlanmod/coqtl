@@ -1,3 +1,13 @@
+(**
+
+ CoqTL user theorem: All_sm_match
+
+ Def: all state machine in the source model will be mached by a rule in HSM2FSM
+
+ Proved with engine specification
+
+ **)
+
 Require Import String.
 Require Import Coq.Logic.Eqdep_dec.
 

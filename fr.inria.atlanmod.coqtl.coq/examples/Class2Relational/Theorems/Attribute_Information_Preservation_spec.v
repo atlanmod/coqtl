@@ -1,3 +1,14 @@
+(**
+
+ CoqTL user theorem: Attribute_information_preservation
+
+ Def: all non-derived attributes in the source model will create 
+      collumn in the target model with the same name
+
+ Proved with engine specification
+
+ **)
+
 Require Import String.
 Require Import core.utils.TopUtils.
 Require Import core.utils.CpdtTactics.

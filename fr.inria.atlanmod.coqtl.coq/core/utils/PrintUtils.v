@@ -1,3 +1,9 @@
+(**
+
+ Utility to printing EMFs
+
+ **)
+
 Require Import String.
 Require Import Coq.Numbers.Natural.Peano.NPeano.
 Require Import Coq.Strings.Ascii.

@@ -1,3 +1,13 @@
+(**
+
+ CoqTL user theorem: All_sm_instantiate
+
+ Def: all state machine in the source model will create state machine in the target model
+
+ Proved with engine specification
+
+ **)
+
 Require Import String.
 Require Import Coq.Logic.Eqdep_dec.
 

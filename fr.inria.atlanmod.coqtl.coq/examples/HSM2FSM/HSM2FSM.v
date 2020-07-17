@@ -1,3 +1,9 @@
+(**
+
+ CoqTL user transformation: HSM2FSM
+
+ **)
+
 Require Import Bool.
 Require Import String.
 Require Import List.
@@ -13,13 +19,6 @@ Require Import examples.HSM2FSM.HSM.
 
 
 Set Implicit Arguments.
-
-
-
-
-
-
-
 
 
 Definition HSM2FSM :=

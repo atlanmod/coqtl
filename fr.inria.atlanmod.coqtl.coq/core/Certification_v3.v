@@ -1,3 +1,17 @@
+(**
+
+ Certifying the implementation of CoqTL against the Engine specification.
+
+ The implementation refers to commit:
+ 
+ [c7f6526](https://github.com/atlanmod/CoqTL/commit/c7f6526)
+
+ The specification refers to:
+
+ Engine.v
+
+ **)
+
 Require Import core.utils.TopUtils.
 Require Import core.Metamodel.
 Require Import core.Model.
@@ -8,7 +22,7 @@ Require Import core.Syntax.
 Require Import core.Semantics.
 Require Export core.Certification.
 
-Require Import core.Semantics_v4.
+Require Import core.Semantics_v3.
 
 Section Certification.
 
@@ -28,10 +42,10 @@ Section Certification.
 
   Theorem instantiatePattern_preserv:
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-      Semantics_v4.instantiatePattern tr sm sp = Semantics.instantiatePattern tr sm sp.
+      Semantics_v3.instantiatePattern tr sm sp = Semantics.instantiatePattern tr sm sp.
   Proof.
     intros.
-    unfold Semantics_v4.instantiatePattern, Semantics.instantiatePattern.
+    unfold Semantics_v3.instantiatePattern, Semantics.instantiatePattern.
     destruct (matchPattern tr sm sp).
     - reflexivity.
     - reflexivity.
@@ -77,10 +91,10 @@ Section Certification.
 
   Theorem applyPattern_preserv:
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement),
-      Semantics_v4.applyPattern tr sm sp = Semantics.applyPattern tr sm sp.
+      Semantics_v3.applyPattern tr sm sp = Semantics.applyPattern tr sm sp.
   Proof.
     intros.
-    unfold Semantics_v4.applyPattern, Semantics.applyPattern.
+    unfold Semantics_v3.applyPattern, Semantics.applyPattern.
     destruct (matchPattern tr sm sp).
     - reflexivity.
     - reflexivity.
@@ -126,10 +140,10 @@ Section Certification.
 
   Theorem exe_preserv:
     forall (tr: Transformation) (sm : SourceModel),
-      Semantics.execute tr sm = Semantics_v4.execute tr sm.
+      Semantics.execute tr sm = Semantics_v3.execute tr sm.
   Proof.
     intros.
-    unfold Semantics.execute, Semantics_v4.execute.
+    unfold Semantics.execute, Semantics_v3.execute.
     f_equal.
     - induction (allTuples tr sm).
       + simpl. reflexivity.
@@ -193,10 +207,10 @@ Section Certification.
       getOutType := OutputPatternElement_getOutType';
       getOutputElementReferences := OutputPatternElement_getOutputElementReferences';
 
-      execute := Semantics_v4.execute;
+      execute := Semantics_v3.execute;
       matchPattern := matchPattern;
-      instantiatePattern := Semantics_v4.instantiatePattern;
-      applyPattern := Semantics_v4.applyPattern;
+      instantiatePattern := Semantics_v3.instantiatePattern;
+      applyPattern := Semantics_v3.applyPattern;
 
       matchRuleOnPattern := matchRuleOnPattern';
       instantiateRuleOnPattern := instantiateRuleOnPattern';

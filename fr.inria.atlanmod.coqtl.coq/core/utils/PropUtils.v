@@ -1,3 +1,9 @@
+(**
+
+ Utility to manipulate proposition predicates
+
+ **)
+
 Require Import List Omega.
 Require Import core.utils.CpdtTactics.
 

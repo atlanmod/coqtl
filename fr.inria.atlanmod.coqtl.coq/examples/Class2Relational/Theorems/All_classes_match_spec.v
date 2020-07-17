@@ -1,3 +1,13 @@
+(**
+
+ CoqTL user theorem: All_classes_match
+
+ Def: all classes in the source model exists a rule that matches it
+
+ Proved with engine specification
+
+ **)
+
 Require Import String.
 
 Require Import core.utils.TopUtils.

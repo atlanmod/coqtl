@@ -1,3 +1,15 @@
+(**
+
+ CoqTL user theorem: Relational_id_definedness
+
+ Def: if all objects in the source model have unique id,
+      then the target objects generated in the target model
+      have unique id.
+
+ Proved with engine specification
+
+ **)
+
 Require Import Coq.Logic.Eqdep_dec.
 Require Import Coq.Arith.Gt.
 Require Import Coq.Arith.EqNat.

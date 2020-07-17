@@ -1,3 +1,9 @@
+(**
+
+ CoqTL user transformation: Class2Relational
+
+ **)
+
 Require Import String.
 Require Import List.
 Require Import Multiset.
@@ -13,29 +19,6 @@ Require Import core.Metamodel.
 
 Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
-
-(* module Class2Relational; 
-   rule Class2Table {
-       from 
-         c : Class
-       to 
-         tab: Table (
-           id <- c.id,
-           name <- c.name,
-           columns <- c.attributes.resolve('col')
-         )
-    }
-    rule Attribute2Column {
-        from 
-          a : Attribute (not a.derived)
-        to 
-          col: Column (
-            id <- a.id,
-            name <- a.name,
-            reference <- a.type.resolve('tab')
-          )
-    }
-   } *)
 
 Definition Class2Relational :=
   (BuildTransformation

@@ -1,3 +1,9 @@
+(**
+
+ Top level utility header
+
+ **)
+
 Require Export List.
 Require Export core.utils.PropUtils.
 Require Export core.utils.ArithUtils.
