@@ -30,7 +30,7 @@ Repository structure
 
 Compilation
 ------
-See [compilation]() on the wiki.
+See [compilation](https://github.com/atlanmod/CoqTL/wiki/Compiling-CoqTL) on the wiki.
 
 Issues
 ------

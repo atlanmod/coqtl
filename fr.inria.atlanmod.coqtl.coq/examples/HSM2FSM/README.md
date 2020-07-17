@@ -15,10 +15,10 @@ Reproduce
 To reproduce the result provided in [(ref)](#Reference), users can show that by updating engine implementation, the proofs with `_spec` suffix remains unchanged of proof steps:
 
 0. Make sure `HSM2FSM.v` and a proof of interest (`_spec` suffix) import the same engine implementation, e.g. `core.Semantics`.
-1. [Compile CoqTL]().
+1. [Compile CoqTL](https://github.com/atlanmod/CoqTL/wiki/Compiling-CoqTL).
 2. Open the proof of interest, and go through the proof steps to understand (optional).
 3. Update `HSM2FSM.v` and the proof of interest to import the same **new** engine implementation, e.g. `core.Semantics_v2`.
-3. Re-[Compile CoqTL]().
+3. Re-[Compile CoqTL](https://github.com/atlanmod/CoqTL/wiki/Compiling-CoqTL).
 4. Open the proof of interest, and go through the proof steps without any changes. Witness that the proof efforts are preserved when engine behaviors are changed.
 
 Metrics
