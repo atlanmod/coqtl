@@ -4,6 +4,7 @@ Require Import core.utils.TopUtils.
 Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Syntax.
+Require Import core.Expressions.
 
 Section ConcreteSyntaxB.
 
@@ -136,8 +137,18 @@ Section ConcreteSyntaxB.
     find (fun(o:ConcreteOutputPatternElement (ConcreteRule_getInTypes r)) => beq_string name (ConcreteOutputPatternElement_getName o))
          (ConcreteRule_getConcreteOutputPattern r).
 
-  Definition Transformation_getConcreteRules (x : ConcreteTransformation) : list ConcreteRule :=
+  Definition ConcreteTransformation_getConcreteRules (x : ConcreteTransformation) : list ConcreteRule :=
     match x with transformation y => y end.
+
+(*  Definition parseRule(cr: ConcreteRule) : Rule :=
+    buildRule
+      (ConcreteRule_getName cr)
+      (ConcreteRule_getInTypes cr)
+      (makeGuard (ConcreteRule_getInTypes cr) (ConcreteRule_getGuard)).
+  
+  Definition parse(ct: ConcreteTransformation) : Transformation :=
+    buildTransformation 
+      (map parseRule (ConcreteTransformation_getConcreteRules ct)).*)
 
 End ConcreteSyntaxB.
 
