@@ -45,28 +45,28 @@ Definition Class2Relational :=
   transformation ClassMetamodel RelationalMetamodel
   [
     rule "Class2Table"
-    from [ClassEClass]
-    to [elem [ClassEClass] TableClass "tab"
+    from [ClassClass]
+    to [elem [ClassClass] TableClass "tab"
         (fun i m c => return BuildTable (getClassId c) (getClassName c))
-        [link [ClassEClass] TableClass TableColumnsReference
+        [link [ClassClass] TableClass TableColumnsReference
           (fun tls i m c t =>
             attrs <- getClassAttributes c m;
             cols <- resolveAll tls m "col" ColumnClass 
-              (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
+              (singletons (map (A:=Attribute) ClassMetamodel_toObject attrs));
             return BuildTableColumns t cols)]]
             (*
             return (map (resolve tls m "col" ColumnClass) (singletons (getClassAttributes c m)))
              *)
     ;
     rule "Attribute2Column"
-    from [AttributeEClass]
+    from [AttributeClass]
     where (fun m a => return negb (getAttributeDerived a))
-    to [elem [AttributeEClass] ColumnClass "col"
+    to [elem [AttributeClass] ColumnClass "col"
         (fun i m a => return (BuildColumn (getAttributeId a) (getAttributeName a)))
-        [link [AttributeEClass] ColumnClass ColumnReferenceReference
+        [link [AttributeClass] ColumnClass ColumnReferenceReference
           (fun tls i m a c =>
             cl <- getAttributeType a m;
-            tb <- resolve tls m "tab" TableClass [ClassMetamodel_toEObject cl];
+            tb <- resolve tls m "tab" TableClass [ClassMetamodel_toObject cl];
             return BuildColumnReference c tb)]]
   ].
 

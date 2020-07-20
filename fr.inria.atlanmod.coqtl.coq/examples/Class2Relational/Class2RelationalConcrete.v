@@ -41,27 +41,27 @@ Definition Class2Relational :=
   buildConcreteTransformation (smm:=ClassMetamodel) (tmm:=RelationalMetamodel)
     [
       buildConcreteRule "Class2Table" 
-        [ClassEClass] (fun m c => return true)
+        [ClassClass] (fun m c => return true)
         (fun m c => return 1)
-        [ buildConcreteOutputPatternElement (InTypes:=[ClassEClass]) "tab" 
+        [ buildConcreteOutputPatternElement (InTypes:=[ClassClass]) "tab" 
             TableClass (fun i m c => return BuildTable (getClassId c) (getClassName c))
-          [buildConcreteOutputPatternElementReference (InTypes:=[ClassEClass]) (OutType:=TableClass) TableColumnsReference  
+          [buildConcreteOutputPatternElementReference (InTypes:=[ClassClass]) (OutType:=TableClass) TableColumnsReference  
               (fun tls i m c t =>
                  attrs <- getClassAttributes c m;
                  cols <- resolveAll tls m "col" ColumnClass 
-                   (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
+                   (singletons (map (A:=Attribute) ClassMetamodel_toObject attrs));
                  return BuildTableColumns t cols)
           ]
         ];
       buildConcreteRule "Attribute2Column" 
-        [AttributeEClass] (fun m a => return negb (getAttributeDerived a))
+        [AttributeClass] (fun m a => return negb (getAttributeDerived a))
         (fun m a => return 1)
-        [buildConcreteOutputPatternElement (InTypes:=[AttributeEClass]) "col" 
+        [buildConcreteOutputPatternElement (InTypes:=[AttributeClass]) "col" 
             ColumnClass (fun i m a => return (BuildColumn (getAttributeId a) (getAttributeName a)))
-          [buildConcreteOutputPatternElementReference (InTypes:=[AttributeEClass]) (OutType:=ColumnClass) ColumnReferenceReference
+          [buildConcreteOutputPatternElementReference (InTypes:=[AttributeClass]) (OutType:=ColumnClass) ColumnReferenceReference
               (fun tls i m a c =>
                 cl <- getAttributeType a m;
-                tb <- resolve tls m "tab" TableClass [ClassMetamodel_toEObject cl];
+                tb <- resolve tls m "tab" TableClass [ClassMetamodel_toObject cl];
                 return BuildColumnReference c tb)
           ]
         ]
