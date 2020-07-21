@@ -50,7 +50,7 @@ Definition Class2Relational :=
         (fun i m c => return BuildTable (getClassId c) (getClassName c))
         [link [ClassClass] TableClass TableColumnsReference
           (fun tls i m c t =>
-            maybeBuildTableColumns (Some t)
+            maybeBuildTableColumns t
               (resolveAll tls m "col" ColumnClass 
                 (singletons (getClassAttributesObjects c m))))]]
     ;
@@ -61,7 +61,7 @@ Definition Class2Relational :=
         (fun i m a => return BuildColumn (getAttributeId a) (getAttributeName a))
         [link [AttributeClass] ColumnClass ColumnReferenceReference
           (fun tls i m a c =>
-            maybeBuildColumnReference (Some c)
+            maybeBuildColumnReference c
               (maybeResolve tls m "tab" TableClass [getAttributeTypeObject a m]))]]
   ].
 

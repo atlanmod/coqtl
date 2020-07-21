@@ -32,15 +32,15 @@ Inductive
   ColumnReference : Set :=
   BuildColumnReference : Column -> Table -> ColumnReference.
 
-Definition maybeBuildColumnReference (c: option Column) (t: option Table) : option ColumnReference :=
+Definition maybeBuildColumnReference (c: Column) (t: option Table) : option ColumnReference :=
   match c, t with
-  | Some c', Some t' => Some (BuildColumnReference c' t')
+  | c', Some t' => Some (BuildColumnReference c' t')
   | _, _ => None
   end.  
 
-Definition maybeBuildTableColumns (t: option Table) (c: option (list Column)) : option TableColumns :=
+Definition maybeBuildTableColumns (t: Table) (c: option (list Column)) : option TableColumns :=
   match t, c with
-  | Some t', Some c' => Some (BuildTableColumns t' c')
+  | t', Some c' => Some (BuildTableColumns t' c')
   | _, _ => None
   end.  
 
