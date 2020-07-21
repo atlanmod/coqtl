@@ -60,12 +60,11 @@ forall (cm : ClassModel) (rm : RelationalModel),
   (* postcondition *)  (forall (t1 : RelationalMetamodel_Object), In t1 (allModelElements rm) -> (RelationalMetamodel_getName t1 <> ""%string)). 
 Proof.
   intros.
-  unfold execute in H1.
   rewrite H in H1.
   rewrite tr_execute_in_elements in H1.
   do 2 destruct H1.
   destruct x.
-  - contradiction.
+  - contradiction H2.
   - destruct x.
     + specialize (H0 c). 
       apply allTuples_incl in H1.
@@ -76,14 +75,15 @@ Proof.
       do 2 destruct c.
       * simpl in H2.
         destruct H2.
-        -- rewrite <- H2. assumption.
-        -- contradiction.
+        -- rewrite <- H2. simpl. simpl in H0. assumption.
+        -- contradiction H2.
       * destruct c0.
         destruct b.
-        -- contradiction.
-        -- destruct H2. 
-          ++ rewrite <- H2. assumption.
-          ++ contradiction. 
+        -- contradiction H2.
+        -- simpl in H2.
+           destruct H2. 
+           ++ rewrite <- H2. simpl. simpl in H0. assumption.
+           ++ contradiction H2. 
     + exfalso.
       apply maxArity_length with (sp:=c::c0::x) (tr:=Class2Relational) (sm:=cm).
       * unfold maxArity. simpl. omega.
