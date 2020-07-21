@@ -140,8 +140,11 @@ Section Semantics.
     resolveAllIter tr sm name type sps 0.
   
   Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sp: list (option SourceModelElement)) : option (denoteModelClass type) :=
-    resolveIter tr sm name type (optionList2List sp) 0.
+    (type: TargetModelClass) (sp: option (list SourceModelElement)) : option (denoteModelClass type) :=
+    match sp with 
+    | Some sp' => resolve tr sm name type sp'
+    | None => None
+    end.
 
   Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sp: option (list (list SourceModelElement))) : option (list (denoteModelClass type)) :=

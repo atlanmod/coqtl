@@ -62,7 +62,8 @@ Definition Class2Relational :=
         [link [AttributeClass] ColumnClass ColumnReferenceReference
           (fun tls i m a c =>
             maybeBuildColumnReference c
-              (maybeResolve tls m "tab" TableClass [getAttributeTypeObject a m]))]]
+              (maybeResolve tls m "tab" TableClass 
+                (maybeSingleton (getAttributeTypeObject a m))))]]
   ].
 
 Close Scope coqtl.

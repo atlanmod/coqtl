@@ -61,6 +61,11 @@ Proof.
       * assumption.
 Qed.
 
+Definition singleton {A: Type} (a: A) : list A := a::nil.
+
+Definition maybeSingleton {A: Type} (a : option A) : option (list A) :=
+  option_map singleton a.
+
 Definition singletons {A: Type} (l : list A) : list (list A) :=
   listToListList l.
 
