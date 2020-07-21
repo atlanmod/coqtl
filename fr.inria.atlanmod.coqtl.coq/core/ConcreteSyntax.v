@@ -31,14 +31,14 @@ Section ConcreteSyntax.
 
   Definition outputPatternElementTypes
   (sclasses : list SourceModelClass) (tclass: TargetModelClass) :=
-    denoteFunction (sclasses) (option (denoteModelClass tclass)).
+    denoteFunction (sclasses) (denoteModelClass tclass).
 
   Definition iteratedListTypes
   (sclasses : list SourceModelClass) :=
-    denoteFunction (sclasses) (option nat).
+    denoteFunction (sclasses) nat.
 
   Definition guardTypes (sclasses : list SourceModelClass) :=
-    denoteFunction (sclasses) (option bool).
+    denoteFunction (sclasses) bool.
 
   Inductive ConcreteOutputPatternElementReference (InTypes: list SourceModelClass) (OutType:TargetModelClass) : Type :=
     link :
