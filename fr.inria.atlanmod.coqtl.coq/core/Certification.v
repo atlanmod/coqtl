@@ -174,6 +174,21 @@ Section Certification.
       - crush.
   Qed.
 
+  Lemma maxArity_length:
+    forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
+    gt (length sp) (maxArity tr) -> In sp (allTuples tr sm) -> False.
+  Proof.
+  Admitted.
+
+  Lemma allTuples_incl:
+    forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
+    In sp (allTuples tr sm) -> incl sp (allModelElements sm).
+  Proof.
+    intros.
+    unfold allTuples in H. simpl in H. 
+    apply tuples_up_to_n_incl in H.
+    assumption.
+  Qed.
 
   Instance CoqTLEngine :
     TransformationEngine :=
