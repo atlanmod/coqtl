@@ -47,7 +47,7 @@ Definition Class2Relational :=
     rule "Class2Table"
     from [ClassClass]
     to [elem [ClassClass] TableClass "tab"
-        (fun i m c => return BuildTable (getClassId c) (getClassName c))
+        (fun i m c => BuildTable (getClassId c) (getClassName c))
         [link [ClassClass] TableClass TableColumnsReference
           (fun tls i m c t =>
             maybeBuildTableColumns t
@@ -56,9 +56,9 @@ Definition Class2Relational :=
     ;
     rule "Attribute2Column"
     from [AttributeClass]
-    where (fun m a => return negb (getAttributeDerived a))
+    where (fun m a => negb (getAttributeDerived a))
     to [elem [AttributeClass] ColumnClass "col"
-        (fun i m a => return BuildColumn (getAttributeId a) (getAttributeName a))
+        (fun i m a => BuildColumn (getAttributeId a) (getAttributeName a))
         [link [AttributeClass] ColumnClass ColumnReferenceReference
           (fun tls i m a c =>
             maybeBuildColumnReference c

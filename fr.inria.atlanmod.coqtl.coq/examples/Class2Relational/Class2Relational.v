@@ -41,11 +41,11 @@ Definition Class2Relational :=
   buildTransformation
     [
       buildRule "Class2Table" [ClassClass]
-        (makeGuard [ClassClass] (fun m c => return true))
-        (makeIterator [ClassClass] (fun m c => return 1))
+        (makeGuard [ClassClass] (fun m c => true))
+        (makeIterator [ClassClass] (fun m c => 1))
         [buildOutputPatternElement "tab"
           (makeElement [ClassClass] TableClass
-            (fun i m c => return BuildTable (getClassId c) (getClassName c)))
+            (fun i m c => BuildTable (getClassId c) (getClassName c)))
           [buildOutputPatternElementReference
             (makeLink [ClassClass] TableClass TableColumnsReference
             (fun tls i m c t =>
@@ -56,11 +56,11 @@ Definition Class2Relational :=
           ]
         ];
       buildRule "Attribute2Column" [AttributeClass]
-        (makeGuard [AttributeClass] (fun m a => return negb (getAttributeDerived a)))
-        (makeIterator [AttributeClass] (fun m a => return 1))
+        (makeGuard [AttributeClass] (fun m a => negb (getAttributeDerived a)))
+        (makeIterator [AttributeClass] (fun m a => 1))
         [buildOutputPatternElement "col"
           (makeElement [AttributeClass] ColumnClass
-            (fun i m a => return (BuildColumn (getAttributeId a) (getAttributeName a))))
+            (fun i m a => BuildColumn (getAttributeId a) (getAttributeName a)))
           [buildOutputPatternElementReference
             (makeLink [AttributeClass] ColumnClass ColumnReferenceReference
               (fun tls i m a c =>

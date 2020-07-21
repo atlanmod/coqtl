@@ -24,12 +24,12 @@ Section Expressions.
 
   Definition wrapOption {T : Type}
     (l : list SourceModelClass)
-    (imp : denoteSignature l (option T)) :
+    (imp : denoteSignature l T) :
     (list SourceModelElement) -> option T.
   Proof.
     revert l imp. fix Hl 1. intros l imp sl.
     destruct l as [ | l0 l'], sl as [ | s0 sl'].
-    - exact imp.
+    - exact (Some imp).
     - exact None.
     - exact None.
     - exact (x <- toModelClass l0 s0; Hl l' (imp x) sl').
@@ -51,12 +51,12 @@ Section Expressions.
 
   Definition wrapOptionElement
     (l : list SourceModelClass) (t : TargetModelClass)
-    (imp : denoteSignature l (option (denoteModelClass t))) :
+    (imp : denoteSignature l (denoteModelClass t)) :
     (list SourceModelElement) -> option TargetModelElement.
   Proof.
     revert l imp. fix Hl 1. intros l imp sl.
     destruct l as [ | l0 l'], sl as [ | s0 sl'].
-    - exact (x <- imp ; return (toModelElement t x)).
+    - exact (Some (toModelElement t imp)).
     - exact None.
     - exact None.
     - exact (x0 <- toModelClass l0 s0; Hl l' (imp x0) sl').
@@ -78,21 +78,21 @@ Section Expressions.
   Definition GuardFunction : Type :=
     SourceModel -> (list SourceModelElement) -> option bool.
   Definition makeGuard (l : list SourceModelClass)
-    (imp : SourceModel -> denoteSignature l (option bool)) :
+    (imp : SourceModel -> denoteSignature l bool) :
     GuardFunction :=
     fun sm => wrapOption l (imp sm).
 
   Definition IteratorFunction : Type :=
     SourceModel -> (list SourceModelElement) -> option nat.
   Definition makeIterator (l : list SourceModelClass)
-    (imp : SourceModel -> denoteSignature l (option nat)) :
+    (imp : SourceModel -> denoteSignature l nat) :
     IteratorFunction :=
     fun sm => wrapOption l (imp sm).
 
   Definition ElementFunction : Type :=
     nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement.
   Definition makeElement (l : list SourceModelClass) (t : TargetModelClass)
-    (imp : nat -> SourceModel -> denoteSignature l (option (denoteModelClass t))) :
+    (imp : nat -> SourceModel -> denoteSignature l (denoteModelClass t)) :
     ElementFunction :=
     fun it sm => wrapOptionElement l t (imp it sm).
 
