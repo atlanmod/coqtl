@@ -113,19 +113,19 @@ Definition ClassMetamodel_getEAttributeTypesByClass (c: ClassMetamodel_Class): S
   | AttributeClass => (nat * bool * string)
   end.
 
-Inductive ClassMetamodel_EReference : Set :=
-  ClassAttributesEReference | AttributeTypeEReference.
+Inductive ClassMetamodel_Reference : Set :=
+  ClassAttributesReference | AttributeTypeReference.
 
-Definition ClassMetamodel_getTypeByEReference (type : ClassMetamodel_EReference) : Set :=
+Definition ClassMetamodel_getTypeByReference (type : ClassMetamodel_Reference) : Set :=
   match type with
-  | ClassAttributesEReference => ClassAttributes
-  | AttributeTypeEReference => AttributeType
+  | ClassAttributesReference => ClassAttributes
+  | AttributeTypeReference => AttributeType
   end.
 
-Definition ClassMetamodel_getERoleTypesByEReference (c: ClassMetamodel_EReference): Set :=
+Definition ClassMetamodel_getERoleTypesByReference (c: ClassMetamodel_Reference): Set :=
   match c with
-  | ClassAttributesEReference => (Class * list Attribute)
-  | AttributeTypeEReference => (Attribute * Class)
+  | ClassAttributesReference => (Class * list Attribute)
+  | AttributeTypeReference => (Attribute * Class)
   end.
 
 (* Generic types *)
@@ -141,7 +141,7 @@ Definition beq_ClassMetamodel_Object (c1 : ClassMetamodel_Object) (c2 : ClassMet
   end.
 
 Inductive ClassMetamodel_Link : Set :=
-| ClassMetamodel_BuildLink : forall (c:ClassMetamodel_EReference), (ClassMetamodel_getTypeByEReference c) -> ClassMetamodel_Link.
+| ClassMetamodel_BuildLink : forall (c:ClassMetamodel_Reference), (ClassMetamodel_getTypeByReference c) -> ClassMetamodel_Link.
 
 
 (* Reflective functions *)
@@ -149,7 +149,7 @@ Inductive ClassMetamodel_Link : Set :=
 Lemma ClassMetamodel_eqClass_dec : forall (c1:ClassMetamodel_Class) (c2:ClassMetamodel_Class), { c1 = c2 } + { c1 <> c2 }.
 Proof. repeat decide equality. Defined.
 
-Lemma ClassMetamodel_eqEReference_dec : forall (c1:ClassMetamodel_EReference) (c2:ClassMetamodel_EReference), { c1 = c2 } + { c1 <> c2 }.
+Lemma ClassMetamodel_eqReference_dec : forall (c1:ClassMetamodel_Reference) (c2:ClassMetamodel_Reference), { c1 = c2 } + { c1 <> c2 }.
 Proof. repeat decide equality. Defined.
 
 Definition ClassMetamodel_getClass (c : ClassMetamodel_Object) : ClassMetamodel_Class :=
@@ -157,7 +157,7 @@ Definition ClassMetamodel_getClass (c : ClassMetamodel_Object) : ClassMetamodel_
   | (ClassMetamodel_BuildObject c _) => c
    end.
 
-Definition ClassMetamodel_getEReference (c : ClassMetamodel_Link) : ClassMetamodel_EReference :=
+Definition ClassMetamodel_getReference (c : ClassMetamodel_Link) : ClassMetamodel_Reference :=
    match c with
   | (ClassMetamodel_BuildLink c _) => c
    end.
@@ -165,8 +165,8 @@ Definition ClassMetamodel_getEReference (c : ClassMetamodel_Link) : ClassMetamod
 Definition ClassMetamodel_instanceOfClass (cmc: ClassMetamodel_Class) (c : ClassMetamodel_Object): bool :=
   if ClassMetamodel_eqClass_dec (ClassMetamodel_getClass c) cmc then true else false.
 
-Definition ClassMetamodel_instanceOfEReference (cmr: ClassMetamodel_EReference) (c : ClassMetamodel_Link): bool :=
-  if ClassMetamodel_eqEReference_dec (ClassMetamodel_getEReference c) cmr then true else false.
+Definition ClassMetamodel_instanceOfReference (cmr: ClassMetamodel_Reference) (c : ClassMetamodel_Link): bool :=
+  if ClassMetamodel_eqReference_dec (ClassMetamodel_getReference c) cmr then true else false.
 
 Definition ClassMetamodel_getObjectFromEAttributeValues (t : ClassMetamodel_Class) : (ClassMetamodel_getEAttributeTypesByClass t) -> ClassMetamodel_Object :=
   match t with
@@ -174,10 +174,10 @@ Definition ClassMetamodel_getObjectFromEAttributeValues (t : ClassMetamodel_Clas
   | AttributeClass => (fun (p: nat * bool * string) => (ClassMetamodel_BuildObject AttributeClass (BuildAttribute (fst (fst p)) (snd (fst p)) (snd p))))
   end.
 
-Definition ClassMetamodel_getLinkFromERoleValues (t : ClassMetamodel_EReference) : (ClassMetamodel_getERoleTypesByEReference t) -> ClassMetamodel_Link :=
+Definition ClassMetamodel_getLinkFromERoleValues (t : ClassMetamodel_Reference) : (ClassMetamodel_getERoleTypesByReference t) -> ClassMetamodel_Link :=
   match t with
-  | ClassAttributesEReference => (fun (p: Class * list Attribute) => (ClassMetamodel_BuildLink ClassAttributesEReference (BuildClassAttributes (fst p) (snd p))))
-  | AttributeTypeEReference => (fun (p: Attribute * Class) => (ClassMetamodel_BuildLink AttributeTypeEReference (BuildAttributeType (fst p) (snd p))))
+  | ClassAttributesReference => (fun (p: Class * list Attribute) => (ClassMetamodel_BuildLink ClassAttributesReference (BuildClassAttributes (fst p) (snd p))))
+  | AttributeTypeReference => (fun (p: Attribute * Class) => (ClassMetamodel_BuildLink AttributeTypeReference (BuildAttributeType (fst p) (snd p))))
   end.
 
 Definition ClassMetamodel_toClass (t : ClassMetamodel_Class) (c : ClassMetamodel_Object) : option (ClassMetamodel_getTypeByClass t).
@@ -205,10 +205,10 @@ match c with
   
 *)
 
-Definition ClassMetamodel_toEReference (t : ClassMetamodel_EReference) (c : ClassMetamodel_Link) : option (ClassMetamodel_getTypeByEReference t).
+Definition ClassMetamodel_toReference (t : ClassMetamodel_Reference) (c : ClassMetamodel_Link) : option (ClassMetamodel_getTypeByReference t).
 Proof.
   destruct c.
-  destruct (ClassMetamodel_eqEReference_dec t c).
+  destruct (ClassMetamodel_eqReference_dec t c).
   - rewrite <- e in c0.
     exact (Some c0).
   - exact None.
@@ -230,7 +230,7 @@ Definition ClassMetamodel_toLink (c : ClassMetamodel_Link) : ClassMetamodel_Link
 Definition ClassMetamodel_toObjectOfClass (t: ClassMetamodel_Class) (e: ClassMetamodel_getTypeByClass t) : ClassMetamodel_Object :=
   (ClassMetamodel_BuildObject t e).
 
-Definition ClassMetamodel_toLinkOfEReference (t: ClassMetamodel_EReference) (e: ClassMetamodel_getTypeByEReference t) : ClassMetamodel_Link :=
+Definition ClassMetamodel_toLinkOfReference (t: ClassMetamodel_Reference) (e: ClassMetamodel_getTypeByReference t) : ClassMetamodel_Link :=
   (ClassMetamodel_BuildLink t e).
 
 Definition ClassMetamodel_getId (c : ClassMetamodel_Object) : nat :=
@@ -277,7 +277,7 @@ Qed.*)
 
 Fixpoint ClassMetamodel_getClassAttributesOnLinks (c : Class) (l : list ClassMetamodel_Link) : option (list Attribute) :=
   match l with
-  | (ClassMetamodel_BuildLink ClassAttributesEReference (BuildClassAttributes cl a)) :: l1 => if beq_Class cl c then Some a else ClassMetamodel_getClassAttributesOnLinks c l1
+  | (ClassMetamodel_BuildLink ClassAttributesReference (BuildClassAttributes cl a)) :: l1 => if beq_Class cl c then Some a else ClassMetamodel_getClassAttributesOnLinks c l1
   | _ :: l1 => ClassMetamodel_getClassAttributesOnLinks c l1
   | nil => None
   end.
@@ -293,7 +293,7 @@ Definition getClassAttributesObjects (c : Class) (m : Model ClassMetamodel_Objec
 
 Fixpoint ClassMetamodel_getAttributeTypeOnLinks (a : Attribute) (l : list ClassMetamodel_Link) : option Class :=
   match l with
-  | (ClassMetamodel_BuildLink AttributeTypeEReference (BuildAttributeType att c)) :: l1 => if beq_Attribute att a then Some c else ClassMetamodel_getAttributeTypeOnLinks a l1
+  | (ClassMetamodel_BuildLink AttributeTypeReference (BuildAttributeType att c)) :: l1 => if beq_Attribute att a then Some c else ClassMetamodel_getAttributeTypeOnLinks a l1
   | _ :: l1 => ClassMetamodel_getAttributeTypeOnLinks a l1
   | nil => None
   end.
@@ -317,19 +317,19 @@ Definition ClassMetamodel_defaultInstanceOfClass (c: ClassMetamodel_Class) : (Cl
 
 (* Typeclass Instance *)
 
-Instance ClassMetamodel : Metamodel ClassMetamodel_Object ClassMetamodel_Link ClassMetamodel_Class ClassMetamodel_EReference :=
+Instance ClassMetamodel : Metamodel ClassMetamodel_Object ClassMetamodel_Link ClassMetamodel_Class ClassMetamodel_Reference :=
   {
     denoteModelClass := ClassMetamodel_getTypeByClass;
-    denoteModelReference := ClassMetamodel_getTypeByEReference;
+    denoteModelReference := ClassMetamodel_getTypeByReference;
     toModelClass := ClassMetamodel_toClass;
-    toModelReference := ClassMetamodel_toEReference;
+    toModelReference := ClassMetamodel_toReference;
     toModelElement := ClassMetamodel_toObjectOfClass;
-    toModelLink := ClassMetamodel_toLinkOfEReference;
+    toModelLink := ClassMetamodel_toLinkOfReference;
     beq_ModelElement := beq_ClassMetamodel_Object;
 
     (* Theorems *)
     eqModelClass_dec := ClassMetamodel_eqClass_dec;
-    eqModelReference_dec := ClassMetamodel_eqEReference_dec;
+    eqModelReference_dec := ClassMetamodel_eqReference_dec;
   }.
 
 Definition ClassModel := Model ClassMetamodel_Object ClassMetamodel_Link.
