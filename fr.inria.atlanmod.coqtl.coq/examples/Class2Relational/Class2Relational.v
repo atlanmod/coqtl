@@ -48,11 +48,11 @@ Definition Class2Relational :=
             (fun i m c => return BuildTable (getClassId c) (getClassName c)))
           [buildOutputPatternElementReference
             (makeLink [ClassClass] TableClass TableColumnsReference
-              (fun tls i m c t =>
-                 attrs <- getClassAttributes c m;
-                 cols <- resolveAll tls m "col" ColumnClass 
-                   (singletons (map (A:=Attribute) ClassMetamodel_toObject attrs));
-                 return BuildTableColumns t cols))
+            (fun tls i m c t =>
+              attrs <- Some (getClassAttributes c m);
+              cols <- resolveAll tls m "col" ColumnClass 
+                (singletons (map (A:=Attribute) ClassMetamodel_toObject attrs));
+              return BuildTableColumns t cols))
           ]
         ];
       buildRule "Attribute2Column" [AttributeClass]

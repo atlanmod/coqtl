@@ -4,6 +4,7 @@ Require Import core.utils.TopUtils.
 Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Syntax.
+Require Import core.Expressions.
 
 Section ConcreteSyntax.
 
@@ -40,117 +41,159 @@ Section ConcreteSyntax.
     denoteFunction (sclasses) (option bool).
 
   Inductive ConcreteOutputPatternElementReference (InTypes: list SourceModelClass) (OutType:TargetModelClass) : Type :=
-    buildConcreteOutputPatternElementReference :
+    link :
     forall (OutRef: TargetModelReference),
         (list TraceLink -> nat -> SourceModel -> (outputReferenceTypes InTypes OutType OutRef)) ->
         ConcreteOutputPatternElementReference InTypes OutType.
 
   Inductive ConcreteOutputPatternElement (InTypes: list SourceModelClass) : Type :=
-    buildConcreteOutputPatternElement :
-      string 
-      -> forall (OutType:TargetModelClass),
+    elem :
+      forall (OutType:TargetModelClass),
+        string ->
          (nat -> SourceModel -> (outputPatternElementTypes InTypes OutType)) 
       -> (list (ConcreteOutputPatternElementReference InTypes OutType)) -> ConcreteOutputPatternElement InTypes.
 
   Inductive ConcreteRule : Type :=
-    buildConcreteRule :
+    concreteRule :
       (* name *) string
       (* from *) -> forall (InTypes: list SourceModelClass),
-        (SourceModel -> (guardTypes InTypes))
-      (* for *) -> (SourceModel -> (iteratedListTypes InTypes))
+        option (SourceModel -> (guardTypes InTypes))
+      (* for *) -> option (SourceModel -> (iteratedListTypes InTypes))
       (* to *) -> (list (ConcreteOutputPatternElement InTypes))
       -> ConcreteRule.
 
   Inductive ConcreteTransformation : Type :=
-    buildConcreteTransformation :
+    transformation :
       list ConcreteRule
       -> ConcreteTransformation.
 
-(*  Definition ConcreteOutputPatternElementReference_getLinkExpr (o: ConcreteOutputPatternElementReference) : 
-    list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink :=
+  (** ** Accessors **)
+
+  Definition ConcreteOutputPatternElementReference_getRefType {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternElementReference InElTypes OutType) : TargetModelReference :=
     match o with
-      buildConcreteOutputPatternElementReference y => y
+      link _ _ y _ => y
     end.
 
-  Definition ConcreteOutputPatternElement_getName (o: ConcreteOutputPatternElement) : string :=
+  Definition ConcreteOutputPatternElementReference_getOutputReference {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternElementReference InElTypes OutType) :
+    list TraceLink -> nat -> SourceModel -> (outputReferenceTypes InElTypes OutType (ConcreteOutputPatternElementReference_getRefType o)).
+  Proof.
+    destruct o eqn:ho.
+    exact o0.
+  Defined.
+
+  Definition ConcreteOutputPatternElement_getName {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternElement InElTypes) : string :=
     match o with
-      buildConcreteOutputPatternElement y _ _ => y
+      elem _ _ y _ _ => y
     end.
 
-  Definition ConcreteOutputPatternElement_getElementExpr (o: ConcreteOutputPatternElement) : nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement :=
+  Definition ConcreteOutputPatternElement_getOutType {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternElement InElTypes) : TargetModelClass :=
     match o with
-      buildConcreteOutputPatternElement _ y _ => y
+      elem _ y _ _ _ => y
     end.
 
-  Definition ConcreteOutputPatternElement_getOutputElementReferences (o: ConcreteOutputPatternElement) :
-    list ConcreteOutputPatternElementReference :=
+  Definition ConcreteOutputPatternElement_getOutPatternElement {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternElement InElTypes) :
+    nat -> SourceModel -> (outputPatternElementTypes InElTypes (ConcreteOutputPatternElement_getOutType o)) :=
     match o with
-      buildConcreteOutputPatternElement _ _ y => y
+      elem _ _ _ y _ => y
+    end.
+
+  Definition ConcreteOutputPatternElement_getOutputElementReferences {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternElement InElTypes) :
+    list (ConcreteOutputPatternElementReference InElTypes (ConcreteOutputPatternElement_getOutType o)) :=
+    match o with
+      elem _ _ _ _ y => y
     end.
 
   Definition ConcreteRule_getName (x : ConcreteRule) : string :=
     match x with
-      buildConcreteRule y _ _ _ _ => y
-    end.
-  
-  Definition ConcreteRule_getGuardExpr (x : ConcreteRule) : SourceModel -> (list SourceModelElement) -> option bool :=
-    match x with
-      buildConcreteRule _ _ y _ _ => y
+      concreteRule y _ _ _ _ => y
     end.
 
   Definition ConcreteRule_getInTypes (x : ConcreteRule) : list SourceModelClass :=
     match x with
-      buildConcreteRule _ y _ _ _ => y
+      concreteRule _ y _ _ _ => y
     end.
 
-  Definition ConcreteRule_getIteratorExpr (x : ConcreteRule) : SourceModel -> (list SourceModelElement) -> option nat :=
+  Definition ConcreteRule_getGuard (x : ConcreteRule) :
+    option(SourceModel -> (guardTypes (ConcreteRule_getInTypes x))).
+  Proof.
+    destruct x eqn:hx.
+    assumption.
+  Defined.
+
+  Definition ConcreteRule_getIteratedList (x: ConcreteRule) :
+    option (SourceModel -> (iteratedListTypes (ConcreteRule_getInTypes x))).
+  Proof.
+    destruct x eqn:hx.
+    assumption.
+  Defined.
+
+  Definition ConcreteRule_getConcreteOutputPattern (x : ConcreteRule) :
+    list (ConcreteOutputPatternElement (ConcreteRule_getInTypes x)) :=
     match x with
-      buildConcreteRule _ _ _ y _ => y
+      concreteRule _ _ _ _ y => y
     end.
 
-  Definition ConcreteRule_getConcreteOutputPatternElements (x : ConcreteRule) :
-    list ConcreteOutputPatternElement :=
-    match x with
-      buildConcreteRule _ _ _ _ y => y
-    end.
-
-  Definition ConcreteRule_findConcreteOutputPatternElement (r: ConcreteRule) (name: string) : option ConcreteOutputPatternElement :=
-    find (fun (o:ConcreteOutputPatternElement) => beq_string name (ConcreteOutputPatternElement_getName o))
-         (ConcreteRule_getConcreteOutputPatternElements r).
+  Definition ConcreteRule_findConcreteOutputPatternElement (r: ConcreteRule) (name: string) : option (ConcreteOutputPatternElement (ConcreteRule_getInTypes r)) :=
+    find (fun(o:ConcreteOutputPatternElement (ConcreteRule_getInTypes r)) => beq_string name (ConcreteOutputPatternElement_getName o))
+         (ConcreteRule_getConcreteOutputPattern r).
 
   Definition ConcreteTransformation_getConcreteRules (x : ConcreteTransformation) : list ConcreteRule :=
-    match x with buildConcreteTransformation y => y end.*)
+    match x with transformation y => y end.
+
+  Definition parseOutputPatternElementReference (intypes: list SourceModelClass) (outtype: TargetModelClass)
+    (cr: ConcreteOutputPatternElementReference intypes outtype): OutputPatternElementReference :=
+    buildOutputPatternElementReference 
+      (makeLink intypes outtype (ConcreteOutputPatternElementReference_getRefType cr) (ConcreteOutputPatternElementReference_getOutputReference cr)).
+
+  Definition parseOutputPatternElement (intypes: list SourceModelClass) (co: ConcreteOutputPatternElement intypes) : OutputPatternElement :=
+    buildOutputPatternElement
+      (ConcreteOutputPatternElement_getName co)
+      (makeElement intypes (ConcreteOutputPatternElement_getOutType co) (ConcreteOutputPatternElement_getOutPatternElement co))
+      (map (parseOutputPatternElementReference intypes (ConcreteOutputPatternElement_getOutType co)) (ConcreteOutputPatternElement_getOutputElementReferences co)).
+
+  Definition parseRule(cr: ConcreteRule) : Rule :=
+    buildRule
+      (ConcreteRule_getName cr)
+      (ConcreteRule_getInTypes cr)
+      (match ConcreteRule_getGuard cr with
+      | Some g => (makeGuard (ConcreteRule_getInTypes cr) g)
+      | None => (fun _ _ => Some true)
+      end)
+      (match ConcreteRule_getIteratedList cr with
+      | Some i => (makeIterator (ConcreteRule_getInTypes cr) i)
+      | None => (fun _ _ => Some 1)
+      end)
+      (map (parseOutputPatternElement (ConcreteRule_getInTypes cr)) (ConcreteRule_getConcreteOutputPattern cr)).
+  
+  Definition parse(ct: ConcreteTransformation) : Transformation :=
+    buildTransformation 
+      (map parseRule (ConcreteTransformation_getConcreteRules ct)).
 
 End ConcreteSyntax.
 
-Arguments buildTransformation {_ _ _ _ _}.
-Arguments buildConcreteRule {_ _ _ _ _ _ _ _ _ _}.
-Arguments buildConcreteOutputPatternElement {_ _ _ _ _ _ _ _ _ _ _}.
-Arguments buildConcreteOutputPatternElementReference {_ _ _ _ _ _ _ _ _ _ _ _}.
+Arguments transformation {_ _ _ _} _ {_ _ _ _} _.
+Arguments concreteRule {_ _ _ _ _ _ _ _ _ _}.
+Arguments elem {_ _ _ _ _ _ _ _ _ _}.
+Arguments link {_ _ _ _ _ _ _ _ _ _}.
 
 Declare Scope coqtl.
 
-(* Transformation *)
-Notation "'transformation' 'from' sinstance 'to' tinstance 'by' transformationbody" :=
-  (buildConcreteTransformation 
-    (smm:=sinstance)
-    (tmm:=tinstance)
-    transformationbody)
-    (right associativity,
-     at level 60).
-
 (* Rule *)
 Notation "'rule' rulename 'from' types 'where' guard 'for' iterator 'to' outputpattern " :=
-  (buildConcreteRule rulename types guard iterator outputpattern)
-    (right associativity, at level 60).
+  (concreteRule rulename types (Some guard) (Some iterator) outputpattern)
+    (right associativity, at level 60):coqtl.
 
-(* OutputPatternElement *)
-Notation "elid ':' intypes => eltype := eldef 'with' refdef" :=
-  (buildConcreteOutputPatternElement (InTypes:=intypes) elid eltype eldef refdef)
-    (right associativity, at level 60): coqtl.
+(* Rule without guard *)
+Notation "'rule' rulename 'from' types 'for' iterator 'to' outputpattern " :=
+  (concreteRule rulename types (None) (Some iterator) outputpattern)
+    (right associativity, at level 60):coqtl.
 
-(* OutputPatternLink *)
-Notation "':' intypes => eltype => reftype ':=' refends" :=
-  (buildConcreteOutputPatternElementReference (InTypes:=intypes) (OutType:=eltype) reftype refends)
-    (right associativity, at level 60,
-      reftype at next level): coqtl.
+(* Rule without iterator *)
+Notation "'rule' rulename 'from' types 'where' guard 'to' outputpattern " :=
+  (concreteRule rulename types (Some guard) (None) outputpattern)
+    (right associativity, at level 60):coqtl.
+
+(* Rule without guard and iterator *)
+Notation "'rule' rulename 'from' types 'to' outputpattern " :=
+  (concreteRule rulename types (None) (None) outputpattern)
+    (right associativity, at level 60):coqtl.

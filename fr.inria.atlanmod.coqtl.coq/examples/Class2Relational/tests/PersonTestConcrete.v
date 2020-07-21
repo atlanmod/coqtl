@@ -2,13 +2,13 @@ Require Import String.
 Require Import List.
 
 Require Import core.Semantics.
-Require Import core.ConcreteSyntaxB.
+Require Import core.ConcreteSyntax.
 Require Import core.utils.PrintUtils.
 Require Import core.utils.ListUtils.
 Require Import core.utils.TupleUtils.
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
-Require Import examples.Class2Relational.Class2RelationalConcreteB.
+Require Import examples.Class2Relational.Class2RelationalConcrete.
 Require Import examples.Class2Relational.tests.PersonModel.
 
 (* Require Import Class2RelationalVerif. *)
