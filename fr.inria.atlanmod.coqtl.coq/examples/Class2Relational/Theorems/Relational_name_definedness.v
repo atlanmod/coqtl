@@ -72,8 +72,8 @@ Proof.
       specialize (H1 c).
       assert (In c [c]). { left. reflexivity. }
       specialize (H0 (H1 H3)).
-      do 2 destruct c.
-      * (* [Class] *)simpl in H2.
+      do 2 destruct c. (* Case analysis on source element type *)
+      * (* [Class] *) simpl in H2.
         destruct H2.
         -- rewrite <- H2. simpl. simpl in H0. assumption.
         -- contradiction H2.
