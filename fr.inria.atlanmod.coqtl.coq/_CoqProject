@@ -30,8 +30,8 @@ examples/Class2Relational/tests/PersonModel.v
 examples/Class2Relational/tests/PersonTest.v
 examples/Class2Relational/tests/PersonTestConcrete.v
 examples/Class2Relational/Theorems/All_classes_instantiate_impl.v
+examples/Class2Relational/Theorems/All_classes_instantiate_spec.v
 #examples/Class2Relational/Theorems/Concrete_attributes_instantiate_impl.v
 #examples/Class2Relational/Theorems/Concrete_attributes_instantiate_spec.v
 #examples/Class2Relational/Theorems/Concrete_attributes_instantiate_impl.v
-#examples/Class2Relational/Theorems/All_classes_instantiate_spec.v
 #examples/Class2Relational/Theorems/Concrete_attributes_instantiate_spec.v
