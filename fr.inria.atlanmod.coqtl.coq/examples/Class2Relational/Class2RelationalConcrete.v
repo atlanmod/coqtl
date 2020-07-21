@@ -51,8 +51,8 @@ Definition Class2Relational :=
         [link [ClassClass] TableClass TableColumnsReference
           (fun tls i m c t =>
             maybeBuildTableColumns t
-              (resolveAll tls m "col" ColumnClass 
-                (singletons (getClassAttributesObjects c m))))]]
+              (maybeResolveAll tls m "col" ColumnClass 
+                (maybeSingletons (getClassAttributesObjects c m))))]]
     ;
     rule "Attribute2Column"
     from [AttributeClass]

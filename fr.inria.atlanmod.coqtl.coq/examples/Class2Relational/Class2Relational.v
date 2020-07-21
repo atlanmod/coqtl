@@ -49,7 +49,7 @@ Definition Class2Relational :=
           [buildOutputPatternElementReference
             (makeLink [ClassClass] TableClass TableColumnsReference
             (fun tls i m c t =>
-              attrs <- Some (getClassAttributes c m);
+              attrs <- getClassAttributes c m;
               cols <- resolveAll tls m "col" ColumnClass 
                 (singletons (map (A:=Attribute) ClassMetamodel_toObject attrs));
               return BuildTableColumns t cols))

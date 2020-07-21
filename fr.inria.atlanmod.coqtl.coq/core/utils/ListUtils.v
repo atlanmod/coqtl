@@ -64,6 +64,9 @@ Qed.
 Definition singletons {A: Type} (l : list A) : list (list A) :=
   listToListList l.
 
+Definition maybeSingletons {A: Type} (l : option (list A)) : option (list (list A)) :=
+  option_map singletons l.
+
 Fixpoint mapWithIndex {A : Type} {B : Type} (f: nat -> A -> B) (n : nat) (l: list A) : list B :=
   match l with
   | nil => nil

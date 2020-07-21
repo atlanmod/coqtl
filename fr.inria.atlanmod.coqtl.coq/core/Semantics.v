@@ -143,6 +143,13 @@ Section Semantics.
     (type: TargetModelClass) (sp: list (option SourceModelElement)) : option (denoteModelClass type) :=
     resolveIter tr sm name type (optionList2List sp) 0.
 
+  Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
+    (type: TargetModelClass) (sp: option (list (list SourceModelElement))) : option (list (denoteModelClass type)) :=
+    match sp with 
+    | Some sp' => resolveAll tr sm name type sp'
+    | None => None
+    end.
+
   (** * Apply **)
 
   Definition applyReferenceOnPattern

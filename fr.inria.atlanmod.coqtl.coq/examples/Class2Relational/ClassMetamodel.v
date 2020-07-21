@@ -275,18 +275,21 @@ Qed.*)
 (*Definition allAttributes (m : ClassModel) : list Attribute :=
   match m with BuildClassModel l _ => optionList2List (map (ClassMetamodel_toClass AttributeClass) l) end.*)
 
-Fixpoint ClassMetamodel_getClassAttributesOnLinks (c : Class) (l : list ClassMetamodel_ELink) : list Attribute :=
+Fixpoint ClassMetamodel_getClassAttributesOnLinks (c : Class) (l : list ClassMetamodel_ELink) : option (list Attribute) :=
   match l with
-  | (ClassMetamodel_BuildELink ClassAttributesEReference (BuildClassAttributes cl a)) :: l1 => if beq_Class cl c then a else ClassMetamodel_getClassAttributesOnLinks c l1
+  | (ClassMetamodel_BuildELink ClassAttributesEReference (BuildClassAttributes cl a)) :: l1 => if beq_Class cl c then Some a else ClassMetamodel_getClassAttributesOnLinks c l1
   | _ :: l1 => ClassMetamodel_getClassAttributesOnLinks c l1
-  | nil => nil
+  | nil => None
   end.
 
-Definition getClassAttributes (c : Class) (m : Model ClassMetamodel_Object ClassMetamodel_ELink) : list Attribute :=
+Definition getClassAttributes (c : Class) (m : Model ClassMetamodel_Object ClassMetamodel_ELink) : option (list Attribute) :=
   ClassMetamodel_getClassAttributesOnLinks c (@allModelLinks _ _ m).
 
-Definition getClassAttributesObjects (c : Class) (m : Model ClassMetamodel_Object ClassMetamodel_ELink) : list ClassMetamodel_Object :=
-  map ClassMetamodel_toObjectFromAttribute (getClassAttributes c m).
+Definition getClassAttributesObjects (c : Class) (m : Model ClassMetamodel_Object ClassMetamodel_ELink) : option (list ClassMetamodel_Object) :=
+  match getClassAttributes c m with
+  | Some l => Some (map ClassMetamodel_toObjectFromAttribute l)
+  | _ => None
+  end.
 
 Fixpoint ClassMetamodel_getAttributeTypeOnLinks (a : Attribute) (l : list ClassMetamodel_ELink) : option Class :=
   match l with
