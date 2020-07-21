@@ -28,11 +28,10 @@ Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
 
-Require Import core.utils.TopUtils.
+Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Expressions.
-Require Import core.utils.CpdtTactics.
 
 Set Implicit Arguments.
 

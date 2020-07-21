@@ -4,7 +4,7 @@ Require Import Multiset.  (* bag *)
 Require Import ListSet.   (* set *)
 Require Import Omega.
 
-Require Import core.utils.TopUtils.
+Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.Model.
 

@@ -1,6 +1,6 @@
 Require Import String.
 
-Require Import core.utils.TopUtils.
+Require Import core.utils.Utils.
 Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.Certification.
@@ -18,7 +18,6 @@ Theorem All_classes_instantiate_impl :
   exists (t: Table),
     instantiatePattern Class2Relational cm [ClassMetamodel_toObject c] = [RelationalMetamodel_toObject t].
 Proof.
-  intros.
-  eexists _.
+  eexists.
   reflexivity.
 Qed.

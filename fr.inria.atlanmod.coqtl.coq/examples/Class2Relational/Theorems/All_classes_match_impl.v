@@ -1,6 +1,6 @@
 Require Import String.
 
-Require Import core.utils.TopUtils.
+Require Import core.utils.Utils.
 Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.Certification.
@@ -16,9 +16,8 @@ Require Import core.utils.CpdtTactics.
 Theorem All_classes_match_impl :
   forall (cm : ClassModel) (c : Class),
   exists (r : Rule),
-    matchPattern Class2Relational cm [ClassMetamodel_toEObject c] = [r].
+    matchPattern Class2Relational cm [ClassMetamodel_toObject c] = [r].
 Proof.
-  intros.
-  eexists _.
+  eexists.
   reflexivity.
 Qed.

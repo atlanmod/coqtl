@@ -24,8 +24,7 @@
 
  Require Import core.Metamodel.
  Require Import core.Model.
- Require Import core.utils.TopUtils.
- Require Import core.utils.CpdtTactics.
+ Require Import core.utils.Utils.
  Require Import core.Engine.
 
 (*********************************************************)
@@ -34,7 +33,7 @@
 
 (** ** maxArity **)
 
-Lemma tr_maxArity_in :
+(*Lemma tr_maxArity_in :
   forall (eng: TransformationEngine),
     forall (tr: Transformation) (r: Rule),
       In r (getRules tr) ->
@@ -433,3 +432,4 @@ Proof.
   specialize (tr_applyElementOnPattern_None_iterator eng tr sm r sp i x H).
   crush.
 Qed.
+*)
