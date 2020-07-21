@@ -67,35 +67,27 @@ Proof.
   destruct x.
   - contradiction.
   - destruct x.
-    2: {
-      exfalso.
-      apply maxArity_length with (sp:=c::c0::x) (tr:=Class2Relational) (sm:=cm).
-      - unfold maxArity. simpl. omega.
-      - assumption. 
-    }
-    1: {
-      specialize (H0 c). 
+    + specialize (H0 c). 
       apply allTuples_incl in H1.
       unfold incl in H1.
       specialize (H1 c).
-      assert (In c [c]). {
-        left.
-        reflexivity.
-      }
+      assert (In c [c]). { left. reflexivity. }
       specialize (H0 (H1 H3)).
-      destruct c.
-      destruct c.
-      - simpl in H2.
+      do 2 destruct c.
+      * simpl in H2.
         destruct H2.
-        + rewrite <- H2. assumption.
-        + contradiction.
-      - destruct c0.
+        -- rewrite <- H2. assumption.
+        -- contradiction.
+      * destruct c0.
         destruct b.
-        + contradiction.
-        + destruct H2. 
-          * rewrite <- H2. assumption.
-          * contradiction. 
-    }
+        -- contradiction.
+        -- destruct H2. 
+          ++ rewrite <- H2. assumption.
+          ++ contradiction. 
+    + exfalso.
+      apply maxArity_length with (sp:=c::c0::x) (tr:=Class2Relational) (sm:=cm).
+      * unfold maxArity. simpl. omega.
+      * assumption. 
 Qed.
 
 (*Ltac destructPattern sp tr sm h := 
