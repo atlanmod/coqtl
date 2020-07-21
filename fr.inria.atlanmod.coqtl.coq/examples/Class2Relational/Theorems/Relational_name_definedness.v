@@ -63,28 +63,28 @@ Proof.
   rewrite H in H1.
   rewrite tr_execute_in_elements in H1.
   do 2 destruct H1.
-  destruct x.
-  - contradiction H2.
+  destruct x. (* Case analysis on source pattern *)
+  - (* Empty pattern *) contradiction H2.
   - destruct x.
-    + specialize (H0 c). 
+    + (* Singleton *) specialize (H0 c). 
       apply allTuples_incl in H1.
       unfold incl in H1.
       specialize (H1 c).
       assert (In c [c]). { left. reflexivity. }
       specialize (H0 (H1 H3)).
       do 2 destruct c.
-      * simpl in H2.
+      * (* [Class] *)simpl in H2.
         destruct H2.
         -- rewrite <- H2. simpl. simpl in H0. assumption.
         -- contradiction H2.
-      * destruct c0.
+      * (* [Attribute] *) destruct c0.
         destruct b.
-        -- contradiction H2.
-        -- simpl in H2.
+        -- (* derived *) contradiction H2.
+        -- (* not derived *) simpl in H2.
            destruct H2. 
            ++ rewrite <- H2. simpl. simpl in H0. assumption.
            ++ contradiction H2. 
-    + exfalso.
+    + (* Other patterns *) exfalso.
       apply maxArity_length with (sp:=c::c0::x) (tr:=Class2Relational) (sm:=cm).
       * unfold maxArity. simpl. omega.
       * assumption. 
