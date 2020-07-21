@@ -40,32 +40,32 @@ Require Import Class2Relational.RelationalMetamodel.
 Definition Class2Relational :=
   buildTransformation
     [
-      buildRule "Class2Table" [ClassEClass]
-        (makeGuard [ClassEClass] (fun m c => return true))
-        (makeIterator [ClassEClass] (fun m c => return 1))
+      buildRule "Class2Table" [ClassClass]
+        (makeGuard [ClassClass] (fun m c => true))
+        (makeIterator [ClassClass] (fun m c => 1))
         [buildOutputPatternElement "tab"
-          (makeElement [ClassEClass] TableClass
-            (fun i m c => return BuildTable (getClassId c) (getClassName c)))
+          (makeElement [ClassClass] TableClass
+            (fun i m c => BuildTable (getClassId c) (getClassName c)))
           [buildOutputPatternElementReference
-            (makeLink [ClassEClass] TableClass TableColumnsReference
-              (fun tls i m c t =>
-                 attrs <- getClassAttributes c m;
-                 cols <- resolveAll tls m "col" ColumnClass 
-                   (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
-                 return BuildTableColumns t cols))
+            (makeLink [ClassClass] TableClass TableColumnsReference
+            (fun tls i m c t =>
+              attrs <- getClassAttributes c m;
+              cols <- resolveAll tls m "col" ColumnClass 
+                (singletons (map (A:=Attribute) ClassMetamodel_toObject attrs));
+              return BuildTableColumns t cols))
           ]
         ];
-      buildRule "Attribute2Column" [AttributeEClass]
-        (makeGuard [AttributeEClass] (fun m a => return negb (getAttributeDerived a)))
-        (makeIterator [AttributeEClass] (fun m a => return 1))
+      buildRule "Attribute2Column" [AttributeClass]
+        (makeGuard [AttributeClass] (fun m a => negb (getAttributeDerived a)))
+        (makeIterator [AttributeClass] (fun m a => 1))
         [buildOutputPatternElement "col"
-          (makeElement [AttributeEClass] ColumnClass
-            (fun i m a => return (BuildColumn (getAttributeId a) (getAttributeName a))))
+          (makeElement [AttributeClass] ColumnClass
+            (fun i m a => BuildColumn (getAttributeId a) (getAttributeName a)))
           [buildOutputPatternElementReference
-            (makeLink [AttributeEClass] ColumnClass ColumnReferenceReference
+            (makeLink [AttributeClass] ColumnClass ColumnReferenceReference
               (fun tls i m a c =>
                 cl <- getAttributeType a m;
-                tb <- resolve tls m "tab" TableClass [ClassMetamodel_toEObject cl];
+                tb <- resolve tls m "tab" TableClass [ClassMetamodel_toObject cl];
                 return BuildColumnReference c tb))
           ]
         ]

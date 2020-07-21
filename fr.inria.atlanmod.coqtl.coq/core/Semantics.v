@@ -127,17 +127,31 @@ Section Semantics.
   end.
 
   Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
-             (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
+    (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
     resolveIter tr sm name type sp 0.
 
   Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
-             (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
+    (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
     : option (list (denoteModelClass type)) :=
     Some (flat_map (fun l:(list SourceModelElement) => optionToList (resolveIter tr sm name type l iter)) sps).
 
   Definition resolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
-             (type: TargetModelClass) (sps: list(list SourceModelElement)) : option (list (denoteModelClass type)) :=
+    (type: TargetModelClass) (sps: list(list SourceModelElement)) : option (list (denoteModelClass type)) :=
     resolveAllIter tr sm name type sps 0.
+  
+  Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
+    (type: TargetModelClass) (sp: option (list SourceModelElement)) : option (denoteModelClass type) :=
+    match sp with 
+    | Some sp' => resolve tr sm name type sp'
+    | None => None
+    end.
+
+  Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
+    (type: TargetModelClass) (sp: option (list (list SourceModelElement))) : option (list (denoteModelClass type)) :=
+    match sp with 
+    | Some sp' => resolveAll tr sm name type sp'
+    | None => None
+    end.
 
   (** * Apply **)
 

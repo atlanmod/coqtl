@@ -11,15 +11,15 @@ Require Import examples.Class2Relational.ClassMetamodel.
       Attribute id=2 derived=true name='sibling' type='Person'
 *)
 
-Definition PersonModel : Model ClassMetamodel_EObject ClassMetamodel_ELink :=
+Definition PersonModel : Model ClassMetamodel_Object ClassMetamodel_Link :=
   (Build_Model
      (* elements *)
-     ((ClassMetamodel_BuildEObject ClassEClass (BuildClass 0 "Person")) :: (ClassMetamodel_BuildEObject AttributeEClass (BuildAttribute 1 false "parent")) :: 
-      (ClassMetamodel_BuildEObject AttributeEClass (BuildAttribute 2 true "sibling")) :: nil)
+     ((ClassMetamodel_BuildObject ClassClass (BuildClass 0 "Person")) :: (ClassMetamodel_BuildObject AttributeClass (BuildAttribute 1 false "parent")) :: 
+      (ClassMetamodel_BuildObject AttributeClass (BuildAttribute 2 true "sibling")) :: nil)
      (* links *)
-     ((ClassMetamodel_BuildELink ClassAttributesEReference (BuildClassAttributes (BuildClass 0 "Person") ((BuildAttribute 1 false "parent")::nil))) ::
-      (ClassMetamodel_BuildELink AttributeTypeEReference (BuildAttributeType (BuildAttribute 1 false "parent") (BuildClass 0 "Person"))) ::
-      (ClassMetamodel_BuildELink ClassAttributesEReference (BuildClassAttributes (BuildClass 0 "Person") ((BuildAttribute 2 true "sibling")::nil))) ::
-      (ClassMetamodel_BuildELink AttributeTypeEReference (BuildAttributeType (BuildAttribute 2 true "sibling") (BuildClass 0 "Person"))) :: 
+     ((ClassMetamodel_BuildLink ClassAttributesReference (BuildClassAttributes (BuildClass 0 "Person") ((BuildAttribute 1 false "parent")::nil))) ::
+      (ClassMetamodel_BuildLink AttributeTypeReference (BuildAttributeType (BuildAttribute 1 false "parent") (BuildClass 0 "Person"))) ::
+      (ClassMetamodel_BuildLink ClassAttributesReference (BuildClassAttributes (BuildClass 0 "Person") ((BuildAttribute 2 true "sibling")::nil))) ::
+      (ClassMetamodel_BuildLink AttributeTypeReference (BuildAttributeType (BuildAttribute 2 true "sibling") (BuildClass 0 "Person"))) :: 
       nil)
   ).

@@ -32,6 +32,18 @@ Inductive
   ColumnReference : Set :=
   BuildColumnReference : Column -> Table -> ColumnReference.
 
+Definition maybeBuildColumnReference (c: Column) (t: option Table) : option ColumnReference :=
+  match c, t with
+  | c', Some t' => Some (BuildColumnReference c' t')
+  | _, _ => None
+  end.  
+
+Definition maybeBuildTableColumns (t: Table) (c: option (list Column)) : option TableColumns :=
+  match t, c with
+  | t', Some c' => Some (BuildTableColumns t' c')
+  | _, _ => None
+  end.  
+
 (* Accessors *)
 
 Definition getTableId (t : Table) : nat :=
@@ -120,19 +132,19 @@ Qed.
 
 (* Meta-types *)
 
-Inductive RelationalMetamodel_EClass : Set :=
+Inductive RelationalMetamodel_Class : Set :=
   TableClass | ColumnClass.
 
-Definition RelationalMetamodel_getTypeByEClass (type : RelationalMetamodel_EClass) : Set :=
+Definition RelationalMetamodel_getTypeByClass (type : RelationalMetamodel_Class) : Set :=
   match type with
   | TableClass => Table
   | ColumnClass => Column
   end.
 
-Inductive RelationalMetamodel_EReference : Set :=
+Inductive RelationalMetamodel_Reference : Set :=
   TableColumnsReference | ColumnReferenceReference.
 
-Definition RelationalMetamodel_getTypeByEReference (type : RelationalMetamodel_EReference) : Set :=
+Definition RelationalMetamodel_getTypeByReference (type : RelationalMetamodel_Reference) : Set :=
   match type with
   | TableColumnsReference => TableColumns
   | ColumnReferenceReference => ColumnReference
@@ -140,73 +152,73 @@ Definition RelationalMetamodel_getTypeByEReference (type : RelationalMetamodel_E
 
 (* Generic types *)
 
-Inductive RelationalMetamodel_EObject : Set :=
-| RelationalMetamodel_BuildEObject : forall (c:RelationalMetamodel_EClass), (RelationalMetamodel_getTypeByEClass c) -> RelationalMetamodel_EObject.
+Inductive RelationalMetamodel_Object : Set :=
+| RelationalMetamodel_BuildObject : forall (c:RelationalMetamodel_Class), (RelationalMetamodel_getTypeByClass c) -> RelationalMetamodel_Object.
 
-Definition beq_RelationalMetamodel_EObject (c1 : RelationalMetamodel_EObject) (c2 : RelationalMetamodel_EObject) : bool :=
+Definition beq_RelationalMetamodel_Object (c1 : RelationalMetamodel_Object) (c2 : RelationalMetamodel_Object) : bool :=
   match c1, c2 with
-  | RelationalMetamodel_BuildEObject TableClass o1, RelationalMetamodel_BuildEObject TableClass o2 => beq_Table o1 o2
-  | RelationalMetamodel_BuildEObject ColumnClass o1, RelationalMetamodel_BuildEObject ColumnClass o2 => beq_Column o1 o2
+  | RelationalMetamodel_BuildObject TableClass o1, RelationalMetamodel_BuildObject TableClass o2 => beq_Table o1 o2
+  | RelationalMetamodel_BuildObject ColumnClass o1, RelationalMetamodel_BuildObject ColumnClass o2 => beq_Column o1 o2
   | _, _ => false
   end.
 
-Inductive RelationalMetamodel_ELink : Set :=
-| RelationalMetamodel_BuildELink : forall (c:RelationalMetamodel_EReference), (RelationalMetamodel_getTypeByEReference c) -> RelationalMetamodel_ELink.
+Inductive RelationalMetamodel_Link : Set :=
+| RelationalMetamodel_BuildLink : forall (c:RelationalMetamodel_Reference), (RelationalMetamodel_getTypeByReference c) -> RelationalMetamodel_Link.
 
 
 
 (* Reflective functions *)
 
-Lemma RelationalMetamodel_eqEClass_dec : forall (c1:RelationalMetamodel_EClass) (c2:RelationalMetamodel_EClass), { c1 = c2 } + { c1 <> c2 }.
+Lemma RelationalMetamodel_eqClass_dec : forall (c1:RelationalMetamodel_Class) (c2:RelationalMetamodel_Class), { c1 = c2 } + { c1 <> c2 }.
 Proof. repeat decide equality. Defined.
 
-Lemma RelationalMetamodel_eqEReference_dec : forall (c1:RelationalMetamodel_EReference) (c2:RelationalMetamodel_EReference), { c1 = c2 } + { c1 <> c2 }.
+Lemma RelationalMetamodel_eqReference_dec : forall (c1:RelationalMetamodel_Reference) (c2:RelationalMetamodel_Reference), { c1 = c2 } + { c1 <> c2 }.
 Proof. repeat decide equality. Defined.
 
-Definition RelationalMetamodel_getEClass (c : RelationalMetamodel_EObject) : RelationalMetamodel_EClass :=
+Definition RelationalMetamodel_getClass (c : RelationalMetamodel_Object) : RelationalMetamodel_Class :=
   match c with
-  | (RelationalMetamodel_BuildEObject t _) => t
+  | (RelationalMetamodel_BuildObject t _) => t
   end.
 
-Definition RelationalMetamodel_getEReference (c : RelationalMetamodel_ELink) : RelationalMetamodel_EReference :=
+Definition RelationalMetamodel_getReference (c : RelationalMetamodel_Link) : RelationalMetamodel_Reference :=
   match c with
-  | (RelationalMetamodel_BuildELink t _) => t
+  | (RelationalMetamodel_BuildLink t _) => t
   end.
 
-Definition RelationalMetamodel_instanceOfEClass (cmc: RelationalMetamodel_EClass) (c : RelationalMetamodel_EObject): bool :=
-  if RelationalMetamodel_eqEClass_dec (RelationalMetamodel_getEClass c) cmc then true else false.
+Definition RelationalMetamodel_instanceOfClass (cmc: RelationalMetamodel_Class) (c : RelationalMetamodel_Object): bool :=
+  if RelationalMetamodel_eqClass_dec (RelationalMetamodel_getClass c) cmc then true else false.
 
-Definition RelationalMetamodel_instanceOfEReference (cmr: RelationalMetamodel_EReference) (c : RelationalMetamodel_ELink): bool :=
-  if RelationalMetamodel_eqEReference_dec (RelationalMetamodel_getEReference c) cmr then true else false.
+Definition RelationalMetamodel_instanceOfReference (cmr: RelationalMetamodel_Reference) (c : RelationalMetamodel_Link): bool :=
+  if RelationalMetamodel_eqReference_dec (RelationalMetamodel_getReference c) cmr then true else false.
 
-Definition RelationalMetamodel_EClassAttributeTypes (c: RelationalMetamodel_EClass): Set :=
+Definition RelationalMetamodel_ClassAttributeTypes (c: RelationalMetamodel_Class): Set :=
   match c with
   | TableClass => (nat * string)
   | ColumnClass => (nat * string)
   end.
 
-Definition BuildRelationalMetamodel_EClassElement (t : RelationalMetamodel_EClass) : (RelationalMetamodel_EClassAttributeTypes t) -> RelationalMetamodel_EObject :=
+Definition BuildRelationalMetamodel_ClassElement (t : RelationalMetamodel_Class) : (RelationalMetamodel_ClassAttributeTypes t) -> RelationalMetamodel_Object :=
   match t with
-  | TableClass => (fun (p: nat * string) => (RelationalMetamodel_BuildEObject TableClass (BuildTable (fst p) (snd p))))
-  | ColumnClass => (fun (p: nat * string) => (RelationalMetamodel_BuildEObject ColumnClass (BuildColumn (fst p) (snd p))))
+  | TableClass => (fun (p: nat * string) => (RelationalMetamodel_BuildObject TableClass (BuildTable (fst p) (snd p))))
+  | ColumnClass => (fun (p: nat * string) => (RelationalMetamodel_BuildObject ColumnClass (BuildColumn (fst p) (snd p))))
   end.
 
-Definition RelationalMetamodel_EReferenceRoleTypes (c: RelationalMetamodel_EReference): Set :=
+Definition RelationalMetamodel_ReferenceRoleTypes (c: RelationalMetamodel_Reference): Set :=
   match c with
   | TableColumnsReference => (Table * list Column)
   | ColumnReferenceReference => (Column * Table)
   end.
 
-Definition BuildRelationalMetamodel_EReferenceLink (t : RelationalMetamodel_EReference) : (RelationalMetamodel_EReferenceRoleTypes t) -> RelationalMetamodel_ELink :=
+Definition BuildRelationalMetamodel_ReferenceLink (t : RelationalMetamodel_Reference) : (RelationalMetamodel_ReferenceRoleTypes t) -> RelationalMetamodel_Link :=
   match t with
-  | TableColumnsReference => (fun (p: Table * list Column) => (RelationalMetamodel_BuildELink TableColumnsReference (BuildTableColumns (fst p) (snd p))))
-  | ColumnReferenceReference => (fun (p: Column * Table) => (RelationalMetamodel_BuildELink ColumnReferenceReference (BuildColumnReference (fst p) (snd p))))
+  | TableColumnsReference => (fun (p: Table * list Column) => (RelationalMetamodel_BuildLink TableColumnsReference (BuildTableColumns (fst p) (snd p))))
+  | ColumnReferenceReference => (fun (p: Column * Table) => (RelationalMetamodel_BuildLink ColumnReferenceReference (BuildColumnReference (fst p) (snd p))))
   end.
 
-Definition toRelationalMetamodel_EClass (t : RelationalMetamodel_EClass) (c : RelationalMetamodel_EObject) : option (RelationalMetamodel_getTypeByEClass t) :=
+Definition toRelationalMetamodel_Class (t : RelationalMetamodel_Class) (c : RelationalMetamodel_Object) : option (RelationalMetamodel_getTypeByClass t) :=
   match c with
-| RelationalMetamodel_BuildEObject c0 d =>
-    let s := RelationalMetamodel_eqEClass_dec c0 t in
+| RelationalMetamodel_BuildObject c0 d =>
+    let s := RelationalMetamodel_eqClass_dec c0 t in
     match s with
     | left e => match e with
                      eq_refl => Some d
@@ -217,29 +229,29 @@ Definition toRelationalMetamodel_EClass (t : RelationalMetamodel_EClass) (c : Re
 
 (*Proof.
   destruct c.
-  destruct (RelationalMetamodel_eqEClass_dec t r).
+  destruct (RelationalMetamodel_eqClass_dec t r).
   - rewrite <- e in d.
     exact (Some d).
   - exact None.
 Defined.*)
 
-Theorem toRelationalMetamodel_EClass_inv :
-  forall (t : RelationalMetamodel_EClass) (c : RelationalMetamodel_EObject) (c': RelationalMetamodel_getTypeByEClass t),
-    toRelationalMetamodel_EClass t c = Some c' ->
-    c = (RelationalMetamodel_BuildEObject t c').
+Theorem toRelationalMetamodel_Class_inv :
+  forall (t : RelationalMetamodel_Class) (c : RelationalMetamodel_Object) (c': RelationalMetamodel_getTypeByClass t),
+    toRelationalMetamodel_Class t c = Some c' ->
+    c = (RelationalMetamodel_BuildObject t c').
 Proof.
   intros.
   destruct c.
   simpl in H.
-  destruct (RelationalMetamodel_eqEClass_dec c t).
+  destruct (RelationalMetamodel_eqClass_dec c t).
   - destruct e. inversion H. reflexivity.
   - inversion H.
 Qed.
 
-Definition toRelationalMetamodel_EReference (t : RelationalMetamodel_EReference) (c : RelationalMetamodel_ELink) : option (RelationalMetamodel_getTypeByEReference t).
+Definition toRelationalMetamodel_Reference (t : RelationalMetamodel_Reference) (c : RelationalMetamodel_Link) : option (RelationalMetamodel_getTypeByReference t).
 Proof.
   destruct c.
-  destruct (RelationalMetamodel_eqEReference_dec t c).
+  destruct (RelationalMetamodel_eqReference_dec t c).
   - rewrite <- e in r.
     exact (Some r).
   - exact None.
@@ -247,108 +259,108 @@ Defined.
 
 (* Generic functions *)
 
-Definition RelationalMetamodel_toEObjectFromTable (t :Table) : RelationalMetamodel_EObject :=
-  (RelationalMetamodel_BuildEObject TableClass t).
-Coercion RelationalMetamodel_toEObjectFromTable : Table >-> RelationalMetamodel_EObject.
-Definition RelationalMetamodel_toEObject (c : RelationalMetamodel_EObject) : RelationalMetamodel_EObject := c.
+Definition RelationalMetamodel_toObjectFromTable (t :Table) : RelationalMetamodel_Object :=
+  (RelationalMetamodel_BuildObject TableClass t).
+Coercion RelationalMetamodel_toObjectFromTable : Table >-> RelationalMetamodel_Object.
+Definition RelationalMetamodel_toObject (c : RelationalMetamodel_Object) : RelationalMetamodel_Object := c.
 
-Definition RelationalMetamodel_toEObjectFromColumn (c :Column) : RelationalMetamodel_EObject :=
-  (RelationalMetamodel_BuildEObject ColumnClass c).
-Coercion RelationalMetamodel_toEObjectFromColumn : Column >-> RelationalMetamodel_EObject.
-Definition RelationalMetamodel_toELink (c : RelationalMetamodel_ELink) : RelationalMetamodel_ELink := c.
+Definition RelationalMetamodel_toObjectFromColumn (c :Column) : RelationalMetamodel_Object :=
+  (RelationalMetamodel_BuildObject ColumnClass c).
+Coercion RelationalMetamodel_toObjectFromColumn : Column >-> RelationalMetamodel_Object.
+Definition RelationalMetamodel_toLink (c : RelationalMetamodel_Link) : RelationalMetamodel_Link := c.
 
-Definition RelationalMetamodel_toEObjectOfEClass (t: RelationalMetamodel_EClass) (e: RelationalMetamodel_getTypeByEClass t) : RelationalMetamodel_EObject:=
-  (RelationalMetamodel_BuildEObject t e).
+Definition RelationalMetamodel_toObjectOfClass (t: RelationalMetamodel_Class) (e: RelationalMetamodel_getTypeByClass t) : RelationalMetamodel_Object:=
+  (RelationalMetamodel_BuildObject t e).
 
-Definition RelationalMetamodel_toELinkOfEReference (t: RelationalMetamodel_EReference) (e: RelationalMetamodel_getTypeByEReference t) : RelationalMetamodel_ELink :=
-  (RelationalMetamodel_BuildELink t e).
+Definition RelationalMetamodel_toLinkOfReference (t: RelationalMetamodel_Reference) (e: RelationalMetamodel_getTypeByReference t) : RelationalMetamodel_Link :=
+  (RelationalMetamodel_BuildLink t e).
 
-Definition RelationalMetamodel_getId (r : RelationalMetamodel_EObject) : nat :=
+Definition RelationalMetamodel_getId (r : RelationalMetamodel_Object) : nat :=
   match r with
-  | (RelationalMetamodel_BuildEObject TableClass c) => getTableId c
-  | (RelationalMetamodel_BuildEObject ColumnClass a) => getColumnId a
+  | (RelationalMetamodel_BuildObject TableClass c) => getTableId c
+  | (RelationalMetamodel_BuildObject ColumnClass a) => getColumnId a
   end.
 
-Definition RelationalMetamodel_getName (r : RelationalMetamodel_EObject) : string :=
+Definition RelationalMetamodel_getName (r : RelationalMetamodel_Object) : string :=
   match r with
-  | (RelationalMetamodel_BuildEObject TableClass c) => getTableName c
-  | (RelationalMetamodel_BuildEObject ColumnClass a) => getColumnName a
+  | (RelationalMetamodel_BuildObject TableClass c) => getTableName c
+  | (RelationalMetamodel_BuildObject ColumnClass a) => getColumnName a
   end.
 
 (*Definition allTables (m : RelationalModel) : list Table :=
-  match m with BuildRelationalModel l _  => optionList2List (map (toRelationalMetamodel_EClass TableClass) l) end.
+  match m with BuildRelationalModel l _  => optionList2List (map (toRelationalMetamodel_Class TableClass) l) end.
 
 Definition allColumns (m : RelationalModel) : list Column :=
-  match m with BuildRelationalModel l _  => optionList2List (map (toRelationalMetamodel_EClass ColumnClass) l) end.*)
+  match m with BuildRelationalModel l _  => optionList2List (map (toRelationalMetamodel_Class ColumnClass) l) end.*)
 
-Fixpoint getTableColumnsOnLinks (t : Table) (l : list RelationalMetamodel_ELink) : option (list Column) :=
+Fixpoint getTableColumnsOnLinks (t : Table) (l : list RelationalMetamodel_Link) : option (list Column) :=
   match l with
-  | (RelationalMetamodel_BuildELink TableColumnsReference (BuildTableColumns tab c)) :: l1 => if beq_Table tab t then Some c else getTableColumnsOnLinks t l1
+  | (RelationalMetamodel_BuildLink TableColumnsReference (BuildTableColumns tab c)) :: l1 => if beq_Table tab t then Some c else getTableColumnsOnLinks t l1
   | _ :: l1 => getTableColumnsOnLinks t l1
   | nil => None
   end.
 
-Definition getTableColumns (t : Table) (m : Model RelationalMetamodel_EObject RelationalMetamodel_ELink) : option (list Column) :=
+Definition getTableColumns (t : Table) (m : Model RelationalMetamodel_Object RelationalMetamodel_Link) : option (list Column) :=
   match m with
     (Build_Model rs ls) => getTableColumnsOnLinks t ls
   end.
 
-Fixpoint getColumnReferenceOnLinks (c : Column) (l : list RelationalMetamodel_ELink) : option Table :=
+Fixpoint getColumnReferenceOnLinks (c : Column) (l : list RelationalMetamodel_Link) : option Table :=
   match l with
-  | (RelationalMetamodel_BuildELink ColumnReferenceReference (BuildColumnReference col t)) :: l1 => if beq_Column col c then Some t else getColumnReferenceOnLinks c l1
+  | (RelationalMetamodel_BuildLink ColumnReferenceReference (BuildColumnReference col t)) :: l1 => if beq_Column col c then Some t else getColumnReferenceOnLinks c l1
   | _ :: l1 => getColumnReferenceOnLinks c l1
   | nil => None
   end.
 
-Definition getColumnReference (c : Column) (m : Model RelationalMetamodel_EObject RelationalMetamodel_ELink) : option Table :=
+Definition getColumnReference (c : Column) (m : Model RelationalMetamodel_Object RelationalMetamodel_Link) : option Table :=
   match m with
     (Build_Model rs ls) => getColumnReferenceOnLinks c ls
   end.
 
-Definition bottomRelationalMetamodel_EClass (c: RelationalMetamodel_EClass) : (RelationalMetamodel_getTypeByEClass c) :=
+Definition bottomRelationalMetamodel_Class (c: RelationalMetamodel_Class) : (RelationalMetamodel_getTypeByClass c) :=
   match c with
   | TableClass => (BuildTable 0 "")
   | ColumnClass => (BuildColumn 0 "")
   end.
 
 Lemma rel_invert : 
-  forall (t: RelationalMetamodel_EClass) (t1 t2: RelationalMetamodel_getTypeByEClass t), RelationalMetamodel_BuildEObject t t1 = RelationalMetamodel_BuildEObject t t2 -> t1 = t2.
+  forall (t: RelationalMetamodel_Class) (t1 t2: RelationalMetamodel_getTypeByClass t), RelationalMetamodel_BuildObject t t1 = RelationalMetamodel_BuildObject t t2 -> t1 = t2.
 Proof.
 intros.
 inversion H.
 apply inj_pair2_eq_dec in H1.
 exact H1.
-apply RelationalMetamodel_eqEClass_dec.
+apply RelationalMetamodel_eqClass_dec.
 Qed.
 
 Lemma rel_elink_invert : 
-  forall (t: RelationalMetamodel_EReference) (t1 t2: RelationalMetamodel_getTypeByEReference t), RelationalMetamodel_BuildELink t t1 = RelationalMetamodel_BuildELink t t2 -> t1 = t2.
+  forall (t: RelationalMetamodel_Reference) (t1 t2: RelationalMetamodel_getTypeByReference t), RelationalMetamodel_BuildLink t t1 = RelationalMetamodel_BuildLink t t2 -> t1 = t2.
 Proof.
 intros.
 inversion H.
 apply inj_pair2_eq_dec in H1.
 exact H1.
-apply RelationalMetamodel_eqEReference_dec.
+apply RelationalMetamodel_eqReference_dec.
 Qed.
 
-Instance RelationalMetamodel : Metamodel RelationalMetamodel_EObject RelationalMetamodel_ELink RelationalMetamodel_EClass RelationalMetamodel_EReference :=
+Instance RelationalMetamodel : Metamodel RelationalMetamodel_Object RelationalMetamodel_Link RelationalMetamodel_Class RelationalMetamodel_Reference :=
   {
-    denoteModelClass := RelationalMetamodel_getTypeByEClass;
-    denoteModelReference := RelationalMetamodel_getTypeByEReference;
-    toModelClass := toRelationalMetamodel_EClass;
-    toModelReference := toRelationalMetamodel_EReference;
-    toModelElement := RelationalMetamodel_toEObjectOfEClass;
-    toModelLink := RelationalMetamodel_toELinkOfEReference;
-    beq_ModelElement := beq_RelationalMetamodel_EObject;
+    denoteModelClass := RelationalMetamodel_getTypeByClass;
+    denoteModelReference := RelationalMetamodel_getTypeByReference;
+    toModelClass := toRelationalMetamodel_Class;
+    toModelReference := toRelationalMetamodel_Reference;
+    toModelElement := RelationalMetamodel_toObjectOfClass;
+    toModelLink := RelationalMetamodel_toLinkOfReference;
+    beq_ModelElement := beq_RelationalMetamodel_Object;
 
     (* Theorems *)
-    eqModelClass_dec := RelationalMetamodel_eqEClass_dec;
-    eqModelReference_dec := RelationalMetamodel_eqEReference_dec;
+    eqModelClass_dec := RelationalMetamodel_eqClass_dec;
+    eqModelReference_dec := RelationalMetamodel_eqReference_dec;
   }.
   
 
   
 
 
-Definition RelationalModel := Model RelationalMetamodel_EObject RelationalMetamodel_ELink.
+Definition RelationalModel := Model RelationalMetamodel_Object RelationalMetamodel_Link.
 

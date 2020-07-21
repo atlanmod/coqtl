@@ -15,6 +15,8 @@ Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
 
 (* module Class2Relational; 
+   create OUT : RelationalMetamodel from IN : ClassMetamodel;
+
    rule Class2Table {
        from 
          c : Class
@@ -22,7 +24,7 @@ Require Import Class2Relational.RelationalMetamodel.
          tab: Table (
            id <- c.id,
            name <- c.name,
-           columns <- c.attributes.resolve('col')
+           columns <- c.attributes->collect(a | thisModule.resolve(a, 'col'))
          )
     }
     rule Attribute2Column {
@@ -32,39 +34,36 @@ Require Import Class2Relational.RelationalMetamodel.
           col: Column (
             id <- a.id,
             name <- a.name,
-            reference <- a.type.resolve('tab')
+            reference <- thisModule.resolve(a.type, 'tab')
           )
     }
    } *)
 
-   Compute (outputPatternElementTypes [ClassEClass] TableClass).
+Open Scope coqtl.
 
 Definition Class2Relational :=
-  buildConcreteTransformation
-    [
-      buildConcreteRule "Class2Table" 
-        [ClassEClass] (fun m c => return true)
-        (fun m c => return 1)
-        [buildConcreteOutputPatternElement [ClassEClass] "tab" 
-            TableClass (fun i m c => return BuildTable (getClassId c) (getClassName c))
-          [buildConcreteOutputPatternElementReference TableColumnsReference  
-              (fun tls i m c t =>
-                 attrs <- getClassAttributes c m;
-                 cols <- resolveAll tls m "col" ColumnClass 
-                   (singletons (map (A:=Attribute) ClassMetamodel_toEObject attrs));
-                 return BuildTableColumns t cols)
-          ]
-        ];
-      buildConcreteRule "Attribute2Column" 
-        [AttributeEClass] (fun m a => return negb (getAttributeDerived a))
-        (fun m a => return 1)
-        [buildConcreteOutputPatternElement [AttributeEClass] "col" 
-            ColumnClass (fun i m a => return (BuildColumn (getAttributeId a) (getAttributeName a)))
-          [buildConcreteOutputPatternElementReference ColumnReferenceReference
-              (fun tls i m a c =>
-                cl <- getAttributeType a m;
-                tb <- resolve tls m "tab" TableClass [ClassMetamodel_toEObject cl];
-                return BuildColumnReference c tb)
-          ]
-        ]
-    ].
+  transformation ClassMetamodel RelationalMetamodel
+  [
+    rule "Class2Table"
+    from [ClassClass]
+    to [elem [ClassClass] TableClass "tab"
+        (fun i m c => BuildTable (getClassId c) (getClassName c))
+        [link [ClassClass] TableClass TableColumnsReference
+          (fun tls i m c t =>
+            maybeBuildTableColumns t
+              (maybeResolveAll tls m "col" ColumnClass 
+                (maybeSingletons (getClassAttributesObjects c m))))]]
+    ;
+    rule "Attribute2Column"
+    from [AttributeClass]
+    where (fun m a => negb (getAttributeDerived a))
+    to [elem [AttributeClass] ColumnClass "col"
+        (fun i m a => BuildColumn (getAttributeId a) (getAttributeName a))
+        [link [AttributeClass] ColumnClass ColumnReferenceReference
+          (fun tls i m a c =>
+            maybeBuildColumnReference c
+              (maybeResolve tls m "tab" TableClass 
+                (maybeSingleton (getAttributeTypeObject a m))))]]
+  ].
+
+Close Scope coqtl.
