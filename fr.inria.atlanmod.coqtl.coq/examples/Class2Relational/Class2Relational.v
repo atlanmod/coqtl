@@ -4,9 +4,9 @@ Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
 
-Require Import core.utils.TopUtils.
+Require Import core.utils.Utils.
 
-Require Import core.Syntax.
+Require Import core.ConcreteSyntax.
 Require Import core.Semantics.
 Require Import core.Metamodel.
 Require Import core.Expressions.
@@ -15,6 +15,8 @@ Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
 
 (* module Class2Relational; 
+   create OUT : RelationalMetamodel from IN : ClassMetamodel;
+
    rule Class2Table {
        from 
          c : Class
@@ -22,7 +24,7 @@ Require Import Class2Relational.RelationalMetamodel.
          tab: Table (
            id <- c.id,
            name <- c.name,
-           columns <- c.attributes.resolve('col')
+           columns <- c.attributes->collect(a | thisModule.resolve(a, 'col'))
          )
     }
     rule Attribute2Column {
@@ -32,41 +34,39 @@ Require Import Class2Relational.RelationalMetamodel.
           col: Column (
             id <- a.id,
             name <- a.name,
-            reference <- a.type.resolve('tab')
+            reference <- thisModule.resolve(a.type, 'tab')
           )
     }
    } *)
 
-Definition Class2Relational :=
-  buildTransformation
-    [
-      buildRule "Class2Table" [ClassClass]
-        (makeGuard [ClassClass] (fun m c => true))
-        (makeIterator [ClassClass] (fun m c => 1))
-        [buildOutputPatternElement "tab"
-          (makeElement [ClassClass] TableClass
-            (fun i m c => BuildTable (getClassId c) (getClassName c)))
-          [buildOutputPatternElementReference
-            (makeLink [ClassClass] TableClass TableColumnsReference
-            (fun tls i m c t =>
-              attrs <- getClassAttributes c m;
-              cols <- resolveAll tls m "col" ColumnClass 
-                (singletons (map (A:=Attribute) ClassMetamodel_toObject attrs));
-              return BuildTableColumns t cols))
-          ]
-        ];
-      buildRule "Attribute2Column" [AttributeClass]
-        (makeGuard [AttributeClass] (fun m a => negb (getAttributeDerived a)))
-        (makeIterator [AttributeClass] (fun m a => 1))
-        [buildOutputPatternElement "col"
-          (makeElement [AttributeClass] ColumnClass
-            (fun i m a => BuildColumn (getAttributeId a) (getAttributeName a)))
-          [buildOutputPatternElementReference
-            (makeLink [AttributeClass] ColumnClass ColumnReferenceReference
-              (fun tls i m a c =>
-                cl <- getAttributeType a m;
-                tb <- resolve tls m "tab" TableClass [ClassMetamodel_toObject cl];
-                return BuildColumnReference c tb))
-          ]
-        ]
-    ].
+Open Scope coqtl.
+
+Definition Class2Relational' :=
+  transformation ClassMetamodel RelationalMetamodel
+  [
+    rule "Class2Table"
+    from [ClassClass]
+    to [elem [ClassClass] TableClass "tab"
+        (fun i m c => BuildTable (getClassId c) (getClassName c))
+        [link [ClassClass] TableClass TableColumnsReference
+          (fun tls i m c t =>
+            maybeBuildTableColumns t
+              (maybeResolveAll tls m "col" ColumnClass 
+                (maybeSingletons (getClassAttributesObjects c m))))]]
+    ;
+    rule "Attribute2Column"
+    from [AttributeClass]
+    where (fun m a => negb (getAttributeDerived a))
+    to [elem [AttributeClass] ColumnClass "col"
+        (fun i m a => BuildColumn (getAttributeId a) (getAttributeName a))
+        [link [AttributeClass] ColumnClass ColumnReferenceReference
+          (fun tls i m a c =>
+            maybeBuildColumnReference c
+              (maybeResolve tls m "tab" TableClass 
+                (maybeSingleton (getAttributeTypeObject a m))))]]
+  ].
+
+Definition Class2Relational := parse Class2Relational'.
+
+
+Close Scope coqtl.

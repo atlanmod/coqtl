@@ -1,8 +1,7 @@
 Require Import String.
 Require Import Omega.
 
-Require Import core.utils.TopUtils.
-Require Import core.utils.CpdtTactics.
+Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Expressions.
@@ -175,6 +174,21 @@ Section Certification.
       - crush.
   Qed.
 
+(*TODO
+  Lemma maxArity_length:
+    forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
+    gt (length sp) (maxArity tr) -> In sp (allTuples tr sm) -> False.
+  *)
+
+  Lemma allTuples_incl:
+    forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
+    In sp (allTuples tr sm) -> incl sp (allModelElements sm).
+  Proof.
+    intros.
+    unfold allTuples in H. simpl in H. 
+    apply tuples_up_to_n_incl in H.
+    assumption.
+  Qed.
 
   Instance CoqTLEngine :
     TransformationEngine :=

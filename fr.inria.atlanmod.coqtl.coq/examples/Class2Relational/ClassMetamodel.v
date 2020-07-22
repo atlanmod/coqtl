@@ -7,7 +7,7 @@ Require Import Omega.
 Require Import Coq.Logic.Eqdep_dec.
 
 
-Require Import core.utils.TopUtils.
+Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.utils.CpdtTactics.
