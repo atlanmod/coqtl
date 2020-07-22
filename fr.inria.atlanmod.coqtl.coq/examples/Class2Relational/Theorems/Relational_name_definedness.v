@@ -23,7 +23,7 @@ Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
 
-Ltac parseTransformation Tr Ht := 
+Ltac unfoldTransformationIn Tr Ht := 
   unfold Tr in Ht;
   unfold ConcreteSyntax.parse in Ht; 
   unfold ConcreteSyntax.parseRule in Ht;
@@ -38,7 +38,7 @@ Ltac parseTransformation Tr Ht :=
   repeat (unfold Expressions.wrapOption in Ht);
   simpl in Ht.
 
-Ltac parseTransformationInGoal Tr := 
+Ltac unfoldTransformation Tr := 
   unfold Tr;
   unfold ConcreteSyntax.parse; 
   unfold ConcreteSyntax.parseRule;
