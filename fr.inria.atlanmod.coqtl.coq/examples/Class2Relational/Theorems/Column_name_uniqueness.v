@@ -126,23 +126,7 @@ Proof.
   + do 2 destruct c, c0, c1, c2; contradiction.
   + do 2 destruct c, c0, c1, c2; contradiction.
   + do 2 destruct c, c0, c1, c2; contradiction.
-  + do 2 destruct c, c0, c1, c2.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
-   * contradiction.
+  + do 2 destruct c, c0, c1, c2; contradiction.
 Admitted.
 
 
