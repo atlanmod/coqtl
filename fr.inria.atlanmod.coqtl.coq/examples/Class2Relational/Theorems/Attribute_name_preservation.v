@@ -5,6 +5,7 @@ Def: all non-derived attributes in the source model will create
 **)
 
 Require Import String.
+Require Import Omega.
 Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.Semantics.
@@ -27,4 +28,26 @@ Theorem Attribute_name_preservation:
             In (RelationalMetamodel_toObject ColumnClass c) (allModelElements rm) /\
             getColumnName c = getAttributeName a.
 Proof.
-Admitted.
+    intros.
+    exists (BuildColumn (getAttributeId a) (getAttributeName a)).
+    split.
+    - rewrite H.
+      rewrite tr_execute_in_elements.
+      exists ([ClassMetamodel_toObject AttributeClass a]).
+      split.
+      + apply allTuples_incl_length.
+        * unfold incl.
+          intros.
+          apply in_inv in H2.
+          destruct H2.
+          -- rewrite <- H2. assumption.
+          -- contradiction.
+        * unfold maxArity. simpl. omega.
+      + destruct a.
+        simpl in H1.
+        rewrite H1.
+        simpl. 
+        left.
+        reflexivity.
+    - reflexivity.
+Qed.

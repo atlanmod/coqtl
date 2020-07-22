@@ -190,6 +190,17 @@ Section Certification.
     assumption.
   Qed.
 
+  Lemma allTuples_incl_length:
+    forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
+    incl sp (allModelElements sm) -> length sp <= maxArity tr -> In sp (allTuples tr sm).
+  Proof.
+    intros.
+    unfold allTuples.
+    apply tuples_up_to_n_incl_length with (n:=maxArity tr) in H.
+    - assumption.
+    - assumption.
+  Qed.  
+  
   Instance CoqTLEngine :
     TransformationEngine :=
     {
