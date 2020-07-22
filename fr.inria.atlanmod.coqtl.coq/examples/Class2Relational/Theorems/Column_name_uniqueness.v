@@ -71,4 +71,41 @@ Proof.
         * destruct c3. simpl in H9. destruct H9. inversion H9. contradiction.
         * destruct c3. simpl in H9. destruct H9. inversion H9. contradiction.
         * (* [a] [a] [c] *)
+          specialize (H0 c2 c3 c4).
+          remember (getClassAttributes c4 cm).
+          destruct o.
+          --specialize (H0 l).
+            apply allTuples_incl in H1.
+            apply allTuples_incl in H2.
+            apply allTuples_incl in H3.
+            unfold incl in H1, H2, H3.
+            specialize (H1 (ClassMetamodel_toObject AttributeClass c2)).
+            specialize (H2 (ClassMetamodel_toObject AttributeClass c3)).
+            specialize (H3 (ClassMetamodel_toObject ClassClass c4)).
+            assert (In (ClassMetamodel_toObject AttributeClass c2) [ClassMetamodel_toObject AttributeClass c2]).
+            { left. reflexivity. }
+            assert (In (ClassMetamodel_toObject AttributeClass c3) [ClassMetamodel_toObject AttributeClass c3]).
+            { left. reflexivity. }
+            assert (In (ClassMetamodel_toObject ClassClass c4) [ClassMetamodel_toObject ClassClass c4]).
+            { left. reflexivity. }
+            assert (return l=return l). {reflexivity. }
+            specialize (H0 (H1 H11) (H2 H12) (H3 H13) H14).
+            destruct c2, c3.
+            destruct b, b0.
+            ++ simpl in H8, H9, H10. contradiction.
+            ++ simpl in H8, H9, H10. contradiction.
+            ++ simpl in H8, H9, H10. contradiction.
+            ++ simpl in H8, H9, H10. 
+               destruct H8, H9, H10.
+               ** apply rel_invert in H8.
+                  apply rel_invert in H9.
+                  apply rel_invert in H10.
+                  rewrite <- H8.
+                  rewrite <- H9.
+                  unfold not.
+                  intros.
+                  inversion H15.
+                  unfold getColumnName in H15.
+                  rewrite H15 in H0.
+                  simpl in H0.
 Admitted.

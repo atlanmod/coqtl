@@ -53,8 +53,7 @@ Proof.
             * (*[c] [c]*) specialize (H0 c1 c2).
                 apply allTuples_incl in H1.
                 apply allTuples_incl in H2.
-                unfold incl in H1.
-                unfold incl in H2.
+                unfold incl in H1, H2.
                 specialize (H1 (ClassMetamodel_toObject ClassClass c1)).
                 specialize (H2 (ClassMetamodel_toObject ClassClass c2)).
                 assert (In (ClassMetamodel_toObject ClassClass c1) [ClassMetamodel_toObject ClassClass c1]). 
