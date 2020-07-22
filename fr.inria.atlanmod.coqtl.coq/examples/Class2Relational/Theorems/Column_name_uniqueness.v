@@ -108,4 +108,48 @@ Proof.
                   unfold getColumnName in H15.
                   rewrite H15 in H0.
                   simpl in H0.
+                  admit.
+               ** contradiction.
+               ** contradiction.
+               ** contradiction.
+               ** contradiction.
+               ** contradiction.
+               ** contradiction.
+               ** contradiction.
+        -- admit.
+    * destruct c4. destruct b. 
+      -- simpl in H10. contradiction. 
+      -- simpl in H10. destruct H10. inversion H10. contradiction.
+  + do 2 destruct c, c0, c1, c2; contradiction.
+  + do 2 destruct c, c0, c1, c2; contradiction.
+  + do 2 destruct c, c0, c1, c2; contradiction.
+  + do 2 destruct c, c0, c1, c2; contradiction.
+  + do 2 destruct c, c0, c1, c2; contradiction.
+  + do 2 destruct c, c0, c1, c2; contradiction.
+  + do 2 destruct c, c0, c1, c2.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
+   * contradiction.
 Admitted.
+
+
+ 
+
+
+  
+
+
+
