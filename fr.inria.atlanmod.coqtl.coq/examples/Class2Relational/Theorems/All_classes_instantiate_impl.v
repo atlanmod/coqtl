@@ -16,7 +16,7 @@ Require Import core.utils.CpdtTactics.
 Theorem All_classes_instantiate_impl :
   forall (cm : ClassModel) (c: Class),
   exists (t: Table),
-    instantiatePattern Class2Relational cm [ClassMetamodel_toObject c] = [RelationalMetamodel_toObject t].
+    instantiatePattern Class2Relational cm [ClassMetamodel_toObject ClassClass c] = [RelationalMetamodel_toObject TableClass t].
 Proof.
   eexists.
   reflexivity.
