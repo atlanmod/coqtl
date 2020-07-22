@@ -84,11 +84,15 @@ Proof.
            destruct H2. 
            ++ rewrite <- H2. simpl. simpl in H0. assumption.
            ++ contradiction H2. 
-    + (* Other patterns *) exfalso.
+    + (* Other patterns *) do 2 destruct c.
+      * destruct c0. destruct c; contradiction H2.
+      * destruct c0. destruct c; contradiction H2.
+Qed.
+
+(* + (* Other patterns *) exfalso.
       apply maxArity_length with (sp:=c::c0::x) (tr:=Class2Relational) (sm:=cm).
       * unfold maxArity. simpl. omega.
-      * assumption. 
-Qed.
+      * assumption. *)
 
 (*Ltac destructPattern sp tr sm h := 
   destruct sp;
