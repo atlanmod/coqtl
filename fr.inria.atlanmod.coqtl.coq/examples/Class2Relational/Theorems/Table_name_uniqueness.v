@@ -67,5 +67,50 @@ Proof.
                 specialize (H0 (H2 H7)).
                 simpl in H4, H5.
                 destruct H4, H5. 
-                -- inversion H4.
-Admitted.
+                -- apply rel_invert in H4.
+                   apply rel_invert in H5.
+                   rewrite <- H4.
+                   rewrite <- H5.
+                   apply H0.
+                   rewrite <- H4 in H3.
+                   rewrite <- H5 in H3.
+                   destruct c1, c2.
+                   simpl in H3.
+                   unfold not.
+                   intros.
+                   unfold not in H3.
+                   inversion H8.
+                   rewrite H10 in H3.
+                   rewrite H11 in H3.
+                   contradiction.
+                -- contradiction. 
+                -- contradiction.
+                -- contradiction.
+            * (*[c] [a]*) destruct c2. destruct b.
+                -- contradiction.
+                -- simpl in H5. destruct H5. inversion H5. contradiction. 
+            * (*[a] [c]*) destruct c1. destruct b.
+                -- contradiction.
+                -- simpl in H4. destruct H4. inversion H4. contradiction.
+            * (*[a] [a]*) destruct c1. destruct b.
+                -- contradiction.
+                -- simpl in H4. destruct H4. inversion H4. contradiction.
+        + (* [x] [y;y';_] *)
+            do 2 destruct c0, c1.
+            * contradiction.
+            * contradiction.
+            * contradiction.
+            * contradiction.
+        + (* [x;x';_] [y] *)
+            do 2 destruct c, c1.
+            * contradiction.
+            * contradiction.
+            * contradiction.
+            * contradiction.
+        + (* [x;x';_] [y;y';_] *)
+            do 2 destruct c, c1.
+            * contradiction.
+            * contradiction.
+            * contradiction.
+            * contradiction.
+Qed.
