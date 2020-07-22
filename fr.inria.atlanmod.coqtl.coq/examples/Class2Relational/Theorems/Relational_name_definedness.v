@@ -89,13 +89,17 @@ Proof.
       * destruct c0. destruct c; contradiction H2.
 Qed.
 
-(* (* [Attribute] *) 
-        unfold instantiatePattern in H2. 
-        unfold matchPattern in H2.
-        unfold matchRuleOnPattern in H2. simpl in H2.
-        destruct (negb (getAttributeDerived c0)). simpl in H2.*)
+(* Alternative for (* [Attribute] *):
+      unfold instantiatePattern in H2. 
+      unfold matchPattern in H2.
+      unfold matchRuleOnPattern in H2. simpl in H2.
+      destruct (negb (getAttributeDerived c0)). 
+      -- simpl in H2. destruct H2. 
+        ++ rewrite <- H2. simpl. simpl in H0. assumption.
+        ++ contradiction H2. 
+      --  contradiction H2.*)
 
-(* + (* Other patterns *) exfalso.
+(* Alternative for (* Other patterns *): 
       apply maxArity_length with (sp:=c::c0::x) (tr:=Class2Relational) (sm:=cm).
       * unfold maxArity. simpl. omega.
       * assumption. *)
