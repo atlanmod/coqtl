@@ -23,7 +23,7 @@ Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
 
-Theorem Table_name_uniqueness :
+Theorem Table_name_uniqueness:
 forall (cm : ClassModel) (rm : RelationalModel), 
 (* transformation *) 
     rm = execute Class2Relational cm ->

@@ -53,7 +53,7 @@ Ltac parseTransformationInGoal Tr :=
   repeat (unfold Expressions.wrapOption);
   simpl.
 
-Theorem Relational_name_definedness :
+Theorem Relational_name_definedness:
 forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
   (* precondition *)   (forall (c1 : ClassMetamodel_Object), In c1 (allModelElements cm) -> (ClassMetamodel_getName c1 <> ""%string)) ->
