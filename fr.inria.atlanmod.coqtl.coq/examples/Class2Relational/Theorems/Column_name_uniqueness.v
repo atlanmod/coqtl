@@ -25,27 +25,50 @@ Require Import examples.Class2Relational.RelationalMetamodel.
 
 Theorem Column_name_uniqueness:
 forall (cm : ClassModel) (rm : RelationalModel), 
-(* transformation *) 
+    (* transformation *)
     rm = execute Class2Relational cm ->
-(* precondition *)   
-(forall (a1: Attribute) (a2: Attribute) (c: Class) (ats: list Attribute), 
-    In (ClassMetamodel_toObject AttributeClass a1) (allModelElements cm) -> 
-    In (ClassMetamodel_toObject AttributeClass a2) (allModelElements cm) -> 
-    In (ClassMetamodel_toObject ClassClass c) (allModelElements cm) -> 
-    getClassAttributes c cm = Some ats ->
-    In a1 ats ->
-    In a2 ats ->
-    a1 <> a2 -> 
-    getAttributeName a1 <> getAttributeName a2) ->
-(* postcondition *)  
-(forall (c1: Column) (c2: Column) (t: Table) (cls: list Column), 
-    In (RelationalMetamodel_toObject ColumnClass c1) (allModelElements rm) -> 
-    In (RelationalMetamodel_toObject ColumnClass c2) (allModelElements rm) -> 
-    In (RelationalMetamodel_toObject TableClass t) (allModelElements rm) -> 
-    getTableColumns t rm = Some cls ->    
-    In c1 cls ->
-    In c2 cls ->
-    c1 <> c2 -> 
-    getColumnName c1 <> getColumnName c2).
+    (* precondition *)
+    (forall (at1: Attribute) (at2: Attribute) (cl: Class) (ats: list Attribute),
+        In (ClassMetamodel_toObject AttributeClass at1) (allModelElements cm) ->
+        In (ClassMetamodel_toObject AttributeClass at2) (allModelElements cm) ->
+        In (ClassMetamodel_toObject ClassClass cl) (allModelElements cm) ->
+        getClassAttributes cl cm = Some ats ->
+        In at1 ats ->
+        In at2 ats ->
+        at1 <> at2 ->
+        getAttributeName at1 <> getAttributeName at2) ->
+    (* postcondition *)
+    (forall (co1: Column) (co2: Column) (ta: Table) (cos: list Column),
+        In (RelationalMetamodel_toObject ColumnClass co1) (allModelElements rm) ->
+        In (RelationalMetamodel_toObject ColumnClass co2) (allModelElements rm) ->
+        In (RelationalMetamodel_toObject TableClass ta) (allModelElements rm) ->
+        getTableColumns ta rm = Some cos ->
+        In co1 cos ->
+        In co2 cos ->
+        co1 <> co2 ->
+        getColumnName co1 <> getColumnName co2).
 Proof.
+    intros.
+    rewrite H in H1, H2, H3.
+    rewrite tr_execute_in_elements in H1, H2, H3.
+    do 2 destruct H1, H2, H3.
+    destruct x, x0, x1.
+    - contradiction.
+    - contradiction.
+    - contradiction.
+    - contradiction.
+    - contradiction.
+    - contradiction.
+    - contradiction.
+    - (* [x::_] [y::_] [z::_] *) 
+      destruct x, x0, x1.
+      + (* [x] [y] [z] *)
+        do 2 destruct c, c0, c1.
+        * destruct c2. simpl in H8. destruct H8. inversion H8. contradiction.
+        * destruct c2. simpl in H8. destruct H8. inversion H8. contradiction.
+        * destruct c2. simpl in H8. destruct H8. inversion H8. contradiction.
+        * destruct c2. simpl in H8. destruct H8. inversion H8. contradiction.
+        * destruct c3. simpl in H9. destruct H9. inversion H9. contradiction.
+        * destruct c3. simpl in H9. destruct H9. inversion H9. contradiction.
+        * (* [a] [a] [c] *)
 Admitted.

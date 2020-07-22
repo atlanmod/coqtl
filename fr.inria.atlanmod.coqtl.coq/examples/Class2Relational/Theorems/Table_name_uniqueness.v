@@ -41,10 +41,8 @@ forall (cm : ClassModel) (rm : RelationalModel),
     getTableName t1 <> getTableName t2).
 Proof.
     intros.
-    rewrite H in H1.
-    rewrite H in H2.
-    rewrite tr_execute_in_elements in H1.
-    rewrite tr_execute_in_elements in H2.
+    rewrite H in H1, H2.
+    rewrite tr_execute_in_elements in H1, H2.
     do 2 destruct H1, H2.
     destruct x, x0.
     - (* [] [] *) contradiction H4.
