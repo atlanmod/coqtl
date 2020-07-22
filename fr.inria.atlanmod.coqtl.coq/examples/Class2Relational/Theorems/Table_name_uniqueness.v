@@ -29,14 +29,14 @@ forall (cm : ClassModel) (rm : RelationalModel),
     rm = execute Class2Relational cm ->
 (* precondition *)   
 (forall (c1: Class) (c2: Class), 
-    In (ClassMetamodel_toObject c1) (allModelElements cm) -> 
-    In (ClassMetamodel_toObject c2) (allModelElements cm) -> 
+    In (ClassMetamodel_toObjectOfClass ClassClass c1) (allModelElements cm) -> 
+    In (ClassMetamodel_toObjectOfClass ClassClass c2) (allModelElements cm) -> 
     c1 <> c2 -> 
     getClassName c1 <> getClassName c2) ->
 (* postcondition *)  
 (forall (t1: Table) (t2: Table), 
-    In (RelationalMetamodel_toObject t1) (allModelElements rm) -> 
-    In (RelationalMetamodel_toObject t2) (allModelElements rm) -> 
+    In (RelationalMetamodel_toObjectOfClass TableClass t1) (allModelElements rm) -> 
+    In (RelationalMetamodel_toObjectOfClass TableClass t2) (allModelElements rm) -> 
     t1 <> t2 -> 
     getTableName t1 <> getTableName t2).
 Proof.
@@ -53,10 +53,19 @@ Proof.
     - (* [x::_] [y::_] *) destruct x, x0.
         + (* [x] [y] *) do 2 destruct c, c0.
             * (*[c] [c]*) specialize (H0 c1 c2).
-            apply allTuples_incl in H1.
-            apply allTuples_incl in H2.
-            unfold incl in H1.
-            unfold incl in H2.
-            specialize (H1 c1).
-            specialize (H2 c2).
+                apply allTuples_incl in H1.
+                apply allTuples_incl in H2.
+                unfold incl in H1.
+                unfold incl in H2.
+                specialize (H1 (ClassMetamodel_toObjectOfClass ClassClass c1)).
+                specialize (H2 (ClassMetamodel_toObjectOfClass ClassClass c2)).
+                assert (In (ClassMetamodel_toObjectOfClass ClassClass c1) [ClassMetamodel_toObjectOfClass ClassClass c1]). 
+                { left. reflexivity. }
+                assert (In (ClassMetamodel_toObjectOfClass ClassClass c2) [ClassMetamodel_toObjectOfClass ClassClass c2]). 
+                { left. reflexivity. }
+                specialize (H0 (H1 H6)).
+                specialize (H0 (H2 H7)).
+                simpl in H4, H5.
+                destruct H4, H5. 
+                -- inversion H4.
 Admitted.
