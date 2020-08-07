@@ -23,7 +23,7 @@ Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
 
-Ltac parseTransformation Tr Ht := 
+Ltac unfoldTransformationIn Tr Ht := 
   unfold Tr in Ht;
   unfold ConcreteSyntax.parse in Ht; 
   unfold ConcreteSyntax.parseRule in Ht;
@@ -38,7 +38,7 @@ Ltac parseTransformation Tr Ht :=
   repeat (unfold Expressions.wrapOption in Ht);
   simpl in Ht.
 
-Ltac parseTransformationInGoal Tr := 
+Ltac unfoldTransformation Tr := 
   unfold Tr;
   unfold ConcreteSyntax.parse; 
   unfold ConcreteSyntax.parseRule;
@@ -53,7 +53,7 @@ Ltac parseTransformationInGoal Tr :=
   repeat (unfold Expressions.wrapOption);
   simpl.
 
-Theorem Relational_name_definedness :
+Theorem Relational_name_definedness:
 forall (cm : ClassModel) (rm : RelationalModel), 
   (* transformation *) rm = execute Class2Relational cm ->
   (* precondition *)   (forall (c1 : ClassMetamodel_Object), In c1 (allModelElements cm) -> (ClassMetamodel_getName c1 <> ""%string)) ->
@@ -122,4 +122,42 @@ Qed.
   ].*)
   
 
-  
+Ltac destruct_execute Hexecute sp Hin Hinstantiate :=
+  apply tr_execute_in_elements in Hexecute;
+  destruct Hexecute as [sp [Hin Hinstantiate]].
+
+Ltac destruct_instantiatePattern Hinstantiate rule Hrule HinstRule :=
+  apply tr_instantiatePattern_in in Hinstantiate;
+  destruct Hinstantiate as [rule [Hrule HinstRule]].
+
+Ltac destruct_matchPattern Hrule Hr Hmatch :=
+  apply tr_matchPattern_in in Hrule;
+  destruct Hrule as [Hr Hmatch].
+
+Ltac destruct_rule Hrule :=
+  repeat (destruct Hrule as [Hrule | Hrule]; try contradiction Hrule); destruct Hrule.
+
+Ltac destruct_pattern Hinst sp :=
+  repeat (let se := fresh "se" in
+          destruct sp as [ | se sp ];
+          [ | destruct se as [[] ?] eqn:?];
+          try contradiction Hinst);
+  destruct Hinst as [Hinst | []]; simpl in Hinst.
+
+Theorem Relational_name_definedness':
+forall (cm : ClassModel) (rm : RelationalModel),
+  (* transformation *) rm = execute Class2Relational cm ->
+  (* precondition *)   (forall (c1 : ClassMetamodel_Object), In c1 (allModelElements cm) -> (ClassMetamodel_getName c1 <> ""%string)) ->
+  (* postcondition *)  (forall (t1 : RelationalMetamodel_Object), In t1 (allModelElements rm) -> (RelationalMetamodel_getName t1 <> ""%string)).
+Proof.
+  intros. subst rm.
+  destruct_execute H1 sp Hin Hinst. (* t1 comes from a pattern sp *)
+  apply allTuples_incl in Hin. (* sp is made of source model elements *)
+  destruct_instantiatePattern Hinst r Hr Hinst. (* sp matches a rule r *)
+  destruct_matchPattern Hr Hr Hmatch. (* r comes from the transformation *)
+  clear Hmatch. (* Hmatch is not used for this proof *)
+  destruct_rule Hr; (* case analysis on rules *)
+    destruct_pattern Hinst sp. (* retrieve the source pattern for each rule *)
+  - (* Class2Table *) specialize (H0 se). crush.
+  - (* Attribute2Column *) specialize (H0 se). crush.
+Qed.

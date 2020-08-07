@@ -218,19 +218,14 @@ Defined.
 
 Definition ClassMetamodel_toObjectFromClass (c :Class) : ClassMetamodel_Object :=
   (ClassMetamodel_BuildObject ClassClass c).
-Coercion ClassMetamodel_toObjectFromClass : Class >-> ClassMetamodel_Object.
 
 Definition ClassMetamodel_toObjectFromAttribute (a :Attribute) : ClassMetamodel_Object :=
   (ClassMetamodel_BuildObject AttributeClass a).
-Coercion ClassMetamodel_toObjectFromAttribute : Attribute >-> ClassMetamodel_Object.
 
-Definition ClassMetamodel_toObject (c : ClassMetamodel_Object) : ClassMetamodel_Object := c.
-Definition ClassMetamodel_toLink (c : ClassMetamodel_Link) : ClassMetamodel_Link := c.
-
-Definition ClassMetamodel_toObjectOfClass (t: ClassMetamodel_Class) (e: ClassMetamodel_getTypeByClass t) : ClassMetamodel_Object :=
+Definition ClassMetamodel_toObject (t: ClassMetamodel_Class) (e: ClassMetamodel_getTypeByClass t) : ClassMetamodel_Object :=
   (ClassMetamodel_BuildObject t e).
 
-Definition ClassMetamodel_toLinkOfReference (t: ClassMetamodel_Reference) (e: ClassMetamodel_getTypeByReference t) : ClassMetamodel_Link :=
+Definition ClassMetamodel_toLink (t: ClassMetamodel_Reference) (e: ClassMetamodel_getTypeByReference t) : ClassMetamodel_Link :=
   (ClassMetamodel_BuildLink t e).
 
 Definition ClassMetamodel_getId (c : ClassMetamodel_Object) : nat :=
@@ -305,7 +300,7 @@ Definition getAttributeType (a : Attribute) (m : Model ClassMetamodel_Object Cla
 
 Definition getAttributeTypeObject (a : Attribute) (m : Model ClassMetamodel_Object ClassMetamodel_Link) : option ClassMetamodel_Object :=
   match getAttributeType a m with
-  | Some c => Some (ClassMetamodel_toObject c)
+  | Some c => Some (ClassMetamodel_toObject ClassClass c)
   | None => None
   end.
 
@@ -323,8 +318,8 @@ Instance ClassMetamodel : Metamodel ClassMetamodel_Object ClassMetamodel_Link Cl
     denoteModelReference := ClassMetamodel_getTypeByReference;
     toModelClass := ClassMetamodel_toClass;
     toModelReference := ClassMetamodel_toReference;
-    toModelElement := ClassMetamodel_toObjectOfClass;
-    toModelLink := ClassMetamodel_toLinkOfReference;
+    toModelElement := ClassMetamodel_toObject;
+    toModelLink := ClassMetamodel_toLink;
     beq_ModelElement := beq_ClassMetamodel_Object;
 
     (* Theorems *)
@@ -360,7 +355,7 @@ Qed.
 Lemma Class_Object_cast:
   forall a c,
     ClassMetamodel_toClass ClassClass a = return c ->
-      ClassMetamodel_toObject c = a.
+      ClassMetamodel_toObject ClassClass c = a.
 Proof.
   intros.
   unfold ClassMetamodel_toClass in H.
@@ -373,7 +368,7 @@ Qed.
 Lemma Attribute_Object_cast:
   forall a c,
     ClassMetamodel_toClass AttributeClass a = return c ->
-      ClassMetamodel_toObject c = a.
+      ClassMetamodel_toObject AttributeClass c = a.
 Proof.
   intros.
   unfold ClassMetamodel_toClass in H.

@@ -261,18 +261,14 @@ Defined.
 
 Definition RelationalMetamodel_toObjectFromTable (t :Table) : RelationalMetamodel_Object :=
   (RelationalMetamodel_BuildObject TableClass t).
-Coercion RelationalMetamodel_toObjectFromTable : Table >-> RelationalMetamodel_Object.
-Definition RelationalMetamodel_toObject (c : RelationalMetamodel_Object) : RelationalMetamodel_Object := c.
 
 Definition RelationalMetamodel_toObjectFromColumn (c :Column) : RelationalMetamodel_Object :=
   (RelationalMetamodel_BuildObject ColumnClass c).
-Coercion RelationalMetamodel_toObjectFromColumn : Column >-> RelationalMetamodel_Object.
-Definition RelationalMetamodel_toLink (c : RelationalMetamodel_Link) : RelationalMetamodel_Link := c.
 
-Definition RelationalMetamodel_toObjectOfClass (t: RelationalMetamodel_Class) (e: RelationalMetamodel_getTypeByClass t) : RelationalMetamodel_Object:=
+Definition RelationalMetamodel_toObject (t: RelationalMetamodel_Class) (e: RelationalMetamodel_getTypeByClass t) : RelationalMetamodel_Object:=
   (RelationalMetamodel_BuildObject t e).
 
-Definition RelationalMetamodel_toLinkOfReference (t: RelationalMetamodel_Reference) (e: RelationalMetamodel_getTypeByReference t) : RelationalMetamodel_Link :=
+Definition RelationalMetamodel_toLink (t: RelationalMetamodel_Reference) (e: RelationalMetamodel_getTypeByReference t) : RelationalMetamodel_Link :=
   (RelationalMetamodel_BuildLink t e).
 
 Definition RelationalMetamodel_getId (r : RelationalMetamodel_Object) : nat :=
@@ -349,8 +345,8 @@ Instance RelationalMetamodel : Metamodel RelationalMetamodel_Object RelationalMe
     denoteModelReference := RelationalMetamodel_getTypeByReference;
     toModelClass := toRelationalMetamodel_Class;
     toModelReference := toRelationalMetamodel_Reference;
-    toModelElement := RelationalMetamodel_toObjectOfClass;
-    toModelLink := RelationalMetamodel_toLinkOfReference;
+    toModelElement := RelationalMetamodel_toObject;
+    toModelLink := RelationalMetamodel_toLink;
     beq_ModelElement := beq_RelationalMetamodel_Object;
 
     (* Theorems *)
