@@ -13,65 +13,125 @@ Require Import ListSet.   (* set *)
 Require Import Omega.
 Require Import Bool.
 
-Require Import core.utils.TopUtils.
+Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.Model.
 
 Require Import Coq.Logic.Eqdep_dec.
 
+
 (* Base types *)
-Inductive LocatedElement : Set :=
-  BuildLocatedElement :
-  (* id *) string ->
-  (* location *) string ->
-  LocatedElement.
-  
+
+(* Check: flatten attribute in inheritence hierachy *)
+
 Inductive TruthTable : Set :=
   BuildTruthTable :
-  (* Inheritence Attribute *) LocatedElement -> 
+  (* location *) string ->
   (* id *) string ->
   (* name *) string ->
   TruthTable.
-  
-Inductive Port : Set :=
-  BuildPort :
-  (* Inheritence Attribute *) LocatedElement -> 
-  (* id *) string ->
-  (* name *) string ->
-  Port.
-  
-Inductive InputPort : Set :=
-  BuildInputPort :
-  (* Inheritence Attribute *) Port -> 
-  (* id *) string ->
-  InputPort.
-  
-Inductive OutputPort : Set :=
-  BuildOutputPort :
-  (* Inheritence Attribute *) Port -> 
-  (* id *) string ->
-  OutputPort.
-  
+
 Inductive Row : Set :=
   BuildRow :
-  (* Inheritence Attribute *) LocatedElement -> 
+  (* location *) string ->
   (* id *) string ->
   Row.
   
 Inductive Cell : Set :=
   BuildCell :
-  (* Inheritence Attribute *) LocatedElement -> 
+  (* location *) string ->
   (* id *) string ->
   (* value *) bool ->
   Cell.
-  
 
+Inductive InputPort : Set :=
+  BuildInputPort :
+  (* location *) string ->
+  (* id *) string ->
+  (* name *) string ->
+  InputPort.
+  
+Inductive OutputPort : Set :=
+  BuildOutputPort :
+  (* location *) string ->
+  (* id *) string ->
+  (* name *) string ->
+  OutputPort.
+
+(* Port-types *)
+Inductive Port_EClass : Set :=
+  | InputPortEClass
+  | OutputPortEClass
+.
+
+Definition Port_getTypeByEClass (arg : Port_EClass) : Set :=
+  match arg with
+    | InputPortEClass => InputPort
+    | OutputPortEClass => OutputPort
+  end.
+
+(* Check: abstract class as predicated constructor *)
+Inductive Port : Set :=
+  | Build_Abstract_Port : 
+    forall (arg: Port_EClass), 
+      (Port_getTypeByEClass arg) -> Port.
+
+(* AbstractState-types *)
+Inductive LocatedElement_EClass : Set :=
+  | TruthTableEClass
+  | RowEClass
+  | CellEClass
+  | PortEClass
+.
+
+(* Check: deep inheritence hierachy can be handeled *)
+Definition LocatedElement_getTypeByEClass (hsec_arg : LocatedElement_EClass) : Set :=
+  match hsec_arg with
+  | TruthTableEClass => TruthTable
+  | RowEClass => Row
+  | CellEClass => Cell
+  | PortEClass => Port
+  end.
+
+(* Check: parent class might be instaniateable, solve by alternative constructors *)
+Inductive LocatedElement : Set :=
+| Build_Concrete_LocatedElement :
+  (* id *) string ->
+  (* location *) string ->
+  LocatedElement
+| Build_Abstract_LocatedElement : 
+    forall (arg: LocatedElement_EClass), 
+      (LocatedElement_getTypeByEClass arg) -> LocatedElement.
+
+(* Check: multiple inheritence 
+
+   The idea is have separate set of eclass for each parent class, 
+
+   rename if overlapped
+
+   This delegate a complex job for the model generator
+
+   to flatten element/reference that corresponds to multi-inheritence
+
+Inductive NamedElement_EClass : Set :=
+  | TruthTableEClass2
+  | InputPortEClass2
+.
+
+Definition NamedElement_getTypeByEClass (hsec_arg : NamedElement_EClass) : Set :=
+  match hsec_arg with
+  | TruthTableEClass2 => TruthTable
+  | InputPortEClass2 => InputPort
+  end.
+
+*)
 
 Inductive TruthTablePorts : Set :=
    BuildTruthTablePorts :
    TruthTable ->
    list Port ->
    TruthTablePorts.
+
 Inductive TruthTableRows : Set :=
    BuildTruthTableRows :
    TruthTable ->
@@ -83,19 +143,21 @@ Inductive PortOwner : Set :=
    Port ->
    TruthTable ->
    PortOwner.
+
+(* Check: relationship on children-class does not affect siblings 
+          because each relationship is pinpoint on the exact sub-classes *)
 Inductive PortCells : Set :=
    BuildPortCells :
    Port ->
    list Cell ->
    PortCells.
 
-
-
 Inductive RowOwner : Set :=
    BuildRowOwner :
    Row ->
    TruthTable ->
    RowOwner.
+
 Inductive RowCells : Set :=
    BuildRowCells :
    Row ->
@@ -107,6 +169,7 @@ Inductive CellOwner : Set :=
    Cell ->
    Row ->
    CellOwner.
+
 Inductive CellPort : Set :=
    BuildCellPort :
    Cell ->
@@ -116,88 +179,86 @@ Inductive CellPort : Set :=
 
 
 (* Accessors *)
-Definition LocatedElement_getId (l : LocatedElement) : string :=
-  match l with BuildLocatedElement  id location  => id end.
-Definition LocatedElement_getLocation (l : LocatedElement) : string :=
-  match l with BuildLocatedElement  id location  => location end.
- 
-Definition TruthTable_getLocatedElement (t : TruthTable) : LocatedElement :=
-  match t with BuildTruthTable locatedelement id name  => locatedelement end.
+
+
+Definition TruthTable_getLocation (t : TruthTable) : string :=
+  match t with BuildTruthTable location id name  => location end.
 Definition TruthTable_getId (t : TruthTable) : string :=
-  match t with BuildTruthTable locatedelement id name  => id end.
+  match t with BuildTruthTable location id name  => id end.
 Definition TruthTable_getName (t : TruthTable) : string :=
-  match t with BuildTruthTable locatedelement id name  => name end.
+  match t with BuildTruthTable location id name  => name end.
  
-Definition Port_getLocatedElement (p : Port) : LocatedElement :=
-  match p with BuildPort locatedelement id name  => locatedelement end.
-Definition Port_getId (p : Port) : string :=
-  match p with BuildPort locatedelement id name  => id end.
-Definition Port_getName (p : Port) : string :=
-  match p with BuildPort locatedelement id name  => name end.
- 
-Definition InputPort_getPort (i : InputPort) : Port :=
-  match i with BuildInputPort port id  => port end.
+
+Definition InputPort_getLocation (i : InputPort) : string :=
+  match i with BuildInputPort location id name  => location end.
 Definition InputPort_getId (i : InputPort) : string :=
-  match i with BuildInputPort port id  => id end.
- 
-Definition OutputPort_getPort (o : OutputPort) : Port :=
-  match o with BuildOutputPort port id  => port end.
+  match i with BuildInputPort location id name  => id end.
+Definition InputPort_getName (i : InputPort) : string :=
+  match i with BuildInputPort location id name  => name end.
+
+Definition OutputPort_getLocation (o : OutputPort) : string :=
+  match o with BuildOutputPort location id name   => location end.
 Definition OutputPort_getId (o : OutputPort) : string :=
-  match o with BuildOutputPort port id  => id end.
- 
-Definition Row_getLocatedElement (r : Row) : LocatedElement :=
-  match r with BuildRow locatedelement id  => locatedelement end.
+  match o with BuildOutputPort location id name   => id end.
+Definition OutputPort_getName (o : OutputPort) : string :=
+  match o with BuildOutputPort location id name   => name end.
+
+Definition Row_getLocation (r : Row) : string :=
+  match r with BuildRow location id  => location end.
 Definition Row_getId (r : Row) : string :=
-  match r with BuildRow locatedelement id  => id end.
+  match r with BuildRow location id  => id end.
  
-Definition Cell_getLocatedElement (c : Cell) : LocatedElement :=
-  match c with BuildCell locatedelement id value  => locatedelement end.
+Definition Cell_getLocation (c : Cell) : string :=
+  match c with BuildCell location id value  => location end.
 Definition Cell_getId (c : Cell) : string :=
-  match c with BuildCell locatedelement id value  => id end.
+  match c with BuildCell location id value  => id end.
 Definition Cell_getValue (c : Cell) : bool :=
-  match c with BuildCell locatedelement id value  => value end.
- 
+  match c with BuildCell location id value  => value end.
 
 
-		
+Definition Port_getLocation (p : Port) : string :=
+  match p with 
+    | Build_Abstract_Port InputPortEClass (BuildInputPort location id name)  => location 
+    | Build_Abstract_Port OutputPortEClass (BuildOutputPort location id name) => location
+  end.
+Definition Port_getId (p : Port) : string :=
+  match p with 
+    | Build_Abstract_Port InputPortEClass (BuildInputPort location id name)  => id 
+    | Build_Abstract_Port OutputPortEClass (BuildOutputPort location id name) => id
+  end.
+Definition Port_getName (p : Port) : string :=
+  match p with 
+    | Build_Abstract_Port InputPortEClass (BuildInputPort location id name)  => name 
+    | Build_Abstract_Port OutputPortEClass (BuildOutputPort location id name) => name
+  end.
+
+Definition LocatedElement_getId (l : LocatedElement) : string :=
+  match l with 
+    | Build_Concrete_LocatedElement id location  => id 
+    | Build_Abstract_LocatedElement TruthTableEClass (BuildTruthTable location id name) => id
+    | Build_Abstract_LocatedElement RowEClass (BuildRow location id) => id
+    | Build_Abstract_LocatedElement CellEClass (BuildCell location id value) => id
+    | Build_Abstract_LocatedElement PortEClass p => Port_getId p
+  end.
+Definition LocatedElement_getLocation (l : LocatedElement) : string :=
+  match l with 
+    | Build_Concrete_LocatedElement id location  => location 
+    | Build_Abstract_LocatedElement TruthTableEClass (BuildTruthTable location id name) => location
+    | Build_Abstract_LocatedElement RowEClass (BuildRow location id) => location
+    | Build_Abstract_LocatedElement CellEClass (BuildCell location id value) => location
+    | Build_Abstract_LocatedElement PortEClass p => Port_getLocation p
+  end.
+
+
 (* Meta-types *)
+
 Inductive TTMetamodel_EClass : Set :=
   | LocatedElementEClass
-  | TruthTableEClass
-  | PortEClass
-  | InputPortEClass
-  | OutputPortEClass
-  | RowEClass
-  | CellEClass
 .
 
 Definition TTMetamodel_getTypeByEClass (ttec_arg : TTMetamodel_EClass) : Set :=
   match ttec_arg with
     | LocatedElementEClass => LocatedElement
-    | TruthTableEClass => TruthTable
-    | PortEClass => Port
-    | InputPortEClass => InputPort
-    | OutputPortEClass => OutputPort
-    | RowEClass => Row
-    | CellEClass => Cell
-  end.	
-
-Definition TTMetamodel_getEAttributeTypesByEClass (ttec_arg : TTMetamodel_EClass) : Set :=
-  match ttec_arg with
-    | LocatedElementEClass => 
-    (string)
-    | TruthTableEClass => 
-    (LocatedElement * string)
-    | PortEClass => 
-    (LocatedElement * string)
-    | InputPortEClass => 
-    (Port)
-    | OutputPortEClass => 
-    (Port)
-    | RowEClass => 
-    (LocatedElement)
-    | CellEClass => 
-    (LocatedElement * bool)
   end.
 
 Inductive TTMetamodel_EReference : Set :=
@@ -223,23 +284,8 @@ Definition TTMetamodel_getTypeByEReference (tter_arg : TTMetamodel_EReference) :
 | CellPortEReference => CellPort
   end.
 
-Definition TTMetamodel_getERoleTypesByEReference (tter_arg : TTMetamodel_EReference) : Set :=
-  match tter_arg with
-| TruthTablePortsEReference => (TruthTable * list Port)
-| TruthTableRowsEReference => (TruthTable * list Row)
-| PortOwnerEReference => (Port * TruthTable)
-| PortCellsEReference => (Port * list Cell)
-| RowOwnerEReference => (Row * TruthTable)
-| RowCellsEReference => (Row * list Cell)
-| CellOwnerEReference => (Cell * Row)
-| CellPortEReference => (Cell * Port)
-  end.
 
 (* Generic types *)
-
-
-
-
 
 Inductive TTMetamodel_EObject : Set :=
  | Build_TTMetamodel_EObject : 
@@ -294,35 +340,18 @@ Proof.
   - exact None.
 Defined.
 
+Lemma TTMetamodel_eqPortEClass_dec : 
+ forall (ttec_arg1:Port_EClass) (ttec_arg2:Port_EClass), { ttec_arg1 = ttec_arg2 } + { ttec_arg1 <> ttec_arg2 }.
+Proof. repeat decide equality. Defined.
+
+Lemma TTMetamodel_eqLocatedElementEClass_dec : 
+ forall (ttec_arg1:LocatedElement_EClass) (ttec_arg2:LocatedElement_EClass), { ttec_arg1 = ttec_arg2 } + { ttec_arg1 <> ttec_arg2 }.
+Proof. repeat decide equality. Defined.
+
 (* Generic functions *)
 Definition TTMetamodel_toEObjectFromLocatedElement (lo_arg :LocatedElement) : TTMetamodel_EObject :=
   (Build_TTMetamodel_EObject LocatedElementEClass lo_arg).
 Coercion TTMetamodel_toEObjectFromLocatedElement : LocatedElement >-> TTMetamodel_EObject.
-
-Definition TTMetamodel_toEObjectFromTruthTable (tr_arg :TruthTable) : TTMetamodel_EObject :=
-  (Build_TTMetamodel_EObject TruthTableEClass tr_arg).
-Coercion TTMetamodel_toEObjectFromTruthTable : TruthTable >-> TTMetamodel_EObject.
-
-Definition TTMetamodel_toEObjectFromPort (po_arg :Port) : TTMetamodel_EObject :=
-  (Build_TTMetamodel_EObject PortEClass po_arg).
-Coercion TTMetamodel_toEObjectFromPort : Port >-> TTMetamodel_EObject.
-
-Definition TTMetamodel_toEObjectFromInputPort (in_arg :InputPort) : TTMetamodel_EObject :=
-  (Build_TTMetamodel_EObject InputPortEClass in_arg).
-Coercion TTMetamodel_toEObjectFromInputPort : InputPort >-> TTMetamodel_EObject.
-
-Definition TTMetamodel_toEObjectFromOutputPort (ou_arg :OutputPort) : TTMetamodel_EObject :=
-  (Build_TTMetamodel_EObject OutputPortEClass ou_arg).
-Coercion TTMetamodel_toEObjectFromOutputPort : OutputPort >-> TTMetamodel_EObject.
-
-Definition TTMetamodel_toEObjectFromRow (ro_arg :Row) : TTMetamodel_EObject :=
-  (Build_TTMetamodel_EObject RowEClass ro_arg).
-Coercion TTMetamodel_toEObjectFromRow : Row >-> TTMetamodel_EObject.
-
-Definition TTMetamodel_toEObjectFromCell (ce_arg :Cell) : TTMetamodel_EObject :=
-  (Build_TTMetamodel_EObject CellEClass ce_arg).
-Coercion TTMetamodel_toEObjectFromCell : Cell >-> TTMetamodel_EObject.
-
 
 (** Metamodel Type Class Instaniation **)
 Definition TTMetamodel_toEObject (tteo_arg : TTMetamodel_EObject) : TTMetamodel_EObject := tteo_arg.
@@ -338,109 +367,83 @@ Definition TTMetamodel_toELinkOfEReference (tter_arg: TTMetamodel_EReference) (t
 
 (* Accessors on model *)
 (* Equality for Types *)
-(*? We currently define eq for Eclass on their fist attribute *)
-Definition beq_LocatedElement (lo_arg1 : LocatedElement) (lo_arg2 : LocatedElement) : bool :=
-( beq_string (LocatedElement_getLocation lo_arg1) (LocatedElement_getLocation lo_arg2) )
-.
 
 Definition beq_TruthTable (tr_arg1 : TruthTable) (tr_arg2 : TruthTable) : bool :=
-beq_LocatedElement (TruthTable_getLocatedElement tr_arg1) (TruthTable_getLocatedElement tr_arg2) &&
-( beq_string (TruthTable_getName tr_arg1) (TruthTable_getName tr_arg2) )
-.
-
-Definition beq_Port (po_arg1 : Port) (po_arg2 : Port) : bool :=
-beq_LocatedElement (Port_getLocatedElement po_arg1) (Port_getLocatedElement po_arg2) &&
-( beq_string (Port_getName po_arg1) (Port_getName po_arg2) )
+ ( beq_string (TruthTable_getLocation tr_arg1) (TruthTable_getLocation tr_arg2) ) &&
+ ( beq_string (TruthTable_getId tr_arg1) (TruthTable_getId tr_arg2) ) &&
+ ( beq_string (TruthTable_getName tr_arg1) (TruthTable_getName tr_arg2) )
 .
 
 Definition beq_InputPort (in_arg1 : InputPort) (in_arg2 : InputPort) : bool :=
-beq_Port (InputPort_getPort in_arg1) (InputPort_getPort in_arg2)
+( beq_string (InputPort_getLocation in_arg1) (InputPort_getLocation in_arg2) ) &&
+( beq_string (InputPort_getId in_arg1) (InputPort_getId in_arg2) ) &&
+( beq_string (InputPort_getName in_arg1) (InputPort_getName in_arg2) )
 .
 
 Definition beq_OutputPort (ou_arg1 : OutputPort) (ou_arg2 : OutputPort) : bool :=
-beq_Port (OutputPort_getPort ou_arg1) (OutputPort_getPort ou_arg2)
+( beq_string (OutputPort_getLocation ou_arg1) (OutputPort_getLocation ou_arg2) ) &&
+( beq_string (OutputPort_getId ou_arg1) (OutputPort_getId ou_arg2) ) &&
+( beq_string (OutputPort_getName ou_arg1) (OutputPort_getName ou_arg2) )
 .
 
+Definition beq_Port (po_arg1 : Port) (po_arg2 : Port) : bool :=
+  match po_arg1, po_arg2 with
+  | Build_Abstract_Port InputPortEClass i1, Build_Abstract_Port InputPortEClass i2 =>
+      ( beq_InputPort i1 i2)
+  | Build_Abstract_Port OutputPortEClass o1, Build_Abstract_Port OutputPortEClass o2 =>
+      ( beq_OutputPort o1 o2) 
+  | _,_ => false
+  end.
+
 Definition beq_Row (ro_arg1 : Row) (ro_arg2 : Row) : bool :=
-beq_LocatedElement (Row_getLocatedElement ro_arg1) (Row_getLocatedElement ro_arg2)
+beq_string (Row_getLocation ro_arg1) (Row_getLocation ro_arg2) &&
+beq_string (Row_getId ro_arg1) (Row_getId ro_arg2)
 .
 
 Definition beq_Cell (ce_arg1 : Cell) (ce_arg2 : Cell) : bool :=
-beq_LocatedElement (Cell_getLocatedElement ce_arg1) (Cell_getLocatedElement ce_arg2) &&
+beq_string (Cell_getLocation ce_arg1) (Cell_getLocation ce_arg2) &&
+beq_string (Cell_getId ce_arg1) (Cell_getId ce_arg2) &&
 ( beq_bool (Cell_getValue ce_arg1) (Cell_getValue ce_arg2) )
 .
 
+(* Check: equality of locatedElement, it is used in an important place of type class instantiation *)
 
+Definition beq_LocatedElement (lo_arg1 : LocatedElement) (lo_arg2 : LocatedElement) : bool :=
+  match lo_arg1, lo_arg2 with
+  | Build_Concrete_LocatedElement id1 location1, Build_Concrete_LocatedElement id2 location2 => 
+      ( beq_string location1 location2 ) && ( beq_string id1 id2 )
+  | Build_Abstract_LocatedElement TruthTableEClass tt1, Build_Abstract_LocatedElement TruthTableEClass tt2 =>
+      ( beq_TruthTable tt1 tt2)
+  | Build_Abstract_LocatedElement PortEClass p1, Build_Abstract_LocatedElement PortEClass p2 =>
+      ( beq_Port p1 p2)
+  | Build_Abstract_LocatedElement RowEClass r1, Build_Abstract_LocatedElement RowEClass r2 =>
+      ( beq_Row r1 r2)
+  | Build_Abstract_LocatedElement CellEClass c1, Build_Abstract_LocatedElement CellEClass c2 =>
+      ( beq_Cell c1 c2) 
+  | _,_ => false
+  end.
 
-Fixpoint TTMetamodel_Port_downcastInputPort (po_arg : Port) (l : list TTMetamodel_EObject) : option InputPort := 
-  match l with
-	 | Build_TTMetamodel_EObject InputPortEClass (BuildInputPort eSuper id ) :: l' => 
-		if beq_Port po_arg eSuper then (Some (BuildInputPort eSuper id )) else (TTMetamodel_Port_downcastInputPort po_arg l')
-	 | _ :: l' => (TTMetamodel_Port_downcastInputPort po_arg l')
-	 | nil => None
-end.
+Definition TTMetamodel_Port_DownCast (ttec_arg : Port_EClass) (tteo_arg : Port) : option (Port_getTypeByEClass ttec_arg).
+Proof.
+  destruct tteo_arg as [arg1 arg2].
+  destruct (TTMetamodel_eqPortEClass_dec arg1 ttec_arg) as [e|] eqn:dec_case.
+  - rewrite e in arg2.
+    exact (Some arg2).
+  - exact None.
+Defined.
 
-Definition Port_downcastInputPort (po_arg : Port) (m : TTModel) : option InputPort :=
-  TTMetamodel_Port_downcastInputPort po_arg (@allModelElements _ _ m).
+Definition TTMetamodel_LocatedElement_DownCast (ttec_arg : LocatedElement_EClass) (tteo_arg : LocatedElement) : option (LocatedElement_getTypeByEClass ttec_arg).
+Proof.
+  destruct tteo_arg.
+  - exact None.
+  - destruct (TTMetamodel_eqLocatedElementEClass_dec arg ttec_arg) as [e|] eqn:dec_case.
+    -- rewrite e in l.
+       exact (Some l).
+    -- exact None.
+Defined.
 
-Fixpoint TTMetamodel_Port_downcastOutputPort (po_arg : Port) (l : list TTMetamodel_EObject) : option OutputPort := 
-  match l with
-	 | Build_TTMetamodel_EObject OutputPortEClass (BuildOutputPort eSuper id ) :: l' => 
-		if beq_Port po_arg eSuper then (Some (BuildOutputPort eSuper id )) else (TTMetamodel_Port_downcastOutputPort po_arg l')
-	 | _ :: l' => (TTMetamodel_Port_downcastOutputPort po_arg l')
-	 | nil => None
-end.
-
-Definition Port_downcastOutputPort (po_arg : Port) (m : TTModel) : option OutputPort :=
-  TTMetamodel_Port_downcastOutputPort po_arg (@allModelElements _ _ m).
-
-
-Fixpoint TTMetamodel_LocatedElement_downcastTruthTable (lo_arg : LocatedElement) (l : list TTMetamodel_EObject) : option TruthTable := 
-  match l with
-	 | Build_TTMetamodel_EObject TruthTableEClass (BuildTruthTable eSuper id name ) :: l' => 
-		if beq_LocatedElement lo_arg eSuper then (Some (BuildTruthTable eSuper id name )) else (TTMetamodel_LocatedElement_downcastTruthTable lo_arg l')
-	 | _ :: l' => (TTMetamodel_LocatedElement_downcastTruthTable lo_arg l')
-	 | nil => None
-end.
-
-Definition LocatedElement_downcastTruthTable (lo_arg : LocatedElement) (m : TTModel) : option TruthTable :=
-  TTMetamodel_LocatedElement_downcastTruthTable lo_arg (@allModelElements _ _ m).
-
-Fixpoint TTMetamodel_LocatedElement_downcastPort (lo_arg : LocatedElement) (l : list TTMetamodel_EObject) : option Port := 
-  match l with
-	 | Build_TTMetamodel_EObject PortEClass (BuildPort eSuper id name ) :: l' => 
-		if beq_LocatedElement lo_arg eSuper then (Some (BuildPort eSuper id name )) else (TTMetamodel_LocatedElement_downcastPort lo_arg l')
-	 | _ :: l' => (TTMetamodel_LocatedElement_downcastPort lo_arg l')
-	 | nil => None
-end.
-
-Definition LocatedElement_downcastPort (lo_arg : LocatedElement) (m : TTModel) : option Port :=
-  TTMetamodel_LocatedElement_downcastPort lo_arg (@allModelElements _ _ m).
-
-Fixpoint TTMetamodel_LocatedElement_downcastRow (lo_arg : LocatedElement) (l : list TTMetamodel_EObject) : option Row := 
-  match l with
-	 | Build_TTMetamodel_EObject RowEClass (BuildRow eSuper id ) :: l' => 
-		if beq_LocatedElement lo_arg eSuper then (Some (BuildRow eSuper id )) else (TTMetamodel_LocatedElement_downcastRow lo_arg l')
-	 | _ :: l' => (TTMetamodel_LocatedElement_downcastRow lo_arg l')
-	 | nil => None
-end.
-
-Definition LocatedElement_downcastRow (lo_arg : LocatedElement) (m : TTModel) : option Row :=
-  TTMetamodel_LocatedElement_downcastRow lo_arg (@allModelElements _ _ m).
-
-Fixpoint TTMetamodel_LocatedElement_downcastCell (lo_arg : LocatedElement) (l : list TTMetamodel_EObject) : option Cell := 
-  match l with
-	 | Build_TTMetamodel_EObject CellEClass (BuildCell eSuper id value ) :: l' => 
-		if beq_LocatedElement lo_arg eSuper then (Some (BuildCell eSuper id value )) else (TTMetamodel_LocatedElement_downcastCell lo_arg l')
-	 | _ :: l' => (TTMetamodel_LocatedElement_downcastCell lo_arg l')
-	 | nil => None
-end.
-
-Definition LocatedElement_downcastCell (lo_arg : LocatedElement) (m : TTModel) : option Cell :=
-  TTMetamodel_LocatedElement_downcastCell lo_arg (@allModelElements _ _ m).
-
-
-
+(* Check the model is a bit wired, where the element is wrapped around parent classes (e.g. BuildPort inputElcass p),
+         and the link is not wrapped (e.g. just p) *)
 
 Fixpoint TruthTable_getPortsOnLinks (tr_arg : TruthTable) (l : list TTMetamodel_ELink) : option (list Port) :=
 match l with
@@ -449,7 +452,6 @@ match l with
 | _ :: l' => TruthTable_getPortsOnLinks tr_arg l'
 | nil => None
 end.
-
 Definition TruthTable_getPorts (tr_arg : TruthTable) (m : TTModel) : option (list Port) :=
   TruthTable_getPortsOnLinks tr_arg (@allModelLinks _ _ m).
 Fixpoint TruthTable_getRowsOnLinks (tr_arg : TruthTable) (l : list TTMetamodel_ELink) : option (list Row) :=
@@ -528,23 +530,9 @@ end.
 Definition Cell_getPort (ce_arg : Cell) (m : TTModel) : option (Port) :=
   Cell_getPortOnLinks ce_arg (@allModelLinks _ _ m).
 
-
-Definition TTMetamodel_defaultInstanceOfEClass (ttec_arg: TTMetamodel_EClass) : (TTMetamodel_getTypeByEClass ttec_arg) :=
-  match ttec_arg with
-  | LocatedElementEClass => 
-  (BuildLocatedElement "" "")
-  | TruthTableEClass => 
-  (BuildTruthTable (BuildLocatedElement "" "") "" "")
-  | PortEClass => 
-  (BuildPort (BuildLocatedElement "" "") "" "")
-  | InputPortEClass => 
-  (BuildInputPort (BuildPort (BuildLocatedElement "" "") "" "") "")
-  | OutputPortEClass => 
-  (BuildOutputPort (BuildPort (BuildLocatedElement "" "") "" "") "")
-  | RowEClass => 
-  (BuildRow (BuildLocatedElement "" "") "")
-  | CellEClass => 
-  (BuildCell (BuildLocatedElement "" "") "" true)
+Definition beq_TTMetamodel_Object (c1 : TTMetamodel_EObject) (c2 : TTMetamodel_EObject) : bool :=
+  match c1, c2 with
+  | Build_TTMetamodel_EObject LocatedElementEClass o1, Build_TTMetamodel_EObject LocatedElementEClass o2 => beq_LocatedElement o1 o2
   end.
 
 (* Typeclass Instance *)
@@ -556,24 +544,12 @@ Instance TTMetamodel : Metamodel TTMetamodel_EObject TTMetamodel_ELink TTMetamod
     toModelReference := TTMetamodel_toEReference;
     toModelElement := TTMetamodel_toEObjectOfEClass;
     toModelLink := TTMetamodel_toELinkOfEReference;
-    bottomModelClass := TTMetamodel_defaultInstanceOfEClass;
+    beq_ModelElement := beq_TTMetamodel_Object;
 
     (* Theorems *)
     eqModelClass_dec := TTMetamodel_eqEClass_dec;
     eqModelReference_dec := TTMetamodel_eqEReference_dec;
-
-    (* Constructors *)
-    BuildModelElement := Build_TTMetamodel_EObject;
-    BuildModelLink := Build_TTMetamodel_ELink;
   }.
-  
-(* Useful lemmas *)
-Lemma TT_invert : 
-  forall (ttec_arg: TTMetamodel_EClass) (t1 t2: TTMetamodel_getTypeByEClass ttec_arg), Build_TTMetamodel_EObject ttec_arg t1 = Build_TTMetamodel_EObject ttec_arg t2 -> t1 = t2.
-Proof.
-  intros.
-  inversion H.
-  apply inj_pair2_eq_dec in H1.
-  exact H1.
-  apply TTMetamodel_eqEClass_dec.
-Qed.
+
+
+
