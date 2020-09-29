@@ -13,7 +13,7 @@ Require Import ListSet.   (* set *)
 Require Import Omega.
 Require Import Bool.
 
-Require Import core.utils.TopUtils.
+Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.Model.
 
@@ -25,48 +25,68 @@ Inductive BDD : Set :=
   (* id *) string ->
   (* name *) string ->
   BDD.
-  
-Inductive Port : Set :=
-  BuildPort :
-  (* id *) string ->
-  (* name *) string ->
-  Port.
-  
+
 Inductive InputPort : Set :=
   BuildInputPort :
-  (* Inheritence Attribute *) Port -> 
   (* id *) string ->
+  (* name *) string ->
   InputPort.
   
 Inductive OutputPort : Set :=
   BuildOutputPort :
-  (* Inheritence Attribute *) Port -> 
   (* id *) string ->
+  (* name *) string ->
   OutputPort.
-  
-Inductive Tree : Set :=
-  BuildTree :
-  (* id *) string ->
-  Tree.
-  
+
 Inductive Leaf : Set :=
   BuildLeaf :
-  (* Inheritence Attribute *) Tree -> 
   (* id *) string ->
   Leaf.
-  
+
+Inductive Subtree : Set :=
+  BuildSubtree :
+  (* id *) string ->
+  Subtree.
+
 Inductive Assignment : Set :=
   BuildAssignment :
   (* id *) string ->
   (* value *) bool ->
   Assignment.
-  
-Inductive Subtree : Set :=
-  BuildSubtree :
-  (* Inheritence Attribute *) Tree -> 
-  (* id *) string ->
-  Subtree.
-  
+
+(* Port-types *)
+Inductive Port_EClass : Set :=
+  | InputPortEClass
+  | OutputPortEClass
+.
+
+Definition Port_getTypeByEClass (arg : Port_EClass) : Set :=
+  match arg with
+    | InputPortEClass => InputPort
+    | OutputPortEClass => OutputPort
+  end.
+
+Inductive Port : Set :=
+  | Build_Abstract_Port : 
+    forall (arg: Port_EClass), 
+      (Port_getTypeByEClass arg) -> Port.
+
+Inductive Tree_EClass : Set :=
+  | LeafEClass
+  | SubtreeEClass
+.
+
+Definition Tree_getTypeByEClass (arg : Tree_EClass) : Set :=
+  match arg with
+    | LeafEClass => Leaf
+    | SubtreeEClass => Subtree
+  end.
+
+Inductive Tree : Set :=
+  | Build_Abstract_Tree : 
+    forall (arg: Tree_EClass), 
+      (Tree_getTypeByEClass arg) -> Tree.
+
 
 Inductive BDDPorts : Set :=
    BuildBDDPorts :
@@ -159,85 +179,62 @@ Definition BDD_getId (b : BDD) : string :=
 Definition BDD_getName (b : BDD) : string :=
   match b with BuildBDD  id name  => name end.
  
-Definition Port_getId (p : Port) : string :=
-  match p with BuildPort  id name  => id end.
-Definition Port_getName (p : Port) : string :=
-  match p with BuildPort  id name  => name end.
- 
-Definition InputPort_getPort (i : InputPort) : Port :=
-  match i with BuildInputPort port id  => port end.
 Definition InputPort_getId (i : InputPort) : string :=
-  match i with BuildInputPort port id  => id end.
- 
-Definition OutputPort_getPort (o : OutputPort) : Port :=
-  match o with BuildOutputPort port id  => port end.
+  match i with BuildInputPort id name  => id end.
+Definition InputPort_getName (i : InputPort) : string :=
+  match i with BuildInputPort id name  => name end.
+
 Definition OutputPort_getId (o : OutputPort) : string :=
-  match o with BuildOutputPort port id  => id end.
- 
-Definition Tree_getId (t : Tree) : string :=
-  match t with BuildTree  id  => id end.
- 
-Definition Leaf_getTree (l : Leaf) : Tree :=
-  match l with BuildLeaf tree id  => tree end.
+  match o with BuildOutputPort id name  => id end.
+Definition OutputPort_getName (o : OutputPort) : string :=
+  match o with BuildOutputPort id name  => name end. 
+
+
 Definition Leaf_getId (l : Leaf) : string :=
-  match l with BuildLeaf tree id  => id end.
- 
+  match l with BuildLeaf id  => id end.
+
+Definition Subtree_getId (s : Subtree) : string :=
+  match s with BuildSubtree id  => id end.
+
 Definition Assignment_getId (a : Assignment) : string :=
   match a with BuildAssignment  id value  => id end.
 Definition Assignment_getValue (a : Assignment) : bool :=
   match a with BuildAssignment  id value  => value end.
  
-Definition Subtree_getTree (s : Subtree) : Tree :=
-  match s with BuildSubtree tree id  => tree end.
-Definition Subtree_getId (s : Subtree) : string :=
-  match s with BuildSubtree tree id  => id end.
- 
+Definition Port_getId (p : Port) : string :=
+  match p with 
+    | Build_Abstract_Port InputPortEClass (BuildInputPort id name)  => id 
+    | Build_Abstract_Port OutputPortEClass (BuildOutputPort id name) => id
+  end.
+Definition Port_getName (p : Port) : string :=
+  match p with 
+    | Build_Abstract_Port InputPortEClass (BuildInputPort id name)  => name 
+    | Build_Abstract_Port OutputPortEClass (BuildOutputPort id name) => name
+  end.
 
+Definition Tree_getId (t : Tree) : string :=
+  match t with 
+    | Build_Abstract_Tree LeafEClass (BuildLeaf id)  => id 
+    | Build_Abstract_Tree SubtreeEClass (BuildSubtree id) => id
+  end.
 
 		
 (* Meta-types *)
 Inductive bddMetamodel_EClass : Set :=
   | BDDEClass
   | PortEClass
-  | InputPortEClass
-  | OutputPortEClass
   | TreeEClass
-  | LeafEClass
   | AssignmentEClass
-  | SubtreeEClass
 .
 
 Definition bddMetamodel_getTypeByEClass (bdec_arg : bddMetamodel_EClass) : Set :=
   match bdec_arg with
     | BDDEClass => BDD
     | PortEClass => Port
-    | InputPortEClass => InputPort
-    | OutputPortEClass => OutputPort
     | TreeEClass => Tree
-    | LeafEClass => Leaf
     | AssignmentEClass => Assignment
-    | SubtreeEClass => Subtree
   end.	
 
-Definition bddMetamodel_getEAttributeTypesByEClass (bdec_arg : bddMetamodel_EClass) : Set :=
-  match bdec_arg with
-    | BDDEClass => 
-    (string)
-    | PortEClass => 
-    (string)
-    | InputPortEClass => 
-    (Port)
-    | OutputPortEClass => 
-    (Port)
-    | TreeEClass => 
-    (Empty_set)
-    | LeafEClass => 
-    (Tree)
-    | AssignmentEClass => 
-    (bool)
-    | SubtreeEClass => 
-    (Tree)
-  end.
 
 Inductive bddMetamodel_EReference : Set :=
 | BDDPortsEReference
@@ -276,30 +273,7 @@ Definition bddMetamodel_getTypeByEReference (bder_arg : bddMetamodel_EReference)
 | SubtreeTreeForOneEReference => SubtreeTreeForOne
   end.
 
-Definition bddMetamodel_getERoleTypesByEReference (bder_arg : bddMetamodel_EReference) : Set :=
-  match bder_arg with
-| BDDPortsEReference => (BDD * list Port)
-| BDDTreeEReference => (BDD * Tree)
-| BDDTreesEReference => (BDD * list Tree)
-| PortOwnerEReference => (Port * BDD)
-| InputPortSubtreesEReference => (InputPort * list Subtree)
-| OutputPortAssignmentsEReference => (OutputPort * list Assignment)
-| TreeOwnerBDDEReference => (Tree * BDD)
-| TreeOwnerSubtreeForZeroEReference => (Tree * list Subtree)
-| TreeOwnerSubtreeForOneEReference => (Tree * list Subtree)
-| LeafAssignmentsEReference => (Leaf * list Assignment)
-| AssignmentPortEReference => (Assignment * OutputPort)
-| AssignmentOwnerEReference => (Assignment * Leaf)
-| SubtreePortEReference => (Subtree * InputPort)
-| SubtreeTreeForZeroEReference => (Subtree * Tree)
-| SubtreeTreeForOneEReference => (Subtree * Tree)
-  end.
-
 (* Generic types *)
-
-
-
-
 
 Inductive bddMetamodel_EObject : Set :=
  | Build_bddMetamodel_EObject : 
@@ -354,6 +328,14 @@ Proof.
   - exact None.
 Defined.
 
+Lemma TTMetamodel_eqPortEClass_dec : 
+ forall (ttec_arg1:Port_EClass) (ttec_arg2:Port_EClass), { ttec_arg1 = ttec_arg2 } + { ttec_arg1 <> ttec_arg2 }.
+Proof. repeat decide equality. Defined.
+
+Lemma TTMetamodel_eqTreeEClass_dec : 
+ forall (ttec_arg1:Tree_EClass) (ttec_arg2:Tree_EClass), { ttec_arg1 = ttec_arg2 } + { ttec_arg1 <> ttec_arg2 }.
+Proof. repeat decide equality. Defined.
+
 (* Generic functions *)
 Definition bddMetamodel_toEObjectFromBDD (bd_arg :BDD) : bddMetamodel_EObject :=
   (Build_bddMetamodel_EObject BDDEClass bd_arg).
@@ -363,29 +345,13 @@ Definition bddMetamodel_toEObjectFromPort (po_arg :Port) : bddMetamodel_EObject 
   (Build_bddMetamodel_EObject PortEClass po_arg).
 Coercion bddMetamodel_toEObjectFromPort : Port >-> bddMetamodel_EObject.
 
-Definition bddMetamodel_toEObjectFromInputPort (in_arg :InputPort) : bddMetamodel_EObject :=
-  (Build_bddMetamodel_EObject InputPortEClass in_arg).
-Coercion bddMetamodel_toEObjectFromInputPort : InputPort >-> bddMetamodel_EObject.
-
-Definition bddMetamodel_toEObjectFromOutputPort (ou_arg :OutputPort) : bddMetamodel_EObject :=
-  (Build_bddMetamodel_EObject OutputPortEClass ou_arg).
-Coercion bddMetamodel_toEObjectFromOutputPort : OutputPort >-> bddMetamodel_EObject.
-
 Definition bddMetamodel_toEObjectFromTree (tr_arg :Tree) : bddMetamodel_EObject :=
   (Build_bddMetamodel_EObject TreeEClass tr_arg).
 Coercion bddMetamodel_toEObjectFromTree : Tree >-> bddMetamodel_EObject.
 
-Definition bddMetamodel_toEObjectFromLeaf (le_arg :Leaf) : bddMetamodel_EObject :=
-  (Build_bddMetamodel_EObject LeafEClass le_arg).
-Coercion bddMetamodel_toEObjectFromLeaf : Leaf >-> bddMetamodel_EObject.
-
 Definition bddMetamodel_toEObjectFromAssignment (as_arg :Assignment) : bddMetamodel_EObject :=
   (Build_bddMetamodel_EObject AssignmentEClass as_arg).
 Coercion bddMetamodel_toEObjectFromAssignment : Assignment >-> bddMetamodel_EObject.
-
-Definition bddMetamodel_toEObjectFromSubtree (su_arg :Subtree) : bddMetamodel_EObject :=
-  (Build_bddMetamodel_EObject SubtreeEClass su_arg).
-Coercion bddMetamodel_toEObjectFromSubtree : Subtree >-> bddMetamodel_EObject.
 
 
 (** Metamodel Type Class Instaniation **)
@@ -402,87 +368,72 @@ Definition bddMetamodel_toELinkOfEReference (bder_arg: bddMetamodel_EReference) 
 
 (* Accessors on model *)
 (* Equality for Types *)
-(*? We currently define eq for Eclass on their fist attribute *)
+
 Definition beq_BDD (bd_arg1 : BDD) (bd_arg2 : BDD) : bool :=
+( beq_string (BDD_getId bd_arg1) (BDD_getId bd_arg2) ) &&
 ( beq_string (BDD_getName bd_arg1) (BDD_getName bd_arg2) )
 .
 
-Definition beq_Port (po_arg1 : Port) (po_arg2 : Port) : bool :=
-( beq_string (Port_getName po_arg1) (Port_getName po_arg2) )
-.
-
 Definition beq_InputPort (in_arg1 : InputPort) (in_arg2 : InputPort) : bool :=
-beq_Port (InputPort_getPort in_arg1) (InputPort_getPort in_arg2)
+beq_string (InputPort_getId in_arg1) (InputPort_getId in_arg2) &&
+beq_string (InputPort_getName in_arg1) (InputPort_getName in_arg2)
 .
 
 Definition beq_OutputPort (ou_arg1 : OutputPort) (ou_arg2 : OutputPort) : bool :=
-beq_Port (OutputPort_getPort ou_arg1) (OutputPort_getPort ou_arg2)
-.
-
-Definition beq_Tree (tr_arg1 : Tree) (tr_arg2 : Tree) : bool :=
-(true)
+beq_string (OutputPort_getId ou_arg1) (OutputPort_getId ou_arg2) &&
+beq_string (OutputPort_getName ou_arg1) (OutputPort_getName ou_arg2)
 .
 
 Definition beq_Leaf (le_arg1 : Leaf) (le_arg2 : Leaf) : bool :=
-beq_Tree (Leaf_getTree le_arg1) (Leaf_getTree le_arg2)
-.
-
-Definition beq_Assignment (as_arg1 : Assignment) (as_arg2 : Assignment) : bool :=
-( beq_bool (Assignment_getValue as_arg1) (Assignment_getValue as_arg2) )
+beq_string (Leaf_getId le_arg1) (Leaf_getId le_arg2)
 .
 
 Definition beq_Subtree (su_arg1 : Subtree) (su_arg2 : Subtree) : bool :=
-beq_Tree (Subtree_getTree su_arg1) (Subtree_getTree su_arg2)
+beq_string (Subtree_getId su_arg1) (Subtree_getId su_arg2)
+.
+
+Definition beq_Assignment (as_arg1 : Assignment) (as_arg2 : Assignment) : bool :=
+( beq_string (Assignment_getId as_arg1) (Assignment_getId as_arg2) ) &&
+( beq_bool (Assignment_getValue as_arg1) (Assignment_getValue as_arg2) )
 .
 
 
 
-Fixpoint bddMetamodel_Tree_downcastLeaf (tr_arg : Tree) (l : list bddMetamodel_EObject) : option Leaf := 
-  match l with
-	 | Build_bddMetamodel_EObject LeafEClass (BuildLeaf eSuper id ) :: l' => 
-		if beq_Tree tr_arg eSuper then (Some (BuildLeaf eSuper id )) else (bddMetamodel_Tree_downcastLeaf tr_arg l')
-	 | _ :: l' => (bddMetamodel_Tree_downcastLeaf tr_arg l')
-	 | nil => None
-end.
+Definition beq_Port (po_arg1 : Port) (po_arg2 : Port) : bool :=
+  match po_arg1, po_arg2 with
+  | Build_Abstract_Port InputPortEClass i1, Build_Abstract_Port InputPortEClass i2 =>
+      ( beq_InputPort i1 i2)
+  | Build_Abstract_Port OutputPortEClass o1, Build_Abstract_Port OutputPortEClass o2 =>
+      ( beq_OutputPort o1 o2) 
+  | _,_ => false
+  end.
 
-Definition Tree_downcastLeaf (tr_arg : Tree) (m : bddModel) : option Leaf :=
-  bddMetamodel_Tree_downcastLeaf tr_arg (@allModelElements _ _ m).
+Definition beq_Tree (tr_arg1 : Tree) (tr_arg2 : Tree) : bool :=
+  match tr_arg1, tr_arg2 with
+  | Build_Abstract_Tree LeafEClass t1, Build_Abstract_Tree LeafEClass t2 =>
+      ( beq_Leaf t1 t2)
+  | Build_Abstract_Tree SubtreeEClass s1, Build_Abstract_Tree SubtreeEClass s2 =>
+      ( beq_Subtree s1 s2) 
+  | _,_ => false
+  end.
 
-Fixpoint bddMetamodel_Tree_downcastSubtree (tr_arg : Tree) (l : list bddMetamodel_EObject) : option Subtree := 
-  match l with
-	 | Build_bddMetamodel_EObject SubtreeEClass (BuildSubtree eSuper id ) :: l' => 
-		if beq_Tree tr_arg eSuper then (Some (BuildSubtree eSuper id )) else (bddMetamodel_Tree_downcastSubtree tr_arg l')
-	 | _ :: l' => (bddMetamodel_Tree_downcastSubtree tr_arg l')
-	 | nil => None
-end.
+Definition TTMetamodel_Port_DownCast (ttec_arg : Port_EClass) (tteo_arg : Port) : option (Port_getTypeByEClass ttec_arg).
+Proof.
+  destruct tteo_arg as [arg1 arg2].
+  destruct (TTMetamodel_eqPortEClass_dec arg1 ttec_arg) as [e|] eqn:dec_case.
+  - rewrite e in arg2.
+    exact (Some arg2).
+  - exact None.
+Defined.
 
-Definition Tree_downcastSubtree (tr_arg : Tree) (m : bddModel) : option Subtree :=
-  bddMetamodel_Tree_downcastSubtree tr_arg (@allModelElements _ _ m).
-
-
-Fixpoint bddMetamodel_Port_downcastInputPort (po_arg : Port) (l : list bddMetamodel_EObject) : option InputPort := 
-  match l with
-	 | Build_bddMetamodel_EObject InputPortEClass (BuildInputPort eSuper id ) :: l' => 
-		if beq_Port po_arg eSuper then (Some (BuildInputPort eSuper id )) else (bddMetamodel_Port_downcastInputPort po_arg l')
-	 | _ :: l' => (bddMetamodel_Port_downcastInputPort po_arg l')
-	 | nil => None
-end.
-
-Definition Port_downcastInputPort (po_arg : Port) (m : bddModel) : option InputPort :=
-  bddMetamodel_Port_downcastInputPort po_arg (@allModelElements _ _ m).
-
-Fixpoint bddMetamodel_Port_downcastOutputPort (po_arg : Port) (l : list bddMetamodel_EObject) : option OutputPort := 
-  match l with
-	 | Build_bddMetamodel_EObject OutputPortEClass (BuildOutputPort eSuper id ) :: l' => 
-		if beq_Port po_arg eSuper then (Some (BuildOutputPort eSuper id )) else (bddMetamodel_Port_downcastOutputPort po_arg l')
-	 | _ :: l' => (bddMetamodel_Port_downcastOutputPort po_arg l')
-	 | nil => None
-end.
-
-Definition Port_downcastOutputPort (po_arg : Port) (m : bddModel) : option OutputPort :=
-  bddMetamodel_Port_downcastOutputPort po_arg (@allModelElements _ _ m).
-
-
+Definition TTMetamodel_Tree_DownCast (ttec_arg : Tree_EClass) (tteo_arg : Tree) : option (Tree_getTypeByEClass ttec_arg).
+Proof.
+  destruct tteo_arg as [arg1 arg2].
+  destruct (TTMetamodel_eqTreeEClass_dec arg1 ttec_arg) as [e|] eqn:dec_case.
+  - rewrite e in arg2.
+    exact (Some arg2).
+  - exact None.
+Defined.
 
 Fixpoint BDD_getPortsOnLinks (bd_arg : BDD) (l : list bddMetamodel_ELink) : option (list Port) :=
 match l with
@@ -642,26 +593,15 @@ end.
 Definition Subtree_getTreeForOne (su_arg : Subtree) (m : bddModel) : option (Tree) :=
   Subtree_getTreeForOneOnLinks su_arg (@allModelLinks _ _ m).
 
-
-Definition bddMetamodel_defaultInstanceOfEClass (bdec_arg: bddMetamodel_EClass) : (bddMetamodel_getTypeByEClass bdec_arg) :=
-  match bdec_arg with
-  | BDDEClass => 
-  (BuildBDD "" "")
-  | PortEClass => 
-  (BuildPort "" "")
-  | InputPortEClass => 
-  (BuildInputPort (BuildPort "" "") "")
-  | OutputPortEClass => 
-  (BuildOutputPort (BuildPort "" "") "")
-  | TreeEClass => 
-  (BuildTree "")
-  | LeafEClass => 
-  (BuildLeaf (BuildTree "") "")
-  | AssignmentEClass => 
-  (BuildAssignment "" true)
-  | SubtreeEClass => 
-  (BuildSubtree (BuildTree "") "")
+Definition beq_bddMetamodel_Object (c1 : bddMetamodel_EObject) (c2 : bddMetamodel_EObject) : bool :=
+  match c1, c2 with
+  | Build_bddMetamodel_EObject BDDEClass o1, Build_bddMetamodel_EObject BDDEClass o2 => beq_BDD o1 o2
+  | Build_bddMetamodel_EObject PortEClass o1, Build_bddMetamodel_EObject PortEClass o2 => beq_Port o1 o2
+  | Build_bddMetamodel_EObject TreeEClass o1, Build_bddMetamodel_EObject TreeEClass o2 => beq_Tree o1 o2
+  | Build_bddMetamodel_EObject AssignmentEClass o1, Build_bddMetamodel_EObject AssignmentEClass o2 => beq_Assignment o1 o2
+  | _, _ => false
   end.
+
 
 (* Typeclass Instance *)
 Instance bddMetamodel : Metamodel bddMetamodel_EObject bddMetamodel_ELink bddMetamodel_EClass bddMetamodel_EReference :=
@@ -672,24 +612,12 @@ Instance bddMetamodel : Metamodel bddMetamodel_EObject bddMetamodel_ELink bddMet
     toModelReference := bddMetamodel_toEReference;
     toModelElement := bddMetamodel_toEObjectOfEClass;
     toModelLink := bddMetamodel_toELinkOfEReference;
-    bottomModelClass := bddMetamodel_defaultInstanceOfEClass;
+    beq_ModelElement := beq_bddMetamodel_Object;
 
     (* Theorems *)
     eqModelClass_dec := bddMetamodel_eqEClass_dec;
     eqModelReference_dec := bddMetamodel_eqEReference_dec;
 
-    (* Constructors *)
-    BuildModelElement := Build_bddMetamodel_EObject;
-    BuildModelLink := Build_bddMetamodel_ELink;
   }.
-  
-(* Useful lemmas *)
-Lemma bdd_invert : 
-  forall (bdec_arg: bddMetamodel_EClass) (t1 t2: bddMetamodel_getTypeByEClass bdec_arg), Build_bddMetamodel_EObject bdec_arg t1 = Build_bddMetamodel_EObject bdec_arg t2 -> t1 = t2.
-Proof.
-  intros.
-  inversion H.
-  apply inj_pair2_eq_dec in H1.
-  exact H1.
-  apply bddMetamodel_eqEClass_dec.
-Qed.
+
+
