@@ -26,35 +26,35 @@ Require Import Coq.Logic.Eqdep_dec.
 
 Inductive TruthTable : Set :=
   BuildTruthTable :
-  (* location *) string ->
   (* id *) string ->
+  (* location *) string ->
   (* name *) string ->
   TruthTable.
 
 Inductive Row : Set :=
   BuildRow :
-  (* location *) string ->
   (* id *) string ->
+  (* location *) string ->
   Row.
   
 Inductive Cell : Set :=
   BuildCell :
-  (* location *) string ->
   (* id *) string ->
+  (* location *) string ->
   (* value *) bool ->
   Cell.
 
 Inductive InputPort : Set :=
   BuildInputPort :
-  (* location *) string ->
   (* id *) string ->
+  (* location *) string ->
   (* name *) string ->
   InputPort.
   
 Inductive OutputPort : Set :=
   BuildOutputPort :
-  (* location *) string ->
   (* id *) string ->
+  (* location *) string ->
   (* name *) string ->
   OutputPort.
 
@@ -182,70 +182,70 @@ Inductive CellPort : Set :=
 
 
 Definition TruthTable_getLocation (t : TruthTable) : string :=
-  match t with BuildTruthTable location id name  => location end.
+  match t with BuildTruthTable  id location name  => location end.
 Definition TruthTable_getId (t : TruthTable) : string :=
-  match t with BuildTruthTable location id name  => id end.
+  match t with BuildTruthTable id location name  => id end.
 Definition TruthTable_getName (t : TruthTable) : string :=
-  match t with BuildTruthTable location id name  => name end.
+  match t with BuildTruthTable id location name  => name end.
  
 
 Definition InputPort_getLocation (i : InputPort) : string :=
-  match i with BuildInputPort location id name  => location end.
+  match i with BuildInputPort  id location name  => location end.
 Definition InputPort_getId (i : InputPort) : string :=
-  match i with BuildInputPort location id name  => id end.
+  match i with BuildInputPort  id location name  => id end.
 Definition InputPort_getName (i : InputPort) : string :=
-  match i with BuildInputPort location id name  => name end.
+  match i with BuildInputPort  id location name  => name end.
 
 Definition OutputPort_getLocation (o : OutputPort) : string :=
-  match o with BuildOutputPort location id name   => location end.
+  match o with BuildOutputPort  id location name   => location end.
 Definition OutputPort_getId (o : OutputPort) : string :=
-  match o with BuildOutputPort location id name   => id end.
+  match o with BuildOutputPort  id location name   => id end.
 Definition OutputPort_getName (o : OutputPort) : string :=
-  match o with BuildOutputPort location id name   => name end.
+  match o with BuildOutputPort  id location name   => name end.
 
 Definition Row_getLocation (r : Row) : string :=
-  match r with BuildRow location id  => location end.
+  match r with BuildRow  id  location => location end.
 Definition Row_getId (r : Row) : string :=
-  match r with BuildRow location id  => id end.
+  match r with BuildRow  id location => id end.
  
 Definition Cell_getLocation (c : Cell) : string :=
-  match c with BuildCell location id value  => location end.
+  match c with BuildCell  id location value  => location end.
 Definition Cell_getId (c : Cell) : string :=
-  match c with BuildCell location id value  => id end.
+  match c with BuildCell  id location value  => id end.
 Definition Cell_getValue (c : Cell) : bool :=
-  match c with BuildCell location id value  => value end.
+  match c with BuildCell  id location value  => value end.
 
 
 Definition Port_getLocation (p : Port) : string :=
   match p with 
-    | Build_Abstract_Port InputPortEClass (BuildInputPort location id name)  => location 
-    | Build_Abstract_Port OutputPortEClass (BuildOutputPort location id name) => location
+    | Build_Abstract_Port InputPortEClass (BuildInputPort  id location name)  => location 
+    | Build_Abstract_Port OutputPortEClass (BuildOutputPort  id location name) => location
   end.
 Definition Port_getId (p : Port) : string :=
   match p with 
-    | Build_Abstract_Port InputPortEClass (BuildInputPort location id name)  => id 
-    | Build_Abstract_Port OutputPortEClass (BuildOutputPort location id name) => id
+    | Build_Abstract_Port InputPortEClass (BuildInputPort  id location name)  => id 
+    | Build_Abstract_Port OutputPortEClass (BuildOutputPort  id location name) => id
   end.
 Definition Port_getName (p : Port) : string :=
   match p with 
-    | Build_Abstract_Port InputPortEClass (BuildInputPort location id name)  => name 
-    | Build_Abstract_Port OutputPortEClass (BuildOutputPort location id name) => name
+    | Build_Abstract_Port InputPortEClass (BuildInputPort  id location name)  => name 
+    | Build_Abstract_Port OutputPortEClass (BuildOutputPort  id location name) => name
   end.
 
 Definition LocatedElement_getId (l : LocatedElement) : string :=
   match l with 
     | Build_Concrete_LocatedElement id location  => id 
-    | Build_Abstract_LocatedElement TruthTableEClass (BuildTruthTable location id name) => id
-    | Build_Abstract_LocatedElement RowEClass (BuildRow location id) => id
-    | Build_Abstract_LocatedElement CellEClass (BuildCell location id value) => id
+    | Build_Abstract_LocatedElement TruthTableEClass (BuildTruthTable  id location name) => id
+    | Build_Abstract_LocatedElement RowEClass (BuildRow  id location) => id
+    | Build_Abstract_LocatedElement CellEClass (BuildCell  id location value) => id
     | Build_Abstract_LocatedElement PortEClass p => Port_getId p
   end.
 Definition LocatedElement_getLocation (l : LocatedElement) : string :=
   match l with 
     | Build_Concrete_LocatedElement id location  => location 
-    | Build_Abstract_LocatedElement TruthTableEClass (BuildTruthTable location id name) => location
-    | Build_Abstract_LocatedElement RowEClass (BuildRow location id) => location
-    | Build_Abstract_LocatedElement CellEClass (BuildCell location id value) => location
+    | Build_Abstract_LocatedElement TruthTableEClass (BuildTruthTable  id location name) => location
+    | Build_Abstract_LocatedElement RowEClass (BuildRow  id location) => location
+    | Build_Abstract_LocatedElement CellEClass (BuildCell  id location value) => location
     | Build_Abstract_LocatedElement PortEClass p => Port_getLocation p
   end.
 
