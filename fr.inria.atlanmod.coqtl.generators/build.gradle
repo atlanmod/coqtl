@@ -12,7 +12,7 @@ sourceSets {
  
 jar {
     manifest {
-        attributes 'Main-Class': 'fr.inria.atlanmod.coqtl.ecore.core.EcoreGeneratorDriver'
+        attributes 'Main-Class': 'fr.inria.atlanmod.coqtl.xmi.core.XMIGeneratorDriver'
     }
 }
 
