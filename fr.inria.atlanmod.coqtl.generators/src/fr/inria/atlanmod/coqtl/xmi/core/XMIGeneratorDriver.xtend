@@ -13,7 +13,9 @@ class XMIGeneratorDriver {
 		
 		var content = ""
 		val compiler = new XMI2Coq
+		
 		content += compiler.mapEObjects(resource.contents, exname, mmname)	
+		
 		URIUtil.write(output_uri, content)
 	}
 	
