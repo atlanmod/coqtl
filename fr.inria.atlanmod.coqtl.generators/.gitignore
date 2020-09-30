@@ -1,3 +1,5 @@
 /bin/
 /xtend-gen/
 *.v
+.gradle
+build
