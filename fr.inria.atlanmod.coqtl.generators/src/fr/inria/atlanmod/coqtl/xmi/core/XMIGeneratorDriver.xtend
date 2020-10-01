@@ -27,7 +27,7 @@ class XMIGeneratorDriver {
 			println("2. metamodel name, e.g. TT");
 			println("3. metamodel relative path, e.g. /./resources/TT2BDD/TT.ecore");
 			println("4. model relative path, e.g. /./resources/TT2BDD/tt.xor.xmi");
-			println("5. output path, e.g. /./resources/tt.xor.v");
+			println("5. output path, e.g. /./resources/model.v");
 			System.exit(0)
 		}
 		
@@ -39,7 +39,7 @@ class XMIGeneratorDriver {
 		
 		//val m_path = "./resources/TT2BDD/tt.xor.xmi"
 		//val mm_path = "./resources/TT2BDD/TT.ecore"
-		//val output_path = "./resources/tt.xor.v"
+		//val output_path = "./resources/model.v"
 		//val exname = "TT2BDD"
 		//val mmname = "TT"
 		
