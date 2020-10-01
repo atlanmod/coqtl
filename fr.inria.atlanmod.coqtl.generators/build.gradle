@@ -1,5 +1,6 @@
 plugins {
 	id 'org.xtext.xtend' version '2.0.8'
+  id 'application'
 }
 
 repositories {
@@ -17,6 +18,10 @@ jar {
 }
 
 sourceCompatibility = 8
+
+application {
+    mainClassName = 'fr.inria.atlanmod.coqtl.xmi.core.XMIGeneratorDriver'
+}
 
 dependencies {
   compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.23.0'
