@@ -56,35 +56,35 @@ class EMFUtil {
 	 * @return the default value of an {@code EAttribute}
 	 * */
 	def static PrintDefaultValue(EAttribute eAttribute) '''
-		«val eType = eAttribute.EType»
-		«IF eType.name == 'EInt' || eType.name == 'Integer'»0«
-		ELSEIF eType.name == 'EBoolean' || eType.name == 'Boolean'»true«
-		ELSEIF eType.name == 'EString' || eType.name == 'String'»""«
-		ELSE»We don't know how to print «eType.name» «ENDIF
-	»'''
+		Â«val eType = eAttribute.ETypeÂ»
+		Â«IF eType.name == 'EInt' || eType.name == 'Integer'Â»0Â«
+		ELSEIF eType.name == 'EBoolean' || eType.name == 'Boolean'Â»trueÂ«
+		ELSEIF eType.name == 'EString' || eType.name == 'String'Â»""Â«
+		ELSEÂ»We don't know how to print Â«eType.nameÂ» Â«ENDIF
+	Â»'''
 	
 	/**
 	 * @return the default value of an {@code EClass}
 	 * */
 	def static String PrintDefaultValue(EClass eClass) '''
-	«IF eClass.ESuperTypes.size > 0 »«
-		IF eClass.EAttributes.size > 0»(Build«eClass.name» «EMFUtil.PrintDefaultValue(eClass.ESuperTypes.get(0))» "" «FOR eAttribute : eClass.EAttributes SEPARATOR " "»«EMFUtil.PrintDefaultValue(eAttribute)»«ENDFOR»)«
-		ELSE»(Build«eClass.name» «EMFUtil.PrintDefaultValue(eClass.ESuperTypes.get(0))» "")«
-		ENDIF»«
-    ELSE»«
-    	IF eClass.EAttributes.size > 0»(Build«eClass.name» "" «FOR eAttribute : eClass.EAttributes SEPARATOR " "»«EMFUtil.PrintDefaultValue(eAttribute)»«ENDFOR»)«
-    	ELSE»(Build«eClass.name» "")«
-    	ENDIF»«
-    ENDIF»'''
+	Â«IF eClass.ESuperTypes.size > 0 Â»Â«
+		IF eClass.EAttributes.size > 0Â»(BuildÂ«eClass.nameÂ» Â«EMFUtil.PrintDefaultValue(eClass.ESuperTypes.get(0))Â» "" Â«FOR eAttribute : eClass.EAttributes SEPARATOR " "Â»Â«EMFUtil.PrintDefaultValue(eAttribute)Â»Â«ENDFORÂ»)Â«
+		ELSEÂ»(BuildÂ«eClass.nameÂ» Â«EMFUtil.PrintDefaultValue(eClass.ESuperTypes.get(0))Â» "")Â«
+		ENDIFÂ»Â«
+    ELSEÂ»Â«
+    	IF eClass.EAttributes.size > 0Â»(BuildÂ«eClass.nameÂ» "" Â«FOR eAttribute : eClass.EAttributes SEPARATOR " "Â»Â«EMFUtil.PrintDefaultValue(eAttribute)Â»Â«ENDFORÂ»)Â«
+    	ELSEÂ»(BuildÂ«eClass.nameÂ» "")Â«
+    	ENDIFÂ»Â«
+    ENDIFÂ»'''
     	
 	
 	/**
 	 * @return the string represtation of an {@code o}
 	 * */
 	def static PrintValue(Object o) '''
-		«IF o instanceof String»"«o.toString»"«
-		ELSEIF o != null»«o.toString»«ELSE
-		»""«ENDIF
-	»'''
+		Â«IF o instanceof StringÂ»"Â«o.toStringÂ»"Â«
+		ELSEIF o != nullÂ»Â«o.toStringÂ»Â«ELSE
+		Â»""Â«ENDIF
+	Â»'''
 	
 }
