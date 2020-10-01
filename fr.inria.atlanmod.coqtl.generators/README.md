@@ -9,7 +9,9 @@ Information
 This repository contains working-in-progress Eclipse plugins for generating metamodel/model inputs of CoqTL from Ecore files.
 * To generate **.v** files from Ecore metamodels, check **fr.inria.atlanmod.coqtl.ecore.core.EcoreGeneratorDriver**.
 * To generate **.v** files from xmi models, check **fr.inria.atlanmod.coqtl.xmi.core.XMIGeneratorDriver**.
-  * The XMI model generator expects 5 inputs:
+  * A gradle file is provided to compile a executable jar for XMI model generation
+    * `gradle build`
+  * The executable jar expects 5 inputs:
     * example name, e.g. TT2BDD.
     * metamodel name, e.g. TT
     * metamodel relative path, e.g. /./resources/TT2BDD/TT.ecore
