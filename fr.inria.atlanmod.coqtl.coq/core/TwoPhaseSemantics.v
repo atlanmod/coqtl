@@ -239,43 +239,8 @@ Section TwoPhaseSemantics.
       (* elements *) (flat_map (instantiatePattern tr sm) (allTuples tr sm))
       (* links *) (flat_map (applyPattern tr sm) (allTuples tr sm)).
 
-  Require Import Coq.Logic.FunctionalExtensionality.
 
-  Theorem equiv : 
-    forall (tr: Transformation) (sm : SourceModel),
-      executeTraces tr sm = execute tr sm.
-  Proof.
-    intros.
-    unfold execute, executeTraces. simpl.
-    f_equal.
 
-    unfold trace.
-    rewrite flat_map_concat_map. rewrite flat_map_concat_map.
-    rewrite concat_map. f_equal.
-    rewrite map_map. f_equal.
 
-    unfold tracePattern, instantiatePattern.
-    apply functional_extensionality. intros.
-    rewrite flat_map_concat_map. rewrite flat_map_concat_map.
-    rewrite concat_map. f_equal.
-    rewrite map_map. f_equal.
-
-    unfold traceRuleOnPattern, instantiateRuleOnPattern.
-    apply functional_extensionality. intros.
-    rewrite flat_map_concat_map. rewrite flat_map_concat_map.
-    rewrite concat_map. f_equal.
-    rewrite map_map. f_equal.
-
-    unfold traceIterationOnPattern, instantiateIterationOnPattern.
-    apply functional_extensionality. intros.
-    rewrite flat_map_concat_map. rewrite flat_map_concat_map.
-    rewrite concat_map. f_equal.
-    rewrite map_map. f_equal.
-
-    unfold traceElementOnPattern.
-    apply functional_extensionality. intros.
-    destruct (instantiateElementOnPattern x2 sm x x1). 
-    reflexivity. reflexivity.  
-  Qed.
 
 End TwoPhaseSemantics.
