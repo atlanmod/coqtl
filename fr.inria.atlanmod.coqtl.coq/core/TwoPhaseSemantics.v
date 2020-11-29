@@ -116,12 +116,10 @@ Section TwoPhaseSemantics.
   Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sp: list SourceModelElement)
              (iter : nat) : option (denoteModelClass type) :=
-  let tl := find (fun tl: @TraceLink SourceModelElement TargetModelElement => 
-    match tl with 
-     buildTraceLink (sp', iter', name') _ => 
-       (list_beq SourceModelElement beq_ModelElement sp' sp) && 
-       (iter' =? iter) && (name =? name')%string
-    end) tls in
+  let tl := find (fun tl: TraceLink => 
+    (list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp) &&
+    ((TraceLink_getIterator tl) =? iter) &&
+    ((TraceLink_getName tl) =? name)%string) tls in
   match tl with
     | Some tl' => toModelClass type (TraceLink_getTargetElement tl')
     | None => None
