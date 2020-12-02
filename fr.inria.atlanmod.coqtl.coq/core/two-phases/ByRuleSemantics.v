@@ -7,6 +7,8 @@ Require Import core.Syntax.
 Require Import Bool.
 Require Import Arith.
 Require Import Semantics.
+Require Import Certification.
+
 Scheme Equality for list.
 
 
@@ -29,12 +31,12 @@ Section ByRuleSemantics.
     Definition allModelElementsOfType (t: SourceModelClass) (sm: SourceModel) : list SourceModelElement :=
       filter (hasType t) (allModelElements sm).
 
-    Fixpoint allTuplesOfTypes (l: list SourceModelClass) (sm: SourceModel): list (list SourceModelElement) := 
-      match l with
-      | t :: l' => prod_cons (allModelElementsOfType t sm) (allTuplesOfTypes l' sm)
-      | _ => nil
-      end.
-    
+    Definition allModelElementsOfTypes (l: list SourceModelClass) (sm: SourceModel): list (list SourceModelElement) :=
+      map (fun t:SourceModelClass => allModelElementsOfType t sm) l.
+
+    Definition allTuplesOfTypes (l: list SourceModelClass) (sm: SourceModel): list (list SourceModelElement) := 
+      fold_right prod_cons ([nil]) (allModelElementsOfTypes l sm) .
+
     Definition allTuplesByRule (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
       flat_map (fun (r:Rule) => allTuplesOfTypes (Rule_getInTypes r) sm) (Transformation_getRules tr).
 
@@ -51,6 +53,10 @@ Section ByRuleSemantics.
       unfold allTuplesByRule in H.
       apply in_flat_map in H.
       destruct H. destruct H.
+      apply allTuples_incl_length.
+      - unfold incl.
+        intros.
+        unfold allTuplesOfTypes in H0.
     Admitted.
 
     Lemma In_by_rule_instantiate : 
