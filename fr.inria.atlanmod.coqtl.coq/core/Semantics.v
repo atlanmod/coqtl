@@ -19,7 +19,9 @@ Section Semantics.
           (TargetModel := Model TargetModelElement TargetModelLink)
           (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
 
-  Definition evalExpr {A B:Type} (f: A -> B) (a: A) := f a. 
+  Definition Expr (A: Type) (B: Type) : Type := A -> B.
+
+  Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a. 
 
   Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
     evalExpr (@Rule_getGuardExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp.
