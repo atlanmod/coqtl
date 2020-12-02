@@ -20,25 +20,27 @@ Section TwoPhaseSemantics.
           (TargetModel := Model TargetModelElement TargetModelLink)
           (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
 
+  Definition evalExpr {A B:Type} (f: A -> B) (a: A) := f a. 
+
   Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    (@Rule_getGuardExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp.
+    evalExpr (@Rule_getGuardExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp.
 
   Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
     nat :=
-    match (@Rule_getIteratorExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp with
+    match (evalExpr (@Rule_getIteratorExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp) with
     | Some n => n
     | _ => 0
     end.
 
   Definition evalOutputPatternElementExpr (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (o: OutputPatternElement)
     : option TargetModelElement := 
-    (@OutputPatternElement_getElementExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) iter sm sp.
+    (evalExpr (@OutputPatternElement_getElementExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) iter sm sp).
 
   Definition evalOutputPatternLinkExpr
              (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: nat) (tr: list TraceLink)
              (o: OutputPatternElementReference)
     : option TargetModelLink :=
-  (@OutputPatternElementReference_getLinkExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) tr iter sm sp oe.
+    (evalExpr (@OutputPatternElementReference_getLinkExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) tr iter sm sp oe).
 
   (** * Instantiate **)
 
@@ -227,12 +229,12 @@ Section TwoPhaseSemantics.
   Definition apply (tr: Transformation) (sm : SourceModel) : list TargetModelLink :=
     flat_map (applyPattern tr sm) (allTuples tr sm).
 
-  Definition executeTraces (tr: Transformation) (sm : SourceModel) : TargetModel :=
+  Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
     let (elements, tls) := instantiateTraces tr sm in
     let links := applyTraces tr sm tls in
     Build_Model elements links.
   
-  Definition execute (tr: Transformation) (sm : SourceModel) : TargetModel :=
+  Definition execute' (tr: Transformation) (sm : SourceModel) : TargetModel :=
     Build_Model
       (* elements *) (flat_map (instantiatePattern tr sm) (allTuples tr sm))
       (* links *) (flat_map (applyPattern tr sm) (allTuples tr sm)).
