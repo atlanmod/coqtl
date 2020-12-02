@@ -329,7 +329,7 @@ Qed. *)
   intros.
   unfold resolveIter in H.
   destruct (find (fun tl: TraceLink => 
-  (list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp) &&
+  (Semantics.list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp) &&
   ((TraceLink_getIterator tl) =? iter) &&
   ((TraceLink_getName tl) =? name)%string) tls) eqn: find.
   - exists t.
