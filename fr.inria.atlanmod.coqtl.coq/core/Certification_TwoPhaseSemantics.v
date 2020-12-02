@@ -383,7 +383,6 @@ Qed. *)
     (* TODO FACTOR OUT *)
     assert ((Semantics.instantiateElementOnPattern x2 sm x x1) = (instantiateElementOnPattern x2 sm x x1)).
     { crush. }
-    rewrite H.
     destruct (instantiateElementOnPattern x2 sm x x1). 
     reflexivity. reflexivity.  
   Qed. 
