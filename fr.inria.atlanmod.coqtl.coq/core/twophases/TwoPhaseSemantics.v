@@ -8,7 +8,7 @@ Require Import Bool.
 Require Import Arith.
 Require Import Semantics.
 Scheme Equality for list.
-
+ 
 
 Section TwoPhaseSemantics.
 

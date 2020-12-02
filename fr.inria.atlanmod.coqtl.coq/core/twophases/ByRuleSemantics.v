@@ -56,8 +56,10 @@ Section ByRuleSemantics.
       apply allTuples_incl_length.
       - unfold incl.
         intros.
-        unfold allTuplesOfTypes in H0.
-    Admitted.
+        unfold allTuplesOfTypes, prod_cons, allModelElementsOfTypes, allModelElementsOfType in H0.
+        Search flat_map.
+        rewrite flat_map_concat_map in H0.
+        Admitted.
 
     Lemma In_by_rule_instantiate : 
       forall (sp: list SourceModelElement) (tr: Transformation) (sm: SourceModel),

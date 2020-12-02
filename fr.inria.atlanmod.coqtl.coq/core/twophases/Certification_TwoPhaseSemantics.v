@@ -8,7 +8,7 @@ Require Import core.Expressions.
 Require Import core.Engine.
 Require Import core.Syntax.
 Require Import core.Semantics.
-Require Import core.TwoPhaseSemantics.
+Require Import core.twophases.TwoPhaseSemantics.
 Require Import Coq.Logic.FunctionalExtensionality.
 
 Section Certification.
@@ -349,7 +349,7 @@ Qed. *)
 
   Theorem exe_preserv : 
     forall (tr: Transformation) (sm : SourceModel),
-      core.TwoPhaseSemantics.executeTraces tr sm = core.Semantics.execute tr sm.
+      core.twophases.TwoPhaseSemantics.executeTraces tr sm = core.Semantics.execute tr sm.
   Proof.
     intros.
     unfold core.Semantics.execute, executeTraces. simpl.
