@@ -63,11 +63,8 @@ Qed.
 
 (** * cartesian_prod *)
 
-Fixpoint singleton_list {A :Type} (s: (list A)) : list (list A) :=
-  match s with
-  | nil => nil
-  | a :: l => cons (a::nil) (singleton_list l)
-  end.
+Definition singleton_list {A :Type} (s: (list A)) : list (list A) :=
+  map (fun a:A => a::nil) s.
 
 (* Compute (singleton_list nil).
 Compute (singleton_list (1::2::nil)). *)
