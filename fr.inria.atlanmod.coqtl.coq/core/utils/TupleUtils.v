@@ -1,14 +1,13 @@
 Require Import List Omega.
 
+Definition map_cons {A : Type} (a: A) (l : list (list A)) : list (list A) :=
+  map (cons a) l.
+
 (** * prod_concat *)
 
 (* TODO: rewrite by using cartesian product and map cons *)
-Fixpoint prod_cons {A : Type} (s1: list A) (s2 : list (list A)) : list (list A) :=
-  match s1 with
-  | nil => nil
-  | (cons x1 xs1) => (map (fun l => cons x1 l) s2) ++ (prod_cons xs1 s2)
-  end.
-
+Definition prod_cons {A : Type} (s1: list A) (s2 : list (list A)) : list (list A) :=
+  flat_map (fun a:A => map (cons a) s2) s1.
 
 Example prod_cons_test1:
   prod_cons (1::2::nil) ((3::4::nil)::(5::6::nil)::nil) = (1 :: 3 :: 4 :: nil) :: (1 :: 5 :: 6 :: nil) :: (2 :: 3 :: 4 :: nil) :: (2 :: 5 :: 6 :: nil) :: nil.
