@@ -58,7 +58,6 @@ Section ByRuleSemantics.
         intros.
         unfold allTuplesOfTypes, prod_cons, allModelElementsOfTypes, allModelElementsOfType in H0.
         Search flat_map.
-        rewrite flat_map_concat_map in H0.
         Admitted.
 
     Lemma In_by_rule_instantiate : 

@@ -3,6 +3,22 @@ Require Import List Omega.
 Definition map_cons {A : Type} (a: A) (l : list (list A)) : list (list A) :=
   map (cons a) l.
 
+Lemma In_map_cons : 
+  forall (A: Type) (a b: A) (l: list (list A)) (sp: list A),
+  In a sp -> In sp (map_cons b l) -> (a = b \/ (exists p, In a p /\ In p l)).
+Proof.
+  intros.
+  unfold map_cons. 
+  intros.
+  apply in_map_iff in H0.
+  destruct H0. destruct H0.
+  rewrite <- H0 in H.
+  apply in_inv in H.
+  destruct H.
+  - left. symmetry. assumption.
+  - right. exists x. split. assumption. assumption.
+Qed.
+
 (** * prod_concat *)
 
 (* TODO: rewrite by using cartesian product and map cons *)
