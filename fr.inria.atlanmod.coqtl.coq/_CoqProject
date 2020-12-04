@@ -23,6 +23,7 @@ core/Certification.v
 core/ConcreteSyntax.v
 core/EngineProofs.v
 core/twophases/TwoPhaseSemantics.v
+core/twophases/ByRuleSemantics.v
 
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
