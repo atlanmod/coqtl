@@ -282,6 +282,39 @@ Section ByRuleSemantics.
       }
     Qed.
 
+    Lemma In_by_rule_apply : 
+    forall (sp: list SourceModelElement) (tr: Transformation) (sm: SourceModel),
+    In sp (allTuples tr sm) /\ applyPattern tr sm sp <> nil -> In sp (allTuplesByRule tr sm).
+    Proof.
+      intros.
+      destruct H.
+      unfold allTuplesByRule.
+      apply in_flat_map.
+      destruct (hd_error (matchPattern tr sm sp)) eqn:dst.
+      2: {
+        destruct (matchPattern tr sm sp) eqn:hdst.
+        - unfold applyPattern in H0.
+          rewrite hdst in H0.
+          simpl in H0. 
+          unfold not in H0.
+          contradiction H0.
+          reflexivity.
+        - inversion dst. 
+      }
+      1: {
+        exists r. 
+        split.
+        + apply hd_error_In in dst.
+          apply tr_matchPattern_in in dst.
+          destruct dst.
+          assumption.
+        + apply In_by_rule_match with (tr:=tr).
+          split.
+          assumption.
+          assumption.
+      }
+    Qed.
+
     Theorem tr_execute_in_elements :
       forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
       In te (allModelElements (executeByRule tr sm)) <->
@@ -316,6 +349,27 @@ Section ByRuleSemantics.
         (exists (sp : list SourceModelElement),
             In sp (allTuples tr sm) /\
             In tl (applyPattern tr sm sp)).
-    Admitted.
+    Proof.
+      intros.
+      unfold executeByRule. simpl.
+      rewrite in_flat_map.
+      split.
+      * intros.
+        destruct H. destruct H.
+        exists x.
+        split.
+        + apply In_by_rule. assumption.
+        + assumption.
+      * intros.
+        destruct H. destruct H.
+        exists x.
+        split.
+        + apply In_by_rule_apply.
+          split.
+          - assumption.
+          - unfold not. intros.
+            rewrite H1 in H0. contradiction.
+        + assumption.
+    Qed.
 
 End ByRuleSemantics.
