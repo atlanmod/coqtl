@@ -45,6 +45,28 @@ Section ByRuleSemantics.
         (* elements *) (flat_map (instantiatePattern tr sm) (allTuplesByRule tr sm))
         (* links *) (flat_map (applyPattern tr sm) (allTuplesByRule tr sm)).
 
+    Lemma allModelElementsOfTypeInModel :
+      forall (c: SourceModelClass) (sm : SourceModel),
+      incl (allModelElementsOfType c sm) (allModelElements sm).
+    Proof.
+      unfold allModelElementsOfType, incl.
+      intros.
+      apply filter_In in H.
+      destruct H.
+      assumption.
+    Qed.
+
+    Lemma allModelElementsOfTypesInModel :
+      forall (sp : list SourceModelElement) (l: list SourceModelClass) (sm : SourceModel),
+      In sp (allModelElementsOfTypes l sm) -> incl sp (allModelElements sm).
+    Proof.
+      intros.
+      unfold allModelElementsOfTypes in H.
+      apply in_map_iff in H. destruct H. destruct H.
+      rewrite <- H.
+      apply allModelElementsOfTypeInModel.
+    Qed.
+
     Lemma InAllTuplesOfTypes : 
       forall (a : SourceModelElement) (sp: list SourceModelElement) (s: SourceModelClass) (l : list SourceModelClass) (sm: SourceModel),
       In (a :: sp) (allTuplesOfTypes (s :: l) sm)
@@ -63,36 +85,33 @@ Section ByRuleSemantics.
       In sp (allTuplesOfTypes l sm) -> incl sp (allModelElements sm).
     Proof.
       intros.
-      generalize dependent l.
-      induction sp.
-      + intros. 
-        unfold incl. intros. inversion H0.
-      + intros.
-        destruct l.
-        * simpl in H.
-          destruct H. inversion H. contradiction.
-        * apply incl_cons.
-          2: {
-            apply InAllTuplesOfTypes in H.
-            apply IHsp in H.
+      unfold allTuplesOfTypes in H.
+      generalize dependent sp.
+      induction l; intros.
+      - simpl in H. destruct H.
+        + rewrite <- H. unfold incl. intros. inversion H0.
+        + contradiction.
+      - destruct sp.
+        + unfold incl. intros. inversion H0.
+        + simpl in H.
+          unfold prod_cons in H.
+          apply in_flat_map in H. repeat destruct H.
+          apply in_map_iff in H0. repeat destruct H0.
+          unfold incl.
+          intros.
+          simpl in H0.
+          destruct H0.
+          * pose allModelElementsOfTypeInModel.
+            unfold incl in i.
+            apply i with (c:=a).
+            rewrite <- H0.
             assumption.
-          }
-          1: {
-            unfold allTuplesOfTypes in H.
-            simpl in H.
-            apply prod_cons_in with (s1:= (allModelElementsOfType s sm)) (se := a) in H.
-            -- destruct H.
-              ++ unfold allModelElementsOfType in H.
-                apply filter_In in H.
-                destruct H. assumption.
-              ++ destruct H. destruct H.
-                unfold allModelElementsOfTypes in H.
-                unfold allModelElementsOfType in H.
-                unfold prod_cons in  H.
-
-                simpl in H.
-          }
-    Admitted.
+          * unfold incl in IHl.
+            simpl in IHl.
+            generalize H0.
+            apply IHl.
+            assumption.
+    Qed.
 
     Lemma allTuplesByRuleInModel :
       forall (sp : list SourceModelElement) (tr: Transformation) (sm : SourceModel),
