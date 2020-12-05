@@ -179,10 +179,108 @@ Section ByRuleSemantics.
         assumption.
     Qed.
 
+    Lemma In_allTuplesOfTypes_inv :
+      forall (a: SourceModelElement) (sp: list SourceModelElement) 
+      (s: SourceModelClass) (l: list SourceModelClass)
+      (sm: SourceModel),
+      hasType s a = true
+      -> In sp (allTuplesOfTypes l sm) 
+      -> In a (allModelElements sm)
+      -> In (a :: sp) (allTuplesOfTypes (s :: l) sm).
+    Proof.
+      intros.
+      unfold allTuplesOfTypes.
+      simpl.
+      unfold allTuplesOfTypes in H0.
+      apply prod_cons_in_inv with (se:=a) (ss:=sp).
+      - unfold allModelElementsOfType, hasType.
+        apply filter_In.
+        split.
+        + assumption.
+        + apply H.
+      - assumption.
+    Qed.
+
+    Lemma In_by_rule_match :
+      forall (sp: list SourceModelElement) (tr: Transformation) (sm: SourceModel) (r: Rule),
+      In sp (allTuples tr sm) /\ hd_error (matchPattern tr sm sp) = return r    
+      -> In sp (allTuplesOfTypes (Rule_getInTypes r) sm).
+    Proof.
+      intros.
+      destruct H.
+      apply allTuples_incl in H.
+      apply hd_error_In in H0.
+      unfold matchPattern in H0.
+      apply filter_In in H0.
+      destruct H0.
+      unfold matchRuleOnPattern in H1.
+      destruct (checkTypes sp (Rule_getInTypes r)) eqn:dct.
+      2: { inversion H1. }
+      1: {
+        remember (Rule_getInTypes r) as l.
+        clear H1 H0 Heql.
+        generalize dependent l.
+        induction sp; intros.
+        - simpl in dct.
+          destruct l.
+          + simpl.
+            left.
+            reflexivity.
+          + inversion dct.
+        - destruct l.
+          + simpl in dct. inversion dct.
+          + simpl in dct.
+            destruct (toModelClass s a) eqn:dtmc.
+            2: { inversion dct. }
+            1: {
+              apply In_allTuplesOfTypes_inv.
+              - unfold hasType.
+                rewrite dtmc.
+                reflexivity.
+              - apply IHsp.
+                + apply incl_cons_inv in H.
+                  destruct H.
+                  assumption.
+                + assumption.
+              - apply incl_cons_inv in H.
+                destruct H.
+                assumption.
+            }
+      }
+    Qed.
+
     Lemma In_by_rule_instantiate : 
       forall (sp: list SourceModelElement) (tr: Transformation) (sm: SourceModel),
       In sp (allTuples tr sm) /\ instantiatePattern tr sm sp <> nil -> In sp (allTuplesByRule tr sm).
-    Admitted.
+    Proof.
+      intros.
+      destruct H.
+      unfold allTuplesByRule.
+      apply in_flat_map.
+      destruct (hd_error (matchPattern tr sm sp)) eqn:dst.
+      2: {
+        destruct (matchPattern tr sm sp) eqn:hdst.
+        - unfold instantiatePattern in H0.
+          rewrite hdst in H0.
+          simpl in H0. 
+          unfold not in H0.
+          contradiction H0.
+          reflexivity.
+        - inversion dst. 
+      }
+      1: {
+        exists r. 
+        split.
+        + apply hd_error_In in dst.
+          apply tr_matchPattern_in in dst.
+          destruct dst.
+          assumption.
+        + apply In_by_rule_match with (tr:=tr).
+          split.
+          assumption.
+          assumption.
+      }
+    Qed.
 
     Theorem tr_execute_in_elements :
       forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),

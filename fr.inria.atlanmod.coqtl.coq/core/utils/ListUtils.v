@@ -157,3 +157,17 @@ Proof.
       * simpl. right. assumption.
       * assumption.
 Qed.
+
+Lemma hd_error_In :  
+  forall (A : Type) (a : A) (l : list A),
+  hd_error l = Some a -> In a l.
+Proof.
+  intros.
+  unfold hd_error in H.
+  destruct l.
+  - inversion H.
+  - inversion H.
+    simpl.
+    left.
+    reflexivity.
+Qed.
