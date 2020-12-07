@@ -372,4 +372,19 @@ Section ByRuleSemantics.
         + assumption.
     Qed.
 
+    Theorem tr_execute_in :
+      forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement) (tl : TargetModelLink),
+        (In te (allModelElements (executeByRule tr sm)) <-> In te (allModelElements (execute tr sm)))
+        /\ (In tl (allModelLinks (executeByRule tr sm)) <-> In tl (allModelLinks (execute tr sm))).
+    Proof.
+      intros.
+      split.
+      - rewrite tr_execute_in_elements.
+        rewrite Certification.tr_execute_in_elements.
+        split. trivial. trivial.
+      - rewrite tr_execute_in_links.
+        rewrite Certification.tr_execute_in_links.
+        split. trivial. trivial.
+    Qed. 
+
 End ByRuleSemantics.
