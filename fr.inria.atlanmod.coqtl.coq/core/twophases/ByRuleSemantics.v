@@ -22,12 +22,6 @@ Section ByRuleSemantics.
           (TargetModel := Model TargetModelElement TargetModelLink)
           (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
 
-    Definition hasType (t: SourceModelClass) (e: SourceModelElement) : bool :=
-        match (toModelClass t e) with
-        | Some e' => true
-        | _ => false
-        end.
-
     Definition allModelElementsOfType (t: SourceModelClass) (sm: SourceModel) : list SourceModelElement :=
       filter (hasType t) (allModelElements sm).
 
