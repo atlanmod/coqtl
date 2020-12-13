@@ -19,11 +19,12 @@ core/Syntax.v
 core/Semantics.v
 core/Expressions.v
 core/Engine.v
+core/EngineTrace.v
 core/Certification.v
 core/ConcreteSyntax.v
 core/EngineProofs.v
 core/twophases/TwoPhaseSemantics.v
-core/twophases/ByRuleSemantics.v
+core/byrule/ByRuleSemantics.v
 
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
