@@ -31,3 +31,9 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
   (* Decidable equality for objects *)
   beq_ModelElement:  ModelElement -> ModelElement -> bool;
 }.
+
+Definition hasType {ModelElement ModelLink ModelClass ModelReference: Type} {mm: Metamodel ModelElement ModelLink ModelClass ModelReference}  (t: ModelClass) (e: ModelElement) : bool :=
+  match (toModelClass t e) with
+  | Some e' => true
+  | _ => false
+  end.

@@ -19,25 +19,29 @@ Section Semantics.
           (TargetModel := Model TargetModelElement TargetModelLink)
           (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
 
+  Definition Expr (A: Type) (B: Type) : Type := A -> B.
+
+  Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a. 
+
   Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    (@Rule_getGuardExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp.
+    evalExpr (@Rule_getGuardExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp.
 
   Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
     nat :=
-    match (@Rule_getIteratorExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp with
+    match (evalExpr (@Rule_getIteratorExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp) with
     | Some n => n
     | _ => 0
     end.
 
   Definition evalOutputPatternElementExpr (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (o: OutputPatternElement)
     : option TargetModelElement := 
-    (@OutputPatternElement_getElementExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) iter sm sp.
+    (evalExpr (@OutputPatternElement_getElementExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) iter sm sp).
 
   Definition evalOutputPatternLinkExpr
              (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: nat) (tr: list TraceLink)
              (o: OutputPatternElementReference)
     : option TargetModelLink :=
-  (@OutputPatternElementReference_getLinkExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) tr iter sm sp oe.
+    (evalExpr (@OutputPatternElementReference_getLinkExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) tr iter sm sp oe).
 
   (** * Instantiate **)
 
@@ -115,12 +119,10 @@ Section Semantics.
   Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sp: list SourceModelElement)
              (iter : nat) : option (denoteModelClass type) :=
-  let tl := find (fun tl: @TraceLink SourceModelElement TargetModelElement => 
-    match tl with 
-     buildTraceLink (sp', iter', name') _ => 
-       (list_beq SourceModelElement beq_ModelElement sp' sp) && 
-       (iter' =? iter) && (name =? name')%string
-    end) tls in
+  let tl := find (fun tl: TraceLink => 
+    (list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp) &&
+    ((TraceLink_getIterator tl) =? iter) &&
+    ((TraceLink_getName tl) =? name)%string) tls in
   match tl with
     | Some tl' => toModelClass type (TraceLink_getTargetElement tl')
     | None => None

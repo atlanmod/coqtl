@@ -22,6 +22,8 @@ core/Engine.v
 core/Certification.v
 core/ConcreteSyntax.v
 core/EngineProofs.v
+core/twophases/TwoPhaseSemantics.v
+core/twophases/ByRuleSemantics.v
 
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
@@ -35,3 +37,5 @@ examples/Class2Relational/theorems/Relational_name_definedness.v
 examples/Class2Relational/theorems/Table_name_uniqueness.v
 examples/Class2Relational/theorems/Attribute_name_preservation.v
 examples/Class2Relational/theorems/Column_name_uniqueness.v
+examples/TT2BDD/TT.v
+examples/TT2BDD/BDDv2.v

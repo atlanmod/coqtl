@@ -1,14 +1,29 @@
 Require Import List Omega.
 
+Definition map_cons {A : Type} (a: A) (l : list (list A)) : list (list A) :=
+  map (cons a) l.
+
+Lemma In_map_cons : 
+  forall (A: Type) (a b: A) (l: list (list A)) (sp: list A),
+  In a sp -> In sp (map_cons b l) -> (a = b \/ (exists p, In a p /\ In p l)).
+Proof.
+  intros.
+  unfold map_cons. 
+  intros.
+  apply in_map_iff in H0.
+  destruct H0. destruct H0.
+  rewrite <- H0 in H.
+  apply in_inv in H.
+  destruct H.
+  - left. symmetry. assumption.
+  - right. exists x. split. assumption. assumption.
+Qed.
+
 (** * prod_concat *)
 
 (* TODO: rewrite by using cartesian product and map cons *)
-Fixpoint prod_cons {A : Type} (s1: list A) (s2 : list (list A)) : list (list A) :=
-  match s1 with
-  | nil => nil
-  | (cons x1 xs1) => (map (fun l => cons x1 l) s2) ++ (prod_cons xs1 s2)
-  end.
-
+Definition prod_cons {A : Type} (s1: list A) (s2 : list (list A)) : list (list A) :=
+  flat_map (fun a:A => map (cons a) s2) s1.
 
 Example prod_cons_test1:
   prod_cons (1::2::nil) ((3::4::nil)::(5::6::nil)::nil) = (1 :: 3 :: 4 :: nil) :: (1 :: 5 :: 6 :: nil) :: (2 :: 3 :: 4 :: nil) :: (2 :: 5 :: 6 :: nil) :: nil.
@@ -45,29 +60,24 @@ Proof.
 Qed.
 
 Lemma prod_cons_in_inv :
-  forall (T: Type) (se: T) (ss: list T) (s1: list T) (s2: list T) (s3: list (list T)),
-    s1 = se :: ss -> In se s2 -> In ss s3 -> In s1 (prod_cons s2 s3).
+  forall (T: Type) (se: T) (ss: list T) (s2: list T) (s3: list (list T)),
+    In se s2 -> In ss s3 -> In (se :: ss) (prod_cons s2 s3).
 Proof.
-  intros T se ss s1 s2.
+  intros.
   generalize dependent se.
   generalize dependent ss.
-  generalize dependent s1.
   induction s2; intros.
-  - inversion H0.
+  - apply in_nil in H. contradiction.
   - simpl. apply in_or_app.
-    simpl in H0. destruct H0.
-    + left. rewrite H0. rewrite H. apply in_map. assumption.
+    simpl in H. destruct H.
+    + left. rewrite H. apply in_map. assumption.
     + right. apply IHs2 with (ss:=ss) (se:=se); assumption.
 Qed.
 
-
 (** * cartesian_prod *)
 
-Fixpoint singleton_list {A :Type} (s: (list A)) : list (list A) :=
-  match s with
-  | nil => nil
-  | a :: l => cons (a::nil) (singleton_list l)
-  end.
+Definition singleton_list {A :Type} (s: (list A)) : list (list A) :=
+  map (fun a:A => a::nil) s.
 
 (* Compute (singleton_list nil).
 Compute (singleton_list (1::2::nil)). *)
@@ -136,7 +146,6 @@ Proof.
     + inversion H0.
     + simpl.
       apply prod_cons_in_inv with (se:=a) (ss:=sp).
-      * reflexivity.
       * unfold incl in H.
         apply H.
         simpl. left. trivial.

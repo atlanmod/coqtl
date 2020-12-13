@@ -138,3 +138,36 @@ Proof.
       * rewrite H in Ha by (left; reflexivity). discriminate Ha.
       * apply IHl. intros. apply H. right. assumption.
 Qed.
+
+Lemma fold_right_list_invariant :
+  forall (A : Type) (f : A -> list A -> list A) (la0: list A) (l: list A) (P : list A -> Prop),
+  P la0 
+  -> (forall (a' : A) (la' : list A), In a' l -> P la' -> P (f a' la'))
+  -> P (fold_right f la0 l).
+Proof.
+  intros.
+  induction l.
+  - simpl. assumption.
+  - simpl.
+    apply H0.
+    + simpl. left. reflexivity.
+    + apply IHl.
+      intros.
+      apply H0.
+      * simpl. right. assumption.
+      * assumption.
+Qed.
+
+Lemma hd_error_In :  
+  forall (A : Type) (a : A) (l : list A),
+  hd_error l = Some a -> In a l.
+Proof.
+  intros.
+  unfold hd_error in H.
+  destruct l.
+  - inversion H.
+  - inversion H.
+    simpl.
+    left.
+    reflexivity.
+Qed.

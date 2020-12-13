@@ -27,7 +27,7 @@ class XMI2Coq {
 	/* 
 	 * Entry point of model to Boogie transformation
 	 * */ 
-	def mapEObjects(EList<EObject> eobjects) '''
+	def mapEObjects(EList<EObject> eobjects, String ns, String meta) '''
 		(********************************************************************
 			@name Coq declarations for model
 			@date «new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date)»
@@ -36,7 +36,8 @@ class XMI2Coq {
 				 
 		Require Import List.
 		Require Import core.Model.
-		Require Import examples.HSM2FSM.HSM.
+		Require Import String.
+		Require Import examples.«ns».«meta».
 		
 		«var allEObjects = new HashSet»
 		«val root = eobjects.get(0)»
@@ -51,7 +52,7 @@ class XMI2Coq {
 			(Build_Model
 				(
 				«FOR eobject : allEObjects»
-				(Build_«mm_eobject» «eobject.eClass.name»«Keywords.PostfixEClass» «BuildEObject(eobject, eobject.eClass)») :: 
+				(Build_«mm_eobject» «BuildTopSuperEClass(eobject.eClass)» «BuildEObject(eobject, eobject.eClass)») :: 
 				«ENDFOR»
 				nil)
 				(
@@ -65,19 +66,46 @@ class XMI2Coq {
 			).
 	'''
 	
+	def BuildTopSuperEClass(EClass eClass) '''
+	«IF eClass.ESuperTypes.size > 0 »«BuildTopSuperEClass(eClass.ESuperTypes.get(0))»«ELSE»«eClass.name»«Keywords.PostfixEClass»«ENDIF»'''
+	
+	def BuildSuperEObject_prefix(EClass eSupClass, EClass eSubClass) '''
+	«IF eSupClass.ESuperTypes.size > 0 »«BuildSuperEObject_prefix(eSupClass.ESuperTypes.get(0), eSupClass)»«ENDIF
+	»(Build_Abstract_«eSupClass.name» «eSubClass.name»«Keywords.PostfixEClass» '''
+	
+	def BuildSuperEObject_surfix(EClass eClass) '''
+	«IF eClass.ESuperTypes.size > 0 »«BuildSuperEObject_surfix(eClass.ESuperTypes.get(0))»«ENDIF»)'''
+	
 	def BuildEObject(EObject eObject, EClass eClass) '''
-	(Build«eClass.name» «IF eClass.ESuperTypes.size > 0 »«BuildEObject(eObject, eClass.ESuperTypes.get(0))» «ENDIF
-		»"«System.identityHashCode(eObject)+"_"+eClass.name»" «FOR sf: eClass.EAttributes SEPARATOR " "»«EMFUtil.PrintValue(eObject.eGet(sf))»«ENDFOR»)'''
+	«IF eClass.ESuperTypes.size>0»«BuildSuperEObject_prefix(eClass.ESuperTypes.get(0), eClass)»«ENDIF
+	»(Build«eClass.name» "«System.identityHashCode(eObject)+"_"+eClass.name»" «FOR sf: eClass.EAllAttributes SEPARATOR " "»«EMFUtil.PrintValue(eObject.eGet(sf))»«ENDFOR»)«
+	IF eClass.ESuperTypes.size>0»«BuildSuperEObject_surfix(eClass.ESuperTypes.get(0))»«ENDIF»'''
 			
 	def BuildELink(EObject eobject, EStructuralFeature sf)'''
 		«val sf_value = eobject.eGet(sf)»«val tp = sf.EType as EClass»
-		(Build«eobject.eClass.name»«sf.name.toFirstUpper» «BuildEObject(eobject, eobject.eClass)» «BuildEReference(sf_value, tp)»)'''
+		(Build«eobject.eClass.name»«sf.name.toFirstUpper» «BuildEObject_inref(eobject, eobject.eClass)» «BuildEReference(sf_value, tp)»)'''
 	
+	def BuildEObject_inref(EObject eObject, EClass eClass) '''
+	«IF eClass.isAbstract
+	»«IF eObject.eClass.ESuperTypes.size>0»«BuildSuperEObject_inref_prefix(eObject.eClass.ESuperTypes.get(0), eObject.eClass, eClass)»«ENDIF
+	» (Build«eObject.eClass.name» "«System.identityHashCode(eObject)+"_"+eClass.name»" «FOR sf: eClass.EAllAttributes SEPARATOR " "»«EMFUtil.PrintValue(eObject.eGet(sf))»«ENDFOR») «
+	IF eObject.eClass.ESuperTypes.size>0»«BuildSuperEObject_inref_surfix(eObject.eClass, eClass)»«ENDIF»«
+	ELSE» (Build«eObject.eClass.name» "«System.identityHashCode(eObject)+"_"+eClass.name»" «FOR sf: eClass.EAllAttributes SEPARATOR " "»«EMFUtil.PrintValue(eObject.eGet(sf))»«ENDFOR»)«ENDIF»'''
+	
+	def BuildSuperEObject_inref_prefix(EClass eSupClass, EClass eSubClass, EClass top) '''
+	«IF eSupClass.ESuperTypes.size > 0 && eSupClass.name != top.name»«BuildSuperEObject_inref_prefix(eSupClass.ESuperTypes.get(0), eSupClass, top)» «ENDIF
+	» (Build_Abstract_«eSupClass.name» «eSubClass.name»«Keywords.PostfixEClass» '''
+	
+	def BuildSuperEObject_inref_surfix(EClass eClass, EClass top) '''
+	«IF eClass.ESuperTypes.size > 0 && eClass.ESuperTypes.get(0).name != top.name »«BuildSuperEObject_inref_surfix(eClass.ESuperTypes.get(0), top)»«ENDIF»)'''
+	
+	
+	//TODO pick up back reference?
 	def BuildEReference(Object sf_value, EClass tp) '''
 		«IF sf_value instanceof EList 
-		»(«FOR v : sf_value.filter(typeof(EObject)) SEPARATOR " :: "»«BuildEObject(v, tp)»«ENDFOR» :: nil )«
+		»(«FOR v : sf_value.filter(typeof(EObject)) SEPARATOR " :: "»«BuildEObject_inref(v, tp)»«ENDFOR» :: nil )«
 		ELSEIF sf_value instanceof EObject
-		»«BuildEObject(sf_value as EObject, tp)»«
+		»«BuildEObject_inref(sf_value as EObject, tp)»«
 		ENDIF»'''
 	
 	def HashSet<EObject> getAllEObjects(EObject o) {

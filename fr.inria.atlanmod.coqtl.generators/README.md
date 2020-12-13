@@ -4,11 +4,21 @@ In model-driven engineering, model transformation (MT) verification is essential
 
 We propose an alternative solution by designing and implementing an internal domain specific language, namely CoqTL, for the specification of declarative MTs directly in the Coq interactive theorem prover.  Expressions in CoqTL are written in Gallina (the specification language of Coq), increasing the possibilities of reuse of native Coq libraries in the transformation definition and proof. In this repository, it contains the example and proofs of CoqTL.
 
-Usage
+Information
 ------
 This repository contains working-in-progress Eclipse plugins for generating metamodel/model inputs of CoqTL from Ecore files.
 * To generate **.v** files from Ecore metamodels, check **fr.inria.atlanmod.coqtl.ecore.core.EcoreGeneratorDriver**.
 * To generate **.v** files from xmi models, check **fr.inria.atlanmod.coqtl.xmi.core.XMIGeneratorDriver**.
+  * A gradle file is provided to compile a executable jar for XMI model generation
+    * `gradle build`
+  * The executable jar expects 5 inputs:
+    * example name, e.g. TT2BDD.
+    * metamodel name, e.g. TT
+    * metamodel relative path, e.g. /./resources/TT2BDD/TT.ecore
+    * model relative path, e.g. /./resources/TT2BDD/tt.xor.xmi
+    * output path, e.g. /./resources/output.v 
+      * (make sure output name contains only a single dot to be recognizable by Coq)
+    
 
 Contacts
 ------
