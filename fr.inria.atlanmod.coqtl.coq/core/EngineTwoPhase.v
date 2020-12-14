@@ -32,10 +32,11 @@ Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Expressions.
+Require Import core.Engine.
 
 Set Implicit Arguments.
 
-Class TransformationEngineTrace :=
+Class TransformationEngineTrace (t: TransformationEngine) :=
   {
     SourceModelElement: Type;
     SourceModelClass: Type;
