@@ -38,38 +38,11 @@ Set Implicit Arguments.
 
 Class TransformationEngineTrace (t: TransformationEngine) :=
   {
-    SourceModelElement: Type;
-    SourceModelClass: Type;
-    SourceModelLink: Type;
-    SourceModelReference: Type;
-    TargetModelElement: Type;
-    TargetModelClass: Type;
-    TargetModelLink: Type;
-    TargetModelReference: Type;
-
-    smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference;
-    tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference;
-
-    SourceModel := Model SourceModelElement SourceModelLink;
-    TargetModel := Model TargetModelElement TargetModelLink;
-
-    Transformation: Type;
-    Rule: Type;
-    OutputPatternElement: Type;
-    OutputPatternElementReference: Type;
-
-    TraceLink: Type;
-
     (** ** Accessors *)
 
-    getRules: Transformation -> list Rule;
-
-    getInTypes: Rule -> list SourceModelClass;    
-    getGuardExpr: Rule -> (SourceModel -> (list SourceModelElement) -> option bool);
     getOutputPatternElements: Rule -> list OutputPatternElement;
 
     getName: OutputPatternElement -> string;
-    getOutputElementReferences: OutputPatternElement -> list OutputPatternElementReference;
 
     buildTraceLink: (list SourceModelElement * nat * string) -> TargetModelElement -> TraceLink;
     TraceLink_getSourcePattern: TraceLink -> list SourceModelElement;
@@ -77,22 +50,9 @@ Class TransformationEngineTrace (t: TransformationEngine) :=
     TraceLink_getName: TraceLink -> string;
     TraceLink_getTargetElement: TraceLink -> TargetModelElement;
 
-    (** ** maxArity *)
-
-    maxArity (tr: Transformation) : nat :=
-      max (map (length (A:=SourceModelClass)) (map getInTypes (getRules tr)));
-
-    allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
-      tuples_up_to_n (allModelElements sm) (maxArity tr);
-
     (** ** Functions *)
 
-
-
-
     executeTraces: Transformation -> SourceModel -> TargetModel;
-
-    matchPattern: Transformation -> SourceModel -> list SourceModelElement -> list Rule;
 
     instantiateTraces: Transformation -> SourceModel -> (list TargetModelElement * list TraceLink);
     trace: Transformation -> SourceModel -> list TraceLink; 
@@ -112,8 +72,6 @@ Class TransformationEngineTrace (t: TransformationEngine) :=
     evalOutputPatternElementExpr: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
     evalIteratorExpr: Rule -> SourceModel -> list SourceModelElement -> nat;
     evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternElementReference -> option TargetModelLink;
-
-
 
     (** ** Theorems *)
 
@@ -177,7 +135,6 @@ Class TransformationEngineTrace (t: TransformationEngine) :=
         forall (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat),
           instantiateElementOnPattern o sm sp iter = evalOutputPatternElementExpr sm sp iter o;
 
-
     (** ** applyPattern *)
 
     tr_applyTraces_in :
@@ -223,6 +180,5 @@ Class TransformationEngineTrace (t: TransformationEngine) :=
                  (sm: SourceModel)
                  (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink),
             applyReferenceOnPatternTraces oper tr sm sp iter te tls  = evalOutputPatternLinkExpr sm sp te iter tls oper;
-
 
   }.
