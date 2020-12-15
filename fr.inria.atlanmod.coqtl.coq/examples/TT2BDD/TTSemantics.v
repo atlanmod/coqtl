@@ -1,4 +1,5 @@
 Require Import TT2BDD.TT.
+Require Import BoolEq.
 Require Import core.Model.
 Require Import String.
 Require Import List.
@@ -73,6 +74,15 @@ Definition eval
     | _ => nil
     end.
 
-
+Definition valueOf 
+    (portValues: list (string*bool))
+    (portName: string)
+    :=
+    let values := (nodup bool_dec (map snd (filter (fun p => String.eqb (fst p) portName) portValues))) in
+    match values with
+    | false :: nil => Some false
+    | true :: nil => Some true
+    | _ => None
+    end.
 
 
