@@ -40,3 +40,5 @@ examples/Class2Relational/theorems/Attribute_name_preservation.v
 examples/Class2Relational/theorems/Column_name_uniqueness.v
 examples/TT2BDD/TT.v
 examples/TT2BDD/BDDv2.v
+examples/TT2BDD/TT2BDD.v
+examples/TT2BDD/tests/model.v
