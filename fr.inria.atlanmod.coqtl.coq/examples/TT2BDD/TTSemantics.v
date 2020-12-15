@@ -3,6 +3,7 @@ Require Import BoolEq.
 Require Import core.Model.
 Require Import String.
 Require Import List.
+Require Import Utils.
 
 Definition matchInputCell 
     (ttm: Model TTMetamodel_EObject TTMetamodel_ELink)
@@ -85,4 +86,12 @@ Definition valueOf
     | _ => None
     end.
 
-
+Definition allInputPorts 
+    (ttm: Model TTMetamodel_EObject TTMetamodel_ELink)
+    (tt : TruthTable) :=
+    filter 
+        (fun port => match port with
+        | (Build_Abstract_Port InputPortEClass p) => true 
+        | _ => false
+        end)
+        (optionListToList (TruthTable_getPorts tt ttm)).
