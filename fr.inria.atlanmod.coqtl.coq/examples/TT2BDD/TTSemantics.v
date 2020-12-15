@@ -69,10 +69,7 @@ Definition eval
         list (string*bool) :=
     match TruthTable_getRows tt ttm with 
     | Some rows => 
-        match find (fun row => matchRow ttm row ins) rows with
-        | Some row => outputOfRow ttm row
-        | _ => nil 
-        end
+        flat_map (outputOfRow ttm)  (filter (fun row => matchRow ttm row ins) rows)
     | _ => nil
     end.
 

@@ -8,4 +8,4 @@ Open Scope string.
 
 Compute (eval InputModel 
     (BuildTruthTable "170144208_TruthTable" "" "Test")
-    (("a", true)::("b",false)::nil)).
+    (("a", false)::("b",true)::nil)).
