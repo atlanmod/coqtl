@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<BDD xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://www.transformation-tool-contest.eu/2019/bdd" name="Test">
+  <ports xsi:type="InputPort" name="a" subtrees="//@tree"/>
+  <ports xsi:type="InputPort" name="b" subtrees="//@tree/@treeForOne/@treeForZero //@tree/@treeForZero"/>
+  <ports xsi:type="InputPort" name="c" subtrees="//@tree/@treeForOne/@treeForZero/@treeForOne //@tree/@treeForZero/@treeForOne //@tree/@treeForOne/@treeForZero/@treeForZero"/>
+  <ports xsi:type="InputPort" name="d" subtrees="//@tree/@treeForOne //@tree/@treeForZero/@treeForOne/@treeForZero"/>
+  <ports xsi:type="OutputPort" name="s" assignments="//@tree/@treeForOne/@treeForOne/@assignments.0 //@tree/@treeForOne/@treeForZero/@treeForZero/@treeForZero/@assignments.0 //@tree/@treeForOne/@treeForZero/@treeForZero/@treeForOne/@assignments.0 //@tree/@treeForZero/@treeForOne/@treeForOne/@assignments.0 //@tree/@treeForOne/@treeForZero/@treeForOne/@treeForOne/@assignments.0 //@tree/@treeForZero/@treeForOne/@treeForZero/@treeForZero/@assignments.0 //@tree/@treeForZero/@treeForZero/@assignments.0 //@tree/@treeForZero/@treeForOne/@treeForZero/@treeForOne/@assignments.0 //@tree/@treeForOne/@treeForZero/@treeForOne/@treeForZero/@assignments.0"/>
+  <tree xsi:type="Subtree" port="//@ports.0">
+    <treeForZero xsi:type="Subtree" port="//@ports.1">
+      <treeForZero xsi:type="Leaf">
+        <assignments value="false" port="//@ports.4"/>
+      </treeForZero>
+      <treeForOne xsi:type="Subtree" port="//@ports.2">
+        <treeForZero xsi:type="Subtree" port="//@ports.3">
+          <treeForZero xsi:type="Leaf">
+            <assignments value="true" port="//@ports.4"/>
+          </treeForZero>
+          <treeForOne xsi:type="Leaf">
+            <assignments value="false" port="//@ports.4"/>
+          </treeForOne>
+        </treeForZero>
+        <treeForOne xsi:type="Leaf">
+          <assignments value="false" port="//@ports.4"/>
+        </treeForOne>
+      </treeForOne>
+    </treeForZero>
+    <treeForOne xsi:type="Subtree" port="//@ports.3">
+      <treeForZero xsi:type="Subtree" port="//@ports.1">
+        <treeForZero xsi:type="Subtree" port="//@ports.2">
+          <treeForZero xsi:type="Leaf">
+            <assignments value="false" port="//@ports.4"/>
+          </treeForZero>
+          <treeForOne xsi:type="Leaf">
+            <assignments value="true" port="//@ports.4"/>
+          </treeForOne>
+        </treeForZero>
+        <treeForOne xsi:type="Subtree" port="//@ports.2">
+          <treeForZero xsi:type="Leaf">
+            <assignments value="true" port="//@ports.4"/>
+          </treeForZero>
+          <treeForOne xsi:type="Leaf">
+            <assignments value="false" port="//@ports.4"/>
+          </treeForOne>
+        </treeForOne>
+      </treeForZero>
+      <treeForOne xsi:type="Leaf">
+        <assignments value="false" port="//@ports.4"/>
+      </treeForOne>
+    </treeForOne>
+  </tree>
+</BDD>
