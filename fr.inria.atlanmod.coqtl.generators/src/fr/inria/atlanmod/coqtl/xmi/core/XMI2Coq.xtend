@@ -103,7 +103,7 @@ class XMI2Coq {
 	//TODO pick up back reference?
 	def BuildEReference(Object sf_value, EClass tp) '''
 		«IF sf_value instanceof EList 
-		»(«FOR v : sf_value.filter(typeof(EObject)) SEPARATOR " :: "»«BuildEObject_inref(v, tp)»«ENDFOR» :: nil )«
+		»«IF sf_value.size > 0»(«FOR v : sf_value.filter(typeof(EObject)) SEPARATOR " :: "»«BuildEObject_inref(v, tp)»«ENDFOR» :: nil )«ELSE» nil «ENDIF»«
 		ELSEIF sf_value instanceof EObject
 		»«BuildEObject_inref(sf_value as EObject, tp)»«
 		ENDIF»'''
