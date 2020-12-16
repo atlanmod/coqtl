@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<TruthTable xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="https://www.transformation-tool-contest.eu/2019/tt" name="Test">
+  <ports xsi:type="InputPort" name="a" cells="//@rows.0/@cells.0 //@rows.1/@cells.0 //@rows.2/@cells.0 //@rows.3/@cells.0 //@rows.4/@cells.0 //@rows.5/@cells.0 //@rows.6/@cells.0 //@rows.7/@cells.0 //@rows.8/@cells.0"/>
+  <ports xsi:type="InputPort" name="b" cells="//@rows.0/@cells.1 //@rows.1/@cells.1 //@rows.2/@cells.1 //@rows.3/@cells.1 //@rows.4/@cells.1 //@rows.5/@cells.1 //@rows.7/@cells.1 //@rows.8/@cells.1"/>
+  <ports xsi:type="InputPort" name="c" cells="//@rows.1/@cells.2 //@rows.2/@cells.2 //@rows.3/@cells.2 //@rows.4/@cells.2 //@rows.5/@cells.2 //@rows.7/@cells.2 //@rows.8/@cells.2"/>
+  <ports xsi:type="InputPort" name="d" cells="//@rows.1/@cells.3 //@rows.2/@cells.3 //@rows.4/@cells.3 //@rows.5/@cells.3 //@rows.6/@cells.1 //@rows.7/@cells.3 //@rows.8/@cells.3"/>
+  <ports xsi:type="OutputPort" name="s" cells="//@rows.0/@cells.2 //@rows.1/@cells.4 //@rows.2/@cells.4 //@rows.3/@cells.3 //@rows.4/@cells.4 //@rows.5/@cells.4 //@rows.6/@cells.2 //@rows.7/@cells.4 //@rows.8/@cells.4"/>
+  <rows>
+    <cells value="false" port="//@ports.0"/>
+    <cells value="false" port="//@ports.1"/>
+    <cells value="false" port="//@ports.4"/>
+  </rows>
+  <rows>
+    <cells value="false" port="//@ports.0"/>
+    <cells value="true" port="//@ports.1"/>
+    <cells value="false" port="//@ports.2"/>
+    <cells value="false" port="//@ports.3"/>
+    <cells value="true" port="//@ports.4"/>
+  </rows>
+  <rows>
+    <cells value="false" port="//@ports.0"/>
+    <cells value="true" port="//@ports.1"/>
+    <cells value="false" port="//@ports.2"/>
+    <cells value="true" port="//@ports.3"/>
+    <cells value="false" port="//@ports.4"/>
+  </rows>
+  <rows>
+    <cells value="false" port="//@ports.0"/>
+    <cells value="true" port="//@ports.1"/>
+    <cells value="true" port="//@ports.2"/>
+    <cells value="false" port="//@ports.4"/>
+  </rows>
+  <rows>
+    <cells value="true" port="//@ports.0"/>
+    <cells value="false" port="//@ports.1"/>
+    <cells value="false" port="//@ports.2"/>
+    <cells value="false" port="//@ports.3"/>
+    <cells value="false" port="//@ports.4"/>
+  </rows>
+  <rows>
+    <cells value="true" port="//@ports.0"/>
+    <cells value="false" port="//@ports.1"/>
+    <cells value="true" port="//@ports.2"/>
+    <cells value="false" port="//@ports.3"/>
+    <cells value="true" port="//@ports.4"/>
+  </rows>
+  <rows>
+    <cells value="true" port="//@ports.0"/>
+    <cells value="true" port="//@ports.3"/>
+    <cells value="false" port="//@ports.4"/>
+  </rows>
+  <rows>
+    <cells value="true" port="//@ports.0"/>
+    <cells value="true" port="//@ports.1"/>
+    <cells value="false" port="//@ports.2"/>
+    <cells value="false" port="//@ports.3"/>
+    <cells value="true" port="//@ports.4"/>
+  </rows>
+  <rows>
+    <cells value="true" port="//@ports.0"/>
+    <cells value="true" port="//@ports.1"/>
+    <cells value="true" port="//@ports.2"/>
+    <cells value="false" port="//@ports.3"/>
+    <cells value="false" port="//@ports.4"/>
+  </rows>
+</TruthTable>
