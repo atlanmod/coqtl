@@ -1,13 +1,14 @@
 -R core core
 -R examples examples
 
+core/utils/CpdtTactics.v
+core/utils/NotationUtils.v
+core/utils/ListUtils.v
 core/utils/ArithUtils.v
 core/utils/BoolUtils.v
 core/utils/ConcatUtils.v
-core/utils/CpdtTactics.v
+
 core/utils/DatatypeUtils.v
-core/utils/ListUtils.v
-core/utils/NotationUtils.v
 core/utils/PrintUtils.v
 core/utils/PropUtils.v
 core/utils/StringUtils.v
@@ -19,7 +20,7 @@ core/Syntax.v
 core/Semantics.v
 core/Expressions.v
 core/Engine.v
-core/EngineTrace.v
+core/EngineTwoPhase.v
 core/Certification.v
 core/ConcreteSyntax.v
 core/EngineProofs.v
