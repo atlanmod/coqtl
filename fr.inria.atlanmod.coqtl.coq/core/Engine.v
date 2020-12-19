@@ -27,13 +27,18 @@ Require Import List.
 Require Import Multiset.
 Require Import ListSet.
 Require Import Omega.
+Require Import Bool.
 
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Expressions.
 
+Scheme Equality for list.
+
 Set Implicit Arguments.
+
+
 
 Class TransformationEngine :=
   {
@@ -56,23 +61,27 @@ Class TransformationEngine :=
     Rule: Type;
     OutputPatternElement: Type;
     OutputPatternElementReference: Type;
-
     TraceLink: Type;
 
     (** ** Accessors *)
 
-    getRules: Transformation -> list Rule;
+    Transformation_getRules: Transformation -> list Rule;
 
-    getInTypes: Rule -> list SourceModelClass;    
-    getGuardExpr: Rule -> (SourceModel -> (list SourceModelElement) -> option bool);
-    getOutputPattern: Rule -> list OutputPatternElement;
+    Rule_getInTypes: Rule -> list SourceModelClass;    
+    Rule_getOutputPatternElements: Rule -> list OutputPatternElement;
 
-    getOutputElementReferences: OutputPatternElement -> list OutputPatternElementReference;
+    OutputPatternElement_getOutputElementReferences: OutputPatternElement -> list OutputPatternElementReference;
+
+    TraceLink_getSourcePattern: TraceLink -> list SourceModelElement;
+    TraceLink_getIterator: TraceLink -> nat;
+    TraceLink_getName: TraceLink -> string;
+    TraceLink_getTargetElement: TraceLink -> TargetModelElement;
+
 
     (** ** maxArity *)
 
     maxArity (tr: Transformation) : nat :=
-      max (map (length (A:=SourceModelClass)) (map getInTypes (getRules tr)));
+      max (map (length (A:=SourceModelClass)) (map Rule_getInTypes (Transformation_getRules tr)));
 
     allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
       tuples_up_to_n (allModelElements sm) (maxArity tr);
@@ -97,6 +106,9 @@ Class TransformationEngine :=
     
     evalOutputPatternElementExpr: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
     evalIteratorExpr: Rule -> SourceModel -> list SourceModelElement -> nat;
+    evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternElementReference -> option TargetModelLink;
+
+    trace: Transformation -> SourceModel -> list TraceLink; 
 
     resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat),
@@ -128,7 +140,7 @@ Class TransformationEngine :=
        forall (tr: Transformation) (sm : SourceModel),
          forall (sp : list SourceModelElement)(r : Rule),
            In r (matchPattern tr sm sp) <->
-             In r (getRules tr) /\
+             In r (Transformation_getRules tr) /\
              matchRuleOnPattern r sm sp = true;
 
     (*tr_matchPattern_None : 
@@ -142,12 +154,12 @@ Class TransformationEngine :=
     (*tr_matchRuleOnPattern_Leaf :
     forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       matchRuleOnPattern r tr sm sp =
-      evalFunction smm sm (getInTypes r) bool (getGuard r) sp;*)
+      evalFunction smm sm (Rule_getInTypes r) bool (getGuard r) sp;*)
 
     (*tr_matchRuleOnPattern_None :
         forall (tr: Transformation) (sm : SourceModel) 
           (r: Rule) (sp: list SourceModelElement),
-           length sp <> length (getInTypes r) ->
+           length sp <> length (Rule_getInTypes r) ->
             matchRuleOnPattern r tr sm sp = None;*)
 
     (** ** instantiatePattern *)
@@ -194,40 +206,44 @@ Class TransformationEngine :=
         In te (instantiateIterationOnPattern r sm sp i)
         <->
         (exists (ope: OutputPatternElement),
-            In ope (getOutputPattern r) /\ 
+            In ope (Rule_getOutputPatternElements r) /\ 
             instantiateElementOnPattern ope sm sp i = Some te);
 
     (*tr_instantiateIterationOnPattern_non_None : 
      forall (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (i:nat),
       instantiateIterationOnPattern r sm sp i <> None <->
-      (exists (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+      (exists (ope: OutputPatternElement (Rule_getInTypes r) (getIteratorType r)),
           In ope (getOutputPattern r) /\ 
           instantiateElementOnPattern ope sm sp i <> None);
     
     tr_instantiateElementOnPattern_None : 
       forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-        (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
-        length sp <> length (getInTypes r) ->
+        (ope: OutputPatternElement (Rule_getInTypes r) (getIteratorType r)),
+        length sp <> length (Rule_getInTypes r) ->
         instantiateElementOnPattern ope sm sp i = None;*)
 
     (** ** instantiateElementOnPattern *)
 
+    tr_instantiateElementOnPattern_leaf:
+        forall (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat),
+          instantiateElementOnPattern o sm sp iter = evalOutputPatternElementExpr sm sp iter o;
+
     (*tr_instantiateElementOnPattern_Leaf :
       forall (sm : SourceModel)
         (tr: Transformation) (r: Rule) (sp: list SourceModelElement) (i : nat)
-        (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+        (ope: OutputPatternElement (Rule_getInTypes r) (getIteratorType r)),
         instantiateElementOnPattern ope sm sp i =
         m <- matchRuleOnPattern r tr sm sp;
         matched <- if m then Some true else None;
         it <- nth_error (evalIterator r sm sp) i;
-        r0 <- evalFunction smm sm (getInTypes r)
+        r0 <- evalFunction smm sm (Rule_getInTypes r)
            (denoteModelClass (getOutType ope))
            (getOutPatternElement ope it) sp;
         Some (toModelElement (getOutType ope) r0);
 
     tr_instantiateElementOnPattern_None_iterator : 
       forall (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-        (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+        (ope: OutputPatternElement (Rule_getInTypes r) (getIteratorType r)),
         i >= length (evalIterator r sm sp) ->
         instantiateElementOnPattern ope sm sp i = None;*) 
     
@@ -272,54 +288,59 @@ Class TransformationEngine :=
 
     (** ** applyIterationOnPattern *)
 
-    
     tr_applyIterationOnPattern_in : 
       forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat),
         In tl (applyIterationOnPattern r tr sm sp i) <->
         (exists (ope: OutputPatternElement),
-            In ope (getOutputPattern r) /\ 
+            In ope (Rule_getOutputPatternElements r) /\ 
             In tl (applyElementOnPattern ope tr sm sp i));
 
     (*
     tr_applyIterationOnPattern_non_None : 
      forall  (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (i:nat),
        applyIterationOnPattern r tr sm sp i <> None <->
-      (exists (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+      (exists (ope: OutputPatternElement (Rule_getInTypes r) (getIteratorType r)),
             In ope (getOutputPattern r) /\ 
             applyElementOnPattern ope tr sm sp i <> None);*)
 
     (** ** applyElementOnPattern *)
 
-    
     tr_applyElementOnPattern_in : 
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) 
              (i:nat) (ope: OutputPatternElement),
         In tl (applyElementOnPattern ope tr sm sp i ) <->
         (exists (oper: OutputPatternElementReference) (te: TargetModelElement),
-            In oper (getOutputElementReferences ope) /\ 
+            In oper (OutputPatternElement_getOutputElementReferences ope) /\ 
             (evalOutputPatternElementExpr sm sp i ope) = Some te /\
             applyReferenceOnPattern oper tr sm sp i te = Some tl);
     
     (*    
     tr_applyElementOnPattern_non_None : 
-     forall  (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (i:nat) (ope: OutputPatternElement (getInTypes r) (getIteratorType r)),
+     forall  (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (i:nat) (ope: OutputPatternElement (Rule_getInTypes r) (getIteratorType r)),
        applyElementOnPattern ope tr sm sp i <> None <->
-      (exists(oper: OutputPatternElementReference (getInTypes r) (getIteratorType r) (getOutType ope)),
-          In oper (getOutputElementReferences ope) /\ 
+      (exists(oper: OutputPatternElementReference (Rule_getInTypes r) (getIteratorType r) (getOutType ope)),
+          In oper (OutputPatternElement_getOutputElementReferences ope) /\ 
           applyReferenceOnPattern oper tr sm sp i <> None);*)
 
     (** ** applyReferenceOnPattern *)
 
+    tr_applyReferenceOnPatternTraces_leaf : 
+          forall (oper: OutputPatternElementReference)
+                 (tr: Transformation)
+                 (sm: SourceModel)
+                 (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink),
+            applyReferenceOnPattern oper tr sm sp iter te  = evalOutputPatternLinkExpr sm sp te iter (trace tr sm) oper;
+
     (*tr_applyReferenceOnPattern_Leaf :
       forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-        (ope: OutputPatternElement (getInTypes r) (getIteratorType r))
-        (oper: OutputPatternElementReference (getInTypes r) (getIteratorType r) (getOutType ope)),
+        (ope: OutputPatternElement (Rule_getInTypes r) (getIteratorType r))
+        (oper: OutputPatternElementReference (Rule_getInTypes r) (getIteratorType r) (getOutType ope)),
         applyReferenceOnPattern oper tr sm sp i =
         m <- matchRuleOnPattern r tr sm sp;
         matched <- if m then Some true else None;
         it <- nth_error (evalIterator r sm sp) i;
         l <- evalOutputPatternElement sm sp it ope;
-        r0 <- evalFunction smm sm (getInTypes r)
+        r0 <- evalFunction smm sm (Rule_getInTypes r)
            (denoteModelClass (getOutType ope) -> option (denoteModelReference (getRefType oper)))
            (getOutputReference oper (matchTransformation tr) it) sp;
         t <- toModelClass (getOutType ope) l;
@@ -328,15 +349,15 @@ Class TransformationEngine :=
 
     tr_applyReferenceOnPattern_None : 
       forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-        (ope: OutputPatternElement (getInTypes r) (getIteratorType r))
-        (oper: OutputPatternElementReference (getInTypes r) (getIteratorType r) (getOutType ope)),
-        length sp <> length (getInTypes r) ->
+        (ope: OutputPatternElement (Rule_getInTypes r) (getIteratorType r))
+        (oper: OutputPatternElementReference (Rule_getInTypes r) (getIteratorType r) (getOutType ope)),
+        length sp <> length (Rule_getInTypes r) ->
         applyReferenceOnPattern oper tr sm sp i = None;
         
     tr_applyReferenceOnPattern_None_iterator : 
       forall (tr:Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement) (i : nat)
-        (ope: OutputPatternElement (getInTypes r) (getIteratorType r))
-        (oper: OutputPatternElementReference (getInTypes r) (getIteratorType r) (getOutType ope)),
+        (ope: OutputPatternElement (Rule_getInTypes r) (getIteratorType r))
+        (oper: OutputPatternElementReference (Rule_getInTypes r) (getIteratorType r) (getOutType ope)),
         i >= length (evalIterator r sm sp) ->
         applyReferenceOnPattern oper tr sm sp i = None;*)
 
@@ -344,30 +365,30 @@ Class TransformationEngine :=
 
     (*tr_maxArity_in :
     forall (tr: Transformation) (r: Rule),
-      In r (getRules tr) ->
-      maxArity tr >= length (getInTypes r);*)
-
-    (** ** resolveAll *)
-
-    (*tr_resolveAll_in:
-    forall (tr: MatchedTransformation) (sm: SourceModel) (name: string)
-      (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
-      (te: denoteModelClass type),
-      (exists tes: list (denoteModelClass type),
-          resolveAll tr sm name type sps iter = Some tes /\ In te tes) <->
-      (exists (sp: list SourceModelElement),
-          In sp sps /\
-          resolve tr sm name type sp iter = Some te);*)
+      In r (Transformation_getRules tr) ->
+      maxArity tr >= length (Rule_getInTypes r);*)
 
     (** ** resolve *)
 
-    (*tr_resolve_Leaf:
-    forall (tr: MatchedTransformation) (sm : SourceModel) (name: string) (type: TargetModelClass)
-      (sp: list SourceModelElement) (iter: nat) (te: (denoteModelClass type)),
-      resolve tr sm name type sp iter = return te ->
-       (exists (r: Rule) (o: OutputPatternElement (getInTypes r) (getIteratorType r)) (e: TargetModelElement), 
-          In r (getRules (unmatchTransformation tr)) /\ In o (getOutputPattern r)
-            /\ (instantiateElementOnPattern o sm sp iter = Some e)
-            /\ (toModelClass type e = Some te));*)
+    tr_resolveAll_in:
+    forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+      (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
+      (te: denoteModelClass type),
+      (exists tes: list (denoteModelClass type),
+          resolveAll tls sm name type sps iter = Some tes /\ In te tes) <->
+      (exists (sp: list SourceModelElement),
+          In sp sps /\
+          resolve tls sm name type sp iter = Some te);
+
+    tr_resolve_Leaf:
+    forall (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
+      (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
+      resolve tls sm name type sp iter = return x ->
+       (exists (tl : TraceLink),
+         In tl tls /\
+         Is_true (list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp) /\
+         ((TraceLink_getIterator tl) = iter) /\ 
+         ((TraceLink_getName tl) = name)%string /\
+         (toModelClass type (TraceLink_getTargetElement tl) = Some x));
 
   }.
