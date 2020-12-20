@@ -107,6 +107,7 @@ Class TransformationEngine :=
     evalOutputPatternElementExpr: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
     evalIteratorExpr: Rule -> SourceModel -> list SourceModelElement -> nat;
     evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternElementReference -> option TargetModelLink;
+    evalGuardExpr: Rule->SourceModel->list SourceModelElement->option bool;
 
     trace: Transformation -> SourceModel -> list TraceLink; 
 
@@ -151,10 +152,10 @@ Class TransformationEngine :=
 
     (** ** matchRuleOnPattern *)
 
-    (*tr_matchRuleOnPattern_Leaf :
+    tr_matchRuleOnPattern_Leaf :
     forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
-      matchRuleOnPattern r tr sm sp =
-      evalFunction smm sm (Rule_getInTypes r) bool (getGuard r) sp;*)
+      matchRuleOnPattern r sm sp =
+       match evalGuardExpr r sm sp with Some true => true | _ => false end;
 
     (*tr_matchRuleOnPattern_None :
         forall (tr: Transformation) (sm : SourceModel) 

@@ -53,6 +53,18 @@ Section Certification.
     apply filter_In.
   Qed.
 
+  Definition evalGuardExpr1 :=  (@evalGuardExpr SourceModelElement SourceModelLink
+        SourceModelClass SourceModelReference smm TargetModelElement TargetModelLink).
+  
+
+  Lemma tr_matchRuleOnPattern_Leaf : 
+  forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+     matchRuleOnPattern r sm sp =
+       match evalGuardExpr1 r sm sp with Some true => true | _ => false end.
+  Proof.
+   crush.
+  Qed.
+
   Lemma tr_instantiatePattern_in :
   forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
     In te (instantiatePattern tr sm sp) <->
@@ -105,6 +117,16 @@ Section Certification.
       split.
       - assumption.
       - crush.
+  Qed.
+
+  Definition evalOutputPatternElementExpr1 :=  (@evalOutputPatternElementExpr SourceModelElement SourceModelLink
+        TargetModelElement TargetModelLink).
+
+  Lemma  tr_instantiateElementOnPattern_leaf:
+        forall (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat),
+          instantiateElementOnPattern o sm sp iter = evalOutputPatternElementExpr1 sm sp iter o.
+  Proof.
+    crush.
   Qed.
 
   Lemma tr_applyPattern_in :
@@ -174,6 +196,17 @@ Section Certification.
       - assumption.
       - crush.
   Qed.
+
+  Lemma tr_applyReferenceOnPatternTraces_leaf : 
+          forall (oper: OutputPatternElementReference)
+                 (tr: Transformation)
+                 (sm: SourceModel)
+                 (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list (@TraceLink SourceModelElement TargetModelElement)),
+            applyReferenceOnPattern oper tr sm sp iter te  = evalOutputPatternLinkExpr sm sp te iter (trace tr sm) oper.
+  Proof.
+   crush.
+  Qed.
+
 
 (*TODO
   Lemma maxArity_length:
@@ -305,6 +338,8 @@ Section Certification.
       TargetModelLink := TargetModelLink;
       TargetModelReference := TargetModelReference;
 
+      (* syntax and accessors *)
+
       Transformation := Transformation;
       Rule := Rule;
       OutputPatternElement := OutputPatternElement;
@@ -312,14 +347,20 @@ Section Certification.
 
       TraceLink := TraceLink;
 
-      getRules := Transformation_getRules;
+      Transformation_getRules := Transformation_getRules;
 
-      getInTypes := Rule_getInTypes;
-      getGuardExpr := Rule_getGuardExpr;
-      getOutputPattern := Rule_getOutputPatternElements;
+      Rule_getInTypes := Rule_getInTypes;
+      Rule_getOutputPatternElements := Rule_getOutputPatternElements;
 
-      getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
-   
+      OutputPatternElement_getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
+
+      TraceLink_getSourcePattern := TraceLink_getSourcePattern;
+      TraceLink_getIterator := TraceLink_getIterator;
+      TraceLink_getName := TraceLink_getName;
+      TraceLink_getTargetElement := TraceLink_getTargetElement;
+
+      (* semantic functions *)
+
       execute := execute;
 
       matchPattern := matchPattern;
@@ -338,22 +379,35 @@ Section Certification.
 
       evalOutputPatternElementExpr := evalOutputPatternElementExpr;
       evalIteratorExpr := evalIteratorExpr;
+      evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
+      evalGuardExpr := evalGuardExpr;
+
+      trace := trace;
 
       resolveAll := resolveAllIter;
       resolve := resolveIter;
+
+      (* lemmas *)
 
       tr_execute_in_elements := tr_execute_in_elements;
       tr_execute_in_links := tr_execute_in_links;
 
       tr_matchPattern_in := tr_matchPattern_in;
+      tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
+
       tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
       tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
+      tr_instantiateElementOnPattern_leaf := tr_instantiateElementOnPattern_leaf;
 
       tr_applyPattern_in := tr_applyPattern_in;
       tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
       tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
       tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
+      tr_applyReferenceOnPatternTraces_leaf := tr_applyReferenceOnPatternTraces_leaf;
+
+      tr_resolveAll_in := tr_resolveAllIter_in;
+      tr_resolve_Leaf := tr_resolveIter_leaf;
 
       (*tr_matchPattern_None := tr_matchPattern_None;
 
