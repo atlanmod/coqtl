@@ -197,7 +197,7 @@ Section Certification.
       - crush.
   Qed.
 
-  Lemma tr_applyReferenceOnPatternTraces_leaf : 
+  Lemma tr_applyReferenceOnPattern_leaf : 
           forall (oper: OutputPatternElementReference)
                  (tr: Transformation)
                  (sm: SourceModel)
@@ -404,7 +404,7 @@ Section Certification.
       tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
       tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
       tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
-      tr_applyReferenceOnPatternTraces_leaf := tr_applyReferenceOnPatternTraces_leaf;
+      tr_applyReferenceOnPatternTraces_leaf := tr_applyReferenceOnPattern_leaf;
 
       tr_resolveAll_in := tr_resolveAllIter_in;
       tr_resolve_Leaf := tr_resolveIter_leaf;
