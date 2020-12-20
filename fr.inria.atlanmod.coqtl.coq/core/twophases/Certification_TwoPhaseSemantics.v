@@ -128,14 +128,14 @@ Section Certification.
   Qed.
 
   (* TODO works inside TwoPhaseSemantics.v *)
-(*   Definition OutputPatternElement1 := (@OutputPatternElement SourceModelElement SourceModelLink SourceModelClass TargetModelElement ).
-  
+Definition OutputPatternElement1 := (@OutputPatternElement SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
+Definition OutputPatternElement_getName1 := (@OutputPatternElement_getName SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
   Lemma tr_traceElementOnPattern_in:
   forall (o: OutputPatternElement1) (sm : SourceModel) (sp : list SourceModelElement) (iter: nat) (o: OutputPatternElement) (tl : TraceLink),
     Some tl = (traceElementOnPattern o sm sp iter) <->
     (exists (e: TargetModelElement),
        Some e = (instantiateElementOnPattern o sm sp iter) /\
-       tl = (buildTraceLink (sp, iter, OutputPatternElement_getName o) e)).
+       tl = (buildTraceLink (sp, iter, OutputPatternElement_getName1 o) e)).
   Proof.
    intros.
    split.
@@ -152,7 +152,7 @@ Section Certification.
      destruct (instantiateElementOnPattern o0 sm sp iter).
      -- crush.
      -- crush.
-Qed. *)
+Qed. 
 
 
 
@@ -448,7 +448,7 @@ Qed. *)
 (* tr_tracePattern_in *) exact tr_tracePattern_in.
 (* tr_traceRuleOnPattern_in *) exact tr_traceRuleOnPattern_in.
 (* tr_traceIterationOnPattern_in *) exact tr_traceIterationOnPattern_in.
-(* (* tr_traceElementOnPattern_in *) exact tr_traceElementOnPattern_in. *) admit.
+(* tr_traceElementOnPattern_in *) exact tr_traceElementOnPattern_in.
 
 (* tr_applyTraces_in  *) exact tr_applyTraces_in.
 (* tr_applyPatternTraces_in  *) exact tr_applyPatternTraces_in.
@@ -457,7 +457,7 @@ Qed. *)
 (* tr_applyElementOnPatternTraces_in *) exact tr_applyElementOnPatternTraces_in.
 (* tr_applyReferenceOnPatternTraces_leaf *) exact tr_applyReferenceOnPatternTraces_leaf.
 
-Admitted.
+Qed.
    
 
 
