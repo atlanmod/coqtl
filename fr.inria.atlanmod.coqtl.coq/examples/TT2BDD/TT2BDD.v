@@ -44,7 +44,7 @@ Definition TT2BDD :=
 
 
 (* We want to prove the following equivalence: 
-   given an assignment for all input ports, and given an output port, 
-   the TT and the BDD give the same value for that output port *)
+   given an assignment for all input ports 'ins', and given an output port 'out', 
+   (valueOf (evalTT TT ins) out) = (valueOf (evalBDD BDD ins) out) *)
 
 Close Scope coqtl.
