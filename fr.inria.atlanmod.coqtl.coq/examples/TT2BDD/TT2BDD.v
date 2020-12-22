@@ -20,14 +20,15 @@ Definition TT2BDD :=
     transformation TTMetamodel bddMetamodel [
         (* The TruthTable transforms to a BDD, with the same name and Ports. *)
         rule "TT2BDD" 
-        from [TruthTableEClass]
+        from [LocatedElementEClass]
         to [
-            elem [TruthTableEClass] BDDEClass "bdd"
-            (fun i m t => BuildBDD (TruthTable_getId t) (TruthTable_getName t))
-            [link [TruthTableEClass] BDD BDDPorts
-                ( fun tls i m t b => 
-                    nil
-                )]
+            elem [LocatedElementEClass] BDDEClass "bdd"
+            (fun i m t => (* (BuildBDD (TruthTable_getId t) (TruthTable_getName t)) *)
+             match (TTMetamodel_LocatedElement_DownCast TruthTableEClass t) with 
+             | Some tr => (BuildBDD (LocatedElement_getId t) (TruthTable_getName tr))
+             | None => (BuildBDD (LocatedElement_getId t) "")
+             end)
+            nil
         ]
 
         (* Each InputPort transforms to an InputPort, with the same name. *)
