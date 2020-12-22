@@ -6,8 +6,10 @@ Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Expressions.
 Require Import core.Engine.
+Require Import core.EngineTwoPhase.
 Require Import core.Syntax.
 Require Import core.Semantics.
+Require Import core.Certification.
 Require Import core.twophases.TwoPhaseSemantics.
 Require Import Coq.Logic.FunctionalExtensionality.
 
@@ -126,14 +128,14 @@ Section Certification.
   Qed.
 
   (* TODO works inside TwoPhaseSemantics.v *)
-(*   Definition OutputPatternElement1 := (@OutputPatternElement SourceModelElement SourceModelLink SourceModelClass TargetModelElement ).
-  
+Definition OutputPatternElement1 := (@OutputPatternElement SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
+Definition OutputPatternElement_getName1 := (@OutputPatternElement_getName SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
   Lemma tr_traceElementOnPattern_in:
   forall (o: OutputPatternElement1) (sm : SourceModel) (sp : list SourceModelElement) (iter: nat) (o: OutputPatternElement) (tl : TraceLink),
     Some tl = (traceElementOnPattern o sm sp iter) <->
     (exists (e: TargetModelElement),
        Some e = (instantiateElementOnPattern o sm sp iter) /\
-       tl = (buildTraceLink (sp, iter, OutputPatternElement_getName o) e)).
+       tl = (buildTraceLink (sp, iter, OutputPatternElement_getName1 o) e)).
   Proof.
    intros.
    split.
@@ -150,16 +152,9 @@ Section Certification.
      destruct (instantiateElementOnPattern o0 sm sp iter).
      -- crush.
      -- crush.
-Qed. *)
+Qed. 
 
-  Definition evalOutputPatternElementExpr1 :=  (@evalOutputPatternElementExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement ).
-  
-  Theorem tr_instantiateElementOnPattern_leaf:
-    forall (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat),
-      instantiateElementOnPattern o sm sp iter = evalOutputPatternElementExpr1 sm sp iter o.
-  Proof.
-    crush.
-  Qed.
+
 
   (** * Apply **)
 
@@ -185,7 +180,7 @@ Qed. *)
     apply in_flat_map.
   Qed.
 
-  Lemma tr_applyRuleOnPattern_in : 
+  Lemma tr_applyRuleOnPatternTraces_in : 
   forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (tls: list TraceLink),
       In tl (applyRuleOnPatternTraces r tr sm sp tls) <->
       (exists (i: nat),
@@ -197,7 +192,7 @@ Qed. *)
   Qed.
 
 
-  Lemma tr_applyIterationOnPattern_in : 
+  Lemma tr_applyIterationOnPatternTraces_in : 
       forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat)  (tls: list TraceLink),
         In tl (applyIterationOnPatternTraces r tr sm sp i tls) <->
         (exists (ope: OutputPatternElement),
@@ -243,7 +238,7 @@ Qed. *)
       - crush.
   Qed.
 
-  Lemma applyReferenceOnPatternTraces_leaf : 
+  Lemma tr_applyReferenceOnPatternTraces_leaf : 
       forall (oper: OutputPatternElementReference)
              (tr: Transformation)
              (sm: SourceModel)
@@ -252,100 +247,6 @@ Qed. *)
   Proof.
    crush.
   Qed.
-
-
-
-  (** * Resolve *)
-
-  Theorem tr_resolveAll_in:
-    forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-      (type: TargetModelClass) (sps: list(list SourceModelElement)),
-      resolveAll tls sm name type sps = resolveAllIter tls sm name type sps 0.
-  Proof.
-    crush.
-  Qed.
-
-  Theorem tr_resolveAllIter_in:
-    forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-      (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
-      (te: denoteModelClass type),
-      (exists tes: list (denoteModelClass type),
-          resolveAllIter tls sm name type sps iter = Some tes /\ In te tes) <->
-      (exists (sp: list SourceModelElement),
-          In sp sps /\
-          resolveIter tls sm name type sp iter = Some te).
-  Proof.
-    intros.
-        intros.
-    split.
-    - intros.
-      destruct H. destruct H.
-      unfold resolveAllIter in H.
-      inversion H.
-      rewrite <- H2 in H0.
-      apply in_flat_map in H0.
-      destruct H0. destruct H0.
-      exists x0. split; auto.
-      destruct (resolveIter tls sm name type x0 iter).
-      -- unfold optionToList in H1. crush.
-      -- crush.
-    - intros.
-      destruct H. destruct H.
-      remember (resolveAllIter tls sm name type sps iter) as tes1.
-      destruct tes1 eqn: resolveAll.
-      -- exists l.
-         split. auto.
-         unfold resolveAllIter in Heqtes1.
-         inversion Heqtes1.
-         apply in_flat_map.
-         exists x. split. auto.
-         destruct (resolveIter tls sm name type x iter).
-         --- crush.
-         --- crush.
-      -- unfold resolveAllIter in Heqtes1.
-         crush.
-  Qed.
-
-  Theorem tr_resolve_in:
-    forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-      (type: TargetModelClass) (sp: list SourceModelElement),
-      resolve tls sm name type sp = resolveIter tls sm name type sp 0.
-  Proof.
-    crush.
-  Qed.
-
-  (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
-  Theorem tr_resolveIter_leaf:
-    forall (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
-      (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
-      resolveIter tls sm name type sp iter = return x ->
-       (exists (tl : TraceLink),
-         In tl tls /\
-         Is_true (list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp) /\
-         ((TraceLink_getIterator tl) = iter) /\ 
-         ((TraceLink_getName tl) = name)%string /\
-         (toModelClass type (TraceLink_getTargetElement tl) = Some x)). 
-  Proof.
-  intros.
-  unfold resolveIter in H.
-  destruct (find (fun tl: TraceLink => 
-  (Semantics.list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp) &&
-  ((TraceLink_getIterator tl) =? iter) &&
-  ((TraceLink_getName tl) =? name)%string) tls) eqn: find.
-  - exists t.
-    apply find_some in find.
-    destruct find.
-    symmetry in H1.
-    apply andb_true_eq in H1.
-    destruct H1.
-    apply andb_true_eq in H1.
-    destruct H1.
-    crush.
-    -- apply beq_nat_true. crush.
-    -- apply String.eqb_eq. crush.
-  - crush.
-  Qed.
-
 
   Theorem exe_preserv : 
     forall (tr: Transformation) (sm : SourceModel),
@@ -387,6 +288,34 @@ Qed. *)
     reflexivity. reflexivity.  
   Qed. 
   
+  Lemma tr_execute_in_elements' :
+  forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
+    In te (allModelElements (executeTraces tr sm)) <->
+    (exists (sp : list SourceModelElement),
+        In sp (allTuples tr sm) /\
+        In te (instantiatePattern tr sm sp)).
+  Proof.
+    intros.
+    assert ((executeTraces tr sm) = (execute tr sm)). { apply exe_preserv. }
+    rewrite H.
+    specialize (Certification.tr_execute_in_elements tr sm te).
+    crush.
+  Qed.
+
+  Lemma tr_execute_in_links' :
+  forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
+    In tl (allModelLinks (executeTraces tr sm)) <->
+    (exists (sp : list SourceModelElement),
+        In sp (allTuples tr sm) /\
+        In tl (applyPattern tr sm sp)).
+  Proof.
+    intros.
+    assert ((executeTraces tr sm) = (execute tr sm)). { apply exe_preserv. }
+    rewrite H.
+    specialize (Certification.tr_execute_in_links tr sm tl).
+    crush.
+  Qed.
+
   Instance CoqTLEngine :
     TransformationEngine :=
     {
@@ -399,6 +328,8 @@ Qed. *)
       TargetModelLink := TargetModelLink;
       TargetModelReference := TargetModelReference;
 
+      (* syntax and accessors *)
+
       Transformation := Transformation;
       Rule := Rule;
       OutputPatternElement := OutputPatternElement;
@@ -406,15 +337,21 @@ Qed. *)
 
       TraceLink := TraceLink;
 
-      getRules := Transformation_getRules;
+      Transformation_getRules := Transformation_getRules;
 
-      getInTypes := Rule_getInTypes;
-      getGuardExpr := Rule_getGuardExpr;
-      getOutputPattern := Rule_getOutputPatternElements;
+      Rule_getInTypes := Rule_getInTypes;
+      Rule_getOutputPatternElements := Rule_getOutputPatternElements;
 
-      getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
-   
-      execute := execute;
+      OutputPatternElement_getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
+
+      TraceLink_getSourcePattern := TraceLink_getSourcePattern;
+      TraceLink_getIterator := TraceLink_getIterator;
+      TraceLink_getName := TraceLink_getName;
+      TraceLink_getTargetElement := TraceLink_getTargetElement;
+
+      (* semantic functions *)
+
+      execute := executeTraces;
 
       matchPattern := matchPattern;
       matchRuleOnPattern := matchRuleOnPattern;
@@ -432,22 +369,35 @@ Qed. *)
 
       evalOutputPatternElementExpr := evalOutputPatternElementExpr;
       evalIteratorExpr := evalIteratorExpr;
+      evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
+      evalGuardExpr := evalGuardExpr;
+
+      trace := trace;
 
       resolveAll := resolveAllIter;
       resolve := resolveIter;
 
-      tr_execute_in_elements := tr_execute_in_elements;
-      tr_execute_in_links := tr_execute_in_links;
+      (* lemmas *)
+
+      tr_execute_in_elements := tr_execute_in_elements';
+      tr_execute_in_links := tr_execute_in_links';
 
       tr_matchPattern_in := tr_matchPattern_in;
+      tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
+
       tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
       tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
+      tr_instantiateElementOnPattern_leaf := tr_instantiateElementOnPattern_leaf;
 
       tr_applyPattern_in := tr_applyPattern_in;
       tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
       tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
       tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
+      tr_applyReferenceOnPatternTraces_leaf := tr_applyReferenceOnPattern_leaf;
+
+      tr_resolveAll_in := tr_resolveAllIter_in;
+      tr_resolve_Leaf := tr_resolveIter_leaf;
 
       (*tr_matchPattern_None := tr_matchPattern_None;
 
@@ -483,6 +433,33 @@ Qed. *)
 
       tr_resolveAll_in := tr_resolveAllIter_in;
       tr_resolve_Leaf := tr_resolveIter_Leaf';*)
-    }. 
+    }.
+
+
+  Instance CoqTLEngineTrace :
+    (TransformationEngineTrace CoqTLEngine).
+  Proof.
+   eexists.
+(* tr_executeTraces_in_elements *) exact tr_executeTraces_in_elements.
+(* tr_executeTraces_in_links *) exact tr_executeTraces_in_links.
+
+(* tr_instantiateTraces_in *) exact tr_instantiateTraces_in.
+(* tr_trace_in *) exact tr_trace_in.
+(* tr_tracePattern_in *) exact tr_tracePattern_in.
+(* tr_traceRuleOnPattern_in *) exact tr_traceRuleOnPattern_in.
+(* tr_traceIterationOnPattern_in *) exact tr_traceIterationOnPattern_in.
+(* tr_traceElementOnPattern_in *) exact tr_traceElementOnPattern_in.
+
+(* tr_applyTraces_in  *) exact tr_applyTraces_in.
+(* tr_applyPatternTraces_in  *) exact tr_applyPatternTraces_in.
+(* tr_applyRuleOnPattern_in *) exact tr_applyRuleOnPatternTraces_in.
+(* tr_applyIterationOnPattern_in *) exact tr_applyIterationOnPatternTraces_in.
+(* tr_applyElementOnPatternTraces_in *) exact tr_applyElementOnPatternTraces_in.
+(* tr_applyReferenceOnPatternTraces_leaf *) exact tr_applyReferenceOnPatternTraces_leaf.
+
+Qed.
+   
+
+
 
 End Certification.

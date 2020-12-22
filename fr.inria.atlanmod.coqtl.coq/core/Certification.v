@@ -1,5 +1,6 @@
 Require Import String.
 Require Import Omega.
+Require Import Bool.
 
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
@@ -50,6 +51,18 @@ Section Certification.
   Proof.
     intros.
     apply filter_In.
+  Qed.
+
+  Definition evalGuardExpr1 :=  (@evalGuardExpr SourceModelElement SourceModelLink
+        SourceModelClass SourceModelReference smm TargetModelElement TargetModelLink).
+  
+
+  Lemma tr_matchRuleOnPattern_Leaf : 
+  forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
+     matchRuleOnPattern r sm sp =
+       match evalGuardExpr1 r sm sp with Some true => true | _ => false end.
+  Proof.
+   crush.
   Qed.
 
   Lemma tr_instantiatePattern_in :
@@ -104,6 +117,16 @@ Section Certification.
       split.
       - assumption.
       - crush.
+  Qed.
+
+  Definition evalOutputPatternElementExpr1 :=  (@evalOutputPatternElementExpr SourceModelElement SourceModelLink
+        TargetModelElement TargetModelLink).
+
+  Lemma  tr_instantiateElementOnPattern_leaf:
+        forall (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat),
+          instantiateElementOnPattern o sm sp iter = evalOutputPatternElementExpr1 sm sp iter o.
+  Proof.
+    crush.
   Qed.
 
   Lemma tr_applyPattern_in :
@@ -174,6 +197,17 @@ Section Certification.
       - crush.
   Qed.
 
+  Lemma tr_applyReferenceOnPattern_leaf : 
+          forall (oper: OutputPatternElementReference)
+                 (tr: Transformation)
+                 (sm: SourceModel)
+                 (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list (@TraceLink SourceModelElement TargetModelElement)),
+            applyReferenceOnPattern oper tr sm sp iter te  = evalOutputPatternLinkExpr sm sp te iter (trace tr sm) oper.
+  Proof.
+   crush.
+  Qed.
+
+
 (*TODO
   Lemma maxArity_length:
     forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
@@ -201,6 +235,97 @@ Section Certification.
     - assumption.
   Qed.  
   
+  (** * Resolve *)
+
+  Theorem tr_resolveAll_in:
+    forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+      (type: TargetModelClass) (sps: list(list SourceModelElement)),
+      resolveAll tls sm name type sps = resolveAllIter tls sm name type sps 0.
+  Proof.
+    crush.
+  Qed.
+
+  Theorem tr_resolveAllIter_in:
+    forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+      (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
+      (te: denoteModelClass type),
+      (exists tes: list (denoteModelClass type),
+          resolveAllIter tls sm name type sps iter = Some tes /\ In te tes) <->
+      (exists (sp: list SourceModelElement),
+          In sp sps /\
+          resolveIter tls sm name type sp iter = Some te).
+  Proof.
+    intros.
+        intros.
+    split.
+    - intros.
+      destruct H. destruct H.
+      unfold resolveAllIter in H.
+      inversion H.
+      rewrite <- H2 in H0.
+      apply in_flat_map in H0.
+      destruct H0. destruct H0.
+      exists x0. split; auto.
+      destruct (resolveIter tls sm name type x0 iter).
+      -- unfold optionToList in H1. crush.
+      -- crush.
+    - intros.
+      destruct H. destruct H.
+      remember (resolveAllIter tls sm name type sps iter) as tes1.
+      destruct tes1 eqn: resolveAll.
+      -- exists l.
+         split. auto.
+         unfold resolveAllIter in Heqtes1.
+         inversion Heqtes1.
+         apply in_flat_map.
+         exists x. split. auto.
+         destruct (resolveIter tls sm name type x iter).
+         --- crush.
+         --- crush.
+      -- unfold resolveAllIter in Heqtes1.
+         crush.
+  Qed.
+
+  Theorem tr_resolve_in:
+    forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+      (type: TargetModelClass) (sp: list SourceModelElement),
+      resolve tls sm name type sp = resolveIter tls sm name type sp 0.
+  Proof.
+    crush.
+  Qed.
+
+  (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
+  Theorem tr_resolveIter_leaf:
+    forall (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
+      (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
+      resolveIter tls sm name type sp iter = return x ->
+       (exists (tl : TraceLink),
+         In tl tls /\
+         Is_true (list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp) /\
+         ((TraceLink_getIterator tl) = iter) /\ 
+         ((TraceLink_getName tl) = name)%string /\
+         (toModelClass type (TraceLink_getTargetElement tl) = Some x)). 
+  Proof.
+  intros.
+  unfold resolveIter in H.
+  destruct (find (fun tl: TraceLink => 
+  (Semantics.list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp) &&
+  ((TraceLink_getIterator tl) =? iter) &&
+  ((TraceLink_getName tl) =? name)%string) tls) eqn: find.
+  - exists t.
+    apply find_some in find.
+    destruct find.
+    symmetry in H1.
+    apply andb_true_eq in H1.
+    destruct H1.
+    apply andb_true_eq in H1.
+    destruct H1.
+    crush.
+    -- apply beq_nat_true. crush.
+    -- apply String.eqb_eq. crush.
+  - crush.
+  Qed.
+
   Instance CoqTLEngine :
     TransformationEngine :=
     {
@@ -213,6 +338,8 @@ Section Certification.
       TargetModelLink := TargetModelLink;
       TargetModelReference := TargetModelReference;
 
+      (* syntax and accessors *)
+
       Transformation := Transformation;
       Rule := Rule;
       OutputPatternElement := OutputPatternElement;
@@ -220,14 +347,20 @@ Section Certification.
 
       TraceLink := TraceLink;
 
-      getRules := Transformation_getRules;
+      Transformation_getRules := Transformation_getRules;
 
-      getInTypes := Rule_getInTypes;
-      getGuardExpr := Rule_getGuardExpr;
-      getOutputPattern := Rule_getOutputPatternElements;
+      Rule_getInTypes := Rule_getInTypes;
+      Rule_getOutputPatternElements := Rule_getOutputPatternElements;
 
-      getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
-   
+      OutputPatternElement_getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
+
+      TraceLink_getSourcePattern := TraceLink_getSourcePattern;
+      TraceLink_getIterator := TraceLink_getIterator;
+      TraceLink_getName := TraceLink_getName;
+      TraceLink_getTargetElement := TraceLink_getTargetElement;
+
+      (* semantic functions *)
+
       execute := execute;
 
       matchPattern := matchPattern;
@@ -246,22 +379,35 @@ Section Certification.
 
       evalOutputPatternElementExpr := evalOutputPatternElementExpr;
       evalIteratorExpr := evalIteratorExpr;
+      evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
+      evalGuardExpr := evalGuardExpr;
+
+      trace := trace;
 
       resolveAll := resolveAllIter;
       resolve := resolveIter;
+
+      (* lemmas *)
 
       tr_execute_in_elements := tr_execute_in_elements;
       tr_execute_in_links := tr_execute_in_links;
 
       tr_matchPattern_in := tr_matchPattern_in;
+      tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
+
       tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
       tr_instantiateIterationOnPattern_in := tr_instantiateIterationOnPattern_in;
+      tr_instantiateElementOnPattern_leaf := tr_instantiateElementOnPattern_leaf;
 
       tr_applyPattern_in := tr_applyPattern_in;
       tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
       tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
       tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
+      tr_applyReferenceOnPatternTraces_leaf := tr_applyReferenceOnPattern_leaf;
+
+      tr_resolveAll_in := tr_resolveAllIter_in;
+      tr_resolve_Leaf := tr_resolveIter_leaf;
 
       (*tr_matchPattern_None := tr_matchPattern_None;
 

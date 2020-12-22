@@ -23,8 +23,21 @@ Section Semantics.
 
   Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a. 
 
+  Fixpoint checkTypes (ses: list SourceModelElement) (scs: list SourceModelClass) : bool :=
+    match ses, scs with
+    | se::ses', sc::scs' => 
+      match (toModelClass sc se) with
+      | Some c => checkTypes ses' scs'
+      | _ => false
+      end
+    | nil, nil => true
+    | _, _ => false
+    end.
+
   Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    evalExpr (@Rule_getGuardExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp.
+    if (checkTypes sp (Rule_getInTypes r)) then
+      evalExpr (@Rule_getGuardExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp
+    else Some false.
 
   Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
     nat :=
@@ -45,21 +58,8 @@ Section Semantics.
 
   (** * Instantiate **)
 
-  Fixpoint checkTypes (ses: list SourceModelElement) (scs: list SourceModelClass) : bool :=
-    match ses, scs with
-    | se::ses', sc::scs' => 
-      match (toModelClass sc se) with
-      | Some c => checkTypes ses' scs'
-      | _ => false
-      end
-    | nil, nil => true
-    | _, _ => false
-    end.
-
   Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceModelElement) : bool :=
-    if (checkTypes sp (Rule_getInTypes r)) then
-      match evalGuardExpr r sm sp with Some true => true | _ => false end
-    else false.
+    match evalGuardExpr r sm sp with Some true => true | _ => false end.
 
   Definition matchPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list Rule :=
     filter (fun (r:Rule) => matchRuleOnPattern r sm sp) (Transformation_getRules tr).
