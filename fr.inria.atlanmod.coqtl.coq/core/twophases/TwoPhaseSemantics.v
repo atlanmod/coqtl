@@ -12,13 +12,13 @@ Scheme Equality for list.
 
 Section TwoPhaseSemantics.
 
-  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}
-          {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}
-          {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}
-          {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}
-          (SourceModel := Model SourceModelElement SourceModelLink)
-          (TargetModel := Model TargetModelElement TargetModelLink)
-          (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
+  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
+  Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
+  Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
+  Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
+  Context (SourceModel := Model SourceModelElement SourceModelLink).
+  Context (TargetModel := Model TargetModelElement TargetModelLink).
+  Context (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
 
   (** * Apply **)
 
