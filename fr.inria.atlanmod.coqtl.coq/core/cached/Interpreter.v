@@ -51,6 +51,30 @@ Section LazySemantics.
     | finish : state
     | conf : Transformation -> SourceModel -> TargetModel -> Stmt -> state.
 
+    Definition state_getTransformation(s: state): option Transformation :=
+    match s with 
+    | conf tr _ _ _ => Some tr
+    | _ => None
+    end.
+
+    Definition state_getSourceModel(s: state): option SourceModel :=
+    match s with 
+    | conf tr sm _ _ => Some sm
+    | _ => None
+    end.
+
+    Definition state_getTargetModel(s: state): option TargetModel :=
+    match s with 
+    | conf tr sm tm _ => Some tm
+    | _ => None
+    end.
+
+    Definition state_getStmt(s: state): option Stmt :=
+    match s with 
+    | conf tr sm tm stmt => Some stmt
+    | _ => None
+    end.
+
     (* default semantics *)
 
     (* step : state -> state 
