@@ -7,12 +7,12 @@ Require Import core.Model.
 
 Section Expressions.
 
-  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}
-          {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}
-          {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}
-          {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}
-          (SourceModel := Model SourceModelElement SourceModelLink)
-          (TargetModel := Model TargetModelElement TargetModelLink).
+  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
+  Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
+  Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
+  Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
+  Context (SourceModel := Model SourceModelElement SourceModelLink).
+  Context (TargetModel := Model TargetModelElement TargetModelLink).
 
   (** ** Generic functions generation *)
 
