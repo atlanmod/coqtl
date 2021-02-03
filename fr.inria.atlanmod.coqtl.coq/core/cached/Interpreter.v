@@ -30,7 +30,7 @@ Section LazySemantics.
 
     (* This is the statments that can be specified in our replay language, TODO: check the arg of each STMT *)
 
-    Inductive Stmt : Type :=
+    (*Inductive Stmt : Type :=
     | skip : Stmt
     | seq : Stmt -> Stmt -> Stmt
     | addElementToSource : SourceModelElement -> Stmt
@@ -38,7 +38,16 @@ Section LazySemantics.
     | getFromTarget : SourceModel -> SourceModelClass -> Stmt
     | deleteElementFromSource : SourceModelElement -> Stmt
     | addLinkToSource : SourceModelLink -> Stmt
-    | deleteLinkFromSource : SourceModelLink -> Stmt.
+    | deleteLinkFromSource : SourceModelLink -> Stmt.*)
+
+    Inductive Stmt : Type :=
+    | apply : Stmt
+    | getFromTarget : TargetModelElement -> TargetModelReference -> Stmt
+    | getRootFromTarget : Stmt
+    | addElementToSource : SourceModelElement -> Stmt
+    | deleteElementFromSource : SourceModelElement -> Stmt
+    | addLinkToSource : SourceModelLink -> Stmt
+    .
 
     (* some helper of Model *)
 
@@ -51,11 +60,34 @@ Section LazySemantics.
     | finish : state
     | conf : Transformation -> SourceModel -> TargetModel -> Stmt -> state.
 
+    Inductive State.
+
     (* default semantics *)
 
     (* step : state -> state 
        TODO: step : state -> state * output, this signature can show the output of the trace
      *)
+    
+    Definition replay (s: Stmt) (st: State) : State * (option (list TargetModelElement)) :=
+      match s with
+      | _ => (st, None)
+      end.
+    
+    Definition replay_state (s: Stmt) (st: State) := (fst (replay s st)).
+
+    Definition replay_prog_state (st: State) (s: list Stmt) :=
+      fold_right (replay_state) st s.
+      
+    Definition strict_replay_trace (st: State) (tr: list Stmt) : list (option (list TargetModelElement)) :=
+      nil.
+
+    Definition lazy_replay_trace (st: State) (tr: list Stmt) : list (option (list TargetModelElement)) :=
+      nil.
+
+    Theorem equivalence_strict_lazy:
+      forall (st: State) (trace: list Stmt),
+        beq_list (strict_replay_prog st trace) (lazy_replay_prog st trace).
+        
 
     Fixpoint replay (tr: Transformation) (sm: SourceModel) (tm: TargetModel) (s: Stmt) : state :=
       match s with
@@ -64,6 +96,8 @@ Section LazySemantics.
       | addElementToSource se => conf tr (Model_addElementToSource sm se) (execute tr (Model_addElementToSource sm se)) skip
       | _ => error
       end.
+
+
 
 
     (* lazy semantics *)
