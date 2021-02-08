@@ -34,7 +34,7 @@ Section LazySemantics.
     | skip : Stmt
     | seq : Stmt -> Stmt -> Stmt
     | addElementToSource : SourceModelElement -> Stmt
-    | getRootFromTarget: SourceModel -> Stmt
+    | getRootFromTarget: TargetModel -> Stmt
     | getFromTarget : SourceModel -> SourceModelClass -> Stmt
     | deleteElementFromSource : SourceModelElement -> Stmt
     | addLinkToSource : SourceModelLink -> Stmt
@@ -49,31 +49,26 @@ Section LazySemantics.
     Inductive state :=
     | error : state
     | finish : state
-    | conf : Transformation -> SourceModel -> TargetModel -> Stmt -> state.
+    | conf : Transformation -> SourceModel -> TargetModel -> state.
 
     Definition state_getTransformation(s: state): option Transformation :=
     match s with 
-    | conf tr _ _ _ => Some tr
+    | conf tr _ _ => Some tr
     | _ => None
     end.
 
     Definition state_getSourceModel(s: state): option SourceModel :=
     match s with 
-    | conf tr sm _ _ => Some sm
+    | conf tr sm _ => Some sm
     | _ => None
     end.
 
     Definition state_getTargetModel(s: state): option TargetModel :=
     match s with 
-    | conf tr sm tm _ => Some tm
+    | conf tr sm tm => Some tm
     | _ => None
     end.
 
-    Definition state_getStmt(s: state): option Stmt :=
-    match s with 
-    | conf tr sm tm stmt => Some stmt
-    | _ => None
-    end.
 
     (* default semantics *)
 
@@ -81,10 +76,17 @@ Section LazySemantics.
        TODO: step : state -> state * output, this signature can show the output of the trace
      *)
 
-    Fixpoint replay (tr: Transformation) (sm: SourceModel) (tm: TargetModel) (s: Stmt) : state :=
-      match s with
-      | skip => finish tm (* print getroot ? *)
-      | seq s1 s2 => error
+    Fixpoint replay (st: state) (stmt: Stmt) : state :=
+      let tr := state_getTransformation st in
+        let sm := state_getSourceModel st in
+          let tm := state_getTargetModel st in
+      match stmt with
+      | skip => finish tm
+      | seq s1 s2 => 
+          match replay st s1 with
+          | error => error
+          | conf tr2 sm2 tm2 => error
+          end
       | addElementToSource se => conf tr (Model_addElementToSource sm se) (execute tr (Model_addElementToSource sm se)) skip
       | _ => error
       end.
