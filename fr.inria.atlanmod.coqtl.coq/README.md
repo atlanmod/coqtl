@@ -1,4 +1,4 @@
-CoqTL: an Internal DSL for Model Transformation in Coq
+Certifying an extensive rule-based model transformation engine for proof preservation
 =======
 Executable engines for relational model-transformation languages evolve continuously because of language extension, performance improvement and bug fixes. While new versions generally change the engine semantics, end-users expect to get backward-compatibility guarantees, so that existing transformations do not need to be adapted at every engine update.
 
@@ -7,6 +7,10 @@ The CoqTL model-transformation language allows users to define model transformat
 In this paper we present the solution we designed for the evolution of CoqTL, and by extension, of rule-based transformation engines. We provide a deep specification of the transformation engine, including a set of theorems that must hold against the engine implementation. Then, at each milestone in the engine development, we certify the new version of the engine against this specification, by providing proofs of the impacted theorems. The certification formally guarantees end-users that all the proofs they write using the provided theorems will be preserved through engine updates.
 
 We illustrate the structure of the deep specification theorems, we produce a machine-checked certification of three versions of CoqTL against it, and we show examples of user theorems that leverage this specification and are thus preserved through the updates.
+
+Our [previous work](https://dl.acm.org/doi/10.1145/3365438.3410949) focuses on proof preservation in the presence of engine implementation evolution. The evolved implementations has to be certified against the same deep specfication of CoqTL for users' stable proofs.
+
+Such deep specification is just another kind of software, which is prone to evolution. Therefore, in this branch, we demonstrate how to address the problem of proof preservation in the presence of deep specification evolution. 
 
 Repository structure
 ------
@@ -26,6 +30,10 @@ Repository structure
   * examples is contained by [examples](/fr.inria.atlanmod.coqtl.coq/examples/):
     * [Class2Relational](/fr.inria.atlanmod.coqtl.coq/examples/Class2Relational/)
     * [HSM2FSM](/fr.inria.atlanmod.coqtl.coq/examples/HSM2FSM)
+* The extended CoqTL language specification includes
+  * [CoqTL engine specification extension](/fr.inria.atlanmod.coqtl.coq/core/EngineTwoPhase.v)
+  * [Extended Semantic functions](/fr.inria.atlanmod.coqtl.coq/core/twophases/TwoPhaseSemantics.v)
+  * [Incremental Certification](/fr.inria.atlanmod.coqtl.coq/core/twophases/Certification_TwoPhaseSemantics.v)
 * The code generator from EMF metamodel/model to CoqTL is contained by [fr.inria.atlanmod.coqtl.generators](/fr.inria.atlanmod.coqtl.generators/) (experimental).
 
 Compilation
