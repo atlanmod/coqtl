@@ -28,14 +28,20 @@ Section LazySemantics.
   Context (TargetModel := Model TargetModelElement TargetModelLink).
   Context (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
 
-    (* This is the statments that can be specified in our replay language, TODO: check the arg of each STMT *)
+    (* This is the statments that can be specified in our replay language 
+       Remark: In Massimo's branch:
+       - TransformationSystem is a tuple of: tr sm tm
+       - It is an argument of each kind of stmt
+        - it is a way to couple stmt with evaluation, i.e. evaluation on a stmt have all information it is needed.
+        - the way here structure is to decouple stmt from evaluation, It looks clearer for now.
+     *)
 
     Inductive Stmt : Type :=
     | skip : Stmt
     | seq : Stmt -> Stmt -> Stmt
     | addElementToSource : SourceModelElement -> Stmt
-    | getRootFromTarget: TargetModel -> Stmt
-    | getFromTarget : SourceModel -> SourceModelClass -> Stmt
+    | getRootFromTarget: Stmt
+    | getFromTarget: TargetModelElement -> TargetModelReference -> Stmt
     | deleteElementFromSource : SourceModelElement -> Stmt
     | addLinkToSource : SourceModelLink -> Stmt
     | deleteLinkFromSource : SourceModelLink -> Stmt.
@@ -46,46 +52,52 @@ Section LazySemantics.
       Build_Model (se::(allModelElements sm)) 
                   (allModelLinks sm).
 
+    Definition Model_addElementToTarget (tm: TargetModel) (te: TargetModelElement) := 
+      Build_Model (te::(allModelElements tm)) 
+                  (allModelLinks tm).
+
     Inductive state :=
     | error : state
-    | finish : state
-    | conf : Transformation -> SourceModel -> TargetModel -> state.
+    | conf : Transformation -> SourceModel -> TargetModel -> Stmt -> state.
 
     Definition state_getTransformation(s: state): option Transformation :=
     match s with 
-    | conf tr _ _ => Some tr
+    | conf tr _ _ _ => Some tr
     | _ => None
     end.
 
     Definition state_getSourceModel(s: state): option SourceModel :=
     match s with 
-    | conf tr sm _ => Some sm
+    | conf tr sm _ _ => Some sm
     | _ => None
     end.
 
     Definition state_getTargetModel(s: state): option TargetModel :=
     match s with 
-    | conf tr sm tm => Some tm
+    | conf tr sm tm _ => Some tm
     | _ => None
     end.
 
+    Definition state_getStmt (s: state): option Stmt :=
+    match s with 
+    | conf tr sm tm stmt => Some stmt
+    | _ => None
+    end.
 
     (* default semantics *)
 
     (* step : state -> state 
-       TODO: step : state -> state * output, this signature can show the output of the trace
      *)
 
-    Fixpoint replay (st: state) (stmt: Stmt) : state :=
-      let tr := state_getTransformation st in
-        let sm := state_getSourceModel st in
-          let tm := state_getTargetModel st in
-      match stmt with
-      | skip => finish tm
+    Fixpoint replay  (tr: Transformation) (sm: SourceModel) (tm: TargetModel) (s: Stmt) : state :=
+      match s with
       | seq s1 s2 => 
-          match replay st s1 with
-          | error => error
-          | conf tr2 sm2 tm2 => error
+          match s1 with
+          | skip => conf tr sm tm s2
+          | _ => match replay tr sm tm s1 with
+                  | error => error
+                  | conf tr2 sm2 tm2 s1_ => conf tr2 sm2 tm2 (seq s1_ s2)
+                 end
           end
       | addElementToSource se => conf tr (Model_addElementToSource sm se) (execute tr (Model_addElementToSource sm se)) skip
       | _ => error
@@ -94,12 +106,23 @@ Section LazySemantics.
 
     (* lazy semantics *)
 
+    (* the output model of addElementToSource is different between lazy and strict, but they output the same modelelement *)
+
+    Definition smartTuples (tr: Transformation) (sm: SourceModel) (se: SourceModelElement) : list (list SourceModelElement):= nil.
+
+    Theorem tuple_equiv :
+      forall (tr: Transformation) (sm: SourceModel) (se: SourceModelElement) (sp: list SourceModelElement), 
+        In sp (allTuples tr ((Model_addElementToSource sm se))) <-> In sp (smartTuples tr sm se) \/ In sp (allTuples tr sm).
+
     Fixpoint replay_lazy (tr: Transformation) (sm: SourceModel) (tm: TargetModel) (s: Stmt) :=
       match s with
-      | skip => error
-      | seq s1 s2 => error
-      | addElementToSource se => error
-      | _ => error
+      | addElementToSource se => 
+          let tm_ := (execute tr sm) in
+            let tes := (flat_map (instantiatePattern tr sm) (smartTuples tr sm se)) in
+            conf tr (Model_addElementToSource sm se) 
+                 (Build_Model (tes ++ (allModelElements tm_)) (allModelLinks tm_))
+                 skip
+      | _ => replay tr sm tm s
       end.
 
     (* sample program *)
