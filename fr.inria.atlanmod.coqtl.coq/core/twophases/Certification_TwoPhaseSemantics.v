@@ -13,6 +13,7 @@ Require Import core.Certification.
 Require Import core.twophases.TwoPhaseSemantics.
 Require Import Coq.Logic.FunctionalExtensionality.
 
+
 Section Certification.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
@@ -27,55 +28,77 @@ Section Certification.
 
   Lemma tr_executeTraces_in_elements :
   forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
-    In te (allModelElements (executeTraces tr sm)) <->
-    In te (fst (instantiateTraces tr sm)).
+        In te (allModelElements (executeTraces tr sm)) <->
+        (exists (tl : TraceLink) (sp : list SourceModelElement),
+            In sp (allTuples tr sm) /\
+            In tl (tracePattern tr sm sp) /\
+            te = TraceLink_getTargetElement tl).
   Proof.
     intros.
-    simpl.
-    crush.
+    split.
+    + intro. 
+      assert (exists (tl : TraceLink),
+                  In tl (trace tr sm) /\
+                  te = (TraceLink_getTargetElement tl) ).
+      { simpl in H.
+            induction (trace tr sm).
+            ++ crush.
+            ++ intros.
+               simpl in H.
+               destruct H. 
+               +++ exists a.
+                   crush.
+               +++ specialize (IHl H).
+                   destruct IHl.
+                   exists x.
+                   crush. }
+      destruct H0.
+      destruct H0.
+      assert (exists (sp : list SourceModelElement),
+                  In sp (allTuples tr sm) /\
+                  In x (tracePattern tr sm sp)).
+      { apply in_flat_map. crush. }
+      destruct H2.
+      destruct H2.
+      exists x. exists x0.
+      crush.
+    + intros.
+      destruct H. 
+      destruct H.
+      destruct H.
+      destruct H0.
+      rewrite H1.
+      apply in_map.
+      apply in_flat_map.
+      exists x0.
+      split. 
+      ++ exact H.
+      ++ exact H0.
   Qed. 
 
   Lemma tr_executeTraces_in_links :
   forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
-    In tl (allModelLinks (executeTraces tr sm)) <->
-    In tl (applyTraces tr sm (trace tr sm)).
+        In tl (allModelLinks (executeTraces tr sm)) <->
+            (exists (sp : list SourceModelElement),
+            In sp (allTuples tr sm) /\
+            In tl (applyPatternTraces tr sm sp (trace tr sm))).
   Proof.
     intros.
-    simpl.
-    crush.
+    split.
+    - simpl. intro.
+      apply in_flat_map in H.
+      destruct H.
+      exists x.
+      crush.
+    - intro.
+      apply in_flat_map.
+      crush.
   Qed.
 
   (** Instantiate *)
 
   (* Please check the lemma formula *)
-  Lemma tr_instantiateTraces_in :
-  forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
-    In te (fst (instantiateTraces tr sm)) <->
-    (exists (tl : (@TraceLink SourceModelElement TargetModelElement)),
-        In tl (trace tr sm) /\
-        te = (TraceLink_getTargetElement tl) ).
-  Proof.
-    intros.
-    simpl.
-    split.
-    + induction (trace tr sm).
-      ++ crush.
-      ++ intros.
-         simpl in H.
-         destruct H. 
-         +++ exists a.
-             crush.
-         +++ specialize (IHl H).
-             destruct IHl.
-             exists x.
-             crush.
-    + intros.
-      destruct H. 
-      destruct H.
-      rewrite H0.
-      apply in_map.
-      exact H.
-  Qed.
+
 
   (* These lemmas of traces are useful when we get sth like (In e traces) *)
 
@@ -130,7 +153,7 @@ Section Certification.
   (* TODO works inside TwoPhaseSemantics.v *)
 Definition OutputPatternElement1 := (@OutputPatternElement SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
 Definition OutputPatternElement_getName1 := (@OutputPatternElement_getName SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
-  Lemma tr_traceElementOnPattern_in:
+  Lemma tr_traceElementOnPattern_leaf:
   forall (o: OutputPatternElement1) (sm : SourceModel) (sp : list SourceModelElement) (iter: nat) (o: OutputPatternElement) (tl : TraceLink),
     Some tl = (traceElementOnPattern o sm sp iter) <->
     (exists (e: TargetModelElement),
@@ -443,14 +466,11 @@ Qed.
 (* tr_executeTraces_in_elements *) exact tr_executeTraces_in_elements.
 (* tr_executeTraces_in_links *) exact tr_executeTraces_in_links.
 
-(* tr_instantiateTraces_in *) exact tr_instantiateTraces_in.
-(* tr_trace_in *) exact tr_trace_in.
 (* tr_tracePattern_in *) exact tr_tracePattern_in.
 (* tr_traceRuleOnPattern_in *) exact tr_traceRuleOnPattern_in.
 (* tr_traceIterationOnPattern_in *) exact tr_traceIterationOnPattern_in.
-(* tr_traceElementOnPattern_in *) exact tr_traceElementOnPattern_in.
+(* tr_traceElementOnPattern_leaf *) exact tr_traceElementOnPattern_leaf.
 
-(* tr_applyTraces_in  *) exact tr_applyTraces_in.
 (* tr_applyPatternTraces_in  *) exact tr_applyPatternTraces_in.
 (* tr_applyRuleOnPattern_in *) exact tr_applyRuleOnPatternTraces_in.
 (* tr_applyIterationOnPattern_in *) exact tr_applyIterationOnPatternTraces_in.
@@ -458,7 +478,6 @@ Qed.
 (* tr_applyReferenceOnPatternTraces_leaf *) exact tr_applyReferenceOnPatternTraces_leaf.
 
 Qed.
-   
 
 
 
