@@ -12,24 +12,26 @@ Class Sum (SumType: Type) (SubTypeName: Type):=
 
 Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=
 {
-  (* Denotation *)
-  denoteModelClass: ModelClass -> Set;
-  denoteModelReference: ModelReference -> Set;
+    elements: Sum ModelElement ModelClass;
+    links: Sum ModelLink ModelReference;
+    (* Denotation *)
+    denoteModelClass: ModelClass -> Set := denoteSubType;
+    denoteModelReference: ModelReference -> Set := denoteSubType;
 
-  (* Decidability of equality for classes *)
-  eqModelClass_dec: forall (c1:ModelClass) (c2:ModelClass), { c1 = c2 } + { c1 <> c2 };
-  eqModelReference_dec: forall (c1:ModelReference) (c2:ModelReference), { c1 = c2 } + { c1 <> c2 };
-
-  (* Downcasting *)
-  toModelClass: forall (t:ModelClass), ModelElement -> option (denoteModelClass t);
-  toModelReference: forall (t:ModelReference), ModelLink -> option (denoteModelReference t);
-
-  (* Upcasting *)
-  toModelElement: forall (t: ModelClass), (denoteModelClass t) -> ModelElement;
-  toModelLink: forall (t: ModelReference), (denoteModelReference t) -> ModelLink;
+    (* Decidability of equality for classes *)
+    eqModelClass_dec: forall (c1:ModelClass) (c2:ModelClass), { c1 = c2 } + { c1 <> c2 } := eqSubTypeName_dec;
+    eqModelReference_dec: forall (c1:ModelReference) (c2:ModelReference), { c1 = c2 } + { c1 <> c2 } := eqSubTypeName_dec;
   
-  (* Decidable equality for objects *)
-  beq_ModelElement:  ModelElement -> ModelElement -> bool;
+    (* Downcasting *)
+    toModelClass: forall (t:ModelClass), ModelElement -> option (denoteModelClass t) := toSubType;
+    toModelReference: forall (t:ModelReference), ModelLink -> option (denoteModelReference t) := toSubType;
+  
+    (* Upcasting *)
+    toModelElement: forall (t: ModelClass), (denoteModelClass t) -> ModelElement := toSumType;
+    toModelLink: forall (t: ModelReference), (denoteModelReference t) -> ModelLink := toSumType;
+    
+    (* Decidable equality for objects *)
+    beq_ModelElement:  ModelElement -> ModelElement -> bool := beq_SumType;
 }.
 
 Definition hasType {ModelElement ModelLink ModelClass ModelReference: Type} {mm: Metamodel ModelElement ModelLink ModelClass ModelReference}  (t: ModelClass) (e: ModelElement) : bool :=

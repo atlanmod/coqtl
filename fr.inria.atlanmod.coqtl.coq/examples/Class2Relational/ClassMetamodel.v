@@ -312,20 +312,32 @@ Definition ClassMetamodel_defaultInstanceOfClass (c: ClassMetamodel_Class) : (Cl
 
 (* Typeclass Instance *)
 
-Instance ClassMetamodel : Metamodel ClassMetamodel_Object ClassMetamodel_Link ClassMetamodel_Class ClassMetamodel_Reference :=
-  {
-    denoteModelClass := ClassMetamodel_getTypeByClass;
-    denoteModelReference := ClassMetamodel_getTypeByReference;
-    toModelClass := ClassMetamodel_toClass;
-    toModelReference := ClassMetamodel_toReference;
-    toModelElement := ClassMetamodel_toObject;
-    toModelLink := ClassMetamodel_toLink;
-    beq_ModelElement := beq_ClassMetamodel_Object;
+Instance ClassElementSum : Sum ClassMetamodel_Object ClassMetamodel_Class :=
+{
+  denoteSubType := ClassMetamodel_getTypeByClass;
+  toSubType := ClassMetamodel_toClass;
+  toSumType := ClassMetamodel_toObject;
+  beq_SumType := beq_ClassMetamodel_Object;
+  eqSubTypeName_dec := ClassMetamodel_eqClass_dec;
+}.
 
-    (* Theorems *)
-    eqModelClass_dec := ClassMetamodel_eqClass_dec;
-    eqModelReference_dec := ClassMetamodel_eqReference_dec;
-  }.
+(* TODO *)
+Definition beq_ClassMetamodel_Link (c1 : ClassMetamodel_Link) (c2 : ClassMetamodel_Link) : bool := true.
+
+Instance ClassLinkSum : Sum ClassMetamodel_Link ClassMetamodel_Reference :=
+{
+  denoteSubType := ClassMetamodel_getTypeByReference;
+  toSubType := ClassMetamodel_toReference;
+  toSumType := ClassMetamodel_toLink;
+  beq_SumType := beq_ClassMetamodel_Link;
+  eqSubTypeName_dec := ClassMetamodel_eqReference_dec;
+}.
+
+Instance ClassMetamodel : Metamodel ClassMetamodel_Object ClassMetamodel_Link ClassMetamodel_Class ClassMetamodel_Reference :=
+{ 
+    elements := ClassElementSum;
+    links := ClassLinkSum;
+}.
 
 Definition ClassModel := Model ClassMetamodel_Object ClassMetamodel_Link.
 

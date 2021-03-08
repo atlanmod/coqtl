@@ -8,7 +8,6 @@ Require Import Bool.
 Require Import Arith.
 Scheme Equality for list.
 
-
 Section Semantics.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.

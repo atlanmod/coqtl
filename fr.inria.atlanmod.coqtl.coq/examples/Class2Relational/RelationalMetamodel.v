@@ -339,24 +339,32 @@ exact H1.
 apply RelationalMetamodel_eqReference_dec.
 Qed.
 
-Instance RelationalMetamodel : Metamodel RelationalMetamodel_Object RelationalMetamodel_Link RelationalMetamodel_Class RelationalMetamodel_Reference :=
+  Instance RelationalElementSum : Sum RelationalMetamodel_Object RelationalMetamodel_Class :=
   {
-    denoteModelClass := RelationalMetamodel_getTypeByClass;
-    denoteModelReference := RelationalMetamodel_getTypeByReference;
-    toModelClass := toRelationalMetamodel_Class;
-    toModelReference := toRelationalMetamodel_Reference;
-    toModelElement := RelationalMetamodel_toObject;
-    toModelLink := RelationalMetamodel_toLink;
-    beq_ModelElement := beq_RelationalMetamodel_Object;
-
-    (* Theorems *)
-    eqModelClass_dec := RelationalMetamodel_eqClass_dec;
-    eqModelReference_dec := RelationalMetamodel_eqReference_dec;
+    denoteSubType := RelationalMetamodel_getTypeByClass;
+    toSubType := toRelationalMetamodel_Class;
+    toSumType := RelationalMetamodel_toObject;
+    beq_SumType := beq_RelationalMetamodel_Object;
+    eqSubTypeName_dec := RelationalMetamodel_eqClass_dec;
   }.
   
-
+  (* TODO *)
+  Definition beq_RelationalMetamodel_Link (c1 : RelationalMetamodel_Link) (c2 : RelationalMetamodel_Link) : bool := true.
   
-
+  Instance RelationalLinkSum : Sum RelationalMetamodel_Link RelationalMetamodel_Reference :=
+  {
+    denoteSubType := RelationalMetamodel_getTypeByReference;
+    toSubType := toRelationalMetamodel_Reference;
+    toSumType := RelationalMetamodel_toLink;
+    beq_SumType := beq_RelationalMetamodel_Link;
+    eqSubTypeName_dec := RelationalMetamodel_eqReference_dec;
+  }.
+  
+  Instance RelationalMetamodel : Metamodel RelationalMetamodel_Object RelationalMetamodel_Link RelationalMetamodel_Class RelationalMetamodel_Reference :=
+  { 
+      elements := RelationalElementSum;
+      links := RelationalLinkSum;
+  }.
 
 Definition RelationalModel := Model RelationalMetamodel_Object RelationalMetamodel_Link.
 

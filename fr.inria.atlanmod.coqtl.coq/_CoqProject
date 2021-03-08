@@ -39,5 +39,3 @@ examples/Class2Relational/theorems/Relational_name_definedness.v
 examples/Class2Relational/theorems/Table_name_uniqueness.v
 examples/Class2Relational/theorems/Attribute_name_preservation.v
 examples/Class2Relational/theorems/Column_name_uniqueness.v
-examples/TT2BDD/TT.v
-examples/TT2BDD/BDDv2.v
