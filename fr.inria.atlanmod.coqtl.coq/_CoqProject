@@ -15,14 +15,14 @@ core/utils/StringUtils.v
 core/utils/TupleUtils.v
 core/utils/Utils.v
 core/Model.v
-core/Metamodel.v
+core/modeling/Metamodel.v
 core/Syntax.v
 core/Semantics.v
-core/Expressions.v
+core/modeling/Expressions.v
 core/Engine.v
 core/EngineTwoPhase.v
 core/Certification.v
-core/ConcreteSyntax.v
+core/modeling/ConcreteSyntax.v
 core/EngineProofs.v
 core/twophases/TwoPhaseSemantics.v
 core/byrule/ByRuleSemantics.v

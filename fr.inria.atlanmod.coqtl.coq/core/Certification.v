@@ -5,7 +5,6 @@ Require Import Bool.
 Require Import core.utils.Utils.
 Require Import core.Metamodel.
 Require Import core.Model.
-Require Import core.Expressions.
 Require Import core.Engine.
 Require Import core.Syntax.
 Require Import core.Semantics.
