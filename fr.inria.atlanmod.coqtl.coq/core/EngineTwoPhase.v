@@ -50,14 +50,11 @@ Class TransformationEngineTrace (t: TransformationEngine) :=
 
     (** ** Functions *)
 
-    instantiateTraces: Transformation -> SourceModel -> (list TargetModelElement * list TraceLink);
     tracePattern: Transformation -> SourceModel -> list SourceModelElement -> list TraceLink;
     traceRuleOnPattern: Rule -> SourceModel -> list SourceModelElement -> list TraceLink;
     traceIterationOnPattern: Rule -> SourceModel -> list SourceModelElement -> nat -> list TraceLink;
     traceElementOnPattern: OutputPatternElement -> SourceModel -> list SourceModelElement -> nat -> option TraceLink;
 
-
-    applyTraces: Transformation -> SourceModel -> list TraceLink -> list TargetModelLink;
     applyPatternTraces: Transformation -> SourceModel -> list SourceModelElement -> list TraceLink -> list TargetModelLink;
     applyRuleOnPatternTraces: Rule -> Transformation -> SourceModel -> list SourceModelElement -> list TraceLink -> list TargetModelLink;
     applyIterationOnPatternTraces: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TraceLink -> list TargetModelLink;
@@ -71,28 +68,19 @@ Class TransformationEngineTrace (t: TransformationEngine) :=
     tr_executeTraces_in_elements :
       forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
         In te (allModelElements (execute tr sm)) <->
-        In te (fst (instantiateTraces tr sm));
+        (exists (tl : TraceLink) (sp : list SourceModelElement),
+            In sp (allTuples tr sm) /\
+            In tl (tracePattern tr sm sp) /\
+            te = TraceLink_getTargetElement tl);
 
     tr_executeTraces_in_links :
       forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
         In tl (allModelLinks (execute tr sm)) <->
-        In tl (applyTraces tr sm (trace tr sm));
+            (exists (sp : list SourceModelElement),
+            In sp (allTuples tr sm) /\
+            In tl (applyPatternTraces tr sm sp (trace tr sm)));
 
     (** ** instantiate *)
-
-    tr_instantiateTraces_in :
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
-        In te (fst (instantiateTraces tr sm)) <->
-        (exists (tl : TraceLink),
-            In tl (trace tr sm) /\
-            te = (TraceLink_getTargetElement tl) );
-
-    tr_trace_in:
-      forall (tr: Transformation) (sm : SourceModel) (tl : TraceLink),
-        In tl (trace tr sm) <->
-        (exists (sp : list SourceModelElement),
-            In sp (allTuples tr sm) /\
-            In tl (tracePattern tr sm sp));
 
     tr_tracePattern_in:
       forall (tr: Transformation) (sm : SourceModel) (sp : list SourceModelElement) (tl : TraceLink),
@@ -115,7 +103,7 @@ Class TransformationEngineTrace (t: TransformationEngine) :=
             In o (Rule_getOutputPatternElements r) /\
             In tl ((fun o => optionToList (traceElementOnPattern o sm sp iter)) o));
 
-    tr_traceElementOnPattern_in:
+    tr_traceElementOnPattern_leaf:
       forall (o: OutputPatternElement) (sm : SourceModel) (sp : list SourceModelElement) (iter: nat) (o: OutputPatternElement) (tl : TraceLink),
         Some tl = (traceElementOnPattern o sm sp iter) <->
         (exists (e: TargetModelElement),
@@ -124,13 +112,6 @@ Class TransformationEngineTrace (t: TransformationEngine) :=
 
 
     (** ** applyPattern *)
-
-    tr_applyTraces_in :
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (tls: list TraceLink),
-        In tl (applyTraces tr sm tls) <->
-        (exists (sp : list SourceModelElement),
-            In sp (allTuples tr sm) /\
-            In tl (applyPatternTraces tr sm sp tls));
 
     tr_applyPatternTraces_in:
       forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (tls: list TraceLink),
