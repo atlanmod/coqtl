@@ -318,7 +318,6 @@ Instance ClassElementSum : Sum ClassMetamodel_Object ClassMetamodel_Class :=
   toSubType := ClassMetamodel_toClass;
   toSumType := ClassMetamodel_toObject;
   beq_SumType := beq_ClassMetamodel_Object;
-  eqSubTypeName_dec := ClassMetamodel_eqClass_dec;
 }.
 
 (* TODO *)
@@ -330,7 +329,6 @@ Instance ClassLinkSum : Sum ClassMetamodel_Link ClassMetamodel_Reference :=
   toSubType := ClassMetamodel_toReference;
   toSumType := ClassMetamodel_toLink;
   beq_SumType := beq_ClassMetamodel_Link;
-  eqSubTypeName_dec := ClassMetamodel_eqReference_dec;
 }.
 
 Instance ClassMetamodel : Metamodel ClassMetamodel_Object ClassMetamodel_Link ClassMetamodel_Class ClassMetamodel_Reference :=

@@ -345,7 +345,6 @@ Qed.
     toSubType := toRelationalMetamodel_Class;
     toSumType := RelationalMetamodel_toObject;
     beq_SumType := beq_RelationalMetamodel_Object;
-    eqSubTypeName_dec := RelationalMetamodel_eqClass_dec;
   }.
   
   (* TODO *)
@@ -357,7 +356,6 @@ Qed.
     toSubType := toRelationalMetamodel_Reference;
     toSumType := RelationalMetamodel_toLink;
     beq_SumType := beq_RelationalMetamodel_Link;
-    eqSubTypeName_dec := RelationalMetamodel_eqReference_dec;
   }.
   
   Instance RelationalMetamodel : Metamodel RelationalMetamodel_Object RelationalMetamodel_Link RelationalMetamodel_Class RelationalMetamodel_Reference :=

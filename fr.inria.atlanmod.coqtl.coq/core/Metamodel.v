@@ -4,7 +4,6 @@ Require Import core.Model.
 Class Sum (SumType: Type) (SubTypeName: Type):=
   {
     denoteSubType: SubTypeName -> Set;
-    eqSubTypeName_dec: forall (c1:SubTypeName) (c2:SubTypeName), { c1 = c2 } + { c1 <> c2 };
     toSubType: forall (t: SubTypeName), SumType -> option (denoteSubType t);
     toSumType: forall (t: SubTypeName), (denoteSubType t) -> SumType;
     beq_SumType:  SumType -> SumType -> bool;
@@ -14,13 +13,10 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
 {
     elements: Sum ModelElement ModelClass;
     links: Sum ModelLink ModelReference;
+    
     (* Denotation *)
     denoteModelClass: ModelClass -> Set := denoteSubType;
     denoteModelReference: ModelReference -> Set := denoteSubType;
-
-    (* Decidability of equality for classes *)
-    eqModelClass_dec: forall (c1:ModelClass) (c2:ModelClass), { c1 = c2 } + { c1 <> c2 } := eqSubTypeName_dec;
-    eqModelReference_dec: forall (c1:ModelReference) (c2:ModelReference), { c1 = c2 } + { c1 <> c2 } := eqSubTypeName_dec;
   
     (* Downcasting *)
     toModelClass: forall (t:ModelClass), ModelElement -> option (denoteModelClass t) := toSubType;
