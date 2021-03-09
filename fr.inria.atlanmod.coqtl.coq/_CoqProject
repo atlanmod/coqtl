@@ -21,7 +21,7 @@ core/Semantics.v
 core/modeling/Expressions.v
 core/Engine.v
 core/EngineTwoPhase.v
-core/Certification.v
+#core/Certification.v
 core/modeling/ConcreteSyntax.v
 core/EngineProofs.v
 core/twophases/TwoPhaseSemantics.v

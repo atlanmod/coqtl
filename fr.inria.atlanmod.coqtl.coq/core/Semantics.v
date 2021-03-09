@@ -115,21 +115,59 @@ Section Semantics.
 
   (* ** Resolve *)
 
-  Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
-             (type: TargetModelClass) (sp: list SourceModelElement)
-             (iter : nat) : option (denoteModelClass type) :=
+  Definition resolveIter' (tls: list TraceLink) (sm: SourceModel) (name: string)
+             (sp: list SourceModelElement)
+             (iter : nat) : option TargetModelElement :=
   let tl := find (fun tl: TraceLink => 
     (list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp) &&
     ((TraceLink_getIterator tl) =? iter) &&
     ((TraceLink_getName tl) =? name)%string) tls in
   match tl with
-    | Some tl' => toModelClass type (TraceLink_getTargetElement tl')
+    | Some tl' => (TraceLink_getTargetElement tl')
     | None => None
+  end.
+
+  Definition resolve' (tr: list TraceLink) (sm: SourceModel) (name: string)
+    (sp: list SourceModelElement) : option TargetModelElement :=
+    resolveIter' tr sm name sp 0.
+
+  Definition resolveAllIter' (tr: list TraceLink) (sm: SourceModel) (name: string)
+    (sps: list(list SourceModelElement)) (iter: nat)
+    : option (list TargetModelElement) :=
+    Some (flat_map (fun l:(list SourceModelElement) => optionToList (resolveIter' tr sm name l iter)) sps).
+
+  Definition resolveAll' (tr: list TraceLink) (sm: SourceModel) (name: string)
+    (sps: list(list SourceModelElement)) : option (list TargetModelElement) :=
+    resolveAllIter' tr sm name sps 0.
+  
+  Definition maybeResolve' (tr: list TraceLink) (sm: SourceModel) (name: string)
+    (sp: option (list SourceModelElement)) : option TargetModelElement :=
+    match sp with 
+    | Some sp' => resolve' tr sm name sp'
+    | None => None
+    end.
+
+  Definition maybeResolveAll' (tr: list TraceLink) (sm: SourceModel) (name: string)
+    (sp: option (list (list SourceModelElement))) : option (list TargetModelElement) :=
+    match sp with 
+    | Some sp' => resolveAll' tr sm name sp'
+    | None => None
+    end.
+
+  Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
+             (type: TargetModelClass) (sp: list SourceModelElement)
+             (iter : nat) : option (denoteModelClass type) :=
+  match (resolveIter' tls sm name sp iter) with
+  | Some e => (toModelClass type e)
+  | _ => None
   end.
 
   Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
-    resolveIter tr sm name type sp 0.
+    match (resolveIter' tr sm name sp 0) with
+    | Some e => (toModelClass type e)
+    | _ => None
+    end.
 
   Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
