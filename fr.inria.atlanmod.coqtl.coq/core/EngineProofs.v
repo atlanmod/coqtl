@@ -22,7 +22,7 @@
  Require Import ListSet.
  Require Import Omega.
 
- Require Import core.Metamodel.
+ Require Import core.modeling.Metamodel.
  Require Import core.Model.
  Require Import core.utils.Utils.
  Require Import core.Engine.
