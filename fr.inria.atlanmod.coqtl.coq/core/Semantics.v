@@ -1,7 +1,7 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.Metamodel.
+(*  Require Import core.modeling.Metamodel.  *)
 Require Import core.Model.
 Require Import core.Syntax.
 Require Import Bool.
@@ -11,9 +11,9 @@ Scheme Equality for list.
 Section Semantics.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
-  Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
+(*    Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.  *)
   Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-  Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
+(*    Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.  *)
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
   Context (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
@@ -22,21 +22,10 @@ Section Semantics.
 
   Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a. 
 
-  Fixpoint checkTypes (ses: list SourceModelElement) (scs: list SourceModelClass) : bool :=
-    match ses, scs with
-    | se::ses', sc::scs' => 
-      match (toModelClass sc se) with
-      | Some c => checkTypes ses' scs'
-      | _ => false
-      end
-    | nil, nil => true
-    | _, _ => false
-    end.
+(* By removing checkTypes, it requires user to write more check in the guard user expression. *)
 
-  Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    if (checkTypes sp (Rule_getInTypes r)) then
-      evalExpr (@Rule_getGuardExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp
-    else Some false.
+  Definition evalGuardExpr' (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
+    evalExpr (@Rule_getGuardExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp.
 
   Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
     nat :=
@@ -58,7 +47,7 @@ Section Semantics.
   (** * Instantiate **)
 
   Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceModelElement) : bool :=
-    match evalGuardExpr r sm sp with Some true => true | _ => false end.
+    match evalGuardExpr' r sm sp with Some true => true | _ => false end.
 
   Definition matchPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list Rule :=
     filter (fun (r:Rule) => matchRuleOnPattern r sm sp) (Transformation_getRules tr).
@@ -113,17 +102,19 @@ Section Semantics.
   Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
     flat_map (tracePattern tr sm) (allTuples tr sm).  
 
-  (* ** Resolve *)
+  Definition TraceLink' := @TraceLink SourceModelElement TargetModelElement.
 
-  Definition resolveIter' (tls: list TraceLink) (sm: SourceModel) (name: string)
+(* users are required to do a filter on tls: all tls in the result need to satisfy:
+   (list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp)  *)
+
+  Definition resolveIter' (tls: list TraceLink') (sm: SourceModel) (name: string)
              (sp: list SourceModelElement)
              (iter : nat) : option TargetModelElement :=
   let tl := find (fun tl: TraceLink => 
-    (list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp) &&
     ((TraceLink_getIterator tl) =? iter) &&
     ((TraceLink_getName tl) =? name)%string) tls in
   match tl with
-    | Some tl' => (TraceLink_getTargetElement tl')
+    | Some tl' => Some (TraceLink_getTargetElement tl')
     | None => None
   end.
 
@@ -154,43 +145,6 @@ Section Semantics.
     | None => None
     end.
 
-  Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
-             (type: TargetModelClass) (sp: list SourceModelElement)
-             (iter : nat) : option (denoteModelClass type) :=
-  match (resolveIter' tls sm name sp iter) with
-  | Some e => (toModelClass type e)
-  | _ => None
-  end.
-
-  Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
-    match (resolveIter' tr sm name sp 0) with
-    | Some e => (toModelClass type e)
-    | _ => None
-    end.
-
-  Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
-    : option (list (denoteModelClass type)) :=
-    Some (flat_map (fun l:(list SourceModelElement) => optionToList (resolveIter tr sm name type l iter)) sps).
-
-  Definition resolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sps: list(list SourceModelElement)) : option (list (denoteModelClass type)) :=
-    resolveAllIter tr sm name type sps 0.
-  
-  Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sp: option (list SourceModelElement)) : option (denoteModelClass type) :=
-    match sp with 
-    | Some sp' => resolve tr sm name type sp'
-    | None => None
-    end.
-
-  Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sp: option (list (list SourceModelElement))) : option (list (denoteModelClass type)) :=
-    match sp with 
-    | Some sp' => resolveAll tr sm name type sp'
-    | None => None
-    end.
 
   (** * Apply **)
 
