@@ -43,16 +43,6 @@ Section SemanticsNonagnostic.
 
   Definition TraceLink' := @TraceLink SourceModelElement TargetModelElement.
 
-  Definition denoteOutput'' {A: Type} (type: TargetModelClass) (f: A -> option TargetModelElement) (args: A): option (denoteModelClass type) :=
-    match f args with
-      | Some e => toModelClass type e
-      | _ => None
-    end.
-
-  Definition maybeResolve'' (tr: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sp: option (list SourceModelElement)) :=
-    denoteOutput'' type (((maybeResolve' tr) sm) name) sp.
-
   Definition denoteOutput (type: TargetModelClass) (f: option TargetModelElement): option (denoteModelClass type) :=
       match f with
       | Some e => toModelClass type e
@@ -61,7 +51,7 @@ Section SemanticsNonagnostic.
 
   Definition denoteOutputList (type: TargetModelClass) (f: option (list TargetModelElement)): option (list (denoteModelClass type)) :=
       match f with
-      | Some e => Some (flat_map (fun l:TargetModelElement => optionToList (toModelClass type l)) e)
+      | Some l => Some (flat_map (fun e:TargetModelElement => optionToList (toModelClass type e)) l)
       | _ => None
       end.
 
