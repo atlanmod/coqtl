@@ -3,8 +3,10 @@ Require Import String.
 Require Import core.utils.Utils.
 Require Import core.modeling.Metamodel.
 Require Import core.Model.
+Require Import core.modeling.ConcreteSyntax.
 Require Import core.Syntax.
 Require Import core.Semantics.
+Require Import core.EqDec. 
 Require Import Bool.
 Require Import Arith.
 Scheme Equality for list.
@@ -13,11 +15,12 @@ Section SemanticsNonagnostic.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
   Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
+  Context {eqdec_sme: EqDec SourceModelElement}.
   Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
   Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
-  Context (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
+  Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
 
   Fixpoint checkTypes (ses: list SourceModelElement) (scs: list SourceModelClass) : bool :=
     match ses, scs with
@@ -30,14 +33,26 @@ Section SemanticsNonagnostic.
     | _, _ => false
     end.
 
-  Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    if (checkTypes sp (Rule_getInTypes r)) then
-      @evalGuardExpr' SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r sm sp
-    else Some false.
+  Check ConcreteRule_getInTypes.
+
+  Definition evalGuardExpr (r : ConcreteRule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
+    if (checkTypes sp (ConcreteRule_getInTypes r)) then
+      @evalGuardExpr' SourceModelElement SourceModelLink TargetModelElement TargetModelLink (parseRule r) sm sp
+    else Some false. 
 
   (* ** Resolve *)
 
   Definition TraceLink' := @TraceLink SourceModelElement TargetModelElement.
+
+  Definition denoteOutput'' {A: Type} (type: TargetModelClass) (f: A -> option TargetModelElement) (args: A): option (denoteModelClass type) :=
+    match f args with
+      | Some e => toModelClass type e
+      | _ => None
+    end.
+
+  Definition maybeResolve'' (tr: list TraceLink) (sm: SourceModel) (name: string)
+    (type: TargetModelClass) (sp: option (list SourceModelElement)) :=
+    denoteOutput'' type (((maybeResolve' tr) sm) name) sp.
 
   Definition denoteOutput (type: TargetModelClass) (f: option TargetModelElement): option (denoteModelClass type) :=
       match f with
