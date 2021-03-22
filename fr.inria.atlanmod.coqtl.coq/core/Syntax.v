@@ -1,7 +1,6 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-(* Require Import core.Metamodel. *) (* TODO: REMOVE? *)
 Require Import core.Model.
 
 (** * Syntax
@@ -11,10 +10,8 @@ Require Import core.Model.
 
 Section Syntax.
 
-  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
-(*   Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}. *) (* TODO: REMOVE? *)
-  Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-(*   Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}. *) (* TODO: REMOVE? *)
+  Context {SourceModelElement SourceModelLink: Type}.
+  Context {TargetModelElement TargetModelLink: Type}.
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
 

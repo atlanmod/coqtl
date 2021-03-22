@@ -1,12 +1,10 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-(*  Require Import core.modeling.Metamodel.  *)
 Require Import core.Model.
 Require Import core.Syntax.
 Require Import Bool.
 Require Import Arith.
-Require Import Coq.Structures.Equalities.
 Scheme Equality for list.
 
 Class EqDec (A : Type) :=
@@ -14,11 +12,9 @@ Class EqDec (A : Type) :=
 
 Section Semantics.
 
-  Context {SourceModelElement SourceModelLink SourceModelReference: Type}.
+  Context {SourceModelElement SourceModelLink: Type}.
   Context {eqdec_sme: EqDec SourceModelElement}.
-(*    Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.  *)
-  Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-(*    Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.  *)
+  Context {TargetModelElement TargetModelLink: Type}.
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
   Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
