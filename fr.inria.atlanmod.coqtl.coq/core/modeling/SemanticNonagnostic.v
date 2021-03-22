@@ -33,10 +33,9 @@ Section SemanticsNonagnostic.
     | _, _ => false
     end.
 
-  Check ConcreteRule_getInTypes.
 
-  Definition evalGuardExpr (r : ConcreteRule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    if (checkTypes sp (ConcreteRule_getInTypes r)) then
+  Definition evalGuardExpr (r : ConcreteRule (smm:=smm)) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
+    if (checkTypes sp (ConcreteRule_getInTypes (smm:=smm) r)) then
       @evalGuardExpr' SourceModelElement SourceModelLink TargetModelElement TargetModelLink (parseRule r) sm sp
     else Some false. 
 
