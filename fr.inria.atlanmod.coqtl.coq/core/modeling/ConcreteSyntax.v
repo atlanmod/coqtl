@@ -14,7 +14,7 @@ Section ConcreteSyntax.
   Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
-  Context (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
+  Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
   Context (TraceLink := @TraceLink SourceModelElement TargetModelElement).
 
   (** ** Syntax **)
@@ -154,7 +154,6 @@ Section ConcreteSyntax.
   Definition parseRule(cr: ConcreteRule) : Rule :=
     buildRule
       (ConcreteRule_getName cr)
-      (ConcreteRule_getInTypes cr)
       (match ConcreteRule_getGuard cr with
       | Some g => (makeGuard (ConcreteRule_getInTypes cr) g)
       | None => (fun _ _ => Some true)
@@ -167,6 +166,7 @@ Section ConcreteSyntax.
   
   Definition parse(ct: ConcreteTransformation) : Transformation :=
     buildTransformation 
+      (max (map (length (A:=SourceModelClass)) (map ConcreteRule_getInTypes (ConcreteTransformation_getConcreteRules ct))))
       (map parseRule (ConcreteTransformation_getConcreteRules ct)).
 
 End ConcreteSyntax.

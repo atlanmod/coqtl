@@ -35,7 +35,6 @@ Section SemanticsNonagnostic.
       @evalGuardExpr' SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r sm sp
     else Some false.
 
-
   (* ** Resolve *)
 
   Definition TraceLink' := @TraceLink SourceModelElement TargetModelElement.

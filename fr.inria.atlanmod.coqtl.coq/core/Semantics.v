@@ -14,27 +14,25 @@ Class EqDec (A : Type) :=
 
 Section Semantics.
 
-  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
+  Context {SourceModelElement SourceModelLink SourceModelReference: Type}.
   Context {eqdec_sme: EqDec SourceModelElement}.
 (*    Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.  *)
   Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
 (*    Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.  *)
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
-  Context (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
+  Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
 
   Definition Expr (A: Type) (B: Type) : Type := A -> B.
 
   Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a. 
 
-(* By removing checkTypes, it requires user to write more check in the guard user expression. *)
-
   Definition evalGuardExpr' (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    evalExpr (@Rule_getGuardExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp.
+    evalExpr (@Rule_getGuardExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp.
 
   Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
     nat :=
-    match (evalExpr (@Rule_getIteratorExpr SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink r) sm sp) with
+    match (evalExpr (@Rule_getIteratorExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp) with
     | Some n => n
     | _ => 0
     end.
@@ -63,7 +61,7 @@ Section Semantics.
 
   Definition instantiateIterationOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) :  list TargetModelElement :=
     flat_map (fun o => optionToList (instantiateElementOnPattern o sm sp iter))
-      (Rule_getOutputPatternElements (SourceModelClass := SourceModelClass) r).
+      (Rule_getOutputPatternElements r).
 
   Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) :  list TargetModelElement :=
     flat_map (instantiateIterationOnPattern r sm sp)
@@ -73,7 +71,7 @@ Section Semantics.
     flat_map (fun r => instantiateRuleOnPattern r sm sp) (matchPattern tr sm sp).
 
   Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (name: string): option (TargetModelElement) :=
-    match (Rule_findOutputPatternElement (SourceModelClass := SourceModelClass) r name) with
+    match (Rule_findOutputPatternElement r name) with
     | Some o =>  instantiateElementOnPattern o sm sp iter
     | None => None
     end.
@@ -89,7 +87,7 @@ Section Semantics.
 
   Definition traceIterationOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) :  list TraceLink :=
     flat_map (fun o => optionToList (traceElementOnPattern o sm sp iter))
-      (Rule_getOutputPatternElements (SourceModelClass := SourceModelClass) r).
+      (Rule_getOutputPatternElements r).
 
   Definition traceRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) :  list TraceLink :=
     flat_map (traceIterationOnPattern r sm sp)
@@ -98,8 +96,7 @@ Section Semantics.
   Definition tracePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TraceLink :=
     flat_map (fun r => traceRuleOnPattern r sm sp) (matchPattern tr sm sp).
 
-  Definition maxArity (tr: Transformation) : nat := 
-    max (map (length (A:=SourceModelClass)) (map Rule_getInTypes (Transformation_getRules tr))).
+  Definition maxArity (tr: Transformation) : nat := Transformation_getArity tr.
 
   Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
     tuples_up_to_n (allModelElements sm) (maxArity tr).
@@ -173,7 +170,7 @@ Section Semantics.
 
   Definition applyIterationOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
     flat_map (fun o => applyElementOnPattern o tr sm sp iter)
-      (Rule_getOutputPatternElements (SourceModelClass := SourceModelClass) r).
+      (Rule_getOutputPatternElements r).
 
   Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): list TargetModelLink :=
     flat_map (applyIterationOnPattern r tr sm sp)
