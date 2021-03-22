@@ -3,17 +3,16 @@ Require Import String.
 Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.Syntax.
+Require Import core.EqDec. 
 Require Import Bool.
 Require Import Arith.
 Scheme Equality for list.
 
-Class EqDec (A : Type) :=
-  { eqb : A -> A -> bool ; }.
 
 Section Semantics.
 
   Context {SourceModelElement SourceModelLink: Type}.
-  Context {eqdec_sme: EqDec SourceModelElement}.
+  Context {eqdec_sme: EqDec SourceModelElement}. (* need equality deciability on source model element *)
   Context {TargetModelElement TargetModelLink: Type}.
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
@@ -102,13 +101,11 @@ Section Semantics.
 
   Definition TraceLink' := @TraceLink SourceModelElement TargetModelElement.
 
-(* users are required to do a filter on tls: all tls in the result need to satisfy:
-   (list_beq SourceModelElement beq_ModelElement (TraceLink_getSourcePattern tl) sp)  *)
-
   Definition resolveIter' (tls: list TraceLink') (sm: SourceModel) (name: string)
              (sp: list SourceModelElement)
              (iter : nat) : option TargetModelElement :=
   let tl := find (fun tl: TraceLink => 
+    (list_beq SourceModelElement core.EqDec.eqb (TraceLink_getSourcePattern tl) sp) &&
     ((TraceLink_getIterator tl) =? iter) &&
     ((TraceLink_getName tl) =? name)%string) tls in
   match tl with
