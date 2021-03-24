@@ -6,7 +6,7 @@ Class Sum (SumType: Type) (SubTypeName: Type):=
     denoteSubType: SubTypeName -> Set;
     toSubType: forall (t: SubTypeName), SumType -> option (denoteSubType t);
     toSumType: forall (t: SubTypeName), (denoteSubType t) -> SumType;
-    beq_SumType:  SumType -> SumType -> bool;
+
   }.
 
 Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=
@@ -25,9 +25,7 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
     (* Upcasting *)
     toModelElement: forall (t: ModelClass), (denoteModelClass t) -> ModelElement := toSumType;
     toModelLink: forall (t: ModelReference), (denoteModelReference t) -> ModelLink := toSumType;
-    
-    (* Decidable equality for objects *)
-    beq_ModelElement:  ModelElement -> ModelElement -> bool := beq_SumType;
+
 }.
 
 Definition hasType {ModelElement ModelLink ModelClass ModelReference: Type} {mm: Metamodel ModelElement ModelLink ModelClass ModelReference}  (t: ModelClass) (e: ModelElement) : bool :=
