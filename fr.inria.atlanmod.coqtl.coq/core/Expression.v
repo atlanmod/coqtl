@@ -16,6 +16,11 @@ Section Expressions.
 
   Definition Expr (A: Type) (B: Type) : Type := A -> B.
 
+
+  (* we then need mult instance of this type class, e.g.
+     one for guard expression, one for outpattern etc.
+     how we can choose which Instance's evalExpr to be executed at runtime?
+   *)
   Class Expression {A : Type} {B: Type} :=
     { evalExpr : Expr A B -> A -> B ; }.
 
