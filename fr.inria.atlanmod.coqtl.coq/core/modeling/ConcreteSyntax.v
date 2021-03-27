@@ -140,35 +140,6 @@ Section ConcreteSyntax.
   Definition ConcreteTransformation_getConcreteRules (x : ConcreteTransformation) : list ConcreteRule :=
     match x with transformation y => y end.
 
-  Definition parseOutputPatternElementReference (intypes: list SourceModelClass) (outtype: TargetModelClass)
-    (cr: ConcreteOutputPatternElementReference intypes outtype): OutputPatternElementReference :=
-    buildOutputPatternElementReference 
-      (makeLink intypes outtype (ConcreteOutputPatternElementReference_getRefType cr) (ConcreteOutputPatternElementReference_getOutputReference cr)).
-
-  Definition parseOutputPatternElement (intypes: list SourceModelClass) (co: ConcreteOutputPatternElement intypes) : OutputPatternElement :=
-    buildOutputPatternElement
-      (ConcreteOutputPatternElement_getName co)
-      (makeElement intypes (ConcreteOutputPatternElement_getOutType co) (ConcreteOutputPatternElement_getOutPatternElement co))
-      (map (parseOutputPatternElementReference intypes (ConcreteOutputPatternElement_getOutType co)) (ConcreteOutputPatternElement_getOutputElementReferences co)).
-
-  Definition parseRule(cr: ConcreteRule) : Rule :=
-    buildRule
-      (ConcreteRule_getName cr)
-      (match ConcreteRule_getGuard cr with
-      | Some g => (makeGuard (ConcreteRule_getInTypes cr) g)
-      | None => (fun _ _ => Some true)
-      end)
-      (match ConcreteRule_getIteratedList cr with
-      | Some i => (makeIterator (ConcreteRule_getInTypes cr) i)
-      | None => (fun _ _ => Some 1)
-      end)
-      (map (parseOutputPatternElement (ConcreteRule_getInTypes cr)) (ConcreteRule_getConcreteOutputPattern cr)).
-  
-  Definition parse(ct: ConcreteTransformation) : Transformation :=
-    buildTransformation 
-      (max (map (length (A:=SourceModelClass)) (map ConcreteRule_getInTypes (ConcreteTransformation_getConcreteRules ct))))
-      (map parseRule (ConcreteTransformation_getConcreteRules ct)).
-
 End ConcreteSyntax.
 
 Arguments transformation {_ _ _ _} _ {_ _ _ _} _.

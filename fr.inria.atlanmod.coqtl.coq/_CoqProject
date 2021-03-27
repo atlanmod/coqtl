@@ -15,6 +15,7 @@ core/utils/TupleUtils.v
 core/utils/Utils.v
 
 core/EqDec.v
+core/Expression.v
 core/Model.v
 core/Syntax.v
 core/Semantics.v
@@ -23,7 +24,8 @@ core/EngineProofs.v
 #core/Certification.v
 
 core/modeling/ConcreteSyntax.v
-core/modeling/Expressions.v
+core/modeling/Parser.v
+core/modeling/ConcreteExpressions.v
 core/modeling/Metamodel.v
 
 #core/EngineTwoPhase.v
