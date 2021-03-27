@@ -5,7 +5,7 @@ Require Import core.Syntax.
 Require Import core.modeling.Metamodel.
 Require Import core.Model.
 
-Section Expressions.
+Section ConcreteExpressions.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
   Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
@@ -104,4 +104,4 @@ Section Expressions.
     LinkFunction :=
     fun mt it sm => wrapOptionLink l t r (imp mt it sm).
 
-End Expressions.
+End ConcreteExpressions.
