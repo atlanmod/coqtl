@@ -4,7 +4,7 @@ Require Import core.utils.Utils.
 Require Import core.modeling.Metamodel.
 Require Import core.Model.
 Require Import core.Syntax.
-Require Import core.modeling.Expressions.
+Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.ConcreteSyntax.
 
 (* parse Concrete syntax into abstract syntax. *)
