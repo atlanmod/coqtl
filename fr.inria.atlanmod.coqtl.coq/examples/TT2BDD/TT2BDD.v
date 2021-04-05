@@ -43,9 +43,19 @@ Definition TT2BDD :=
      
     ].
 
+    (* 
+
+    (owner_i = i/2 rounded down)
+             1
+       2           3
+     4   5       6   7
+    8 9 10 11   12 13 14 15
+   f=0 ...
+    *)
+
 
 (* We want to prove the following equivalence: 
-   given an assignment for all input ports 'ins', and given an output port 'out', 
+   given an assignment for *all* input ports 'ins', and given *an* output port 'out', 
    (valueOf (evalTT TT ins) out) = (valueOf (evalBDD BDD ins) out) *)
 
 Close Scope coqtl.
