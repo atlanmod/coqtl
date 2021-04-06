@@ -8,20 +8,15 @@ Require Import Bool.
 Require Import core.utils.Utils.
 Require Import core.Model.
 
-(* Truth Table *)
+(* Binary Decision Diagram (Tree) *)
 
-(** Columns **)
-
-Inductive Var := 
-  BuildVar :
+Inductive Node := 
+  BuildNode :
   (* name *) string ->
-  (* column *) nat ->
-  Var.
+  Node.
 
-(** Rows **)
-
-Inductive Row :=
-  BuildRow :
-  (* inputs *) list nat ->
-  (* output *) nat ->
-  Row.
+Inductive Edge := 
+  BuildEdge :
+  (* Parent *) Node ->
+  (* Child *) Node ->
+  Edge.
