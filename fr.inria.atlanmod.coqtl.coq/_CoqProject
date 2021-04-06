@@ -28,6 +28,10 @@ core/modeling/Parser.v
 core/modeling/ConcreteExpressions.v
 core/modeling/Metamodel.v
 
+examples/TT2BDD/TT.v
+examples/TT2BDD/BDD.v
+examples/TT2BDD/TT2BDDAbstract.v
+
 #core/EngineTwoPhase.v
 #core/twophases/TwoPhaseSemantics.v
 #core/byrule/ByRuleSemantics.v
