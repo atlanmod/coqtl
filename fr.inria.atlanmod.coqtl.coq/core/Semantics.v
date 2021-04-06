@@ -31,32 +31,35 @@ Section Semantics.
   Definition evalExpr4 {A B C D E:Type} (f: Expr4 A B C D E) (a: A) (b: B) (c: C) (d: D):= f a b c d.
   Definition evalExpr5 {A B C D E F:Type} (f: Expr5 A B C D E F) (a: A) (b: B) (c: C) (d: D) (e: E):= f a b c d e.*)
 
-  Instance baseExpression :
+(*   Instance baseExpression :
     Expression := {
       Expr2 {A B C: Type} := A -> B -> C;
       evalExpr2 {A B C:Type} (f: A -> B -> C) (a: A) (b: B) := f a b;
-    }.
+    }. *)
+
+
+  Definition Expr (A: Type) (B: Type) : Type := A -> B.
+  Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a.
 
   Definition evalGuardExpr' (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
-    evalExpr2 SourceModel (list SourceModelElement) (option bool) 
-      (@Rule_getGuardExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp.
+  evalExpr (@Rule_getGuardExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp.
 
   Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :
     nat :=
-    match (evalExpr2 SourceModel (list SourceModelElement) (option nat) (@Rule_getIteratorExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp) with
+    match (evalExpr (@Rule_getIteratorExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink r) sm sp) with
     | Some n => n
     | _ => 0
     end.
 
   Definition evalOutputPatternElementExpr (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (o: OutputPatternElement)
     : option TargetModelElement := 
-    (evalExpr3 (@OutputPatternElement_getElementExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) iter sm sp).
+  (evalExpr (@OutputPatternElement_getElementExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) iter sm sp).
 
   Definition evalOutputPatternLinkExpr
              (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: nat) (tr: list TraceLink)
              (o: OutputPatternElementReference)
     : option TargetModelLink :=
-    (evalExpr5 (@OutputPatternElementReference_getLinkExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) tr iter sm sp oe).
+  (evalExpr (@OutputPatternElementReference_getLinkExpr SourceModelElement SourceModelLink TargetModelElement TargetModelLink o) tr iter sm sp oe).
 
   (** * Instantiate **)
 
