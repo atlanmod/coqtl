@@ -10,18 +10,15 @@ Require Import core.Model.
 
 (* Truth Table *)
 
-(** Columns **)
+Inductive TTElem := 
+| BuildColumn :  
+    (* name *) string ->
+    (* level *) nat ->
+    TTElem
+| BuildRow :
+    (* inputs *) list nat ->
+    (* output *) nat ->
+    TTElem.
 
-Inductive Var := 
-  BuildVar :
-  (* name *) string ->
-  (* column *) nat ->
-  Var.
-
-(** Rows **)
-
-Inductive Row :=
-  BuildRow :
-  (* inputs *) list nat ->
-  (* output *) nat ->
-  Row.
+Inductive TTRef :=
+  unit. 

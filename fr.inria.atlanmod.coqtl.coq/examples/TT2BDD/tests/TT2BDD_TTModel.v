@@ -7,16 +7,11 @@ Require Import Bool.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
+Require Import core.Semantics.
 
-(* Binary Decision Diagram (Tree) *)
+Require Import examples.TT2BDD.TT.
+Require Import examples.TT2BDD.BDD.
+Require Import examples.TT2BDD.TT2BDDAbstract.
+Require Import examples.TT2BDD.tests.TTModel.
 
-Inductive BDDNode := 
-  BuildBDDNode :
-  (* name *) string ->
-  BDDNode.
-
-Inductive BDDEdge := 
-  BuildBDDEdge :
-  (* Parent *) BDDNode ->
-  (* Child *) BDDNode ->
-  BDDEdge.
+Compute (execute TT2BDD TTable_OR).
