@@ -157,7 +157,7 @@ Definition TT2BDD :=
               (fun tls i m col output => 
                 ulv <- (upper_level col);
                 ucol <- locate m ulv;
-                parent <- resolveIter' tls m "node" [ucol] (div_roundup i 2);
+                parent <- resolveIter' tls m "node" [ucol] ((div_roundup i 2)-1);
                 Some (BuildBDDEdge output parent))]
         ]
       ) ;
@@ -172,7 +172,7 @@ Definition TT2BDD :=
                 col <- locate m height;             (* get node of depth *)
                 row <- hd_error sp;
                 input <- (Row_Input row);
-                parent <- resolveIter' tls m "node" [col] (div_roundup (semantic input) 2);   (* attach output to the corresponding leaf node*)
+                parent <- resolveIter' tls m "node" [col] ((div_roundup (semantic input) 2)-1);   (* attach output to the corresponding leaf node*)
                 Some (BuildBDDEdge output parent) ) ]
         ]
       )
