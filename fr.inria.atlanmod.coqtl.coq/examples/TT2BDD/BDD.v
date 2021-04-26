@@ -17,6 +17,6 @@ Inductive BDDNode :=
 
 Inductive BDDEdge := 
   BuildBDDEdge :
-  (* Parent *) BDDNode ->
-  (* Child *) BDDNode ->
+  (* child *) BDDNode ->
+  (* parent *) BDDNode ->
   BDDEdge.
