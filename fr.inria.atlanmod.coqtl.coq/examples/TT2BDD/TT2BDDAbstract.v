@@ -16,17 +16,23 @@ Require Import core.EqDec.
 Require Import TT2BDD.TT.
 Require Import TT2BDD.BDD.
 
+Require Import Coq.Lists.List.
+Require Import Coq.Init.Nat.
+
+Definition div_roundup (a b : nat) :=
+  match modulo a b with
+  | 0 => a / b
+  | _ => (a / b) + 1
+  end.
+
+Definition times (lv : nat) := pow 2 lv.
+
+Definition list_max (l:list nat) := fold_right max 0 l.
+
 (* In this example, we try to explore that
    - we can write transformation without reflection
    - 
  *)
-
-
-  Definition isColumn (e: TTElem) :=
-    match e with
-    | BuildColumn _ _ => true
-    | _ => false
-    end.
 
   Definition guard (sp: list TTElem) := 
       match hd_error sp with
@@ -34,19 +40,6 @@ Require Import TT2BDD.BDD.
       | _ => false
       end.
 
-  Definition Column_Name (e : TTElem) := 
-    match e with
-    | BuildColumn n _ => n
-    | _ => ""%string
-    end.
-
-  Definition Column_Level (e : TTElem) := 
-    match e with
-    | BuildColumn _ lv => Some lv
-    | _ => None
-    end.
-
-  Definition times (lv : nat) := pow 2 lv.
 
   Definition iter_col (sp: list TTElem) := 
     match hd_error sp with
@@ -78,47 +71,6 @@ Require Import TT2BDD.BDD.
             | Some n => Nat.eqb n lv
             end) (allModelElements m).
 
-  Definition div_roundup (a b : nat) :=
-    match modulo a b with
-    | 0 => a / b
-    | _ => (a / b) + 1
-    end.
-
-  Definition TTEq (a b : TTElem) := 
-    match a, b with
-    | BuildColumn n1 l1, BuildColumn n2 l2 => String.eqb n1 n2 && Nat.eqb l1 l2
-    | BuildRow lst1 n1, BuildRow lst2 n2 => list_beq nat Nat.eqb lst1 lst2 && Nat.eqb n1 n2
-    | _,_ => false
-    end.
-
-  Instance TTEqDec : EqDec TTElem := {
-    eqb := TTEq
-  }.
-
-  Definition isRow (e: TTElem) :=
-    match e with
-    | BuildRow _ _ => true
-    | _ => false
-    end.
-
-  Definition guard_row (sp: list TTElem) := 
-    match hd_error sp with
-    | Some e => isRow e
-    | _ => false
-    end.
-
-  Definition Row_Input (e : TTElem) := 
-    match e with
-    | BuildRow input _ => Some input
-    | _ => None
-    end.
-
-  Definition Row_Output (e : TTElem) := 
-    match e with
-    | BuildRow _ output => Some (natToString output)
-    | _ => None
-    end.
-
   Definition output_name (sp: list TTElem) := 
     match hd_error sp with
     | Some e => match (Row_Output e) with
@@ -127,11 +79,6 @@ Require Import TT2BDD.BDD.
                 end 
     | _ => ""%string
     end.
-
-  Require Import Coq.Lists.List.
-  Require Import Coq.Init.Nat.
-
-  Definition list_max (l:list nat) := fold_right max 0 l.
 
   Definition maxLv (m: Model TTElem TTRef) := list_max (optionList2List (map Column_Level (allModelElements m))).
   
@@ -149,7 +96,7 @@ Definition TT2BDD :=
     1 (* max arity *)
     [ (* rules *)
      (buildRule "Columns2Tree"  
-        (fun m col => Some (guard col))  
+        (fun m sp => option_map isColumn (hd_error sp))
         (fun m col => Some (iter_col col))
         [buildOutputPatternElement "node"
             (fun i m col => Some (BuildBDDNode (oelem_name col i)))
@@ -162,7 +109,7 @@ Definition TT2BDD :=
         ]
       ) ;
       (buildRule "Row2Output"  
-        (fun m row => Some (guard_row row))  
+        (fun m row => option_map isRow (hd_error row))  
         (fun m row => Some 1)
         [buildOutputPatternElement "output"
             (fun i m row => Some (BuildBDDNode (output_name row)))
