@@ -60,16 +60,16 @@ Inductive Cell4 {vtype: Type}:=
     (* column *) nat -> 
     (* value *) vtype -> Cell4.
 
-Definition Table4 (vtype: Type) :=
+Definition Table4 (vtype: Type):=
   list (@Cell4 vtype).
 
-Inductive TT4 := 
-  BuildTT4 : 
+Inductive TT4:= 
+  BuildTT4: 
     (* input ports *) list string ->
     (* output ports *) list string ->
     (* values *) Table4 bool -> TT4.
 
-Definition t4: TT4 :=
+Definition t4: TT4:=
   BuildTT4
     ("a"::"b"::nil) ("c"::nil)
     ((BuildCell4 0 0 false)::(BuildCell4 0 1 false)::(BuildCell4 0 2 true )::
@@ -77,9 +77,11 @@ Definition t4: TT4 :=
 
 (* Option 5 *)
 
-Inductive Table := 
+Inductive Table:= 
   BuildTable :
-     list string -> list string -> list (list (prod string bool)) -> Table.
+    (* input ports *) list string -> 
+    (* output ports *) list string -> 
+    (* values *) list (list (prod string bool)) -> Table.
 
 Definition t: Table:=
   BuildTable

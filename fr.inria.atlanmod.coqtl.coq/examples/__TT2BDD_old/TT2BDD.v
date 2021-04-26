@@ -45,6 +45,18 @@ Definition TT2BDD :=
 
     (* 
 
+    example:
+    a b c
+    f - t
+    t t f
+
+              1
+   a    2           3 
+   b  4   5       6   7
+    
+    leaf 1: c=t parent:4,5
+    leaf 2: c=f parent:7
+
     (owner_i = i/2 rounded down)
              1
        2           3
