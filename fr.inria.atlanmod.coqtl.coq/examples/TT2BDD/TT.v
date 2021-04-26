@@ -16,7 +16,7 @@ Scheme Equality for list.
 Inductive TTElem := 
 | BuildColumn :  
     (* name *) string ->
-    (* level *) nat ->
+    (* level start at 1 *) nat ->
     TTElem
 | BuildRow :
     (* inputs *) list nat ->

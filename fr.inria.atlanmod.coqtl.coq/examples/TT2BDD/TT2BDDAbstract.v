@@ -45,7 +45,7 @@ Definition list_max (l:list nat) := fold_right max 0 l.
     match hd_error sp with
     | Some e => match (Column_Level e) with
                 | None => 0
-                | Some lv => lv
+                | Some lv => (times (lv-1)) 
                 end
     | _ => 0
     end.
@@ -75,7 +75,7 @@ Definition list_max (l:list nat) := fold_right max 0 l.
     match hd_error sp with
     | Some e => match (Row_Output e) with
                 | None => ""%string
-                | Some str => append "S_" (evalTT ...)
+                | Some str => append "S_" str
                 end 
     | _ => ""%string
     end.
