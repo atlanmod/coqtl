@@ -57,6 +57,12 @@ Definition TT2BDD (t: Table) :=
 
 (* We want to prove the following equivalence: 
    given an assignment for *all* input ports 'ins', and given *an* output port 'out', 
-   (valueOf (evalTT TT ins) out) = (valueOf (evalBDD BDD ins) out) *)
+   (valueOf (evalTT TT ins) out) = (valueOf (evalBDD BDD ins) out) 
+   
+    Theorem TT2BDD_correct: 
+     forall (inValues : list bool) (tt: TT) (bdd:BDD),
+        bdd = execute TT2BDD tt ->
+        evalTT tt inValues = evalBDD bdd inValues.
+   *)
 
 Close Scope coqtl.

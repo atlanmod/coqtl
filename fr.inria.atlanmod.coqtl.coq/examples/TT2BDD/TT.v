@@ -72,3 +72,5 @@ Definition Row_Output (e : TTElem) :=
 
 Inductive TTRef :=
   unit. 
+
+Definition evalTT (tt: Model TTElem TTRef) (ins: list bool) : bool := true.
