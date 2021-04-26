@@ -88,3 +88,11 @@ Definition t: Table:=
     ("a"::"b"::nil) ("c"::nil)
     ((("a", false)::("b", false)::("c", true )::nil)::
      (("a", false)::("b", true )::("c", false)::nil)::nil).
+
+Require Import core.Model.
+
+Definition tmodel: Model (list (prod string bool)) unit:=
+  Build_Model 
+  ((("a", false)::("b", false)::("c", true )::nil)::
+   (("a", false)::("b", true )::("c", false)::nil)::nil) 
+   nil.
