@@ -27,18 +27,21 @@ core/modeling/ConcreteSyntax.v
 core/modeling/Parser.v
 core/modeling/ConcreteExpressions.v
 core/modeling/Metamodel.v
+core/modeling/SemanticNonagnostic.v
 
 examples/TT2BDD/TT.v
 examples/TT2BDD/BDD.v
 examples/TT2BDD/TT2BDDAbstract.v
 examples/TT2BDD/tests/TTModel.v
 
-#core/EngineTwoPhase.v
-#core/twophases/TwoPhaseSemantics.v
+core/EngineTwoPhase.v
+core/twophases/TwoPhaseSemantics.v
+#core/twophases/Certification_TwoPhaseSemantics.v
+
 #core/byrule/ByRuleSemantics.v
 
-#examples/Class2Relational/ClassMetamodel.v
-#examples/Class2Relational/RelationalMetamodel.v
+examples/Class2Relational/ClassMetamodel.v
+examples/Class2Relational/RelationalMetamodel.v
 #examples/Class2Relational/Class2Relational.v
 #examples/Class2Relational/Class2RelationalAbstract.v
 #examples/Class2Relational/tests/PersonModel.v

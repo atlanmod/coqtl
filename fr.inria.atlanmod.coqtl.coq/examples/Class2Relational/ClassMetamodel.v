@@ -8,7 +8,7 @@ Require Import Coq.Logic.Eqdep_dec.
 
 
 Require Import core.utils.Utils.
-Require Import core.Metamodel.
+Require Import core.modeling.Metamodel.
 Require Import core.Model.
 Require Import core.utils.CpdtTactics.
 (* Base types *)
@@ -317,7 +317,6 @@ Instance ClassElementSum : Sum ClassMetamodel_Object ClassMetamodel_Class :=
   denoteSubType := ClassMetamodel_getTypeByClass;
   toSubType := ClassMetamodel_toClass;
   toSumType := ClassMetamodel_toObject;
-  beq_SumType := beq_ClassMetamodel_Object;
 }.
 
 (* TODO *)
@@ -328,7 +327,6 @@ Instance ClassLinkSum : Sum ClassMetamodel_Link ClassMetamodel_Reference :=
   denoteSubType := ClassMetamodel_getTypeByReference;
   toSubType := ClassMetamodel_toReference;
   toSumType := ClassMetamodel_toLink;
-  beq_SumType := beq_ClassMetamodel_Link;
 }.
 
 Instance ClassMetamodel : Metamodel ClassMetamodel_Object ClassMetamodel_Link ClassMetamodel_Class ClassMetamodel_Reference :=

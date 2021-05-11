@@ -18,7 +18,7 @@ Section TwoPhaseSemantics.
   Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
-  Context (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
+  Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
 
   (** * Apply **)
 
@@ -42,7 +42,7 @@ Section TwoPhaseSemantics.
 
   Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (tls: list TraceLink): list TargetModelLink :=
     flat_map (fun o => applyElementOnPatternTraces o tr sm sp iter tls)
-      (Rule_getOutputPatternElements (SourceModelClass := SourceModelClass) r).
+      (Rule_getOutputPatternElements r).
 
   Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (tls: list (@TraceLink SourceModelElement TargetModelElement)): list TargetModelLink :=
     flat_map (fun i => applyIterationOnPatternTraces r tr sm sp i tls)

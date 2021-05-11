@@ -5,7 +5,7 @@ Require Import ListSet.   (* set *)
 Require Import Omega.
 
 Require Import core.utils.Utils.
-Require Import core.Metamodel.
+Require Import core.modeling.Metamodel.
 Require Import core.Model.
 
 Require Import Coq.Logic.Eqdep_dec.
@@ -344,7 +344,6 @@ Qed.
     denoteSubType := RelationalMetamodel_getTypeByClass;
     toSubType := toRelationalMetamodel_Class;
     toSumType := RelationalMetamodel_toObject;
-    beq_SumType := beq_RelationalMetamodel_Object;
   }.
   
   (* TODO *)
@@ -355,7 +354,6 @@ Qed.
     denoteSubType := RelationalMetamodel_getTypeByReference;
     toSubType := toRelationalMetamodel_Reference;
     toSumType := RelationalMetamodel_toLink;
-    beq_SumType := beq_RelationalMetamodel_Link;
   }.
   
   Instance RelationalMetamodel : Metamodel RelationalMetamodel_Object RelationalMetamodel_Link RelationalMetamodel_Class RelationalMetamodel_Reference :=
