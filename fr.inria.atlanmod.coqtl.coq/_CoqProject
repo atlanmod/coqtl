@@ -43,7 +43,7 @@ core/twophases/TwoPhaseSemantics.v
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
 #examples/Class2Relational/Class2Relational.v
-#examples/Class2Relational/Class2RelationalAbstract.v
+examples/Class2Relational/Class2RelationalAbstract.v
 examples/Class2Relational/tests/PersonModel.v
 #examples/Class2Relational/tests/PersonTest.v
 #examples/Class2Relational/theorems/All_classes_instantiate_impl.v
