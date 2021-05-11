@@ -6,10 +6,11 @@ Require Import Omega.
 
 Require Import core.utils.Utils.
 
-Require Import core.ConcreteSyntax.
-Require Import core.Semantics.
+Require Import core.modeling.ConcreteSyntax.
+Require Import core.modeling.SemanticNonagnostic.
 Require Import core.Metamodel.
-Require Import core.Expressions.
+Require Import core.modeling.ConcreteExpressions.
+Require Import core.modeling.Parser.
 
 Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
