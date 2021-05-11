@@ -6,7 +6,6 @@ Require Import core.Syntax.
 Require Import core.EqDec. 
 Require Import Bool.
 Require Import Arith.
-Require Import Expression.
 Scheme Equality for list.
 
 
