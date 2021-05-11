@@ -41,7 +41,7 @@ Set Implicit Arguments.
 
 
 
-Class TransformationEngine :=
+Class TransformationEngineModeling :=
   {
     SourceModelElement: Type;
     SourceModelClass: Type;
