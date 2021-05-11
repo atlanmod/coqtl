@@ -1,5 +1,6 @@
 (** * Metamodel **)
 Require Import core.Model.
+Require Import core.EqDec.
 
 Class Sum (SumType: Type) (SubTypeName: Type):=
   {
@@ -13,6 +14,8 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
 {
     elements: Sum ModelElement ModelClass;
     links: Sum ModelLink ModelReference;
+
+    elements_eqdec: EqDec ModelElement;
     
     (* Denotation *)
     denoteModelClass: ModelClass -> Set := denoteSubType;

@@ -31,7 +31,7 @@ Definition TTEq (a b : TTElem) :=
     end.
 
 Instance TTEqDec : EqDec TTElem := {
-    eqb := TTEq
+    eq_b := TTEq
 }.
 
 Definition isColumn (e: TTElem) :=

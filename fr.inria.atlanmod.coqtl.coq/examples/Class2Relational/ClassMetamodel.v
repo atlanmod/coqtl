@@ -6,7 +6,7 @@ Require Import ListSet.   (* set *)
 Require Import Omega.
 Require Import Coq.Logic.Eqdep_dec.
 
-
+Require Import core.EqDec.
 Require Import core.utils.Utils.
 Require Import core.modeling.Metamodel.
 Require Import core.Model.
@@ -329,10 +329,14 @@ Instance ClassLinkSum : Sum ClassMetamodel_Link ClassMetamodel_Reference :=
   toSumType := ClassMetamodel_toLink;
 }.
 
+Instance ClassMetamodel_EqDec : EqDec ClassMetamodel_Object := {
+    eq_b := beq_ClassMetamodel_Object;
+}.
+
 Instance ClassMetamodel : Metamodel ClassMetamodel_Object ClassMetamodel_Link ClassMetamodel_Class ClassMetamodel_Reference :=
 { 
     elements := ClassElementSum;
-    links := ClassLinkSum;
+    links := ClassLinkSum; 
 }.
 
 Definition ClassModel := Model ClassMetamodel_Object ClassMetamodel_Link.

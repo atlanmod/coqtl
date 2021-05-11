@@ -124,7 +124,7 @@ Section Semantics.
              (sp: list SourceModelElement)
              (iter : nat) : option TargetModelElement :=
   let tl := find (fun tl: TraceLink => 
-    (list_beq SourceModelElement core.EqDec.eqb (TraceLink_getSourcePattern tl) sp) &&
+    (list_beq SourceModelElement core.EqDec.eq_b (TraceLink_getSourcePattern tl) sp) &&
     ((TraceLink_getIterator tl) =? iter) &&
     ((TraceLink_getName tl) =? name)%string) tls in
   match tl with

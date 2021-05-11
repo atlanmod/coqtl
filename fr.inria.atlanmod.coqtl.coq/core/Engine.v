@@ -240,7 +240,7 @@ Class TransformationEngine :=
       resolve tls sm name sp iter = return x ->
        (exists (tl : TraceLink),
          In tl tls /\
-         Is_true (list_beq SourceModelElement core.EqDec.eqb (TraceLink_getSourcePattern tl) sp) /\
+         Is_true (list_beq SourceModelElement core.EqDec.eq_b (TraceLink_getSourcePattern tl) sp) /\
          ((TraceLink_getIterator tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
          (TraceLink_getTargetElement tl) = x);

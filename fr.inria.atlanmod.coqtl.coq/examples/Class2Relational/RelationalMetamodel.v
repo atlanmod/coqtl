@@ -4,6 +4,7 @@ Require Import Multiset.  (* bag *)
 Require Import ListSet.   (* set *)
 Require Import Omega.
 
+Require Import core.EqDec.
 Require Import core.utils.Utils.
 Require Import core.modeling.Metamodel.
 Require Import core.Model.
@@ -349,6 +350,11 @@ Qed.
   (* TODO *)
   Definition beq_RelationalMetamodel_Link (c1 : RelationalMetamodel_Link) (c2 : RelationalMetamodel_Link) : bool := true.
   
+  Instance RelationalMetamodel_EqDec : EqDec RelationalMetamodel_Object := {
+    eq_b := beq_RelationalMetamodel_Object;
+  }.
+
+
   Instance RelationalLinkSum : Sum RelationalMetamodel_Link RelationalMetamodel_Reference :=
   {
     denoteSubType := RelationalMetamodel_getTypeByReference;

@@ -1,4 +1,4 @@
 Set Implicit Arguments.
 
 Class EqDec (A : Type) :=
-  { eqb : A -> A -> bool ; }.
+  { eq_b : A -> A -> bool ; }.
