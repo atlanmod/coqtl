@@ -12,7 +12,7 @@ Require Import Bool.
 Require Import Arith.
 Scheme Equality for list.
 
-Section SemanticsNonagnostic.
+Section SemanticsModeling.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
   Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
@@ -81,4 +81,4 @@ Section SemanticsNonagnostic.
     (type: TargetModelClass) (sp: option (list (list SourceModelElement))) : option (list (denoteModelClass type)) :=
     denoteOutputList type (maybeResolveAll' (eqdec_sme:=elements_eqdec) tr sm name sp).
 
-End SemanticsNonagnostic.
+End SemanticsModeling.
