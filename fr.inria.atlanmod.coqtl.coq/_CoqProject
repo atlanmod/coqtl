@@ -27,7 +27,7 @@ core/modeling/ConcreteSyntax.v
 core/modeling/Parser.v
 core/modeling/ConcreteExpressions.v
 core/modeling/Metamodel.v
-core/modeling/SemanticNonagnostic.v
+core/modeling/SemanticsModeling.v
 
 examples/TT2BDD/TT.v
 examples/TT2BDD/BDD.v

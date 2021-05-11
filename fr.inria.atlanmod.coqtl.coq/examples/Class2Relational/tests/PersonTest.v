@@ -2,7 +2,7 @@ Require Import String.
 Require Import List.
 
 Require Import core.Semantics.
-Require Import core.modeling.SemanticNonagnostic.
+Require Import core.modeling.SemanticsModeling.
 Require Import core.modeling.ConcreteSyntax.
 Require Import core.utils.Utils.
 Require Import examples.Class2Relational.ClassMetamodel.
