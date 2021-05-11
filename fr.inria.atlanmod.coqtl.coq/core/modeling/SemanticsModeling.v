@@ -22,7 +22,7 @@ Section SemanticsModeling.
   Context (TargetModel := Model TargetModelElement TargetModelLink).
   Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
 
-  Fixpoint checkTypes (ses: list SourceModelElement) (scs: list SourceModelClass) : bool :=
+  (*Fixpoint checkTypes (ses: list SourceModelElement) (scs: list SourceModelClass) : bool :=
     match ses, scs with
     | se::ses', sc::scs' => 
       match (toModelClass sc se) with
@@ -31,17 +31,16 @@ Section SemanticsModeling.
       end
     | nil, nil => true
     | _, _ => false
-    end.
+    end.*)
 
-
-  Definition evalGuardExpr (r : ConcreteRule (smm:=smm)) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
+  (*Definition evalGuardExpr (r : ConcreteRule (smm:=smm)) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
     if (checkTypes sp (ConcreteRule_getInTypes (smm:=smm) r)) then
       @evalGuardExpr' SourceModelElement SourceModelLink TargetModelElement TargetModelLink (parseRule r) sm sp
-    else Some false. 
+    else Some false. *)
 
   (* ** Resolve *)
 
-  Definition TraceLink' := @TraceLink SourceModelElement TargetModelElement.
+  (*Definition TraceLink' := @TraceLink SourceModelElement TargetModelElement.*)
 
   Definition denoteOutput (type: TargetModelClass) (f: option TargetModelElement): option (denoteModelClass type) :=
       match f with
