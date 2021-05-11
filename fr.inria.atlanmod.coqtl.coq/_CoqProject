@@ -20,7 +20,7 @@ core/Model.v
 core/Syntax.v
 core/Semantics.v
 core/Engine.v
-core/EngineProofs.v
+#core/EngineProofs.v
 #core/Certification.v
 
 core/modeling/ConcreteSyntax.v
@@ -34,7 +34,7 @@ examples/TT2BDD/BDD.v
 examples/TT2BDD/TT2BDDAbstract.v
 examples/TT2BDD/tests/TTModel.v
 
-core/EngineTwoPhase.v
+core/twophases/EngineTwoPhase.v
 core/twophases/TwoPhaseSemantics.v
 #core/twophases/Certification_TwoPhaseSemantics.v
 

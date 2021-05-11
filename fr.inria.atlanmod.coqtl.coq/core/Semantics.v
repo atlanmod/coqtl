@@ -13,7 +13,7 @@ Scheme Equality for list.
 Section Semantics.
 
   Context {SourceModelElement SourceModelLink: Type}.
-  Context {eqdec_sme: EqDec SourceModelElement}. (* need equality deciability on source model element *)
+  Context {eqdec_sme: EqDec SourceModelElement}. (* need decidable equality on source model elements *)
   Context {TargetModelElement TargetModelLink: Type}.
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
