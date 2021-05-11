@@ -29,7 +29,7 @@ core/modeling/ConcreteExpressions.v
 core/modeling/Metamodel.v
 core/modeling/EngineModeling.v
 core/modeling/SemanticsModeling.v
-#core/modeling/CertificationModeling.v
+core/modeling/CertificationModeling.v
 
 core/modeling/twophases/EngineTwoPhase.v
 core/modeling/twophases/TwoPhaseSemantics.v
