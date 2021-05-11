@@ -7,9 +7,9 @@ Require Import Omega.
 Require Import core.utils.Utils.
 
 Require Import core.Syntax.
-Require Import core.Semantics.
+Require Import core.modeling.SemanticNonagnostic.
 Require Import core.Metamodel.
-Require Import core.Expressions.
+Require Import core.modeling.ConcreteExpressions.
 
 Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
@@ -40,9 +40,9 @@ Require Import Class2Relational.RelationalMetamodel.
    } *)
 
 Definition Class2Relational :=
-  buildTransformation
+  buildTransformation 1
     [
-      buildRule "Class2Table" [ClassClass]
+      buildRule "Class2Table"
         (makeGuard [ClassClass] (fun m c => true))
         (makeIterator [ClassClass] (fun m c => 1))
         [buildOutputPatternElement "tab"
@@ -57,7 +57,7 @@ Definition Class2Relational :=
               return BuildTableColumns t cols))
           ]
         ];
-      buildRule "Attribute2Column" [AttributeClass]
+      buildRule "Attribute2Column"
         (makeGuard [AttributeClass] (fun m a => negb (getAttributeDerived a)))
         (makeIterator [AttributeClass] (fun m a => 1))
         [buildOutputPatternElement "col"
