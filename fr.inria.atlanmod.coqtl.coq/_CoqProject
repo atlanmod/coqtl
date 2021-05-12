@@ -34,6 +34,8 @@ core/modeling/twophases/EngineTwoPhase.v
 core/modeling/twophases/TwoPhaseSemantics.v
 #core/modeling/twophases/Certification_TwoPhaseSemantics.v
 
+core/modeling/iterateTraces/IterateTracesSemantics.v
+
 #core/modeling/byrule/ByRuleSemantics.v
 #core/modeling/byrule/Certification_ByRuleSemantics.v
 

@@ -14,7 +14,7 @@ Require Import core.Certification.
 Require Import core.Syntax.
 Require Import core.EqDec.
 
-Section Certification.
+Section IterateTracesCertification.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
   Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
@@ -134,4 +134,4 @@ Section Certification.
       tr_resolve_Leaf := tr_resolveIter_leaf;
     }. 
 
-End Certification.
+End IterateTracesCertification.
