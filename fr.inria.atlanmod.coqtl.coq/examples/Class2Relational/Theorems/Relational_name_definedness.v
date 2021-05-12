@@ -16,14 +16,14 @@ Require Import Omega.
 Require Import core.utils.Utils.
 Require Import core.Semantics.
 Require Import core.Certification.
-Require Import core.Metamodel.
+Require Import core.modeling.Metamodel.
 Require Import core.Model.
 
 Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
 
-Ltac unfoldTransformationIn Tr Ht := 
+(*Ltac unfoldTransformationIn Tr Ht := 
   unfold Tr in Ht;
   unfold ConcreteSyntax.parse in Ht; 
   unfold ConcreteSyntax.parseRule in Ht;
@@ -51,7 +51,7 @@ Ltac unfoldTransformation Tr :=
   repeat (unfold Expressions.wrapOptionElement);
   repeat (unfold Expressions.wrapOptionLink);
   repeat (unfold Expressions.wrapOption);
-  simpl.
+  simpl.*)
 
 Theorem Relational_name_definedness:
 forall (cm : ClassModel) (rm : RelationalModel), 
