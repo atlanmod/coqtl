@@ -7,7 +7,7 @@ Require Import Omega.
 Require Import core.utils.Utils.
 
 Require Import core.Syntax.
-Require Import core.modeling.SemanticsModeling.
+Require Import core.modeling.ModelingSemantics.
 Require Import core.modeling.Metamodel.
 Require Import core.modeling.ConcreteExpressions.
 

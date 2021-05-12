@@ -7,9 +7,9 @@ Require Import core.Model.
 Require Import core.modeling.Metamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.Engine.
-Require Import core.modeling.EngineModeling.
+Require Import core.modeling.ModelingEngine.
 Require Import core.Semantics.
-Require Import core.modeling.SemanticsModeling.
+Require Import core.modeling.ModelingSemantics.
 Require Import core.Certification.
 Require Import core.Syntax.
 Require Import core.EqDec.
