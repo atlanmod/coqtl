@@ -30,7 +30,7 @@ core/modeling/EngineModeling.v
 core/modeling/SemanticsModeling.v
 core/modeling/CertificationModeling.v
 
-core/modeling/twophases/EngineTwoPhase.v
+core/modeling/twophases/TwoPhaseEngine.v
 core/modeling/twophases/TwoPhaseSemantics.v
 core/modeling/twophases/TwoPhaseCertification.v
 

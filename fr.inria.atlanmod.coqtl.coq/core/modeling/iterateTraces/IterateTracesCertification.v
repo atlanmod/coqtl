@@ -5,7 +5,7 @@ Require Import core.utils.Utils.
 Require Import core.modeling.Metamodel.
 Require Import core.Model.
 Require Import core.Engine.
-Require Import core.modeling.twophases.EngineTwoPhase.
+Require Import core.modeling.twophases.TwoPhaseEngine.
 Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.Certification.
