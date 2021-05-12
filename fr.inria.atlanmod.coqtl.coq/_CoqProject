@@ -19,7 +19,7 @@ core/Model.v
 core/Syntax.v
 core/Semantics.v
 core/Engine.v
-#core/EngineProofs.v
+core/EngineProofs.v
 core/Certification.v
 
 core/modeling/ConcreteSyntax.v

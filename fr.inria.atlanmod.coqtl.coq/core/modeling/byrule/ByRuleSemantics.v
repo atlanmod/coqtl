@@ -19,7 +19,7 @@ Section ByRuleSemantics.
   Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
-  Context (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
+  Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
 
     Definition allModelElementsOfType (t: SourceModelClass) (sm: SourceModel) : list SourceModelElement :=
       filter (hasType t) (allModelElements sm).
