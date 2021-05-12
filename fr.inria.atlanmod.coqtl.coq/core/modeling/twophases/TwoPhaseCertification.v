@@ -2,19 +2,18 @@ Require Import String.
 Require Import Omega.
 Require Import Bool.
 Require Import core.utils.Utils.
-Require Import core.Metamodel.
+Require Import core.modeling.Metamodel.
 Require Import core.Model.
-Require Import core.Expressions.
 Require Import core.Engine.
-Require Import core.EngineTwoPhase.
+Require Import core.modeling.twophases.EngineTwoPhase.
 Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.Certification.
-Require Import core.twophases.TwoPhaseSemantics.
+Require Import core.modeling.twophases.TwoPhaseSemantics.
 Require Import Coq.Logic.FunctionalExtensionality.
 
 
-Section Certification.
+Section TwoPhaseCertification.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
   Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
@@ -22,7 +21,7 @@ Section Certification.
   Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
-  Context (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
+  Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
 
   (** EXECUTE TRACE *)
 
@@ -124,7 +123,7 @@ Section Certification.
     apply in_flat_map.
   Qed.
 
-  Definition traceRuleOnPattern1 := (@traceRuleOnPattern SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
+  Definition traceRuleOnPattern1 := (@traceRuleOnPattern SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
  
   Lemma tr_traceRuleOnPattern_in:
   forall (r: Rule) (sm : SourceModel) (sp : list SourceModelElement) (tl : TraceLink),
@@ -137,13 +136,13 @@ Section Certification.
     apply in_flat_map.
   Qed.
 
-  Definition traceIterationOnPattern1 := (@traceIterationOnPattern SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
+  Definition traceIterationOnPattern1 := (@traceIterationOnPattern SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
  
   Lemma tr_traceIterationOnPattern_in:
   forall (r: Rule) (sm : SourceModel) (sp : list SourceModelElement) (iter: nat) (tl : TraceLink),
     In tl (traceIterationOnPattern1 r sm sp iter) <->
     (exists (o: OutputPatternElement),
-        In o (Rule_getOutputPatternElements (SourceModelClass := SourceModelClass) r) /\
+        In o (Rule_getOutputPatternElements r) /\
         In tl ((fun o => optionToList (traceElementOnPattern o sm sp iter)) o)).
   Proof.
     intros.
@@ -219,7 +218,7 @@ Qed.
       forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat)  (tls: list TraceLink),
         In tl (applyIterationOnPatternTraces r tr sm sp i tls) <->
         (exists (ope: OutputPatternElement),
-            In ope (Rule_getOutputPatternElements (SourceModelClass := SourceModelClass) r) /\ 
+            In ope (Rule_getOutputPatternElements r) /\ 
             In tl (applyElementOnPatternTraces ope tr sm sp i tls)).
   Proof.
     intros.
@@ -273,7 +272,7 @@ Qed.
 
   Theorem exe_preserv : 
     forall (tr: Transformation) (sm : SourceModel),
-      core.twophases.TwoPhaseSemantics.executeTraces tr sm = core.Semantics.execute tr sm.
+      core.modeling.twophases.TwoPhaseSemantics.executeTraces tr sm = core.Semantics.execute tr sm.
   Proof.
     intros.
     unfold core.Semantics.execute, executeTraces. simpl.
@@ -338,7 +337,7 @@ Qed.
     specialize (Certification.tr_execute_in_links tr sm tl).
     crush.
   Qed.
-
+(*
   Instance CoqTLEngine :
     TransformationEngine :=
     {
@@ -456,10 +455,10 @@ Qed.
 
       tr_resolveAll_in := tr_resolveAllIter_in;
       tr_resolve_Leaf := tr_resolveIter_Leaf';*)
-    }.
+    }.*)
 
 
-  Instance CoqTLEngineTrace :
+ (* Instance CoqTLEngineTrace :
     (TransformationEngineTrace CoqTLEngine).
   Proof.
    eexists.
@@ -479,6 +478,6 @@ Qed.
 
 Qed.
 
+*)
 
-
-End Certification.
+End TwoPhaseCertification.
