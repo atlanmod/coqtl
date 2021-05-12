@@ -149,5 +149,4 @@ Class TransformationEngineTrace (t: TransformationEngine) :=
                  (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink),
             applyReferenceOnPatternTraces oper tr sm sp iter te tls  = evalOutputPatternLinkExpr sm sp te iter tls oper;
 
-
   }.

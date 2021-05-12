@@ -4,11 +4,11 @@ Require Import Bool.
 Require Import core.utils.Utils.
 Require Import core.modeling.Metamodel.
 Require Import core.Model.
-Require Import core.Engine.
+Require Import core.modeling.ModelingEngine.
 Require Import core.modeling.twophases.TwoPhaseEngine.
 Require Import core.Syntax.
 Require Import core.Semantics.
-Require Import core.Certification.
+Require Import core.modeling.ModelingCertification.
 Require Import core.modeling.twophases.TwoPhaseSemantics.
 Require Import Coq.Logic.FunctionalExtensionality.
 
@@ -150,8 +150,8 @@ Section TwoPhaseCertification.
   Qed.
 
   (* TODO works inside TwoPhaseSemantics.v *)
-Definition OutputPatternElement1 := (@OutputPatternElement SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
-Definition OutputPatternElement_getName1 := (@OutputPatternElement_getName SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
+  Definition OutputPatternElement1 := (@OutputPatternElement SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
+  Definition OutputPatternElement_getName1 := (@OutputPatternElement_getName SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
   Lemma tr_traceElementOnPattern_leaf:
   forall (o: OutputPatternElement1) (sm : SourceModel) (sp : list SourceModelElement) (iter: nat) (o: OutputPatternElement) (tl : TraceLink),
     Some tl = (traceElementOnPattern o sm sp iter) <->
@@ -212,7 +212,6 @@ Qed.
    intros.
    apply in_flat_map.
   Qed.
-
 
   Lemma tr_applyIterationOnPatternTraces_in : 
       forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat)  (tls: list TraceLink),
@@ -337,7 +336,24 @@ Qed.
     specialize (Certification.tr_execute_in_links tr sm tl).
     crush.
   Qed.
-(*
+
+  (*Instance TwoPhaseCoqTLEngine :
+  TransformationEngineModeling (@ModelingCoqTLEngine SourceModelElement SourceModelLink TargetModelElement TargetModelLink):=
+  {
+    SourceModelClass := SourceModelClass;
+    SourceModelReference := SourceModelReference;
+    TargetModelClass := TargetModelClass;
+    TargetModelReference := TargetModelReference;
+
+    resolveAll := resolveAllIter;
+    resolve := resolveIter;
+
+    (* lemmas *)
+
+    tr_resolveAll_in := tr_resolveAllIter_in;
+    tr_resolve_Leaf := tr_resolveIter_leaf;
+  }. 
+
   Instance CoqTLEngine :
     TransformationEngine :=
     {

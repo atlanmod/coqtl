@@ -117,8 +117,8 @@ Section IterateTracesCertification.
     -- apply String.eqb_eq. crush.
     -- Admitted.
 
-  Instance CoqTLEngine :
-    TransformationEngineModeling (@CoqTLEngine SourceModelElement SourceModelLink eqdec_sme TargetModelElement TargetModelLink):=
+  Instance ModelingCoqTLEngine :
+    ModelingTransformationEngine (@CoqTLEngine SourceModelElement SourceModelLink eqdec_sme TargetModelElement TargetModelLink):=
     {
       SourceModelClass := SourceModelClass;
       SourceModelReference := SourceModelReference;
