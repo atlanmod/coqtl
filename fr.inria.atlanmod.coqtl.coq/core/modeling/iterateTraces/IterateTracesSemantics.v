@@ -57,24 +57,71 @@ Section IterateTracesSemantics.
 
   Fixpoint noDup_sp (l : list (list SourceModelElement)) : list (list SourceModelElement) :=
     match l with
-      | x::xs => if (list_beq SourceModelElement core.EqDec.eq_b x (hd nil xs)) then noDup_sp xs else x::(noDup_sp xs)
+      | x::xs => 
+        match xs with
+          | x2::x2s => if (list_beq SourceModelElement core.EqDec.eq_b x x2) then noDup_sp xs else x::(noDup_sp xs)
+          | nil => x::nil
+        end
       | nil => nil
     end.
-  
-  Lemma In_noDup_sp: forall (l: list (list SourceModelElement)) (sp: list SourceModelElement),
-    In sp (noDup_sp l) -> In sp l.
+
+  Lemma In_noDup_sp_cons: forall (l: list (list SourceModelElement)) (sp x: list SourceModelElement),
+    In sp (noDup_sp l) -> In sp (noDup_sp (x::l)).
   Proof.
     intros.
-    induction l.
-    - simpl in H. contradiction.
-    - simpl. simpl in H.
-      destruct (list_beq SourceModelElement core.EqDec.eq_b a (hd nil l)).
-      * right. auto.
-      * simpl in H.
+    simpl.  
+    destruct l eqn:dstl.
+    - contradiction.
+    - destruct (list_beq SourceModelElement eq_b x l0) eqn:dsteq.
+      + assumption.
+      + simpl.
+        simpl in H.
+        right.
+        assumption.
+  Qed.
+
+  Lemma In_noDup_sp_cons': forall (l: list (list SourceModelElement)) (sp x: list SourceModelElement),
+    In sp (noDup_sp (x::l)) -> sp = x \/ In sp (noDup_sp l).
+  Proof.
+    intros.
+    simpl in H.
+    destruct l eqn:dstl.
+    - simpl in H. crush.
+    - destruct (list_beq SourceModelElement eq_b x l0) eqn:dsteq.
+      + right. assumption.
+      + simpl in H.
         destruct H.
-        + auto.
-        + auto.       
-  Qed.       
+        * auto.
+        * right. auto.
+  Qed.
+
+  Lemma In_noDup_sp: forall (l: list (list SourceModelElement)) (sp: list SourceModelElement),
+    In sp (noDup_sp l) <-> In sp l.
+  Proof.
+    split.
+    --  intros.
+        induction l.
+        - simpl in H. contradiction.
+        - simpl. simpl in H.
+          destruct l eqn:dstl.
+          + simpl in H. auto.
+          + destruct (list_beq SourceModelElement core.EqDec.eq_b a l0) eqn:dsteq.
+            * right. apply IHl. assumption.
+            * simpl in H.
+              destruct H.
+              ++ auto.
+              ++ auto. 
+    -- intros.
+       induction l.
+       - contradiction.
+       - simpl in H.
+         destruct l eqn:dstl.
+         * auto.
+         * simpl.
+           destruct (list_beq SourceModelElement core.EqDec.eq_b a l0) eqn:dsteq.
+           + destruct l1 eqn:dstl1.
+             ++ destruct H.
+                ** rewrite <- H. unfold In. left. Admitted.
 
   Definition instantiateTraces (tr: Transformation) (sm : SourceModel) :=
     let tls := trace tr sm in

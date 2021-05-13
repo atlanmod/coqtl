@@ -159,64 +159,7 @@ Qed.
 
   (** * Apply **)
 
-  Lemma tr_executeTraces_in_links :
-  forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
-        In tl (allModelLinks (executeTraces tr sm)) <->
-            (exists (sp : list SourceModelElement),
-            In sp (allTuples tr sm) /\
-            In tl (applyPatternTraces tr sm sp (trace tr sm))).
-  Proof.
-    intros.
-    split.
-    - simpl. intro.
-      apply in_flat_map in H.
-      destruct H.
-      exists x.
-      crush.
-      apply In_noDup_sp in H0.
-      unfold trace in H0.
-      induction (allTuples tr sm).
-      * simpl in H0. contradiction.
-      * simpl. simpl in H0. 
-        rewrite map_app in H0.
-        apply in_app_or in H0.
-        destruct H0.
-        + left.
-          unfold tracePattern in H.
-          induction (matchPattern tr sm a).
-          -- simpl in H. contradiction.
-          -- simpl in H.
-            rewrite map_app in H.
-            apply in_app_or in H.            
-            destruct H.
-            
-            ** apply in_map_iff in H.
-               destruct H. destruct H.
-               apply tr_traceRuleOnPattern_in in H0.
-               destruct H0. destruct H0.
-               apply tr_traceIterationOnPattern_in in H2.
-               destruct H2. destruct H2.
-               unfold traceElementOnPattern in H3.
-               destruct (instantiateElementOnPattern x2 sm a x1) eqn:inst.
-               simpl in H3.
-               destruct H3.
-               *** rewrite <- H3 in H. simpl in H. 
-                   assumption.
-               *** contradiction.
-               *** contradiction.
-            ** apply IHl0 in H. assumption.
-        + auto.
-      - Admitted.
 
-  Lemma tr_applyTraces_in :
-  forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (tls: list TraceLink),
-    In tl (applyTraces tr sm tls) <->
-    (exists (sp : list SourceModelElement),
-        In sp (allTuples tr sm) /\
-        In tl (applyPatternTraces tr sm sp tls)).
-  Proof.
-    intros.
-  Admitted.
 
   Lemma tr_applyPatternTraces_in:
   forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (tls: list TraceLink),
@@ -239,7 +182,6 @@ Qed.
    intros.
    apply in_flat_map.
   Qed.
-
 
   Lemma tr_applyIterationOnPatternTraces_in : 
       forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (i:nat)  (tls: list TraceLink),
@@ -297,9 +239,83 @@ Qed.
    crush.
   Qed.
 
+  Lemma tr_applyTraces_in :
+  forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
+    In tl (applyTraces tr sm (trace tr sm)) <->
+    (exists (sp : list SourceModelElement),
+        In sp (allTuples tr sm) /\
+        In tl (applyPatternTraces tr sm sp (trace tr sm))).
+  Proof.
+    split.
+    - intros.
+      apply in_flat_map in H.
+      destruct H.
+      exists x.
+      crush.
+      apply In_noDup_sp in H0.
+      unfold trace in H0.
+      induction (allTuples tr sm).
+      * simpl in H0. contradiction.
+      * simpl. simpl in H0. 
+        rewrite map_app in H0.
+  Admitted. (*
+        apply in_app_or in H0.
+        destruct H0.
+        + left.
+          unfold tracePattern in H.
+          induction (matchPattern tr sm a).
+          -- simpl in H. contradiction.
+          -- simpl in H.
+            rewrite map_app in H.
+            apply in_app_or in H.            
+            destruct H.
+            ** apply in_map_iff in H.
+              destruct H. destruct H.
+              apply tr_traceRuleOnPattern_in in H0.
+              destruct H0. destruct H0.
+              apply tr_traceIterationOnPattern_in in H2.
+              destruct H2. destruct H2.
+              unfold traceElementOnPattern in H3.
+              destruct (instantiateElementOnPattern x2 sm a x1) eqn:inst.
+              simpl in H3.
+              destruct H3.
+              *** rewrite <- H3 in H. simpl in H. 
+                  assumption.
+              *** contradiction.
+              *** contradiction.
+            ** apply IHl0 in H. assumption.
+        + auto.
+      - intros.
+        destruct H. destruct H.
+        unfold applyTraces.
+        apply in_flat_map.
+        exists x.
+        crush.
+        unfold trace.
+        unfold tracePattern.
+
+        apply tr_applyPatternTraces_in in H0.
+        repeat destruct H0.
+        apply tr_matchPattern_in in H0.
+        repeat destruct H0.
+        induction (allTuples tr sm).
+        + contradiction.
+        + simpl in H. simpl.
+  Admitted.*)
+
+  Lemma tr_executeTraces_in_links :
+  forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
+        In tl (allModelLinks (executeTraces tr sm)) <->
+            (exists (sp : list SourceModelElement),
+            In sp (allTuples tr sm) /\
+            In tl (applyPatternTraces tr sm sp (trace tr sm))).
+  Proof.
+    apply tr_applyTraces_in.
+  Qed.
+
   Theorem exe_preserv : 
     forall (tr: Transformation) (sm : SourceModel),
-      core.modeling.twophases.TwoPhaseSemantics.executeTraces tr sm = core.Semantics.execute tr sm.
+      core.modeling.iteratetraces.IterateTracesSemantics.executeTraces tr sm = core.Semantics.execute tr sm.
   Proof.
     intros.
     unfold core.Semantics.execute, executeTraces. simpl.
