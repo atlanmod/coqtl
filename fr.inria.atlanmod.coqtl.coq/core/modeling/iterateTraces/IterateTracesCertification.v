@@ -5,11 +5,11 @@ Require Import core.utils.Utils.
 Require Import core.modeling.Metamodel.
 Require Import core.Model.
 Require Import core.Engine.
-Require Import core.modeling.twophases.TwoPhaseEngine.
 Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.Certification.
-Require Import core.modeling.twophases.TwoPhaseSemantics.
+Require Import core.EqDec.
+Require Import core.modeling.iteratetraces.IterateTracesSemantics.
 Require Import Coq.Logic.FunctionalExtensionality.
 
 
@@ -17,6 +17,7 @@ Section IterateTracesCertification.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
   Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
+  Context {eqdec_sme: EqDec SourceModelElement}. (* need decidable equality on source model elements *)
   Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
   Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
   Context (SourceModel := Model SourceModelElement SourceModelLink).
@@ -172,8 +173,7 @@ Qed.
       destruct H.
       exists x.
       crush.
-  Admitted.
-(*      apply In_noDup_sp in H0.
+      apply In_noDup_sp in H0.
       unfold trace in H0.
       induction (allTuples tr sm).
       * simpl in H0. contradiction.
@@ -187,21 +187,26 @@ Qed.
           -- simpl in H. contradiction.
           -- simpl in H.
             rewrite map_app in H.
-            apply in_app_or in H.
+            apply in_app_or in H.            
             destruct H.
+            
             ** apply in_map_iff in H.
                destruct H. destruct H.
-               unfold traceRuleOnPattern in H0.
-               unfold traceIterationOnPattern in H0.
-               unfold traceElementOnPattern in H0.
-               apply in_flat_map in H0.
-               destruct H0.
-               destruct H0.
-               apply in_flat_map in H2.
-               destruct H2.
-               destruct H2.
-          simpl in H. 
-  Admitted.*)
+               apply tr_traceRuleOnPattern_in in H0.
+               destruct H0. destruct H0.
+               apply tr_traceIterationOnPattern_in in H2.
+               destruct H2. destruct H2.
+               unfold traceElementOnPattern in H3.
+               destruct (instantiateElementOnPattern x2 sm a x1) eqn:inst.
+               simpl in H3.
+               destruct H3.
+               *** rewrite <- H3 in H. simpl in H. 
+                   assumption.
+               *** contradiction.
+               *** contradiction.
+            ** apply IHl0 in H. assumption.
+        + auto.
+      - Admitted.
 
   Lemma tr_applyTraces_in :
   forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (tls: list TraceLink),
