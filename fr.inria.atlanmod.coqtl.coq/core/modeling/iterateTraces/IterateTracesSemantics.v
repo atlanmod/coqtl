@@ -121,7 +121,9 @@ Section IterateTracesSemantics.
            destruct (list_beq SourceModelElement core.EqDec.eq_b a l0) eqn:dsteq.
            + destruct l1 eqn:dstl1.
              ++ destruct H.
-                ** rewrite <- H. unfold In. left. Admitted.
+                ** rewrite <- H. unfold In. left. 
+                  Admitted.
+                  (* here it shows the problem for an explicit eq_b*)
 
   Definition instantiateTraces (tr: Transformation) (sm : SourceModel) :=
     let tls := trace tr sm in

@@ -14,8 +14,10 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
 {
     elements: Sum ModelElement ModelClass;
     links: Sum ModelLink ModelReference;
-
     elements_eqdec: EqDec ModelElement;
+
+    (* Decidable Equality*)
+    elements_eqb := eq_b;
     
     (* Denotation *)
     denoteModelClass: ModelClass -> Set := denoteSubType;

@@ -1,7 +1,6 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.modeling.Metamodel.
 Require Import core.Model.
 Require Import core.Syntax.
 Require Import Bool.
@@ -13,9 +12,7 @@ Scheme Equality for list.
 Section TwoPhaseSemantics.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
-  Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
   Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-  Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
   Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
@@ -59,7 +56,7 @@ Section TwoPhaseSemantics.
 
   Definition applyTraces (tr: Transformation) (sm : SourceModel) (tls: list (@TraceLink SourceModelElement TargetModelElement)): list TargetModelLink :=
     flat_map (fun sp => applyPatternTraces tr sm sp tls) (allTuples tr sm).
-  
+
   Definition executeTraces (tr: Transformation) (sm : SourceModel) : TargetModel :=
     let (elements, tls) := instantiateTraces tr sm in
     let links := applyTraces tr sm tls in
