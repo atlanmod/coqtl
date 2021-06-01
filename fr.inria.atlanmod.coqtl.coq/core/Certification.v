@@ -441,4 +441,27 @@ Context (Transformation := @Transformation SourceModelElement SourceModelLink Ta
       tr_resolve_Leaf := tr_resolveIter_Leaf';*)
     }. 
 
+
+
+(* matched sp must produce matched rule's output element 
+   genearlization of lemma such as: Attribute_name_preservation
+ *)
+
+Lemma tr_match_injective :
+  forall (tr: Transformation) (sm : SourceModel),
+    forall (sp : list SourceModelElement)(r : Rule),
+      In r (matchPattern tr sm sp) /\ 
+      Rule_getOutputPatternElements r <> nil ->
+        (exists (te: TargetModelElement),  In te (instantiateRuleOnPattern r sm sp) ).
+Proof.
+intros.
+eexists.
+unfold instantiateRuleOnPattern.
+
+(* if In te (instantiateRuleOnPattern r sm sp) => tr_instantiatePattern_in
+      In te (instantiatePattern tr sm sp) => by tr_execute_in_elements
+      In te (allModelElements (execute tr sm)) 
+      *)
+
+
 End Certification.
