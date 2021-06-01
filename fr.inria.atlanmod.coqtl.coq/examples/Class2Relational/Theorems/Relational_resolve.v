@@ -52,7 +52,17 @@ Proof.
           -- (* derived *) contradiction H0.
           -- (* not derived *) simpl in H0.
               destruct H0. 
-              ++ remember (applyPattern Class2Relational cm [ClassMetamodel_BuildObject AttributeClass c0]).
+              ++ remember (applyPattern Class2Relational cm 
+              [ClassMetamodel_BuildObject AttributeClass
+             (BuildAttribute n false s)]).
+             unfold applyPattern in Heql0.
+             unfold applyRuleOnPattern in Heql0.
+             unfold applyIterationOnPattern in Heql0.
+             unfold applyElementOnPattern in Heql0.
+             simpl in Heql0.
+             unfold ConcreteExpressions.makeLink in Heql0.
+             unfold ConcreteExpressions.wrapOptionLink in Heql0.
+              
                  admit. (* todo *)
               ++ contradiction H0.
       + (* Other patterns *) do 2 destruct c.
