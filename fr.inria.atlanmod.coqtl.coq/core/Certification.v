@@ -449,9 +449,10 @@ Context (Transformation := @Transformation SourceModelElement SourceModelLink Ta
 
 Lemma tr_match_injective :
   forall (tr: Transformation) (sm : SourceModel),
-    forall (sp : list SourceModelElement)(r : Rule),
-      In r (matchPattern tr sm sp) /\ 
-      Rule_getOutputPatternElements r <> nil ->
+    forall (sp : list SourceModelElement)(r : Rule)(iter: nat),
+      In r (matchPattern tr sm sp) /\
+      ((Rule_getIteratorExpr r) sm sp) = Some iter /\ 
+      (exists ope, In ope (Rule_getOutputPatternElements r) /\  (OutputPatternElement_getElementExpr ope) iter sm sp <> None) ->
         (exists (te: TargetModelElement),  In te (instantiateRuleOnPattern r sm sp) ).
 Proof.
 intros.
