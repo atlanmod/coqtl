@@ -52,7 +52,13 @@ Proof.
           -- (* derived *) contradiction H0.
           -- (* not derived *) simpl in H0.
               destruct H0. 
-              ++ remember (applyPattern Class2Relational cm 
+++ admit.
+
+(*
+unfold getColumnReference.
+unfold getColumnReferenceOnLinks. simpl.
+
+remember (applyPattern Class2Relational cm 
               [ClassMetamodel_BuildObject AttributeClass
              (BuildAttribute n false s)]).
              unfold applyPattern in Heql0.
@@ -62,8 +68,34 @@ Proof.
              simpl in Heql0.
              unfold ConcreteExpressions.makeLink in Heql0.
              unfold ConcreteExpressions.wrapOptionLink in Heql0.
-              
-                 admit. (* todo *)
+destruct ( toModelClass AttributeClass
+(ClassMetamodel_BuildObject AttributeClass
+   (BuildAttribute n false s))) eqn: x0_ca.
+--- (* x0 <> nil *)
+    unfold optionToList in Heql0.
+    simpl in Heql0.
+    unfold maybeBuildColumnReference  in Heql0.
+    unfold ModelingSemantics.maybeResolve in Heql0.
+    unfold ModelingSemantics.denoteOutput in Heql0.
+    unfold maybeResolve' in Heql0.
+    unfold maybeSingleton in Heql0.
+    unfold option_map in Heql0.
+    destruct (getAttributeTypeObject d cm) eqn: do_ca.
+    ---- destruct (resolve' (trace Class2Relational cm) cm "tab"
+(singleton c)) eqn: resolve_ca.
+
+----- destruct (toModelClass TableClass r) eqn: cast_ca.
+  ------ simpl in Heql0. 
+  ------ admit. (* contradiction *)
+----- admit. (* contradiction *)
+    
+    
+    ---- admit. (* contradiction getAttributeTypeObject d cm = None *)
+
+--- (* x0 = nil *) 
+    admit. (* todo *)
+
+*)
               ++ contradiction H0.
       + (* Other patterns *) do 2 destruct c.
         * destruct c0. destruct c; contradiction H0.
