@@ -27,77 +27,58 @@ forall (cm : ClassModel) (rm : RelationalModel),
     In (RelationalMetamodel_toObject ColumnClass col) (allModelElements rm) ->
       getColumnReference col rm <> None). 
 Proof.
-    intros cm rm tr pre.
-    intros. 
-    rewrite tr in H.
-    apply tr_execute_in_elements in H.
-    do 2 destruct H. 
-    destruct x eqn: sp_ca. (* Case analysis on source pattern *)
-    - (* Empty pattern *) contradiction H0.
-    - destruct l eqn: l_ca.
-      + (* Singleton *) 
-        apply allTuples_incl in H.
-        unfold incl in H.
-        specialize (H c).
-        assert (In c [c]). { left. reflexivity. }
-        specialize (H H1).  
-        rename x into sp.
-        do 2 destruct c. (* Case analysis on source element type *)
-        * (* [Class] *) simpl in H0.
-          destruct H0.
-          ** admit. (* contradiction in H0 *)
-          ** crush.
-        * (* [Attribute] *) destruct c0 eqn: attr_ca.
-          destruct b eqn: d_ca.
-          -- (* derived *) contradiction H0.
-          -- (* not derived *) simpl in H0.
-              destruct H0. 
-++ admit.
+intros cm rm tr pre.
+intros. 
+rewrite tr.
 
-(*
-unfold getColumnReference.
-unfold getColumnReferenceOnLinks. simpl.
+assert 
+(exists t: Table, 
+  In (RelationalMetamodel_BuildLink 
+        ColumnReferenceReference 
+        (BuildColumnReference col t))
+     (allModelLinks rm)) as HcolInrml.
+{  
+eexists.
+rewrite tr.
+apply tr_execute_in_links.
 
-remember (applyPattern Class2Relational cm 
-              [ClassMetamodel_BuildObject AttributeClass
-             (BuildAttribute n false s)]).
-             unfold applyPattern in Heql0.
-             unfold applyRuleOnPattern in Heql0.
-             unfold applyIterationOnPattern in Heql0.
-             unfold applyElementOnPattern in Heql0.
-             simpl in Heql0.
-             unfold ConcreteExpressions.makeLink in Heql0.
-             unfold ConcreteExpressions.wrapOptionLink in Heql0.
-destruct ( toModelClass AttributeClass
-(ClassMetamodel_BuildObject AttributeClass
-   (BuildAttribute n false s))) eqn: x0_ca.
---- (* x0 <> nil *)
-    unfold optionToList in Heql0.
-    simpl in Heql0.
-    unfold maybeBuildColumnReference  in Heql0.
-    unfold ModelingSemantics.maybeResolve in Heql0.
-    unfold ModelingSemantics.denoteOutput in Heql0.
-    unfold maybeResolve' in Heql0.
-    unfold maybeSingleton in Heql0.
-    unfold option_map in Heql0.
-    destruct (getAttributeTypeObject d cm) eqn: do_ca.
-    ---- destruct (resolve' (trace Class2Relational cm) cm "tab"
-(singleton c)) eqn: resolve_ca.
+(* get the sp that corresponds to [col] *)
 
------ destruct (toModelClass TableClass r) eqn: cast_ca.
-  ------ simpl in Heql0. 
-  ------ admit. (* contradiction *)
------ admit. (* contradiction *)
-    
-    
-    ---- admit. (* contradiction getAttributeTypeObject d cm = None *)
+rewrite tr in H.
+apply tr_execute_in_elements in H.
+destruct H as [sp H].
+destruct H as [HspIncm HcolInInst].
+remember HspIncm as HspIncm_copy.
+clear HeqHspIncm_copy.
+destruct sp as [ | sphd sptl] eqn: sp_ca. (* Case analysis on source pattern *)
+- (* Empty pattern *) contradiction HcolInInst.
+- destruct sptl eqn: sptl_ca.
+  + (* Singleton *) 
+    apply allTuples_incl in HspIncm.
+    unfold incl in HspIncm.
+    specialize (HspIncm sphd).
+    assert (In sphd [sphd]). { left. reflexivity. }
+    specialize (HspIncm H).  
+    destruct sphd as [sphd_tp sphd_elem]. 
+    destruct sphd_tp. (* Case analysis on source element type *)
+    ++ (* [Class] *) simpl in HcolInInst.
+      destruct HcolInInst.
+      +++ inversion H0. (* contradiction in H0 *)
+      +++ crush.
+    ++ (* [Attribute] *) destruct sphd_elem as [attr_id attr_der attr_name] eqn: sphd_elem_attr.
+      destruct attr_der eqn: attr_der_ca. (* Case analysis on attribute derivable *)
+      +++ (* derived *) contradiction HcolInInst.
+      +++ (* not derived *) 
+         exists sp.
+         split.
+         * rewrite <- sp_ca in HspIncm_copy. exact HspIncm_copy.
+         * admit.
+  + (* Other patterns *) do 2 destruct c.
+    * admit. (* destruct c0. destruct c; contradiction H0. *)
+    * admit. (* destruct c0. destruct c; contradiction H0. *)
+}
 
---- (* x0 = nil *) 
-    admit. (* todo *)
+destruct HcolInrml as [t Ht].
 
-*)
-              ++ contradiction H0.
-      + (* Other patterns *) do 2 destruct c.
-        * destruct c0. destruct c; contradiction H0.
-        * destruct c0. destruct c; contradiction H0.
+
 Admitted.
