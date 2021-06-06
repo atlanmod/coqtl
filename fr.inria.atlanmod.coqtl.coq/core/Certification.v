@@ -458,7 +458,7 @@ Proof.
 intros.
 eexists.
 unfold instantiateRuleOnPattern.
-
+Admitted.
 (* if In te (instantiateRuleOnPattern r sm sp) => tr_instantiatePattern_in
       In te (instantiatePattern tr sm sp) => by tr_execute_in_elements
       In te (allModelElements (execute tr sm)) 
