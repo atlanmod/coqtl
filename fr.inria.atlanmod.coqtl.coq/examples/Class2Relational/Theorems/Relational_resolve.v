@@ -78,7 +78,18 @@ destruct sp as [ | sphd sptl] eqn: sp_ca. (* Case analysis on source pattern *)
     * admit. (* destruct c0. destruct c; contradiction H0. *)
 }
 
+apply option_res_dec.
 destruct HcolInrml as [t Ht].
 
-
 Admitted.
+
+
+(* demonstrate how to use instaniate in eexist s*)
+Goal exists x, 1 + x = 3.
+Proof.                        (* ⊢ exists x, 1 + x = 3 *)
+  eapply ex_intro.            (* ⊢ 1 + ?42 = 3 *)
+  simpl.                      (* ⊢ S ?42 = 3 *)
+  apply f_equal.              (* ⊢ ?42 = 2 *)
+  instantiate (1:=2).         (* place the 1st hold with [2] *)
+  reflexivity.                (* proof completed *)
+Qed.
