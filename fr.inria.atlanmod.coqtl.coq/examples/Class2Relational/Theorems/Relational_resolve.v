@@ -87,8 +87,8 @@ unfold ConcreteExpressions.wrapOptionLink.
 
 destruct ( toModelClass AttributeClass
 (ClassMetamodel_BuildObject AttributeClass
-   (BuildAttribute attr_id false attr_name))) eqn: x0_ca.
-**  (* x0 <> nil *)
+   (BuildAttribute attr_id false attr_name))) eqn: link_cast_ca.
+**  (* <> None *)
     unfold optionToList.
     simpl.
     unfold maybeBuildColumnReference.
@@ -97,10 +97,10 @@ destruct ( toModelClass AttributeClass
     unfold maybeResolve'.
     unfold maybeSingleton.
     unfold option_map.
-    destruct (getAttributeTypeObject d cm) eqn: do_ca.
+    destruct (getAttributeTypeObject d cm) eqn: link_expr_cl_ca.
     *** destruct (resolve' (trace Class2Relational cm) cm "tab"
-(singleton c)) eqn: resolve_ca.
-        **** destruct (toModelClass TableClass r) eqn: cast_ca.
+(singleton c)) eqn: link_expr_tb_ca.
+        **** destruct (toModelClass TableClass r) eqn: tb_cast_ca.
              ***** simpl. left. 
                    simpl in HcolInInst.
                    destruct HcolInInst eqn: Hinst_ca.
