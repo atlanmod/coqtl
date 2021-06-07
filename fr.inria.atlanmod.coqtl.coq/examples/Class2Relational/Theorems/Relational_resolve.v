@@ -72,7 +72,56 @@ destruct sp as [ | sphd sptl] eqn: sp_ca. (* Case analysis on source pattern *)
          exists sp.
          split.
          * rewrite <- sp_ca in HspIncm_copy. exact HspIncm_copy.
-         * admit.
+         * 
+remember (applyPattern Class2Relational cm sp) as Rapply.
+rename HeqRapply into Happly.
+rewrite Happly.
+rewrite sp_ca.
+unfold applyPattern.
+unfold applyRuleOnPattern.
+unfold applyIterationOnPattern.
+unfold applyElementOnPattern.
+simpl.
+unfold ConcreteExpressions.makeLink.
+unfold ConcreteExpressions.wrapOptionLink.
+
+destruct ( toModelClass AttributeClass
+(ClassMetamodel_BuildObject AttributeClass
+   (BuildAttribute attr_id false attr_name))) eqn: x0_ca.
+**  (* x0 <> nil *)
+    unfold optionToList.
+    simpl.
+    unfold maybeBuildColumnReference.
+    unfold ModelingSemantics.maybeResolve.
+    unfold ModelingSemantics.denoteOutput.
+    unfold maybeResolve'.
+    unfold maybeSingleton.
+    unfold option_map.
+    destruct (getAttributeTypeObject d cm) eqn: do_ca.
+    *** destruct (resolve' (trace Class2Relational cm) cm "tab"
+(singleton c)) eqn: resolve_ca.
+        **** destruct (toModelClass TableClass r) eqn: cast_ca.
+             ***** simpl. left. 
+                   simpl in HcolInInst.
+                   destruct HcolInInst eqn: Hinst_ca.
+                   ****** unfold toModelElement  in e.
+                          unfold toSumType   in e.
+                          simpl in e.
+                          unfold toModelLink.
+                          unfold toSumType.
+                          simpl.
+                          clear Hinst_ca.
+                          apply rel_invert in e.
+                          rewrite e.
+                          unfold RelationalMetamodel_toLink.
+                          (* instantiate (1:=d0). *)
+                          admit.
+                   ****** crush.
+             ***** admit. (* contradiction in resolve_ca and cast_ca *)
+        **** admit. (* contradiction in do_ca and resolve_ca *)
+    *** rename d into attr. admit. (* contradiction in pre, only if attr in cm_elem *)
+** (* x0 <> nil contradiction *)
+   inversion x0_ca. 
   + (* Other patterns *) do 2 destruct c.
     * admit. (* destruct c0. destruct c; contradiction H0. *)
     * admit. (* destruct c0. destruct c; contradiction H0. *)
