@@ -448,16 +448,13 @@ Context (Transformation := @Transformation SourceModelElement SourceModelLink Ta
  *)
 
 Lemma tr_match_injective :
-  forall (tr: Transformation) (sm : SourceModel),
-    forall (sp : list SourceModelElement)(r : Rule)(iter: nat),
-      In r (matchPattern tr sm sp) /\
+  forall (sm : SourceModel)(sp : list SourceModelElement)(r : Rule)(iter: nat),
       In iter (indexes (evalIteratorExpr r sm sp)) /\ 
       (exists ope, In ope (Rule_getOutputPatternElements r) /\  (evalOutputPatternElementExpr sm sp iter ope) <> None ) ->
-        (exists (te: TargetModelElement),  In te (instantiateRuleOnPattern r sm sp) ).
+        (exists (te: TargetModelElement),  In te (instantiateRuleOnPattern (TargetModelLink:=TargetModelLink) r sm sp) ).
 Proof.
 intros.
-destruct H as [Hr Hrest].
-destruct Hrest as [Hiter Hope].
+destruct H as [Hiter Hope].
 destruct Hope as [ope HopeIn].
 destruct HopeIn as [HopeInr HopeEval].
 apply option_res_dec in HopeEval.
@@ -483,5 +480,54 @@ Qed.
       In te (allModelElements (execute tr sm)) 
       *)
 
+  Theorem tr_instantiateRuleAndIterationOnPattern_in :
+  forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+    In te (instantiateRuleOnPattern r sm sp) <->
+    (exists (i: nat) (ope: OutputPatternElement),
+        In i (indexes (evalIteratorExpr r sm sp)) /\
+        In ope (Rule_getOutputPatternElements r) /\ 
+          instantiateElementOnPattern (TargetModelLink:=TargetModelLink) ope sm sp i = Some te).
+  Proof.
+    intros.
+    split.
+    - intros.
+      apply tr_instantiateRuleOnPattern_in in H.
+      repeat destruct H.
+      exists x.
+      apply tr_instantiateIterationOnPattern_in in H0.
+      repeat destruct H0.
+      exists x0.
+      auto.
+      exact tr.
+    - intros.
+      repeat destruct H.
+      destruct H0.
+      apply tr_instantiateRuleOnPattern_in.
+      exact tr.
+      exists x.
+      split.
+      + assumption.
+      + apply tr_instantiateIterationOnPattern_in.
+        exists x0.
+        auto. 
+  Qed.
+
+  Theorem tr_instantiateRuleAndIterationOnPattern_in' :
+  forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
+    In te (instantiateRuleOnPattern r sm sp) <->
+    (exists (i: nat),
+        In i (indexes (evalIteratorExpr r sm sp)) /\
+        (exists (ope: OutputPatternElement),
+        In ope (Rule_getOutputPatternElements r) /\ 
+          instantiateElementOnPattern (TargetModelLink:=TargetModelLink) ope sm sp i = Some te)).
+  Proof.
+    intros.
+    specialize (tr_instantiateRuleOnPattern_in tr r sm sp te) as inst.
+  Admitted. (* 
+    rewrite tr_instantiateIterationOnPattern_in with (r:=r) (sp:=sp) (te:=te) (sm:=sm)  in inst.
+    assumption. *)
+
+
+                
 
 End Certification.
