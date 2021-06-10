@@ -121,10 +121,14 @@ destruct ( toModelClass AttributeClass
         **** admit. (* contradiction in do_ca and resolve_ca *)
     *** rename d into attr. admit. (* contradiction in pre, only if attr in cm_elem *)
 ** (* x0 <> nil contradiction *)
-   inversion x0_ca. 
-  + (* Other patterns *) do 2 destruct c.
-    * admit. (* destruct c0. destruct c; contradiction H0. *)
-    * admit. (* destruct c0. destruct c; contradiction H0. *)
+   inversion link_cast_ca. 
+  + (* Other patterns *) 
+    rename c into sptlhd.
+    rename l into sptltl.
+    destruct sptlhd as [sptlhd_tp sptlhd_elem].
+    destruct sptlhd_tp eqn: sptlhd_tp_ca.
+    * destruct sphd. destruct c; contradiction HcolInInst.
+    * destruct sphd. destruct c; contradiction HcolInInst.
 }
 
 rewrite <- tr.
