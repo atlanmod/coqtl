@@ -127,8 +127,39 @@ destruct ( toModelClass AttributeClass
     * admit. (* destruct c0. destruct c; contradiction H0. *)
 }
 
-apply option_res_dec.
-destruct HcolInrml as [t Ht].
+rewrite <- tr.
+unfold getColumnReference.
+
+induction (allModelLinks rm) as [nil | hd tl].
+- simpl in HcolInrml.
+  destruct HcolInrml.
+  contradiction.
+- destruct hd as [hdtp hdlk].
+  destruct hdtp as [tabcolumns | colref].
+  -- simpl.
+     apply IHtl.
+     simpl in HcolInrml.
+     crush.
+     exists x.
+     exact H1.
+  -- simpl.
+     simpl in HcolInrml.
+     destruct HcolInrml as [tab Htab].
+     destruct Htab.
+     --- destruct hdlk.
+         apply rel_elink_invert in H0.
+         inversion H0.
+         assert (beq_Column col col = true). { admit. }
+         rewrite H1.
+         apply option_res_dec.
+         exists tab.
+         reflexivity.
+     --- destruct hdlk.
+         destruct (beq_Column c col).
+         ---- crush.
+         ---- apply IHtl.
+              exists tab.
+              exact H0.
 
 Admitted.
 

@@ -298,9 +298,7 @@ Fixpoint getTableColumnsOnLinks (t : Table) (l : list RelationalMetamodel_Link) 
   end.
 
 Definition getTableColumns (t : Table) (m : Model RelationalMetamodel_Object RelationalMetamodel_Link) : option (list Column) :=
-  match m with
-    (Build_Model rs ls) => getTableColumnsOnLinks t ls
-  end.
+getTableColumnsOnLinks t (allModelLinks m).
 
 Fixpoint getColumnReferenceOnLinks (c : Column) (l : list RelationalMetamodel_Link) : option Table :=
   match l with
@@ -309,10 +307,7 @@ Fixpoint getColumnReferenceOnLinks (c : Column) (l : list RelationalMetamodel_Li
   | nil => None
   end.
 
-Definition getColumnReference (c : Column) (m : Model RelationalMetamodel_Object RelationalMetamodel_Link) : option Table :=
-  match m with
-    (Build_Model rs ls) => getColumnReferenceOnLinks c ls
-  end.
+Definition getColumnReference (c : Column) (m : Model RelationalMetamodel_Object RelationalMetamodel_Link) : option Table := getColumnReferenceOnLinks c (allModelLinks m).
 
 Definition bottomRelationalMetamodel_Class (c: RelationalMetamodel_Class) : (RelationalMetamodel_getTypeByClass c) :=
   match c with
