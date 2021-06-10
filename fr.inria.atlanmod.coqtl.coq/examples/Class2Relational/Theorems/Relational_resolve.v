@@ -119,7 +119,16 @@ destruct ( toModelClass AttributeClass
                    ****** crush.
              ***** admit. (* contradiction in resolve_ca and cast_ca *)
         **** admit. (* contradiction in do_ca and resolve_ca *)
-    *** rename d into attr. admit. (* contradiction in pre, only if attr in cm_elem *)
+    *** (* contradiction in pre, only if attr in cm_elem *)
+        rename d into attr.
+        inversion link_cast_ca as [attr_ctr].
+        rewrite attr_ctr in HspIncm.
+        specialize (pre attr HspIncm).
+        unfold getAttributeTypeObject in link_expr_cl_ca.
+        apply option_res_dec in pre.
+        destruct pre as [class Hclass]. 
+        rewrite Hclass in link_expr_cl_ca.
+        inversion link_expr_cl_ca.
 ** (* x0 <> nil contradiction *)
    inversion link_cast_ca. 
   + (* Other patterns *) 
