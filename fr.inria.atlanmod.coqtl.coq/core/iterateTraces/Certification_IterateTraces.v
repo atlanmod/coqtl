@@ -379,7 +379,7 @@ Qed.
     specialize (Certification.tr_execute_in_links tr sm tl).
     crush.
   Qed.
-(*
+
   Instance CoqTLEngine :
     TransformationEngine :=
     {
@@ -463,7 +463,7 @@ Qed.
       tr_resolveAll_in := tr_resolveAllIter_in;
       tr_resolve_Leaf := tr_resolveIter_Leaf';*)
     }.
-  Instance CoqTLEngineTrace :
+  (*Instance CoqTLEngineTrace :
     (TransformationEngineTrace CoqTLEngine).
   Proof.
    eexists.
@@ -480,6 +480,5 @@ Qed.
 (* tr_applyReferenceOnPatternTraces_leaf *) exact tr_applyReferenceOnPatternTraces_leaf.
 Qed.
 *)
-
 
 End IterateTracesCertification.
