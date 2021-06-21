@@ -194,6 +194,7 @@ Section ByRuleSemanticsCertification.
       apply filter_In in H0.
       destruct H0.
       unfold matchRuleOnPattern in H1.
+      unfold evalGuardExpr in H1.
       destruct (checkTypes sp (Rule_getInTypes r)) eqn:dct.
       2: { inversion H1. }
       1: {
@@ -386,13 +387,13 @@ Section ByRuleSemanticsCertification.
 
       TraceLink := TraceLink;
 
-      getRules := Transformation_getRules;
+      Transformation_getRules := Transformation_getRules;
 
-      getInTypes := Rule_getInTypes;
-      getGuardExpr := Rule_getGuardExpr;
-      getOutputPattern := Rule_getOutputPatternElements;
+      Rule_getInTypes := Rule_getInTypes;
+      (*Rule_getGuardExpr := Rule_getGuardExpr;*)
+      Rule_getOutputPatternElements := Rule_getOutputPatternElements;
 
-      getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
+      (*getOutputElementReferences := OutputPatternElement_getOutputElementReferences;*)
    
       execute := execute;
 
@@ -411,10 +412,19 @@ Section ByRuleSemanticsCertification.
       applyReferenceOnPattern := applyReferenceOnPattern;
 
       evalOutputPatternElementExpr := evalOutputPatternElementExpr;
+      evalOutputPatternLinkExpr:=evalOutputPatternLinkExpr;
       evalIteratorExpr := evalIteratorExpr;
+      evalGuardExpr:=evalGuardExpr;
+
+      trace:=trace;
 
       resolveAll := resolveAllIter;
       resolve := resolveIter;
+
+      TraceLink_getSourcePattern := TraceLink_getSourcePattern;
+      TraceLink_getIterator := TraceLink_getIterator;
+      TraceLink_getName := TraceLink_getName;
+      TraceLink_getTargetElement := TraceLink_getTargetElement;
 
       tr_execute_in_elements := tr_execute_in_elements;
       tr_execute_in_links := tr_execute_in_links;
@@ -429,6 +439,13 @@ Section ByRuleSemanticsCertification.
       tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
       tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
 
+
+      tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
+      tr_instantiateElementOnPattern_leaf := tr_instantiateElementOnPattern_leaf;
+      tr_applyReferenceOnPatternTraces_leaf := tr_applyReferenceOnPattern_leaf;
+
+      tr_resolveAll_in := tr_resolveAllIter_in;
+      tr_resolve_Leaf := tr_resolveIter_leaf;
       (*tr_matchPattern_None := tr_matchPattern_None;
 
       tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
