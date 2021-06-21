@@ -41,16 +41,16 @@ Section IterateTracesSemantics.
       | None => nil
       end) (OutputPatternElement_getOutputElementReferences ope).
 
- (* Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (tls: list TraceLink): list TargetModelLink :=
+  Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (tls: list TraceLink): list TargetModelLink :=
     flat_map (fun o => applyElementOnPatternTraces o tr sm sp iter tls)
-      (Rule_getOutputPatternElements r).
+      (Rule_getOutputPatternElements (SourceModelClass:=SourceModelClass) r).
 
   Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (tls: list (@TraceLink SourceModelElement TargetModelElement)): list TargetModelLink :=
     flat_map (fun i => applyIterationOnPatternTraces r tr sm sp i tls)
       (indexes (evalIteratorExpr r sm sp)).
 
   Definition applyPatternTraces (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tls: list TraceLink): list TargetModelLink :=
-    flat_map (fun r => applyRuleOnPatternTraces r tr sm sp tls) (matchPattern tr sm sp).*)
+    flat_map (fun r => applyRuleOnPatternTraces r tr sm sp tls) (matchPattern tr sm sp).
 
   (** * Execute **)
 

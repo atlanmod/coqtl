@@ -2,14 +2,14 @@ Require Import String.
 Require Import Omega.
 Require Import Bool.
 Require Import core.utils.Utils.
-Require Import core.modeling.Metamodel.
+Require Import core.Metamodel.
 Require Import core.Model.
 Require Import core.Engine.
 Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.Certification.
 Require Import core.EqDec.
-Require Import core.modeling.iteratetraces.IterateTracesSemantics.
+Require Import IterateTracesSemantics.
 Require Import Coq.Logic.FunctionalExtensionality.
 
 
@@ -22,7 +22,7 @@ Section IterateTracesCertification.
   Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
   Context (SourceModel := Model SourceModelElement SourceModelLink).
   Context (TargetModel := Model TargetModelElement TargetModelLink).
-  Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
+  Context (Transformation := @Transformation SourceModelElement SourceModelLink SourceModelClass TargetModelElement TargetModelLink).
 
   (** EXECUTE TRACE *)
 
@@ -108,7 +108,7 @@ Section IterateTracesCertification.
  
   Lemma tr_traceRuleOnPattern_in:
   forall (r: Rule) (sm : SourceModel) (sp : list SourceModelElement) (tl : TraceLink),
-    In tl (traceRuleOnPattern1 r sm sp) <->
+    In tl (traceRuleOnPattern1 SourceModelClass r sm sp) <->
     (exists (iter: nat),
         In iter (indexes (evalIteratorExpr r sm sp)) /\
         In tl (traceIterationOnPattern r sm sp iter)).
@@ -121,7 +121,7 @@ Section IterateTracesCertification.
  
   Lemma tr_traceIterationOnPattern_in:
   forall (r: Rule) (sm : SourceModel) (sp : list SourceModelElement) (iter: nat) (tl : TraceLink),
-    In tl (traceIterationOnPattern1 r sm sp iter) <->
+    In tl (traceIterationOnPattern1 SourceModelClass r sm sp iter) <->
     (exists (o: OutputPatternElement),
         In o (Rule_getOutputPatternElements r) /\
         In tl ((fun o => optionToList (traceElementOnPattern o sm sp iter)) o)).
@@ -314,7 +314,7 @@ Qed.
 
   Theorem exe_preserv : 
     forall (tr: Transformation) (sm : SourceModel),
-      core.modeling.iteratetraces.IterateTracesSemantics.executeTraces tr sm = core.Semantics.execute tr sm.
+      IterateTracesSemantics.executeTraces tr sm = core.Semantics.execute tr sm.
   Proof.
     intros.
     unfold core.Semantics.execute, executeTraces. simpl.
