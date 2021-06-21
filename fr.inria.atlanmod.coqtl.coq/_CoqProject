@@ -29,7 +29,7 @@ core/twophases/Certification_TwoPhaseSemantics.v
 core/byrule/ByRuleSemantics.v
 core/byrule/Certification_ByRuleSemantics.v
 core/iterateTraces/IterateTracesSemantics.v
-core/iterateTraces/Certification_IterateTracesSemantics.v
+core/iterateTraces/Certification_IterateTraces.v
 
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
