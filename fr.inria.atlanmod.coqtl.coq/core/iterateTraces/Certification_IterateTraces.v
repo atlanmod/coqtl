@@ -78,8 +78,6 @@ Section IterateTracesCertification.
 
   (** Instantiate *)
 
-  (* Please check the lemma formula *)
-
   (* These lemmas of traces are useful when we get sth like (In e traces) *)
 
   Lemma tr_trace_in:
@@ -159,8 +157,6 @@ Qed.
 
   (** * Apply **)
 
-
-
   Lemma tr_applyPatternTraces_in:
   forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (tls: list TraceLink),
     In tl (applyPatternTraces tr sm sp tls) <->
@@ -239,6 +235,32 @@ Qed.
    crush.
   Qed.
 
+
+  Lemma tr_tracePattern_source:
+  forall (tr: Transformation) (sm : SourceModel) (tl : TraceLink) (sp: list SourceModelElement),
+    In tl (tracePattern tr sm sp) -> sp = TraceLink_getSourcePattern tl.
+  Proof.
+    intros.
+    apply tr_tracePattern_in in H.
+    destruct H. destruct H.
+    apply in_flat_map in H0.
+    destruct H0. destruct H0.
+    apply in_flat_map in H1.
+    destruct H1. destruct H1.
+    unfold optionToList in H2.
+    destruct (traceElementOnPattern x1 sm sp x0) eqn:dst.
+    - simpl in H2.
+      symmetry in dst. 
+      apply tr_traceElementOnPattern_leaf in dst.
+      + destruct dst. destruct H3. destruct H2.
+        * rewrite <- H2.
+          rewrite H4.
+          auto.
+        * contradiction.
+      + exact x1.
+    - contradiction.      
+  Qed.
+
   Lemma tr_applyTraces_in :
   forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
     In tl (applyTraces tr sm (trace tr sm)) <->
@@ -249,58 +271,76 @@ Qed.
     split.
     - intros.
       apply in_flat_map in H.
-      destruct H.
+      destruct H. destruct H.
       exists x.
       crush.
-      apply In_noDup_sp in H0.
-      unfold trace in H0.
-      induction (allTuples tr sm).
-      * simpl in H0. contradiction.
-      * simpl. simpl in H0. 
-        rewrite map_app in H0.
-  Admitted. (*
-        apply in_app_or in H0.
-        destruct H0.
-        + left.
-          unfold tracePattern in H.
-          induction (matchPattern tr sm a).
-          -- simpl in H. contradiction.
-          -- simpl in H.
-            rewrite map_app in H.
-            apply in_app_or in H.            
-            destruct H.
-            ** apply in_map_iff in H.
-              destruct H. destruct H.
-              apply tr_traceRuleOnPattern_in in H0.
-              destruct H0. destruct H0.
-              apply tr_traceIterationOnPattern_in in H2.
-              destruct H2. destruct H2.
-              unfold traceElementOnPattern in H3.
-              destruct (instantiateElementOnPattern x2 sm a x1) eqn:inst.
-              simpl in H3.
-              destruct H3.
-              *** rewrite <- H3 in H. simpl in H. 
-                  assumption.
-              *** contradiction.
-              *** contradiction.
-            ** apply IHl0 in H. assumption.
-        + auto.
-      - intros.
-        destruct H. destruct H.
-        unfold applyTraces.
-        apply in_flat_map.
-        exists x.
-        crush.
-        unfold trace.
-        unfold tracePattern.
-        apply tr_applyPatternTraces_in in H0.
+      apply in_map_iff in H.
+      destruct H. destruct H.
+      apply tr_trace_in in H1.
+      destruct H1. destruct H1.
+      apply tr_tracePattern_source in H2.
+      rewrite <- H.
+      rewrite <- H2.
+      assumption.
+    - intros.
+      unfold applyTraces.
+      apply in_flat_map.
+      repeat destruct H.
+      exists x.
+      crush.
+
+      apply in_map_iff.
+      unfold trace.
+
+      remember (tracePattern tr sm x) as trp.
+      destruct trp.
+      2: {
+        exists t.
+        split.
+        - symmetry. apply tr_tracePattern_source with (tr:=tr) (sm:=sm).
+          rewrite <- Heqtrp. simpl. left. reflexivity.
+        - apply in_flat_map.
+          exists x.
+          crush.
+          rewrite <- Heqtrp. simpl. left. reflexivity.
+      }
+      1: {
+        symmetry in Heqtrp.
+
+        unfold tracePattern in Heqtrp. 
+        rewrite in_flat_map_nil in Heqtrp.
+        unfold applyPatternTraces in H0.
+        apply in_flat_map in H0.
         repeat destruct H0.
-        apply tr_matchPattern_in in H0.
-        repeat destruct H0.
-        induction (allTuples tr sm).
-        + contradiction.
-        + simpl in H. simpl.
-  Admitted.*)
+        apply Heqtrp in H0.
+
+        unfold traceRuleOnPattern in H0. 
+        rewrite in_flat_map_nil in H0.
+        unfold applyRuleOnPatternTraces in H1.
+        apply in_flat_map in H1.
+        repeat destruct H1.
+        apply H0 in H1.
+
+        unfold traceIterationOnPattern in H1. 
+        rewrite in_flat_map_nil in H1.
+        unfold applyIterationOnPatternTraces in H2.
+        apply in_flat_map in H2.
+        repeat destruct H2.
+        apply H1 in H2.
+
+        unfold optionToList in H2. 
+        destruct (traceElementOnPattern x2 sm x x1) eqn:H2'. inversion H2.  
+
+        unfold traceElementOnPattern in H2'.
+        destruct (instantiateElementOnPattern x2 sm x x1) eqn:H2''. inversion H2'.
+        unfold applyElementOnPatternTraces in H3.
+        apply in_flat_map in H3.
+        repeat destruct H3.
+        unfold instantiateElementOnPattern in H2''.
+        rewrite H2'' in H4.
+        inversion H4.
+      }
+  Qed.
 
   Lemma tr_executeTraces_in_links :
   forall (tr: Transformation) (sm : SourceModel) (tl : TargetModelLink),
@@ -312,45 +352,43 @@ Qed.
     apply tr_applyTraces_in.
   Qed.
 
-  Theorem exe_preserv : 
+  Theorem instantiate_preserv : 
     forall (tr: Transformation) (sm : SourceModel),
-      IterateTracesSemantics.executeTraces tr sm = core.Semantics.execute tr sm.
+    map TraceLink_getTargetElement (trace tr sm) =
+    flat_map (instantiatePattern tr sm) (allTuples tr sm).
   Proof.
-    intros.
-    unfold core.Semantics.execute, executeTraces. simpl.
-    f_equal.
+      intros.
+      unfold trace.
+      rewrite flat_map_concat_map. rewrite flat_map_concat_map.
+      rewrite concat_map. f_equal.
+      rewrite map_map. f_equal.
 
-    unfold trace.
-    rewrite flat_map_concat_map. rewrite flat_map_concat_map.
-    rewrite concat_map. f_equal.
-    rewrite map_map. f_equal.
+      unfold tracePattern, Semantics.instantiatePattern.
+      apply functional_extensionality. intros.
+      rewrite flat_map_concat_map. rewrite flat_map_concat_map.
+      rewrite concat_map. f_equal.
+      rewrite map_map. f_equal.
 
-    unfold tracePattern, Semantics.instantiatePattern.
-    apply functional_extensionality. intros.
-    rewrite flat_map_concat_map. rewrite flat_map_concat_map.
-    rewrite concat_map. f_equal.
-    rewrite map_map. f_equal.
+      unfold traceRuleOnPattern, Semantics.instantiateRuleOnPattern.
+      apply functional_extensionality. intros.
+      rewrite flat_map_concat_map. rewrite flat_map_concat_map.
+      rewrite concat_map. f_equal.
+      rewrite map_map. f_equal.
 
-    unfold traceRuleOnPattern, Semantics.instantiateRuleOnPattern.
-    apply functional_extensionality. intros.
-    rewrite flat_map_concat_map. rewrite flat_map_concat_map.
-    rewrite concat_map. f_equal.
-    rewrite map_map. f_equal.
+      unfold traceIterationOnPattern, Semantics.instantiateIterationOnPattern.
+      apply functional_extensionality. intros.
+      rewrite flat_map_concat_map. rewrite flat_map_concat_map.
+      rewrite concat_map. f_equal.
+      rewrite map_map. f_equal.
 
-    unfold traceIterationOnPattern, Semantics.instantiateIterationOnPattern.
-    apply functional_extensionality. intros.
-    rewrite flat_map_concat_map. rewrite flat_map_concat_map.
-    rewrite concat_map. f_equal.
-    rewrite map_map. f_equal.
-
-    unfold traceElementOnPattern.
-    apply functional_extensionality. intros.
-    (* TODO FACTOR OUT *)
-    assert ((Semantics.instantiateElementOnPattern x2 sm x x1) = (instantiateElementOnPattern x2 sm x x1)).
-    { crush. }
-    destruct (instantiateElementOnPattern x2 sm x x1). 
-    reflexivity. reflexivity.  
-  Admitted. 
+      unfold traceElementOnPattern.
+      apply functional_extensionality. intros.
+      (* TODO FACTOR OUT *)
+      assert ((Semantics.instantiateElementOnPattern x2 sm x x1) = (instantiateElementOnPattern x2 sm x x1)).
+      { crush. }
+      destruct (instantiateElementOnPattern x2 sm x x1). 
+      reflexivity. reflexivity.
+  Qed.
   
   Lemma tr_execute_in_elements' :
   forall (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
@@ -360,10 +398,10 @@ Qed.
         In te (instantiatePattern tr sm sp)).
   Proof.
     intros.
-    assert ((executeTraces tr sm) = (execute tr sm)). { apply exe_preserv. }
-    rewrite H.
-    specialize (Certification.tr_execute_in_elements tr sm te).
-    crush.
+    rewrite  <-   tr_execute_in_elements.
+    simpl.
+    rewrite instantiate_preserv.
+    reflexivity.
   Qed.
 
   Lemma tr_execute_in_links' :
@@ -374,10 +412,7 @@ Qed.
         In tl (applyPattern tr sm sp)).
   Proof.
     intros.
-    assert ((executeTraces tr sm) = (execute tr sm)). { apply exe_preserv. }
-    rewrite H.
-    specialize (Certification.tr_execute_in_links tr sm tl).
-    crush.
+    apply tr_executeTraces_in_links.
   Qed.
 
   Instance CoqTLEngine :
@@ -463,22 +498,23 @@ Qed.
       tr_resolveAll_in := tr_resolveAllIter_in;
       tr_resolve_Leaf := tr_resolveIter_Leaf';*)
     }.
-  (*Instance CoqTLEngineTrace :
+  (*
+  Instance CoqTLEngineTrace :
     (TransformationEngineTrace CoqTLEngine).
   Proof.
    eexists.
-(* tr_executeTraces_in_elements *) exact tr_executeTraces_in_elements.
-(* tr_executeTraces_in_links *) exact tr_executeTraces_in_links.
-(* tr_tracePattern_in *) exact tr_tracePattern_in.
-(* tr_traceRuleOnPattern_in *) exact tr_traceRuleOnPattern_in.
-(* tr_traceIterationOnPattern_in *) exact tr_traceIterationOnPattern_in.
-(* tr_traceElementOnPattern_leaf *) exact tr_traceElementOnPattern_leaf.
-(* tr_applyPatternTraces_in  *) exact tr_applyPatternTraces_in.
-(* tr_applyRuleOnPattern_in *) exact tr_applyRuleOnPatternTraces_in.
-(* tr_applyIterationOnPattern_in *) exact tr_applyIterationOnPatternTraces_in.
-(* tr_applyElementOnPatternTraces_in *) exact tr_applyElementOnPatternTraces_in.
-(* tr_applyReferenceOnPatternTraces_leaf *) exact tr_applyReferenceOnPatternTraces_leaf.
-Qed.
-*)
+    (* tr_executeTraces_in_elements *) exact tr_executeTraces_in_elements.
+    (* tr_executeTraces_in_links *) exact tr_executeTraces_in_links.
+    (* tr_tracePattern_in *) exact tr_tracePattern_in.
+    (* tr_traceRuleOnPattern_in *) exact tr_traceRuleOnPattern_in.
+    (* tr_traceIterationOnPattern_in *) exact tr_traceIterationOnPattern_in.
+    (* tr_traceElementOnPattern_leaf *) exact tr_traceElementOnPattern_leaf.
+    (* tr_applyPatternTraces_in  *) exact tr_applyPatternTraces_in.
+    (* tr_applyRuleOnPattern_in *) exact tr_applyRuleOnPatternTraces_in.
+    (* tr_applyIterationOnPattern_in *) exact tr_applyIterationOnPatternTraces_in.
+    (* tr_applyElementOnPatternTraces_in *) exact tr_applyElementOnPatternTraces_in.
+    (* tr_applyReferenceOnPatternTraces_leaf *) exact tr_applyReferenceOnPatternTraces_leaf.
+  Qed.
+  *)
 
 End IterateTracesCertification.
