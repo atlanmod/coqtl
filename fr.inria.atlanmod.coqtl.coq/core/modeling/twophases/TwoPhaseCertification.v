@@ -19,9 +19,10 @@ Section TwoPhaseCertification.
   Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
   Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
   Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
-  Context (SourceModel := Model SourceModelElement SourceModelLink).
-  Context (TargetModel := Model TargetModelElement TargetModelLink).
-  Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
+
+  Definition SourceModel := Model SourceModelElement SourceModelLink.
+  Definition TargetModel := Model TargetModelElement TargetModelLink.
+  Definition Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink.
 
   (** EXECUTE TRACE *)
 

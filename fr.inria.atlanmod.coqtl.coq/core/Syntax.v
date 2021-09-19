@@ -12,8 +12,9 @@ Section Syntax.
 
   Context {SourceModelElement SourceModelLink: Type}.
   Context {TargetModelElement TargetModelLink: Type}.
-  Context (SourceModel := Model SourceModelElement SourceModelLink).
-  Context (TargetModel := Model TargetModelElement TargetModelLink).
+
+  Definition SourceModel := Model SourceModelElement SourceModelLink.
+  Definition TargetModel := Model TargetModelElement TargetModelLink.
 
   (** ** Traces 
   
