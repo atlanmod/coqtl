@@ -34,7 +34,8 @@ Require Import core.Engine.
 
 Set Implicit Arguments.
 
-Class TransformationEngineTrace (t: TransformationEngine) :=
+Class TransformationEngineTrace (SourceModelElement SourceModelLink TargetModelElement TargetModelLink: Type)
+ (t: TransformationEngine SourceModelElement SourceModelLink TargetModelElement TargetModelLink) :=
   {
 
     (** ** Accessors *)

@@ -39,12 +39,8 @@ Set Implicit Arguments.
 
 
 
-Class TransformationEngine :=
+Class TransformationEngine (SourceModelElement SourceModelLink TargetModelElement TargetModelLink: Type) :=
   {
-    SourceModelElement: Type;
-    SourceModelLink: Type;
-    TargetModelElement: Type;
-    TargetModelLink: Type;
 
     eqdec_sme: EqDec SourceModelElement;
 

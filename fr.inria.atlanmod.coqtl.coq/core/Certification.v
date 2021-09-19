@@ -329,13 +329,8 @@ Context {TargetModelElement TargetModelLink: Type}.
   Qed.
 
   Instance CoqTLEngine :
-    TransformationEngine :=
+    TransformationEngine SourceModelElement SourceModelLink TargetModelElement TargetModelLink:=
     {
-      SourceModelElement := SourceModelElement;
-      SourceModelLink := SourceModelLink;
-      TargetModelElement := TargetModelElement;
-      TargetModelLink := TargetModelLink;
-
       (* syntax and accessors *)
 
       Transformation := Transformation;
