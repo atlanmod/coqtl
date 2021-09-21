@@ -31,11 +31,12 @@ Require Import Omega.
 Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.Engine.
+Require Import core.TransformationConfiguration.
 
 Set Implicit Arguments.
 
-Class TransformationEngineTrace (SourceModelElement SourceModelLink TargetModelElement TargetModelLink: Type)
- (t: TransformationEngine SourceModelElement SourceModelLink TargetModelElement TargetModelLink) :=
+Class TransformationEngineTrace (tc: TransformationConfiguration)
+ (t: TransformationEngine tc) :=
   {
 
     (** ** Accessors *)

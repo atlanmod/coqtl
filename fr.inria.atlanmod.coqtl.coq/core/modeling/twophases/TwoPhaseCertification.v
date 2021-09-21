@@ -15,15 +15,7 @@ Require Import Coq.Logic.FunctionalExtensionality.
 
 Section TwoPhaseCertification.
 
-  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
-  Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
-  Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-  Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
-
-  Definition SourceModel := Model SourceModelElement SourceModelLink.
-  Definition TargetModel := Model TargetModelElement TargetModelLink.
-  Definition Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink.
-
+  Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}. 
   (** EXECUTE TRACE *)
 
   Lemma tr_executeTraces_in_elements :
@@ -123,12 +115,10 @@ Section TwoPhaseCertification.
     intros.
     apply in_flat_map.
   Qed.
-
-  Definition traceRuleOnPattern1 := (@traceRuleOnPattern SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
  
   Lemma tr_traceRuleOnPattern_in:
   forall (r: Rule) (sm : SourceModel) (sp : list SourceModelElement) (tl : TraceLink),
-    In tl (traceRuleOnPattern1 r sm sp) <->
+    In tl (traceRuleOnPattern r sm sp) <->
     (exists (iter: nat),
         In iter (indexes (evalIteratorExpr r sm sp)) /\
         In tl (traceIterationOnPattern r sm sp iter)).
@@ -136,12 +126,10 @@ Section TwoPhaseCertification.
     intros.
     apply in_flat_map.
   Qed.
-
-  Definition traceIterationOnPattern1 := (@traceIterationOnPattern SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
  
   Lemma tr_traceIterationOnPattern_in:
   forall (r: Rule) (sm : SourceModel) (sp : list SourceModelElement) (iter: nat) (tl : TraceLink),
-    In tl (traceIterationOnPattern1 r sm sp iter) <->
+    In tl (traceIterationOnPattern r sm sp iter) <->
     (exists (o: OutputPatternElement),
         In o (Rule_getOutputPatternElements r) /\
         In tl ((fun o => optionToList (traceElementOnPattern o sm sp iter)) o)).
@@ -151,14 +139,12 @@ Section TwoPhaseCertification.
   Qed.
 
   (* TODO works inside TwoPhaseSemantics.v *)
-  Definition OutputPatternElement1 := (@OutputPatternElement SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
-  Definition OutputPatternElement_getName1 := (@OutputPatternElement_getName SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
   Lemma tr_traceElementOnPattern_leaf:
-  forall (o: OutputPatternElement1) (sm : SourceModel) (sp : list SourceModelElement) (iter: nat) (o: OutputPatternElement) (tl : TraceLink),
+  forall (o: OutputPatternElement) (sm : SourceModel) (sp : list SourceModelElement) (iter: nat) (o: OutputPatternElement) (tl : TraceLink),
     Some tl = (traceElementOnPattern o sm sp iter) <->
     (exists (e: TargetModelElement),
        Some e = (instantiateElementOnPattern o sm sp iter) /\
-       tl = (buildTraceLink (sp, iter, OutputPatternElement_getName1 o) e)).
+       tl = (buildTraceLink (sp, iter, OutputPatternElement_getName o) e)).
   Proof.
    intros.
    split.

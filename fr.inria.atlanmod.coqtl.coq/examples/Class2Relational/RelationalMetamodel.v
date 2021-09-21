@@ -6,7 +6,8 @@ Require Import Omega.
 
 Require Import core.EqDec.
 Require Import core.utils.Utils.
-Require Import core.modeling.Metamodel.
+Require Import core.Metamodel.
+Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
 Require Import Coq.Logic.Eqdep_dec.
@@ -357,7 +358,13 @@ Qed.
     toSumType := RelationalMetamodel_toLink;
   }.
   
-  Instance RelationalMetamodel : Metamodel RelationalMetamodel_Object RelationalMetamodel_Link RelationalMetamodel_Class RelationalMetamodel_Reference :=
+  Instance RelationalM : Metamodel :=
+  {
+    ModelElement := RelationalMetamodel_Object;
+    ModelLink := RelationalMetamodel_Link;
+  }.
+
+  Instance RelationalMetamodel : ModelingMetamodel RelationalM :=
   { 
       elements := RelationalElementSum;
       links := RelationalLinkSum;

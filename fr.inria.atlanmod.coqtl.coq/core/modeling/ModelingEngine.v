@@ -30,30 +30,19 @@ Require Import Omega.
 Require Import Bool.
 
 Require Import core.utils.Utils.
-Require Import core.modeling.Metamodel.
+Require Import core.modeling.ModelingMetamodel.
 Require Import core.Engine.
 Require Import core.Model.
-Require Import core.EqDec.
+Require Import core.TransformationConfiguration.
+Require Import core.modeling.ModelingTransformationConfiguration.
 
 Scheme Equality for list.
 
 Set Implicit Arguments.
 
-
-
-Class ModelingTransformationEngine (SourceModelElement SourceModelLink TargetModelElement TargetModelLink: Type) 
-  (t: TransformationEngine SourceModelElement SourceModelLink TargetModelElement TargetModelLink) :=
+Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: ModelingTransformationConfiguration tc) 
+  (t: TransformationEngine tc) :=
   {
-    SourceModelClass: Type;
-    SourceModelReference: Type;
-    TargetModelClass: Type;
-    TargetModelReference: Type;
-
-    smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference;
-    tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference;
-
-    eqdec_sme: EqDec SourceModelElement;
-
     resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat),
         option (list (denoteModelClass type));
@@ -78,7 +67,7 @@ Class ModelingTransformationEngine (SourceModelElement SourceModelLink TargetMod
       resolve tls sm name type sp iter = return x ->
        (exists (tl : TraceLink),
          In tl tls /\
-         Is_true (list_beq SourceModelElement core.EqDec.eq_b (TraceLink_getSourcePattern tl) sp) /\
+         Is_true (list_beq SourceModelElement SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
          ((TraceLink_getIterator tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
          (toModelClass type (TraceLink_getTargetElement tl) = Some x));

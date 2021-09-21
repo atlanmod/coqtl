@@ -8,7 +8,8 @@ Require Import Coq.Logic.Eqdep_dec.
 
 Require Import core.EqDec.
 Require Import core.utils.Utils.
-Require Import core.modeling.Metamodel.
+Require Import core.Metamodel.
+Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require Import core.utils.CpdtTactics.
 (* Base types *)
@@ -333,7 +334,13 @@ Instance ClassMetamodel_EqDec : EqDec ClassMetamodel_Object := {
     eq_b := beq_ClassMetamodel_Object;
 }.
 
-Instance ClassMetamodel : Metamodel ClassMetamodel_Object ClassMetamodel_Link ClassMetamodel_Class ClassMetamodel_Reference :=
+Instance ClassM : Metamodel :=
+{
+  ModelElement := ClassMetamodel_Object;
+  ModelLink := ClassMetamodel_Link;
+}.
+
+Instance ClassMetamodel : ModelingMetamodel ClassM :=
 { 
     elements := ClassElementSum;
     links := ClassLinkSum; 

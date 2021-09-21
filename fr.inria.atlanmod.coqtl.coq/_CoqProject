@@ -14,27 +14,30 @@ core/utils/StringUtils.v
 core/utils/TupleUtils.v
 core/utils/Utils.v
 
-core/EqDec.v
 core/Model.v
+core/EqDec.v
+core/Metamodel.v
+core/TransformationConfiguration.v
 core/Syntax.v
 core/Semantics.v
 core/Engine.v
 core/EngineProofs.v
 core/Certification.v
 
+core/modeling/ModelingMetamodel.v
+core/modeling/ModelingTransformationConfiguration.v
 core/modeling/ConcreteSyntax.v
 core/modeling/Parser.v
 core/modeling/ConcreteExpressions.v
-core/modeling/Metamodel.v
 core/modeling/ModelingEngine.v
 core/modeling/ModelingSemantics.v
-core/modeling/ModelingCertification.v
+#core/modeling/ModelingCertification.v
 
 core/modeling/twophases/TwoPhaseEngine.v
 core/modeling/twophases/TwoPhaseSemantics.v
-core/modeling/twophases/TwoPhaseCertification.v
+#core/modeling/twophases/TwoPhaseCertification.v
 
-core/modeling/iteratetraces/IterateTracesSemantics.v
+#core/modeling/iteratetraces/IterateTracesSemantics.v
 #core/modeling/iteratetraces/IterateTracesCertification.v
 
 #core/modeling/byrule/ByRuleSemantics.v
@@ -42,8 +45,8 @@ core/modeling/iteratetraces/IterateTracesSemantics.v
 
 examples/Class2Relational/ClassMetamodel.v
 examples/Class2Relational/RelationalMetamodel.v
-examples/Class2Relational/Class2Relational.v
 examples/Class2Relational/Class2RelationalAbstract.v
+examples/Class2Relational/Class2Relational.v
 examples/Class2Relational/tests/PersonModel.v
 examples/Class2Relational/tests/PersonTest.v
 examples/Class2Relational/theorems/All_classes_instantiate_impl.v
@@ -55,5 +58,5 @@ examples/Class2Relational/theorems/Column_name_uniqueness.v
 
 examples/TT2BDD/TT.v
 examples/TT2BDD/BDD.v
-examples/TT2BDD/TT2BDDAbstract.v
+#examples/TT2BDD/TT2BDDAbstract.v
 examples/TT2BDD/tests/TTModel.v

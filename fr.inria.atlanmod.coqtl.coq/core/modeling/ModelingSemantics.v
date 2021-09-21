@@ -1,7 +1,7 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.modeling.Metamodel.
+Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require Import core.modeling.ConcreteSyntax.
 Require Import core.Syntax.
@@ -10,18 +10,13 @@ Require Import core.EqDec.
 Require Import core.modeling.Parser.
 Require Import Bool.
 Require Import Arith.
+Require Import core.TransformationConfiguration.
+Require Import core.modeling.ModelingTransformationConfiguration.
 Scheme Equality for list.
 
 Section SemanticsModeling.
 
-  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
-  Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
-  Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-  Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
-
-  Definition SourceModel := Model SourceModelElement SourceModelLink.
-  Definition TargetModel := Model TargetModelElement TargetModelLink.
-  Definition Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink.
+  Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.  
 
   (*Fixpoint checkTypes (ses: list SourceModelElement) (scs: list SourceModelClass) : bool :=
     match ses, scs with
@@ -55,30 +50,31 @@ Section SemanticsModeling.
       | _ => None
       end.
 
+
   Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sp: list SourceModelElement)
              (iter : nat) : option (denoteModelClass type) :=
-    denoteOutput type (resolveIter' (eqdec_sme:=elements_eqdec) tls sm name sp iter).
+    denoteOutput type (resolveIter' tls sm name sp iter).
 
   Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sp: list SourceModelElement) : option (denoteModelClass type) :=
-    denoteOutput type (resolve' (eqdec_sme:=elements_eqdec) tr sm name sp).
+    denoteOutput type (resolve' tr sm name sp).
 
   Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
     : option (list (denoteModelClass type)) :=
-    denoteOutputList type (resolveAllIter'  (eqdec_sme:=elements_eqdec) tr sm name sps iter).
+    denoteOutputList type (resolveAllIter' tr sm name sps iter).
 
   Definition resolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sps: list(list SourceModelElement)) : option (list (denoteModelClass type)) :=
-    denoteOutputList type (resolveAll' (eqdec_sme:=elements_eqdec) tr sm name sps).
+    denoteOutputList type (resolveAll' tr sm name sps).
   
   Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sp: option (list SourceModelElement)) : option (denoteModelClass type) :=
-    denoteOutput type (maybeResolve' (eqdec_sme:=elements_eqdec) tr sm name sp).
+    denoteOutput type (maybeResolve' tr sm name sp).
 
   Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sp: option (list (list SourceModelElement))) : option (list (denoteModelClass type)) :=
-    denoteOutputList type (maybeResolveAll' (eqdec_sme:=elements_eqdec) tr sm name sp).
+    denoteOutputList type (maybeResolveAll' tr sm name sp).
 
 End SemanticsModeling.

@@ -2,6 +2,7 @@ Require Import String.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
+Require Import core.TransformationConfiguration.
 
 (** * Syntax
 
@@ -10,11 +11,7 @@ Require Import core.Model.
 
 Section Syntax.
 
-  Context {SourceModelElement SourceModelLink: Type}.
-  Context {TargetModelElement TargetModelLink: Type}.
-
-  Definition SourceModel := Model SourceModelElement SourceModelLink.
-  Definition TargetModel := Model TargetModelElement TargetModelLink.
+  Context {tc: TransformationConfiguration}.
 
   (** ** Traces 
   
@@ -142,14 +139,14 @@ Section Syntax.
 End Syntax.
 
 (* begin hide *)
-Arguments TraceLink {_ _}.
+Arguments TraceLink {_}.
 
-Arguments Transformation {_ _ _ _}.
-Arguments buildTransformation {_ _ _ _}.
+Arguments Transformation {_}.
+Arguments buildTransformation {_}.
 
-Arguments Rule {_ _ _ _}.
-Arguments buildRule {_ _ _ _}.
+Arguments Rule {_}.
+Arguments buildRule {_}.
 
-Arguments buildOutputPatternElement {_ _ _ _}.
-Arguments buildOutputPatternElementReference {_ _ _ _}.
+Arguments buildOutputPatternElement {_}.
+Arguments buildOutputPatternElementReference {_}.
 (* end hide *)

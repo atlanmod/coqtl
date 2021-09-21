@@ -32,7 +32,7 @@ Proof.
     exists (BuildColumn (getAttributeId a) (getAttributeName a)).
     split.
     - rewrite H.
-      rewrite tr_execute_in_elements.
+      rewrite (tr_execute_in_elements Class2Relational).
       exists ([ClassMetamodel_toObject AttributeClass a]).
       split.
       + apply allTuples_incl_length.

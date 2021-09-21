@@ -14,10 +14,10 @@ Require Import List.
 Require Import Omega.
 
 Require Import core.utils.Utils.
-Require Import core.Semantics.
 Require Import core.Certification.
-Require Import core.modeling.Metamodel.
+Require Import core.Metamodel.
 Require Import core.Model.
+Require Import core.Semantics.
 
 Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.ClassMetamodel.
@@ -61,7 +61,7 @@ forall (cm : ClassModel) (rm : RelationalModel),
 Proof.
   intros.
   rewrite H in H1.
-  rewrite tr_execute_in_elements in H1.
+  rewrite (tr_execute_in_elements Class2Relational) in H1.
   do 2 destruct H1.
   destruct x. (* Case analysis on source pattern *)
   - (* Empty pattern *) contradiction H2.

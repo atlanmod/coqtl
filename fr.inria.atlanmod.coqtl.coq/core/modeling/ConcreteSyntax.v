@@ -1,22 +1,16 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.modeling.Metamodel.
+Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require Import core.Syntax.
 Require Import core.modeling.ConcreteExpressions.
+Require Import core.TransformationConfiguration.
+Require Import core.modeling.ModelingTransformationConfiguration.
 
 Section ConcreteSyntax.
 
-  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
-  Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
-  Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-  Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
-
-  Definition SourceModel := Model SourceModelElement SourceModelLink.
-  Definition TargetModel := Model TargetModelElement TargetModelLink.
-  Definition Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink.
-  Definition TraceLink := @TraceLink SourceModelElement TargetModelElement.
+  Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.
 
   (** ** Syntax **)
 
@@ -143,10 +137,12 @@ Section ConcreteSyntax.
 
 End ConcreteSyntax.
 
-Arguments transformation {_ _ _ _} _ {_ _ _ _} _.
-Arguments concreteRule {_ _ _ _ _ _ _ _ _ _}.
-Arguments elem {_ _ _ _ _ _ _ _ _ _}.
-Arguments link {_ _ _ _ _ _ _ _ _ _}.
+Check transformation.
+
+Arguments transformation {_ _}.
+Arguments concreteRule {_ _}.
+Arguments elem {_ _}.
+Arguments link {_ _}.
 
 Declare Scope coqtl.
 

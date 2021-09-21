@@ -20,3 +20,5 @@ Definition allModelLinks {ModelElement: Type} {ModelLink: Type} (m: Model ModelE
  To use them on a Model m:
  @allModelElements _ _ a.
  *)
+
+Check @modelElements.

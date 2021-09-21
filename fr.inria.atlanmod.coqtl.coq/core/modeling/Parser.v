@@ -1,26 +1,19 @@
 Require Import String.
 
 Require Import core.utils.Utils.
-Require Import core.modeling.Metamodel.
+Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 Require Import core.Syntax.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.ConcreteSyntax.
+Require Import core.TransformationConfiguration.
+Require Import core.modeling.ModelingTransformationConfiguration.
 
 (* parse Concrete syntax into abstract syntax. *)
 
 Section Parser.
 
-  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
-  Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
-  Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-  Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
-
-  Definition SourceModel := Model SourceModelElement SourceModelLink.
-  Definition TargetModel := Model TargetModelElement TargetModelLink.
-  Definition Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink.
-  Definition TraceLink := @TraceLink SourceModelElement TargetModelElement.
-
+  Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.
 
   Definition parseOutputPatternElementReference (intypes: list SourceModelClass) (outtype: TargetModelClass)
     (cr: ConcreteOutputPatternElementReference intypes outtype): OutputPatternElementReference :=
@@ -33,7 +26,7 @@ Section Parser.
       (makeElement intypes (ConcreteOutputPatternElement_getOutType co) (ConcreteOutputPatternElement_getOutPatternElement co))
       (map (parseOutputPatternElementReference intypes (ConcreteOutputPatternElement_getOutType co)) (ConcreteOutputPatternElement_getOutputElementReferences co)).
 
-  Definition parseRule(cr: ConcreteRule (smm:=smm)) : Rule :=
+  Definition parseRule(cr: ConcreteRule) : Rule :=
     buildRule
       (ConcreteRule_getName cr)
       (match ConcreteRule_getGuard cr with
@@ -44,11 +37,11 @@ Section Parser.
       | Some i => (makeIterator (ConcreteRule_getInTypes cr) i)
       | None => (fun _ _ => Some 1)
       end)
-      (map (parseOutputPatternElement (ConcreteRule_getInTypes (smm:=smm) cr)) (ConcreteRule_getConcreteOutputPattern cr)).
+      (map (parseOutputPatternElement (ConcreteRule_getInTypes cr)) (ConcreteRule_getConcreteOutputPattern cr)).
   
-  Definition parse(ct: ConcreteTransformation (smm:=smm)) : Transformation :=
+  Definition parse(ct: ConcreteTransformation) : Transformation :=
     buildTransformation 
-      (max (map (length (A:=SourceModelClass)) (map (ConcreteRule_getInTypes (smm:=smm)) (ConcreteTransformation_getConcreteRules (smm:=smm) ct))   ))
+      (max (map (length (A:=SourceModelClass)) (map ConcreteRule_getInTypes (ConcreteTransformation_getConcreteRules ct))   ))
       (map parseRule (ConcreteTransformation_getConcreteRules ct)).
 
 End Parser.

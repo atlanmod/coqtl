@@ -1,5 +1,6 @@
 (** * Metamodel **)
 Require Import core.Model.
+Require Import core.Metamodel.
 Require Import core.EqDec.
 
 Class Sum (SumType: Type) (SubTypeName: Type):=
@@ -10,14 +11,12 @@ Class Sum (SumType: Type) (SubTypeName: Type):=
 
   }.
 
-Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (ModelReference: Type) :=
+Class ModelingMetamodel `(mm : Metamodel) :=
 {
+    ModelClass: Type;
+    ModelReference: Type;
     elements: Sum ModelElement ModelClass;
     links: Sum ModelLink ModelReference;
-    elements_eqdec: EqDec ModelElement;
-
-    (* Decidable Equality*)
-    elements_eqb := eq_b;
     
     (* Denotation *)
     denoteModelClass: ModelClass -> Set := denoteSubType;
@@ -33,7 +32,7 @@ Class Metamodel (ModelElement: Type) (ModelLink: Type) (ModelClass: Type) (Model
 
 }.
 
-Definition hasType {ModelElement ModelLink ModelClass ModelReference: Type} {mm: Metamodel ModelElement ModelLink ModelClass ModelReference}  (t: ModelClass) (e: ModelElement) : bool :=
+Definition hasType {mm: Metamodel} {mmm: ModelingMetamodel mm} (t: ModelClass) (e: ModelElement) : bool :=
   match (toModelClass t e) with
   | Some e' => true
   | _ => false

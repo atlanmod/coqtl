@@ -2,18 +2,14 @@ Require Import String.
 
 Require Import core.utils.Utils.
 Require Import core.Syntax.
-Require Import core.modeling.Metamodel.
+Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
+Require Import core.TransformationConfiguration.
+Require Import core.modeling.ModelingTransformationConfiguration.
 
 Section ConcreteExpressions.
 
-  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
-  Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
-  Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-  Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
-
-  Definition SourceModel := Model SourceModelElement SourceModelLink.
-  Definition TargetModel := Model TargetModelElement TargetModelLink.
+  Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.  
 
   (** ** Generic functions generation *)
 
@@ -98,7 +94,7 @@ Section ConcreteExpressions.
     fun it sm => wrapOptionElement l t (imp it sm).
 
   Definition LinkFunction : Type :=
-    list (@TraceLink SourceModelElement TargetModelElement)
+    list TraceLink
     -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink.
   Definition makeLink (l : list SourceModelClass) (t : TargetModelClass) (r : TargetModelReference)
     (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :

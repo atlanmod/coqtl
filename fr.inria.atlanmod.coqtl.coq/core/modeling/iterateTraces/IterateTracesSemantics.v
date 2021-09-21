@@ -8,21 +8,15 @@ Require Import Bool.
 Require Import Arith.
 Require Import Semantics.
 Require Import core.EqDec.
+Require Import core.TransformationConfiguration.
+Require Import core.modeling.ModelingTransformationConfiguration.
 Scheme Equality for list.
  
 
 Section IterateTracesSemantics.
 
-  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
-  Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
-  Context {eqdec_sme: EqDec SourceModelElement}. (* need decidable equality on source model elements *)
-  Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-  Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
-
-  Definition SourceModel := Model SourceModelElement SourceModelLink.
-  Definition TargetModel := Model TargetModelElement TargetModelLink.
-  Definition Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink.
-
+  Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}. 
+  
   (** * Apply **)
 
   Definition applyReferenceOnPatternTraces
@@ -47,7 +41,7 @@ Section IterateTracesSemantics.
     flat_map (fun o => applyElementOnPatternTraces o tr sm sp iter tls)
       (Rule_getOutputPatternElements r).
 
-  Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (tls: list (@TraceLink SourceModelElement TargetModelElement)): list TargetModelLink :=
+  Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (tls: list TraceLink): list TargetModelLink :=
     flat_map (fun i => applyIterationOnPatternTraces r tr sm sp i tls)
       (indexes (evalIteratorExpr r sm sp)).
 
@@ -130,7 +124,7 @@ Section IterateTracesSemantics.
     let tls := trace tr sm in
       ( map (TraceLink_getTargetElement) tls, tls ).
   
-  Definition applyTraces (tr: Transformation) (sm : SourceModel) (tls: list (@TraceLink SourceModelElement TargetModelElement)): list TargetModelLink :=
+  Definition applyTraces (tr: Transformation) (sm : SourceModel) (tls: list TraceLink): list TargetModelLink :=
     flat_map (fun sp => applyPatternTraces tr sm sp tls) (noDup_sp (map (TraceLink_getSourcePattern) tls)).
   
   Definition executeTraces (tr: Transformation) (sm : SourceModel) : TargetModel :=

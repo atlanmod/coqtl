@@ -4,7 +4,7 @@ Require Import core.utils.Utils.
 Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.Certification.
-Require Import core.modeling.Metamodel.
+Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
 Require Import examples.Class2Relational.Class2Relational.
