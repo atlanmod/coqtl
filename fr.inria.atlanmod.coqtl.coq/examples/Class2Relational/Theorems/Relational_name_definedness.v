@@ -20,7 +20,7 @@ Require Import core.Model.
 Require Import core.Syntax.
 Require Import core.Engine.
 
-Require Import examples.Class2Relational.Class2Relational.
+Require Import examples.Class2Relational.Class2RelationalAbstract.
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
 
@@ -74,11 +74,14 @@ Proof.
     destruct H2.
     + rewrite <- H2 in H4.
       simpl in H4.
-
-      
-
-    (* Empty pattern *) contradiction H2.
+      inversion H4.
+    + destruct H2.
+      rewrite <- H2 in H4.
+      simpl in H4.
+      inversion H4.
+      contradiction H2.
   - destruct x as [| c0].
+    
     + (* Singleton *) specialize (H0 c). 
       apply allTuples_incl in H1.
       unfold incl in H1.
