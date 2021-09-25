@@ -137,8 +137,6 @@ Section ConcreteSyntax.
 
 End ConcreteSyntax.
 
-Check transformation.
-
 Arguments transformation {_ _}.
 Arguments concreteRule {_ _}.
 Arguments elem {_ _}.

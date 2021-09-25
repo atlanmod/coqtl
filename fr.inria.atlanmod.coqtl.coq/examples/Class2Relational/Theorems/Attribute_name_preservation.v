@@ -5,7 +5,7 @@ Def: all non-derived attributes in the source model will create
 **)
 
 Require Import String.
-Require Import Omega.
+Require Import Lia.
 Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.Semantics.
@@ -42,7 +42,7 @@ Proof.
           destruct H2.
           -- rewrite <- H2. assumption.
           -- contradiction.
-        * unfold maxArity. simpl. omega.
+        * unfold maxArity. simpl. lia.
       + destruct a.
         simpl in H1.
         rewrite H1.
