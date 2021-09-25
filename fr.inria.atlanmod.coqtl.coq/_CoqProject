@@ -23,6 +23,7 @@ core/Syntax.v
 core/Semantics.v
 core/Engine.v
 core/EngineProofs.v
+core/SyntaxCertification.v
 core/Certification.v
 
 core/modeling/ModelingMetamodel.v
