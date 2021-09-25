@@ -10,6 +10,7 @@ Require Import core.Semantics.
 Require Import core.EqDec.
 Require Import core.Metamodel.
 Require Import core.TransformationConfiguration.
+Require Import core.SyntaxCertification.
 
 Section Certification.
 
@@ -301,9 +302,6 @@ Section Certification.
     crush.
   Qed.*)
 
-
-
-
   (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
   Theorem tr_resolveIter_leaf: 
     forall (tls:list TraceLink) (sm : SourceModel) (name: string)
@@ -336,31 +334,6 @@ Section Certification.
   Admitted.
   (**- crush.
   Qed.**)
-
-  Instance CoqTLSyntax :
-    TransformationSyntax tc :=
-    {
-        (* syntax and accessors *)
-
-        Transformation := Transformation;
-        Rule := Rule;
-        OutputPatternElement := OutputPatternElement;
-        OutputPatternElementReference := OutputPatternElementReference;
-
-        TraceLink := TraceLink;
-
-        Transformation_getArity := Transformation_getArity;
-        Transformation_getRules := Transformation_getRules;
-
-        Rule_getOutputPatternElements := Rule_getOutputPatternElements;
-
-        OutputPatternElement_getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
-
-        TraceLink_getSourcePattern := TraceLink_getSourcePattern;
-        TraceLink_getIterator := TraceLink_getIterator;
-        TraceLink_getName := TraceLink_getName;
-        TraceLink_getTargetElement := TraceLink_getTargetElement;      
-    }.
 
   Instance CoqTLEngine :
     TransformationEngine CoqTLSyntax :=
