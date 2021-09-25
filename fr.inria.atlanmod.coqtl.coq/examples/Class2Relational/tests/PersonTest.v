@@ -1,6 +1,7 @@
 Require Import String.
 Require Import List.
 
+Require Import core.Model.
 Require Import core.Semantics.
 Require Import core.modeling.ModelingSemantics.
 Require Import core.modeling.ConcreteSyntax.
@@ -35,4 +36,4 @@ Require Import examples.Class2Relational.tests.PersonModel.
       Column id=1 name='parent' reference='Person'
 *)
 
-Compute (execute Class2Relational PersonModel).
+Compute (Model_beq beq_RelationalMetamodel_Object beq_RelationalMetamodel_Link (execute Class2Relational PersonModel) (execute Class2Relational PersonModel)).
