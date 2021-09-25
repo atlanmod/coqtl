@@ -36,3 +36,5 @@ Require Import examples.Class2Relational.tests.PersonModel.
 *)
 
 Compute (execute Class2Relational PersonModel).
+
+Compute (matchPattern Class2Relational PersonModel nil).
