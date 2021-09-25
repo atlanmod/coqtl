@@ -18,6 +18,7 @@ core/Model.v
 core/EqDec.v
 core/Metamodel.v
 core/TransformationConfiguration.v
+core/TraceLink.v
 core/Syntax.v
 core/Semantics.v
 core/Engine.v
