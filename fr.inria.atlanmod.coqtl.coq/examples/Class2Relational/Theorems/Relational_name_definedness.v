@@ -20,7 +20,7 @@ Require Import core.Model.
 Require Import core.Syntax.
 Require Import core.Engine.
 
-Require Import examples.Class2Relational.Class2RelationalAbstract.
+Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.ClassMetamodel.
 Require Import examples.Class2Relational.RelationalMetamodel.
 
