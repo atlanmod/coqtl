@@ -17,7 +17,7 @@ Require Import core.utils.Utils.
 Require Import core.Certification.
 Require Import core.Metamodel.
 Require Import core.Model.
-Require Import core.Semantics.
+Require Import core.Engine.
 
 Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.ClassMetamodel.
@@ -55,17 +55,17 @@ Ltac unfoldTransformation Tr :=
 
 Theorem Relational_name_definedness:
 forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational cm ->
+  (* transformation *) rm = @execute _ _ CoqTLEngine Class2Relational cm ->
   (* precondition *)   (forall (c1 : ClassMetamodel_Object), In c1 (allModelElements cm) -> (ClassMetamodel_getName c1 <> ""%string)) ->
   (* postcondition *)  (forall (t1 : RelationalMetamodel_Object), In t1 (allModelElements rm) -> (RelationalMetamodel_getName t1 <> ""%string)). 
 Proof.
   intros.
   rewrite H in H1.
-  rewrite (tr_execute_in_elements Class2Relational) in H1.
+  rewrite (@tr_execute_in_elements C2RConfiguration _ CoqTLEngine Class2Relational) in H1.
   do 2 destruct H1.
-  destruct x. (* Case analysis on source pattern *)
+  destruct x as [| c]. (* Case analysis on source pattern *)
   - (* Empty pattern *) contradiction H2.
-  - destruct x.
+  - destruct x as [| c0].
     + (* Singleton *) specialize (H0 c). 
       apply allTuples_incl in H1.
       unfold incl in H1.
@@ -144,6 +144,8 @@ Ltac destruct_pattern Hinst sp :=
           try contradiction Hinst);
   destruct Hinst as [Hinst | []]; simpl in Hinst.
 
+(* 
+
 Theorem Relational_name_definedness':
 forall (cm : ClassModel) (rm : RelationalModel),
   (* transformation *) rm = execute Class2Relational cm ->
@@ -161,3 +163,5 @@ Proof.
   - (* Class2Table *) specialize (H0 se). crush.
   - (* Attribute2Column *) specialize (H0 se). crush.
 Qed.
+
+*)
