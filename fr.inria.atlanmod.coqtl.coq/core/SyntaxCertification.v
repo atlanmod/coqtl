@@ -1,6 +1,7 @@
 Require Import core.Engine.
 Require Import core.Syntax.
 Require Import core.TransformationConfiguration.
+Require Import core.Expressions.
 
 Section SyntaxCertification.
 
@@ -28,7 +29,12 @@ Section SyntaxCertification.
         TraceLink_getSourcePattern := TraceLink_getSourcePattern;
         TraceLink_getIterator := TraceLink_getIterator;
         TraceLink_getName := TraceLink_getName;
-        TraceLink_getTargetElement := TraceLink_getTargetElement;      
+        TraceLink_getTargetElement := TraceLink_getTargetElement;    
+        
+        evalOutputPatternElementExpr := evalOutputPatternElementExpr;
+        evalIteratorExpr := evalIteratorExpr;
+        evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
+        evalGuardExpr := evalGuardExpr';
     }.
 
 End SyntaxCertification.

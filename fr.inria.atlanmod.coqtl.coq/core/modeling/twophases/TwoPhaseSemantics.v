@@ -8,6 +8,7 @@ Require Import Arith.
 Require Import Semantics.
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
+Require Import core.Expressions.
 Scheme Equality for list.
  
 

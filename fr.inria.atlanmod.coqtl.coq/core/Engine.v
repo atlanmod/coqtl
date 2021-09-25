@@ -59,6 +59,11 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
     TraceLink_getIterator: TraceLink -> nat;
     TraceLink_getName: TraceLink -> string;
     TraceLink_getTargetElement: TraceLink -> TargetModelElement;    
+
+    evalOutputPatternElementExpr: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
+    evalIteratorExpr: Rule -> SourceModel -> list SourceModelElement -> nat;
+    evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternElementReference -> option TargetModelLink;
+    evalGuardExpr: Rule->SourceModel->list SourceModelElement->option bool;
 }.
   
 Class TransformationEngine (tc: TransformationConfiguration) (ts: TransformationSyntax tc) :=
@@ -86,11 +91,6 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     applyElementOnPattern: OutputPatternElement -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
     applyReferenceOnPattern: OutputPatternElementReference -> Transformation -> SourceModel -> list SourceModelElement -> nat -> TargetModelElement -> option TargetModelLink;
     
-    evalOutputPatternElementExpr: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
-    evalIteratorExpr: Rule -> SourceModel -> list SourceModelElement -> nat;
-    evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternElementReference -> option TargetModelLink;
-    evalGuardExpr: Rule->SourceModel->list SourceModelElement->option bool;
-
     trace: Transformation -> SourceModel -> list TraceLink; 
 
     resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)

@@ -11,6 +11,7 @@ Require Import core.EqDec.
 Require Import core.Metamodel.
 Require Import core.TransformationConfiguration.
 Require Import core.SyntaxCertification.
+Require Import core.Expressions.
 
 Section Certification.
 
@@ -356,11 +357,6 @@ Section Certification.
       applyIterationOnPattern := applyIterationOnPattern;
       applyElementOnPattern := applyElementOnPattern;
       applyReferenceOnPattern := applyReferenceOnPattern;
-
-      evalOutputPatternElementExpr := evalOutputPatternElementExpr;
-      evalIteratorExpr := evalIteratorExpr;
-      evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
-      evalGuardExpr := evalGuardExpr';
 
       trace := trace;
 
