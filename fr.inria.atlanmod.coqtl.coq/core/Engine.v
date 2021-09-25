@@ -37,9 +37,8 @@ Require Import core.TransformationConfiguration.
 Scheme Equality for list.
 
 Set Implicit Arguments.
-  
-Class TransformationEngine (tc: TransformationConfiguration) :=
-  {
+
+Class TransformationSyntax (tc: TransformationConfiguration) := {
     (** ** Syntax *)
     Transformation: Type;
     Rule: Type;
@@ -51,7 +50,7 @@ Class TransformationEngine (tc: TransformationConfiguration) :=
 
     Transformation_getRules: Transformation -> list Rule;
     Transformation_getArity: Transformation -> nat;
- 
+  
     Rule_getOutputPatternElements: Rule -> list OutputPatternElement;
 
     OutputPatternElement_getOutputElementReferences: OutputPatternElement -> list OutputPatternElementReference;
@@ -59,8 +58,11 @@ Class TransformationEngine (tc: TransformationConfiguration) :=
     TraceLink_getSourcePattern: TraceLink -> list SourceModelElement;
     TraceLink_getIterator: TraceLink -> nat;
     TraceLink_getName: TraceLink -> string;
-    TraceLink_getTargetElement: TraceLink -> TargetModelElement;
-
+    TraceLink_getTargetElement: TraceLink -> TargetModelElement;    
+}.
+  
+Class TransformationEngine (tc: TransformationConfiguration) (ts: TransformationSyntax tc) :=
+  {
     (** ** allTuples *)
 
     allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
@@ -234,5 +236,5 @@ Class TransformationEngine (tc: TransformationConfiguration) :=
          ((TraceLink_getIterator tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
          (TraceLink_getTargetElement tl) = x);
-
+         
   }.

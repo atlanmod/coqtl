@@ -40,8 +40,8 @@ Scheme Equality for list.
 
 Set Implicit Arguments.
 
-Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: ModelingTransformationConfiguration tc) 
-  (t: TransformationEngine tc) :=
+Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: ModelingTransformationConfiguration tc) (ts: TransformationSyntax tc)
+  (t: TransformationEngine ts) :=
   {
     resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
              (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat),

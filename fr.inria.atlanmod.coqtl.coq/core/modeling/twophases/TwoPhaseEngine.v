@@ -35,8 +35,8 @@ Require Import core.TransformationConfiguration.
 
 Set Implicit Arguments.
 
-Class TransformationEngineTrace (tc: TransformationConfiguration)
- (t: TransformationEngine tc) :=
+Class TransformationEngineTrace (tc: TransformationConfiguration) (ts: TransformationSyntax tc)
+ (t: TransformationEngine ts) :=
   {
 
     (** ** Accessors *)
