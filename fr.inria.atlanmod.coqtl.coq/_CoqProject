@@ -35,7 +35,7 @@ core/modeling/twophases/TwoPhaseSemantics.v
 core/modeling/twophases/TwoPhaseCertification.v
 
 core/modeling/iteratetraces/IterateTracesSemantics.v
-core/modeling/iteratetraces/IterateTracesCertification.v
+#core/modeling/iteratetraces/IterateTracesCertification.v
 
 #core/modeling/byrule/ByRuleSemantics.v
 #core/modeling/byrule/Certification_ByRuleSemantics.v

@@ -13,9 +13,10 @@ Section TwoPhaseSemantics.
 
   Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
   Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-  Context (SourceModel := Model SourceModelElement SourceModelLink).
-  Context (TargetModel := Model TargetModelElement TargetModelLink).
-  Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
+
+  Definition SourceModel := Model SourceModelElement SourceModelLink.
+  Definition TargetModel := Model TargetModelElement TargetModelLink.
+  Definition Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink.
 
   (** * Apply **)
 

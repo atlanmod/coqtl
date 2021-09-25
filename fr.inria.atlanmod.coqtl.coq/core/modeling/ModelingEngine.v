@@ -41,7 +41,8 @@ Set Implicit Arguments.
 
 
 
-Class ModelingTransformationEngine (t: TransformationEngine) :=
+Class ModelingTransformationEngine (SourceModelElement SourceModelLink TargetModelElement TargetModelLink: Type) 
+  (t: TransformationEngine SourceModelElement SourceModelLink TargetModelElement TargetModelLink) :=
   {
     SourceModelClass: Type;
     SourceModelReference: Type;

@@ -14,9 +14,10 @@ Section Semantics.
   Context {SourceModelElement SourceModelLink: Type}.
   Context {eqdec_sme: EqDec SourceModelElement}. (* need decidable equality on source model elements *)
   Context {TargetModelElement TargetModelLink: Type}.
-  Context (SourceModel := Model SourceModelElement SourceModelLink).
-  Context (TargetModel := Model TargetModelElement TargetModelLink).
-  Context (Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink).
+
+  Definition SourceModel := Model SourceModelElement SourceModelLink.
+  Definition TargetModel := Model TargetModelElement TargetModelLink.
+  Definition Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink.
 
   (*Definition Expr1 (A: Type) (B: Type) : Type := A -> B.
   Definition Expr2 (A: Type) (B: Type) (C: Type) : Type := A -> B -> C.
