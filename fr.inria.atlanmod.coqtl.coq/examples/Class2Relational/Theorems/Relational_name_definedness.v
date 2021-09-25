@@ -17,6 +17,7 @@ Require Import core.utils.Utils.
 Require Import core.SyntaxCertification.
 Require Import core.Metamodel.
 Require Import core.Model.
+Require Import core.Syntax.
 Require Import core.Engine.
 
 Require Import examples.Class2Relational.Class2Relational.
@@ -64,7 +65,19 @@ Proof.
   rewrite (@tr_execute_in_elements _ _ te Class2Relational) in H1.
   do 2 destruct H1.
   destruct x as [| c]. (* Case analysis on source pattern *)
-  - (* Empty pattern *) contradiction H2.
+  - rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
+    do 2 destruct H2.
+    rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
+    destruct H2.
+    rewrite (@tr_matchRuleOnPattern_Leaf _ _ te Class2Relational) in H4.
+    simpl in H2.
+    destruct H2.
+    + rewrite <- H2 in H4.
+      simpl in H4.
+
+      
+
+    (* Empty pattern *) contradiction H2.
   - destruct x as [| c0].
     + (* Singleton *) specialize (H0 c). 
       apply allTuples_incl in H1.
