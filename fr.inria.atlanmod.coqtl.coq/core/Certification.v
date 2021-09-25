@@ -247,7 +247,7 @@ Section Certification.
   Theorem tr_resolveAll_in:
     forall (tls: list TraceLink) (sm: SourceModel) (name: string)
       (sps: list(list SourceModelElement)),
-      resolveAll' tls sm name sps = resolveAllIter' tls sm name sps 0.
+      resolveAll tls sm name sps = resolveAllIter tls sm name sps 0.
   Proof.
     crush.
   Qed.
@@ -257,39 +257,39 @@ Section Certification.
             (sps: list(list SourceModelElement)) (iter: nat)
       (te: TargetModelElement),
       (exists tes: list TargetModelElement,
-          resolveAllIter' tls sm name sps iter = Some tes /\ In te tes) <->
+          resolveAllIter tls sm name sps iter = Some tes /\ In te tes) <->
       (exists (sp: list SourceModelElement),
           In sp sps /\
-          resolveIter' tls sm name sp iter = Some te).
+          resolveIter tls sm name sp iter = Some te).
   Proof.
     intros.
         intros.
     split.
     - intros.
       destruct H. destruct H.
-      unfold resolveAllIter' in H.
+      unfold resolveAllIter in H.
       inversion H.
       rewrite <- H2 in H0.
       apply in_flat_map in H0.
       destruct H0. destruct H0.
       exists x0. split; auto.
-      destruct (resolveIter' tls sm name x0 iter).
+      destruct (resolveIter tls sm name x0 iter).
       -- unfold optionToList in H1. crush.
       -- crush.
     - intros.
       destruct H. destruct H.
-      remember (resolveAllIter' tls sm name sps iter) as tes1.
+      remember (resolveAllIter tls sm name sps iter) as tes1.
       destruct tes1 eqn: resolveAll.
       -- exists l.
          split. auto.
-         unfold resolveAllIter' in Heqtes1.
+         unfold resolveAllIter in Heqtes1.
          inversion Heqtes1.
          apply in_flat_map.
          exists x. split. auto.
-         destruct (resolveIter' tls sm name x iter).
+         destruct (resolveIter tls sm name x iter).
          --- crush.
          --- crush.
-      -- unfold resolveAllIter' in Heqtes1.
+      -- unfold resolveAllIter in Heqtes1.
          crush.
   Qed.
 
@@ -308,7 +308,7 @@ Section Certification.
   Theorem tr_resolveIter_leaf: 
     forall (tls:list TraceLink) (sm : SourceModel) (name: string)
       (sp: list SourceModelElement) (iter: nat) (x: TargetModelElement),
-      resolveIter' tls sm name sp iter = return x ->
+      resolveIter tls sm name sp iter = return x ->
        (exists (tl : TraceLink),
          In tl tls /\
          Is_true (list_beq SourceModelElement (@elements_eqb smm) (TraceLink_getSourcePattern tl) sp) /\
@@ -317,7 +317,7 @@ Section Certification.
          (TraceLink_getTargetElement tl) = x).
   Proof.
   intros.
-  unfold resolveIter' in H.
+  unfold resolveIter in H.
   destruct (find (fun tl: TraceLink => 
   (list_beq SourceModelElement (@elements_eqb smm) (@TraceLink_getSourcePattern tc tl) sp) &&
   ((TraceLink_getIterator tl) =? iter) &&
@@ -385,8 +385,8 @@ Section Certification.
 
       trace := trace;
 
-      resolveAll := resolveAllIter';
-      resolve := resolveIter';
+      resolveAll := resolveAllIter;
+      resolve := resolveIter;
 
       (* lemmas *)
 
