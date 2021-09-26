@@ -101,6 +101,12 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
 
     (** ** Theorems *)
 
+    (** ** allTuples *)
+
+    allTuples_incl:
+      forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
+        In sp (allTuples tr sm) -> incl sp (allModelElements sm);
+
     (** ** execute *)
 
     tr_execute_in_elements :

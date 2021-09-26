@@ -81,7 +81,6 @@ Proof.
       inversion H4.
       contradiction H2.
   - destruct x as [| c0].
-    
     + (* Singleton *) specialize (H0 c). 
       apply allTuples_incl in H1.
       unfold incl in H1.
@@ -89,20 +88,121 @@ Proof.
       assert (In c [c]). { left. reflexivity. }
       specialize (H0 (H1 H3)).
       do 2 destruct c. (* Case analysis on source element type *)
-      * (* [Class] *) simpl in H2.
+      * (* [Class] *) 
+        rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
+        do 2 destruct H2.
+        rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
         destruct H2.
-        -- rewrite <- H2. simpl. simpl in H0. assumption.
-        -- contradiction H2.
+        rewrite (@tr_matchRuleOnPattern_Leaf _ _ te Class2Relational) in H5.
+        simpl in H2.
+        rewrite (@tr_instantiateRuleOnPattern_in _ _ te Class2Relational) in H4.
+        do 2 destruct H4.
+        apply tr_instantiateIterationOnPattern_in in H6.
+        do 2 destruct H6.
+        rewrite tr_instantiateElementOnPattern_leaf in H7.
+        destruct H2.
+        ** (* Class2Table *) 
+           rewrite <- H2 in H6.
+           simpl in H6.
+           destruct H6.
+           *** rewrite <- H6 in H7.
+               simpl in H7.
+               inversion H7.
+               simpl. 
+               apply H0.
+           *** contradiction H6.
+        ** destruct H2.
+           ***  (* Attribute2Column contradict *)
+                rewrite <- H2 in H6.
+                simpl in H6.
+                destruct H6.
+                **** rewrite <- H6 in H7. simpl in H7. 
+                     inversion H7.
+                **** contradiction H6.
+           *** contradiction H2.
       * (* [Attribute] *) destruct c0.
         destruct b.
-        -- (* derived *) contradiction H2.
-        -- (* not derived *) simpl in H2.
-           destruct H2. 
-           ++ rewrite <- H2. simpl. simpl in H0. assumption.
-           ++ contradiction H2. 
+        -- (* derived *) 
+           rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
+           do 2 destruct H2.
+           rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
+           destruct H2.
+           rewrite (@tr_matchRuleOnPattern_Leaf _ _ te Class2Relational) in H5.
+           simpl in H2. 
+           destruct H2.
+           ** rewrite <- H2 in H5.
+              simpl in H5.
+              inversion H5.
+           ** destruct H2.
+              *** rewrite <- H2 in H5.
+                  simpl in H5.
+                  inversion H5.
+              *** contradiction H2.
+        -- (* not derived *) 
+            rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
+            do 2 destruct H2.
+            rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
+            destruct H2.
+            rewrite (@tr_matchRuleOnPattern_Leaf _ _ te Class2Relational) in H5.
+            simpl in H2.
+            rewrite (@tr_instantiateRuleOnPattern_in _ _ te Class2Relational) in H4.
+            do 2 destruct H4.
+            apply tr_instantiateIterationOnPattern_in in H6.
+            do 2 destruct H6.
+            rewrite tr_instantiateElementOnPattern_leaf in H7.
+            destruct H2.
+            **  (* Class2Table contradict *)
+                 rewrite <- H2 in H6.
+                 simpl in H6.
+                 destruct H6.
+                 *** rewrite <- H6 in H7. simpl in H7. 
+                      inversion H7.
+                 *** contradiction H6.
+            ** (* Attribute2Column *) 
+               destruct H2.
+               *** rewrite <- H2 in H6.
+                   simpl in H6.
+                   destruct H6.
+                   **** rewrite <- H6 in H7.
+                        simpl in H7.
+                        inversion H7.
+                        simpl. 
+                        apply H0.
+                   **** contradiction H6.
+               *** contradiction H2.
     + (* Other patterns *) do 2 destruct c.
-      * destruct c0. destruct c; contradiction H2.
-      * destruct c0. destruct c; contradiction H2.
+      * destruct c0. 
+        rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
+        do 2 destruct H2.
+        rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
+        destruct H2.
+        rewrite (@tr_matchRuleOnPattern_Leaf _ _ te Class2Relational) in H4.
+        simpl in H2.
+        destruct H2.
+        ** rewrite <- H2 in H4.
+          simpl in H4.
+          inversion H4.
+        ** destruct H2.
+          rewrite <- H2 in H4.
+          simpl in H4.
+          inversion H4.
+          contradiction H2.
+      * destruct c0. 
+        rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
+        do 2 destruct H2.
+        rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
+        destruct H2.
+        rewrite (@tr_matchRuleOnPattern_Leaf _ _ te Class2Relational) in H4.
+        simpl in H2.
+        destruct H2.
+        ** rewrite <- H2 in H4.
+          simpl in H4.
+          inversion H4.
+        ** destruct H2.
+          rewrite <- H2 in H4.
+          simpl in H4.
+          inversion H4.
+          contradiction H2.
 Qed.
 
 (* Alternative for (* [Attribute] *):

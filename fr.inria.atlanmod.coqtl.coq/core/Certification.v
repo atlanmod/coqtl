@@ -223,6 +223,7 @@ Section Certification.
     gt (length sp) (maxArity tr) -> In sp (allTuples tr sm) -> False.
   *)
 
+
   Lemma allTuples_incl:
     forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
     In sp (allTuples tr sm) -> incl sp (allModelElements sm).
@@ -385,6 +386,7 @@ Section Certification.
       tr_resolveAll_in := tr_resolveAllIter_in;
       tr_resolve_Leaf := tr_resolveIter_leaf;
 
+      allTuples_incl := allTuples_incl;
       (*tr_matchPattern_None := tr_matchPattern_None;
 
       tr_matchRuleOnPattern_None := tr_matchRuleOnPattern_None;
