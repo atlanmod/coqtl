@@ -36,6 +36,8 @@ Require Import examples.Class2Relational.tests.PersonModel.
       Column id=1 name='parent' reference='Person'
 *)
 
+Compute (matchPattern Class2Relational PersonModel nil).
+
 Compute 
   (Model_beq beq_RelationalMetamodel_Object beq_RelationalMetamodel_Link 
     (execute Class2Relational PersonModel) 

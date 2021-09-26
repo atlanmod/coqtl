@@ -31,7 +31,7 @@ Section Parser.
       (ConcreteRule_getName cr)
       (match ConcreteRule_getGuard cr with
       | Some g => (makeGuard (ConcreteRule_getInTypes cr) g)
-      | None => (fun _ _ => Some true)
+      | None => (makeEmptyGuard (ConcreteRule_getInTypes cr))
       end)
       (match ConcreteRule_getIteratedList cr with
       | Some i => (makeIterator (ConcreteRule_getInTypes cr) i)
