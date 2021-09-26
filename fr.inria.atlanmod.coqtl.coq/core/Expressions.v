@@ -35,7 +35,7 @@ Section Expressions.
   Definition Expr (A: Type) (B: Type) : Type := A -> B.
   Definition evalExpr {A B:Type} (f: Expr A B) (a: A) := f a.
 
-  Definition evalGuardExpr' (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
+  Definition evalGuardExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) : option bool :=
   evalExpr (Rule_getGuardExpr r) sm sp.
 
   Definition evalIteratorExpr (r : Rule) (sm: SourceModel) (sp: list SourceModelElement) :

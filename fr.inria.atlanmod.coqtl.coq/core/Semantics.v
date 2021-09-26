@@ -18,7 +18,7 @@ Section Semantics.
   (** * Instantiate **)
 
   Definition matchRuleOnPattern (r: Rule) (sm : SourceModel) (sp: list SourceModelElement) : bool :=
-    match evalGuardExpr' r sm sp with Some true => true | _ => false end.
+    match evalGuardExpr r sm sp with Some true => true | _ => false end.
 
   Definition matchPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list Rule :=
     filter (fun (r:Rule) => matchRuleOnPattern r sm sp) (Transformation_getRules tr).

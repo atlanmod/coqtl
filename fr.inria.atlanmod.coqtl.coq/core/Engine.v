@@ -134,7 +134,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
 
     (** ** matchRuleOnPattern *)
 
-    tr_matchRuleOnPattern_Leaf :
+    tr_matchRuleOnPattern_leaf :
     forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       matchRuleOnPattern r sm sp =
        match evalGuardExpr r sm sp with Some true => true | _ => false end;
@@ -232,7 +232,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
           In sp sps /\
           resolve tls sm name sp iter = Some te);
 
-    tr_resolve_Leaf:
+    tr_resolve_leaf:
     forall (tls:list TraceLink) (sm : SourceModel) (name: string)
       (sp: list SourceModelElement) (iter: nat) (x: TargetModelElement),
       resolve tls sm name sp iter = return x ->

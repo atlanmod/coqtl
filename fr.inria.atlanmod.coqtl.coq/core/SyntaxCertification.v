@@ -34,7 +34,7 @@ Section SyntaxCertification.
         evalOutputPatternElementExpr := evalOutputPatternElementExpr;
         evalIteratorExpr := evalIteratorExpr;
         evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
-        evalGuardExpr := evalGuardExpr';
+        evalGuardExpr := evalGuardExpr;
     }.
 
 End SyntaxCertification.

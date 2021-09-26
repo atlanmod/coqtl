@@ -61,7 +61,7 @@ Class ModelingTransformationEngine (tc: TransformationConfiguration) (mtc: Model
           In sp sps /\
           resolve tls sm name type sp iter = Some te);
 
-    tr_resolve_Leaf:
+    tr_resolve_leaf:
     forall (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
       (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
       resolve tls sm name type sp iter = return x ->
