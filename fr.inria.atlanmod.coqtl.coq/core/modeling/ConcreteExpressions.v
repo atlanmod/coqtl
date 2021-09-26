@@ -19,22 +19,6 @@ Section ConcreteExpressions.
     | l0 :: l' => denoteModelClass l0 -> denoteSignature l' r
     end.
 
-
-  Definition wrapOption' 
-    (l : list SourceModelClass) :
-    (list SourceModelElement) -> option bool.
-  Proof.
-    revert l. fix Hl 1. intros l sl.
-    destruct l as [ | l0 l'] eqn:a, sl as [ | s0 sl'] eqn:B.
-    - exact (Some true).
-    - exact None.
-    - exact None.
-    - exact (x <- toModelClass l0 s0; Hl l' sl').
-  Defined.
-
-
-
-
   Definition wrapOption {T : Type}
     (l : list SourceModelClass)
     (imp : denoteSignature l T) :
@@ -46,6 +30,18 @@ Section ConcreteExpressions.
     - exact None.
     - exact None.
     - exact (x <- toModelClass l0 s0; Hl l' (imp x) sl').
+  Defined.
+
+  Definition wrapOption' 
+  (l : list SourceModelClass) :
+  (list SourceModelElement) -> option bool.
+  Proof.
+    revert l. fix Hl 1. intros l sl.
+    destruct l as [ | l0 l'] eqn:a, sl as [ | s0 sl'] eqn:B.
+    - exact (Some true).
+    - exact None.
+    - exact None.
+    - exact (x <- toModelClass l0 s0; Hl l' sl').
   Defined.
 
   Definition wrapList {T : Type} (l : list SourceModelClass)
