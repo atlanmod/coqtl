@@ -47,6 +47,7 @@ Definition Class2Relational' :=
   [
     rule "Class2Table"
     from [ClassClass]
+    where (fun m a => true)
     to [elem [ClassClass] TableClass "tab"
         (fun i m c => BuildTable (getClassId c) (getClassName c))
         [link [ClassClass] TableClass TableColumnsReference
