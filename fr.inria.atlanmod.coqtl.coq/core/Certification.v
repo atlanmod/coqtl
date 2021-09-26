@@ -73,7 +73,7 @@ Section Certification.
   Lemma tr_matchRuleOnPattern_Leaf : 
   forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
      matchRuleOnPattern r sm sp =
-       match evalGuardExpr' r sm sp with Some true => true | _ => false end.
+       match evalGuardExpr r sm sp with Some true => true | _ => false end.
   Proof.
    crush.
   Qed.
