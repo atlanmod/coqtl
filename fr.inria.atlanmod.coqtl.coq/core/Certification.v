@@ -70,7 +70,7 @@ Section Certification.
     apply filter_In.
   Qed.
 
-  Lemma tr_matchRuleOnPattern_Leaf : 
+  Lemma tr_matchRuleOnPattern_leaf : 
   forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
      matchRuleOnPattern r sm sp =
        match evalGuardExpr r sm sp with Some true => true | _ => false end.
@@ -370,7 +370,7 @@ Section Certification.
       tr_execute_in_links := tr_execute_in_links;
 
       tr_matchPattern_in := tr_matchPattern_in;
-      tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
+      tr_matchRuleOnPattern_leaf := tr_matchRuleOnPattern_leaf;
 
       tr_instantiatePattern_in := tr_instantiatePattern_in;
       tr_instantiateRuleOnPattern_in := tr_instantiateRuleOnPattern_in;
@@ -384,7 +384,7 @@ Section Certification.
       tr_applyReferenceOnPatternTraces_leaf := tr_applyReferenceOnPattern_leaf;
 
       tr_resolveAll_in := tr_resolveAllIter_in;
-      tr_resolve_Leaf := tr_resolveIter_leaf;
+      tr_resolve_leaf := tr_resolveIter_leaf;
 
       allTuples_incl := allTuples_incl;
       (*tr_matchPattern_None := tr_matchPattern_None;

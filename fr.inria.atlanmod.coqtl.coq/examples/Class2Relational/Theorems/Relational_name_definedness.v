@@ -69,7 +69,7 @@ Proof.
     do 2 destruct H2.
     rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
     destruct H2.
-    rewrite (@tr_matchRuleOnPattern_Leaf _ _ te Class2Relational) in H4.
+    rewrite (@tr_matchRuleOnPattern_leaf _ _ te Class2Relational) in H4.
     simpl in H2.
     destruct H2.
     + rewrite <- H2 in H4.
@@ -93,7 +93,7 @@ Proof.
         do 2 destruct H2.
         rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
         destruct H2.
-        rewrite (@tr_matchRuleOnPattern_Leaf _ _ te Class2Relational) in H5.
+        rewrite (@tr_matchRuleOnPattern_leaf _ _ te Class2Relational) in H5.
         simpl in H2.
         rewrite (@tr_instantiateRuleOnPattern_in _ _ te Class2Relational) in H4.
         do 2 destruct H4.
@@ -127,7 +127,7 @@ Proof.
            do 2 destruct H2.
            rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
            destruct H2.
-           rewrite (@tr_matchRuleOnPattern_Leaf _ _ te Class2Relational) in H5.
+           rewrite (@tr_matchRuleOnPattern_leaf _ _ te Class2Relational) in H5.
            simpl in H2. 
            destruct H2.
            ** rewrite <- H2 in H5.
@@ -143,7 +143,7 @@ Proof.
             do 2 destruct H2.
             rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
             destruct H2.
-            rewrite (@tr_matchRuleOnPattern_Leaf _ _ te Class2Relational) in H5.
+            rewrite (@tr_matchRuleOnPattern_leaf _ _ te Class2Relational) in H5.
             simpl in H2.
             rewrite (@tr_instantiateRuleOnPattern_in _ _ te Class2Relational) in H4.
             do 2 destruct H4.
@@ -176,7 +176,7 @@ Proof.
         do 2 destruct H2.
         rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
         destruct H2.
-        rewrite (@tr_matchRuleOnPattern_Leaf _ _ te Class2Relational) in H4.
+        rewrite (@tr_matchRuleOnPattern_leaf _ _ te Class2Relational) in H4.
         simpl in H2.
         destruct H2.
         ** rewrite <- H2 in H4.
@@ -192,7 +192,7 @@ Proof.
         do 2 destruct H2.
         rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
         destruct H2.
-        rewrite (@tr_matchRuleOnPattern_Leaf _ _ te Class2Relational) in H4.
+        rewrite (@tr_matchRuleOnPattern_leaf _ _ te Class2Relational) in H4.
         simpl in H2.
         destruct H2.
         ** rewrite <- H2 in H4.
