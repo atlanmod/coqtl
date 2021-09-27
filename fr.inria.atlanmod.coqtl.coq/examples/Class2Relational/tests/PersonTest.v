@@ -1,6 +1,7 @@
 Require Import String.
 Require Import List.
 
+Require Import core.Model.
 Require Import core.Semantics.
 Require Import core.modeling.ModelingSemantics.
 Require Import core.modeling.ConcreteSyntax.
@@ -35,6 +36,20 @@ Require Import examples.Class2Relational.tests.PersonModel.
       Column id=1 name='parent' reference='Person'
 *)
 
-Compute (execute Class2Relational PersonModel).
-
-Compute (matchPattern Class2Relational PersonModel nil).
+Compute 
+  (Model_beq beq_RelationalMetamodel_Object beq_RelationalMetamodel_Link 
+    (execute Class2Relational PersonModel) 
+    {|
+       Model.modelElements := RelationalMetamodel_BuildObject TableClass
+                                (BuildTable 0 "Person")
+                              :: RelationalMetamodel_BuildObject ColumnClass
+                                   (BuildColumn 1 "parent") :: nil;
+       Model.modelLinks := RelationalMetamodel_BuildLink
+                             TableColumnsReference
+                             (BuildTableColumns (BuildTable 0 "Person")
+                                (BuildColumn 1 "parent" :: nil))
+                           :: RelationalMetamodel_BuildLink
+                                ColumnReferenceReference
+                                (BuildColumnReference
+                                   (BuildColumn 1 "parent")
+                                   (BuildTable 0 "Person")) :: nil |}).
