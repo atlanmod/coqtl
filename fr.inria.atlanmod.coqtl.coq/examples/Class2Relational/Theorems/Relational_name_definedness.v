@@ -14,10 +14,11 @@ Require Import List.
 Require Import Omega.
 
 Require Import core.utils.Utils.
-Require Import core.Semantics.
-Require Import core.Certification.
-Require Import core.modeling.Metamodel.
+Require Import core.SyntaxCertification.
+Require Import core.Metamodel.
 Require Import core.Model.
+Require Import core.Syntax.
+Require Import core.Engine.
 
 Require Import examples.Class2Relational.Class2Relational.
 Require Import examples.Class2Relational.ClassMetamodel.
@@ -54,18 +55,32 @@ Ltac unfoldTransformation Tr :=
   simpl.*)
 
 Theorem Relational_name_definedness:
-forall (cm : ClassModel) (rm : RelationalModel), 
-  (* transformation *) rm = execute Class2Relational cm ->
+forall (te: TransformationEngine CoqTLSyntax) (cm : ClassModel) (rm : RelationalModel),
+  (* transformation *) rm = @execute _ _ te Class2Relational cm ->
   (* precondition *)   (forall (c1 : ClassMetamodel_Object), In c1 (allModelElements cm) -> (ClassMetamodel_getName c1 <> ""%string)) ->
   (* postcondition *)  (forall (t1 : RelationalMetamodel_Object), In t1 (allModelElements rm) -> (RelationalMetamodel_getName t1 <> ""%string)). 
 Proof.
   intros.
   rewrite H in H1.
-  rewrite tr_execute_in_elements in H1.
+  rewrite (@tr_execute_in_elements _ _ te Class2Relational) in H1.
   do 2 destruct H1.
-  destruct x. (* Case analysis on source pattern *)
-  - (* Empty pattern *) contradiction H2.
-  - destruct x.
+  destruct x as [| c]. (* Case analysis on source pattern *)
+  - rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
+    do 2 destruct H2.
+    rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
+    destruct H2.
+    rewrite (@tr_matchRuleOnPattern_leaf _ _ te Class2Relational) in H4.
+    simpl in H2.
+    destruct H2.
+    + rewrite <- H2 in H4.
+      simpl in H4.
+      inversion H4.
+    + destruct H2.
+      rewrite <- H2 in H4.
+      simpl in H4.
+      inversion H4.
+      contradiction H2.
+  - destruct x as [| c0].
     + (* Singleton *) specialize (H0 c). 
       apply allTuples_incl in H1.
       unfold incl in H1.
@@ -73,20 +88,121 @@ Proof.
       assert (In c [c]). { left. reflexivity. }
       specialize (H0 (H1 H3)).
       do 2 destruct c. (* Case analysis on source element type *)
-      * (* [Class] *) simpl in H2.
+      * (* [Class] *) 
+        rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
+        do 2 destruct H2.
+        rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
         destruct H2.
-        -- rewrite <- H2. simpl. simpl in H0. assumption.
-        -- contradiction H2.
+        rewrite (@tr_matchRuleOnPattern_leaf _ _ te Class2Relational) in H5.
+        simpl in H2.
+        rewrite (@tr_instantiateRuleOnPattern_in _ _ te Class2Relational) in H4.
+        do 2 destruct H4.
+        apply tr_instantiateIterationOnPattern_in in H6.
+        do 2 destruct H6.
+        rewrite tr_instantiateElementOnPattern_leaf in H7.
+        destruct H2.
+        ** (* Class2Table *) 
+           rewrite <- H2 in H6.
+           simpl in H6.
+           destruct H6.
+           *** rewrite <- H6 in H7.
+               simpl in H7.
+               inversion H7.
+               simpl. 
+               apply H0.
+           *** contradiction H6.
+        ** destruct H2.
+           ***  (* Attribute2Column contradict *)
+                rewrite <- H2 in H6.
+                simpl in H6.
+                destruct H6.
+                **** rewrite <- H6 in H7. simpl in H7. 
+                     inversion H7.
+                **** contradiction H6.
+           *** contradiction H2.
       * (* [Attribute] *) destruct c0.
         destruct b.
-        -- (* derived *) contradiction H2.
-        -- (* not derived *) simpl in H2.
-           destruct H2. 
-           ++ rewrite <- H2. simpl. simpl in H0. assumption.
-           ++ contradiction H2. 
+        -- (* derived *) 
+           rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
+           do 2 destruct H2.
+           rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
+           destruct H2.
+           rewrite (@tr_matchRuleOnPattern_leaf _ _ te Class2Relational) in H5.
+           simpl in H2. 
+           destruct H2.
+           ** rewrite <- H2 in H5.
+              simpl in H5.
+              inversion H5.
+           ** destruct H2.
+              *** rewrite <- H2 in H5.
+                  simpl in H5.
+                  inversion H5.
+              *** contradiction H2.
+        -- (* not derived *) 
+            rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
+            do 2 destruct H2.
+            rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
+            destruct H2.
+            rewrite (@tr_matchRuleOnPattern_leaf _ _ te Class2Relational) in H5.
+            simpl in H2.
+            rewrite (@tr_instantiateRuleOnPattern_in _ _ te Class2Relational) in H4.
+            do 2 destruct H4.
+            apply tr_instantiateIterationOnPattern_in in H6.
+            do 2 destruct H6.
+            rewrite tr_instantiateElementOnPattern_leaf in H7.
+            destruct H2.
+            **  (* Class2Table contradict *)
+                 rewrite <- H2 in H6.
+                 simpl in H6.
+                 destruct H6.
+                 *** rewrite <- H6 in H7. simpl in H7. 
+                      inversion H7.
+                 *** contradiction H6.
+            ** (* Attribute2Column *) 
+               destruct H2.
+               *** rewrite <- H2 in H6.
+                   simpl in H6.
+                   destruct H6.
+                   **** rewrite <- H6 in H7.
+                        simpl in H7.
+                        inversion H7.
+                        simpl. 
+                        apply H0.
+                   **** contradiction H6.
+               *** contradiction H2.
     + (* Other patterns *) do 2 destruct c.
-      * destruct c0. destruct c; contradiction H2.
-      * destruct c0. destruct c; contradiction H2.
+      * destruct c0. 
+        rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
+        do 2 destruct H2.
+        rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
+        destruct H2.
+        rewrite (@tr_matchRuleOnPattern_leaf _ _ te Class2Relational) in H4.
+        simpl in H2.
+        destruct H2.
+        ** rewrite <- H2 in H4.
+          simpl in H4.
+          inversion H4.
+        ** destruct H2.
+          rewrite <- H2 in H4.
+          simpl in H4.
+          inversion H4.
+          contradiction H2.
+      * destruct c0. 
+        rewrite (@tr_instantiatePattern_in _ _ te Class2Relational) in H2.
+        do 2 destruct H2.
+        rewrite (@tr_matchPattern_in _ _ te Class2Relational) in H2.
+        destruct H2.
+        rewrite (@tr_matchRuleOnPattern_leaf _ _ te Class2Relational) in H4.
+        simpl in H2.
+        destruct H2.
+        ** rewrite <- H2 in H4.
+          simpl in H4.
+          inversion H4.
+        ** destruct H2.
+          rewrite <- H2 in H4.
+          simpl in H4.
+          inversion H4.
+          contradiction H2.
 Qed.
 
 (* Alternative for (* [Attribute] *):
@@ -144,6 +260,8 @@ Ltac destruct_pattern Hinst sp :=
           try contradiction Hinst);
   destruct Hinst as [Hinst | []]; simpl in Hinst.
 
+(* 
+
 Theorem Relational_name_definedness':
 forall (cm : ClassModel) (rm : RelationalModel),
   (* transformation *) rm = execute Class2Relational cm ->
@@ -161,3 +279,5 @@ Proof.
   - (* Class2Table *) specialize (H0 se). crush.
   - (* Attribute2Column *) specialize (H0 se). crush.
 Qed.
+
+*)

@@ -10,7 +10,6 @@ Require Import core.Model.
 
 Require Import examples.TT2BDD.TT.
 Require Import examples.TT2BDD.BDD.
-Require Import examples.TT2BDD.TT2BDDAbstract.
 
 Definition TTable_OR : Model TTElem TTRef :=
   (Build_Model

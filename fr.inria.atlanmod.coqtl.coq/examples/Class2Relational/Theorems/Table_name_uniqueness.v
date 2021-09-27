@@ -5,7 +5,6 @@
       have unique name.
  **)
 
-Require Import Coq.Logic.Eqdep_dec.
 Require Import Coq.Arith.Gt.
 Require Import Coq.Arith.EqNat.
 Require Import List.
@@ -16,7 +15,7 @@ Require Import core.utils.Utils.
 Require Import core.Certification.*)
 Require Import core.Semantics.
 Require Import core.Certification.
-Require Import core.modeling.Metamodel.
+Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
 Require Import examples.Class2Relational.Class2Relational.
@@ -42,7 +41,7 @@ forall (cm : ClassModel) (rm : RelationalModel),
 Proof.
     intros.
     rewrite H in H1, H2.
-    rewrite tr_execute_in_elements in H1, H2.
+    rewrite (tr_execute_in_elements Class2Relational) in H1, H2.
     do 2 destruct H1, H2.
     destruct x, x0.
     - (* [] [] *) contradiction H4.

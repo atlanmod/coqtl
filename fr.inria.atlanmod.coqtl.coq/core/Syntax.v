@@ -2,6 +2,8 @@ Require Import String.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
+Require Import core.TransformationConfiguration.
+Require Export core.TraceLink.
 
 (** * Syntax
 
@@ -10,42 +12,7 @@ Require Import core.Model.
 
 Section Syntax.
 
-  Context {SourceModelElement SourceModelLink: Type}.
-  Context {TargetModelElement TargetModelLink: Type}.
-
-  Definition SourceModel := Model SourceModelElement SourceModelLink.
-  Definition TargetModel := Model TargetModelElement TargetModelLink.
-
-  (** ** Traces 
-  
-         We introduce the concept of trace in the syntax to track relationship of a target element and 
-         the source pattern that generates it   *)
-
-  Inductive TraceLink : Type :=
-    buildTraceLink : 
-      (list SourceModelElement * nat * string)
-      -> TargetModelElement
-      -> TraceLink.
-
-  Definition TraceLink_getSourcePattern (tl: TraceLink):=
-    match tl with 
-      buildTraceLink (sp, i, n) te => sp
-    end.
-
-  Definition TraceLink_getIterator (tl: TraceLink):=
-    match tl with 
-      buildTraceLink (sp, i, n) te => i
-    end.
-
-  Definition TraceLink_getName (tl: TraceLink):=
-    match tl with 
-      buildTraceLink (sp, i, n) te => n
-    end.
-
-  Definition TraceLink_getTargetElement (tl: TraceLink):=
-    match tl with 
-      buildTraceLink (sp, i, n) te => te
-    end.
+  Context {tc: TransformationConfiguration}.
 
   (** ** Syntactic Elements
 
@@ -142,14 +109,12 @@ Section Syntax.
 End Syntax.
 
 (* begin hide *)
-Arguments TraceLink {_ _}.
+Arguments Transformation {_}.
+Arguments buildTransformation {_}.
 
-Arguments Transformation {_ _ _ _}.
-Arguments buildTransformation {_ _ _ _}.
+Arguments Rule {_}.
+Arguments buildRule {_}.
 
-Arguments Rule {_ _ _ _}.
-Arguments buildRule {_ _ _ _}.
-
-Arguments buildOutputPatternElement {_ _ _ _}.
-Arguments buildOutputPatternElementReference {_ _ _ _}.
+Arguments buildOutputPatternElement {_}.
+Arguments buildOutputPatternElementReference {_}.
 (* end hide *)

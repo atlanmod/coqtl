@@ -8,13 +8,15 @@ Require Import core.utils.Utils.
 
 Require Import core.modeling.ConcreteSyntax.
 Require Import core.modeling.ModelingSemantics.
-Require Import core.modeling.Metamodel.
+Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
 Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
 
+Require Import core.TransformationConfiguration.
+Require Import core.modeling.ModelingTransformationConfiguration.
 (* module Class2Relational; 
    create OUT : RelationalMetamodel from IN : ClassMetamodel;
 
@@ -40,10 +42,20 @@ Require Import Class2Relational.RelationalMetamodel.
     }
    } *)
 
+Instance C2RConfiguration : TransformationConfiguration := {
+  SourceMetamodel := ClassM;
+  TargetMetamodel := RelationalM;
+}.
+
+Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration := {
+  smm := ClassMetamodel;
+  tmm := RelationalMetamodel;
+}.
+
 Open Scope coqtl.
 
 Definition Class2Relational' :=
-  transformation ClassMetamodel RelationalMetamodel
+  transformation
   [
     rule "Class2Table"
     from [ClassClass]
@@ -69,6 +81,5 @@ Definition Class2Relational' :=
   ].
 
 Definition Class2Relational := parse Class2Relational'.
-
 
 Close Scope coqtl.

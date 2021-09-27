@@ -8,8 +8,10 @@ Require Import core.utils.Utils.
 
 Require Import core.Syntax.
 Require Import core.modeling.ModelingSemantics.
-Require Import core.modeling.Metamodel.
+Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
+Require Import core.TransformationConfiguration.
+Require Import core.modeling.ModelingTransformationConfiguration.
 
 Require Import Class2Relational.ClassMetamodel.
 Require Import Class2Relational.RelationalMetamodel.
@@ -38,6 +40,16 @@ Require Import Class2Relational.RelationalMetamodel.
           )
     }
    } *)
+
+Instance C2RConfiguration : TransformationConfiguration := {
+  SourceMetamodel := ClassM;
+  TargetMetamodel := RelationalM;
+}.
+
+Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration := {
+  smm := ClassMetamodel;
+  tmm := RelationalMetamodel;
+}.
 
 Definition Class2Relational :=
   buildTransformation 1

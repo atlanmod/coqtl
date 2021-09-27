@@ -32,21 +32,14 @@ Require Import Bool.
 Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.EqDec.
+Require Import core.TransformationConfiguration.
 
 Scheme Equality for list.
 
 Set Implicit Arguments.
 
-
-
-Class TransformationEngine (SourceModelElement SourceModelLink TargetModelElement TargetModelLink: Type) :=
-  {
-
-    eqdec_sme: EqDec SourceModelElement;
-
-    SourceModel := Model SourceModelElement SourceModelLink;
-    TargetModel := Model TargetModelElement TargetModelLink;
-
+Class TransformationSyntax (tc: TransformationConfiguration) := {
+    (** ** Syntax *)
     Transformation: Type;
     Rule: Type;
     OutputPatternElement: Type;
@@ -57,7 +50,7 @@ Class TransformationEngine (SourceModelElement SourceModelLink TargetModelElemen
 
     Transformation_getRules: Transformation -> list Rule;
     Transformation_getArity: Transformation -> nat;
- 
+  
     Rule_getOutputPatternElements: Rule -> list OutputPatternElement;
 
     OutputPatternElement_getOutputElementReferences: OutputPatternElement -> list OutputPatternElementReference;
@@ -65,8 +58,16 @@ Class TransformationEngine (SourceModelElement SourceModelLink TargetModelElemen
     TraceLink_getSourcePattern: TraceLink -> list SourceModelElement;
     TraceLink_getIterator: TraceLink -> nat;
     TraceLink_getName: TraceLink -> string;
-    TraceLink_getTargetElement: TraceLink -> TargetModelElement;
+    TraceLink_getTargetElement: TraceLink -> TargetModelElement;    
 
+    evalOutputPatternElementExpr: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
+    evalIteratorExpr: Rule -> SourceModel -> list SourceModelElement -> nat;
+    evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternElementReference -> option TargetModelLink;
+    evalGuardExpr: Rule->SourceModel->list SourceModelElement->option bool;
+}.
+  
+Class TransformationEngine (tc: TransformationConfiguration) (ts: TransformationSyntax tc) :=
+  {
     (** ** allTuples *)
 
     allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
@@ -90,11 +91,6 @@ Class TransformationEngine (SourceModelElement SourceModelLink TargetModelElemen
     applyElementOnPattern: OutputPatternElement -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
     applyReferenceOnPattern: OutputPatternElementReference -> Transformation -> SourceModel -> list SourceModelElement -> nat -> TargetModelElement -> option TargetModelLink;
     
-    evalOutputPatternElementExpr: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
-    evalIteratorExpr: Rule -> SourceModel -> list SourceModelElement -> nat;
-    evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternElementReference -> option TargetModelLink;
-    evalGuardExpr: Rule->SourceModel->list SourceModelElement->option bool;
-
     trace: Transformation -> SourceModel -> list TraceLink; 
 
     resolveAll: forall (tr: list TraceLink) (sm: SourceModel) (name: string)
@@ -104,6 +100,12 @@ Class TransformationEngine (SourceModelElement SourceModelLink TargetModelElemen
              (sp: list SourceModelElement) (iter : nat), option TargetModelElement;
 
     (** ** Theorems *)
+
+    (** ** allTuples *)
+
+    allTuples_incl:
+      forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
+        In sp (allTuples tr sm) -> incl sp (allModelElements sm);
 
     (** ** execute *)
 
@@ -132,7 +134,7 @@ Class TransformationEngine (SourceModelElement SourceModelLink TargetModelElemen
 
     (** ** matchRuleOnPattern *)
 
-    tr_matchRuleOnPattern_Leaf :
+    tr_matchRuleOnPattern_leaf :
     forall (tr: Transformation) (sm : SourceModel) (r: Rule) (sp: list SourceModelElement),
       matchRuleOnPattern r sm sp =
        match evalGuardExpr r sm sp with Some true => true | _ => false end;
@@ -230,15 +232,15 @@ Class TransformationEngine (SourceModelElement SourceModelLink TargetModelElemen
           In sp sps /\
           resolve tls sm name sp iter = Some te);
 
-    tr_resolve_Leaf:
+    tr_resolve_leaf:
     forall (tls:list TraceLink) (sm : SourceModel) (name: string)
       (sp: list SourceModelElement) (iter: nat) (x: TargetModelElement),
       resolve tls sm name sp iter = return x ->
        (exists (tl : TraceLink),
          In tl tls /\
-         Is_true (list_beq SourceModelElement core.EqDec.eq_b (TraceLink_getSourcePattern tl) sp) /\
+         Is_true (list_beq SourceModelElement SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
          ((TraceLink_getIterator tl) = iter) /\ 
          ((TraceLink_getName tl) = name)%string /\
          (TraceLink_getTargetElement tl) = x);
-
+         
   }.

@@ -12,20 +12,11 @@ Require Import core.Semantics.
 Require Import core.modeling.ModelingSemantics.
 Require Import core.Certification.
 Require Import core.Syntax.
-Require Import core.EqDec.
 
 Section IterateTracesCertification.
 
-  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
-  Context {smm: Metamodel SourceModelElement SourceModelLink SourceModelClass SourceModelReference}.
-  Context {eqdec_sme: EqDec SourceModelElement}. (* need decidable equality on source model elements *)
-  Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-  Context {tmm: Metamodel TargetModelElement TargetModelLink TargetModelClass TargetModelReference}.
+  Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}. 
   
-  Definition SourceModel := Model SourceModelElement SourceModelLink.
-  Definition TargetModel := Model TargetModelElement TargetModelLink.
-  Definition Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink.
-
   (** * Resolve *)
 
   Theorem tr_resolveAll_in:

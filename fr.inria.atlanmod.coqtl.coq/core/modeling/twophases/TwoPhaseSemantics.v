@@ -6,17 +6,15 @@ Require Import core.Syntax.
 Require Import Bool.
 Require Import Arith.
 Require Import Semantics.
+Require Import core.TransformationConfiguration.
+Require Import core.modeling.ModelingTransformationConfiguration.
+Require Import core.Expressions.
 Scheme Equality for list.
  
 
 Section TwoPhaseSemantics.
 
-  Context {SourceModelElement SourceModelLink SourceModelClass SourceModelReference: Type}.
-  Context {TargetModelElement TargetModelLink TargetModelClass TargetModelReference: Type}.
-
-  Definition SourceModel := Model SourceModelElement SourceModelLink.
-  Definition TargetModel := Model TargetModelElement TargetModelLink.
-  Definition Transformation := @Transformation SourceModelElement SourceModelLink TargetModelElement TargetModelLink.
+  Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.  
 
   (** * Apply **)
 
@@ -42,7 +40,7 @@ Section TwoPhaseSemantics.
     flat_map (fun o => applyElementOnPatternTraces o tr sm sp iter tls)
       (Rule_getOutputPatternElements r).
 
-  Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (tls: list (@TraceLink SourceModelElement TargetModelElement)): list TargetModelLink :=
+  Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (tls: list TraceLink): list TargetModelLink :=
     flat_map (fun i => applyIterationOnPatternTraces r tr sm sp i tls)
       (indexes (evalIteratorExpr r sm sp)).
 
@@ -55,7 +53,7 @@ Section TwoPhaseSemantics.
     let tls := trace tr sm in
       ( map (TraceLink_getTargetElement) tls, tls ).
 
-  Definition applyTraces (tr: Transformation) (sm : SourceModel) (tls: list (@TraceLink SourceModelElement TargetModelElement)): list TargetModelLink :=
+  Definition applyTraces (tr: Transformation) (sm : SourceModel) (tls: list TraceLink): list TargetModelLink :=
     flat_map (fun sp => applyPatternTraces tr sm sp tls) (allTuples tr sm).
 
   Definition executeTraces (tr: Transformation) (sm : SourceModel) : TargetModel :=
