@@ -25,5 +25,5 @@ forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceMode
 Admitted.
 
 Definition monotonicity (tc: TransformationConfiguration) (t: Transformation) :=
-    forall (sm1 sm2: SourceModel) (tm1 tm2: TargetModel),
-    sourcemodel_incl sm1 sm2 -> targetmodel_incl tm1 tm2.
+    forall (sm1 sm2: SourceModel),
+    sourcemodel_incl sm1 sm2 -> targetmodel_incl (execute t sm1) (execute t sm2).
