@@ -11,38 +11,38 @@ Require Import core.TransformationConfiguration.
 
 Section TraceLink.
 
-  Context {tc: TransformationConfiguration}.
+Context {tc: TransformationConfiguration}.
 
-  (** ** Traces 
-  
-         We introduce the concept of trace in the syntax to track relationship of a target element and 
-         the source pattern that generates it   *)
+(** ** Traces 
 
-  Inductive TraceLink : Type :=
-    buildTraceLink : 
-      (list SourceModelElement * nat * string)
-      -> TargetModelElement
-      -> TraceLink.
+        We introduce the concept of trace in the syntax to track relationship of a target element and 
+        the source pattern that generates it   *)
 
-  Definition TraceLink_getSourcePattern (tl: TraceLink):=
-    match tl with 
-      buildTraceLink (sp, i, n) te => sp
-    end.
+Inductive TraceLink : Type :=
+  buildTraceLink : 
+    (list SourceModelElement * nat * string)
+    -> TargetModelElement
+    -> TraceLink.
 
-  Definition TraceLink_getIterator (tl: TraceLink):=
-    match tl with 
-      buildTraceLink (sp, i, n) te => i
-    end.
+Definition TraceLink_getSourcePattern (tl: TraceLink):=
+  match tl with 
+    buildTraceLink (sp, i, n) te => sp
+  end.
 
-  Definition TraceLink_getName (tl: TraceLink):=
-    match tl with 
-      buildTraceLink (sp, i, n) te => n
-    end.
+Definition TraceLink_getIterator (tl: TraceLink):=
+  match tl with 
+    buildTraceLink (sp, i, n) te => i
+  end.
 
-  Definition TraceLink_getTargetElement (tl: TraceLink):=
-    match tl with 
-      buildTraceLink (sp, i, n) te => te
-    end.
+Definition TraceLink_getName (tl: TraceLink):=
+  match tl with 
+    buildTraceLink (sp, i, n) te => n
+  end.
+
+Definition TraceLink_getTargetElement (tl: TraceLink):=
+  match tl with 
+    buildTraceLink (sp, i, n) te => te
+  end.
 
 End TraceLink.
 

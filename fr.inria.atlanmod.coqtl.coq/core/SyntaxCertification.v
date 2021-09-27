@@ -5,36 +5,36 @@ Require Import core.Expressions.
 
 Section SyntaxCertification.
 
-  Context {tc: TransformationConfiguration}.
+Context {tc: TransformationConfiguration}.
 
-  Instance CoqTLSyntax :
-    TransformationSyntax tc :=
-    {
-        (* syntax and accessors *)
+Instance CoqTLSyntax :
+  TransformationSyntax tc :=
+  {
+      (* syntax and accessors *)
 
-        Transformation := Transformation;
-        Rule := Rule;
-        OutputPatternElement := OutputPatternElement;
-        OutputPatternElementReference := OutputPatternElementReference;
+      Transformation := Transformation;
+      Rule := Rule;
+      OutputPatternElement := OutputPatternElement;
+      OutputPatternElementReference := OutputPatternElementReference;
 
-        TraceLink := TraceLink;
+      TraceLink := TraceLink;
 
-        Transformation_getArity := Transformation_getArity;
-        Transformation_getRules := Transformation_getRules;
+      Transformation_getArity := Transformation_getArity;
+      Transformation_getRules := Transformation_getRules;
 
-        Rule_getOutputPatternElements := Rule_getOutputPatternElements;
+      Rule_getOutputPatternElements := Rule_getOutputPatternElements;
 
-        OutputPatternElement_getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
+      OutputPatternElement_getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
 
-        TraceLink_getSourcePattern := TraceLink_getSourcePattern;
-        TraceLink_getIterator := TraceLink_getIterator;
-        TraceLink_getName := TraceLink_getName;
-        TraceLink_getTargetElement := TraceLink_getTargetElement;    
-        
-        evalOutputPatternElementExpr := evalOutputPatternElementExpr;
-        evalIteratorExpr := evalIteratorExpr;
-        evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
-        evalGuardExpr := evalGuardExpr;
-    }.
+      TraceLink_getSourcePattern := TraceLink_getSourcePattern;
+      TraceLink_getIterator := TraceLink_getIterator;
+      TraceLink_getName := TraceLink_getName;
+      TraceLink_getTargetElement := TraceLink_getTargetElement;    
+      
+      evalOutputPatternElementExpr := evalOutputPatternElementExpr;
+      evalIteratorExpr := evalIteratorExpr;
+      evalOutputPatternLinkExpr := evalOutputPatternLinkExpr;
+      evalGuardExpr := evalGuardExpr;
+  }.
 
 End SyntaxCertification.
