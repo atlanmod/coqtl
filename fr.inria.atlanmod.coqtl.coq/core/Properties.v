@@ -20,8 +20,9 @@ Admitted.
 (* Compute elementAt 3 (indexedElements 1 (3::4::5::nil)). *)
 
 Theorem universality_elements :
-forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel) (sm: SourceModel),
-  exists (t: Transformation), allModelElements (execute t sm) = allModelElements (f sm).
+forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel),
+  exists (t: Transformation), 
+  forall (sm: SourceModel), allModelElements (execute t sm) = allModelElements (f sm).
 Proof.
   intros.
   exists (buildTransformation 0 
@@ -33,6 +34,7 @@ Proof.
       nil 
       :: nil))
      ::nil)).
+  intros.
   unfold execute. simpl.
   unfold instantiatePattern. simpl.
   unfold instantiateRuleOnPattern. simpl.
@@ -40,7 +42,6 @@ Proof.
   unfold evalIteratorExpr. simpl.
   destruct (f sm). simpl.
   repeat rewrite <- app_nil_end.
-  Search nth.
   induction modelElements.
   * reflexivity.
   * simpl.
@@ -54,7 +55,7 @@ Proof.
     intros.
     do 2 f_equal.
     clear IHmodelElements.
-    Admit.
+    Admitted.
 
 Theorem confluence :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
