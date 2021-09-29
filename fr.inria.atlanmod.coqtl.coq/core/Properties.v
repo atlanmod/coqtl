@@ -1,7 +1,13 @@
 Require Import core.Semantics.
 Require Import core.Syntax.
+Require Import core.Model.
 Require Import core.TransformationConfiguration.
+Require Import String.
+Require Import EqNat.
 Require Import List.
+Require Import Expressions.
+Require Import core.utils.Utils.
+Require Import FunctionalExtensionality.
 
 Definition transf_incl {tc: TransformationConfiguration} (t1 t2: Transformation) := True.
 Definition sourcemodel_incl {tc: TransformationConfiguration} (t1 t2: SourceModel) := True.
@@ -11,10 +17,44 @@ Definition targetmodel_equiv {tc: TransformationConfiguration} (t1 t2: TargetMod
 Definition Rule_eqdec: forall {tc: TransformationConfiguration}  (x y:Rule), {x = y} + {x <> y}.
 Admitted.
 
-Theorem universality :
-forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel),
-  exists (t: Transformation), execute t = f.
-Admitted.
+(* Compute elementAt 3 (indexedElements 1 (3::4::5::nil)). *)
+
+Theorem universality_elements :
+forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel) (sm: SourceModel),
+  exists (t: Transformation), allModelElements (execute t sm) = allModelElements (f sm).
+Proof.
+  intros.
+  exists (buildTransformation 0 
+    ((buildRule "rule"%string 
+     (fun sm sp => match sp with nil => Some true | _ => Some false end)
+     (fun sm sp => Some (length (allModelElements (f sm))))
+      (buildOutputPatternElement "out"%string 
+      (fun i sm sp => nth_error (allModelElements (f sm)) i)
+      nil 
+      :: nil))
+     ::nil)).
+  unfold execute. simpl.
+  unfold instantiatePattern. simpl.
+  unfold instantiateRuleOnPattern. simpl.
+  unfold instantiateIterationOnPattern. simpl.
+  unfold evalIteratorExpr. simpl.
+  destruct (f sm). simpl.
+  repeat rewrite <- app_nil_end.
+  Search nth.
+  induction modelElements.
+  * reflexivity.
+  * simpl.
+    f_equal.
+    rewrite <- IHmodelElements at 2.
+    repeat rewrite flat_map_concat_map.
+    f_equal.
+    rewrite map_map.
+    f_equal.
+    apply functional_extensionality.
+    intros.
+    do 2 f_equal.
+    clear IHmodelElements.
+    Admit.
 
 Theorem confluence :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),

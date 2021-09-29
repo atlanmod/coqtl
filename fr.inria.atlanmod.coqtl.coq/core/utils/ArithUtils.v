@@ -1,4 +1,5 @@
 Require Import Arith.
+
 Require Import NotationUtils.
 
 Definition ble_nat := leb.
@@ -17,20 +18,29 @@ Proof.
     destruct H; subst; auto.
 Qed.
 
-Fixpoint indexes (length: nat): list nat :=
+Fixpoint indexes (length: nat) :=
   match length with
   | 0 => nil
-  | S length' => (length') :: indexes(length')
+  | S length' => 0 :: (map (fun x => x + 1) (indexes length'))
   end.
+(*Fixpoint indexesFrom (length start:nat) : list nat :=
+  match length with
+  | 0 => nil
+  | S length' => start :: indexesFrom length' (start + 1)
+  end.
+
+Definition indexes (length: nat) := 
+  indexesFrom length 0.*)
 
 Lemma indexes_nat_upperBound:
   forall x len, In x (indexes len) <-> x < len.
 Proof.
-  split; intros.
+Admitted.
+  (*split; intros.
   - induction len; inversion H.
     + subst len. auto.
     + transitivity len; auto.
   - induction len; inversion H.
     + left. reflexivity.
     + right. auto.
-Qed.
+Qed. *)
