@@ -42,7 +42,6 @@ Proof.
   unfold evalIteratorExpr. 
   simpl.
   destruct (f sm).
-  repeat rewrite <- app_nil_end.
   induction modelElements.
   * reflexivity.
   * simpl.
