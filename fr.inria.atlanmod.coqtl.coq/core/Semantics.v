@@ -113,8 +113,8 @@ Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
 
 (** * Apply **)
 
-Definition applyReferenceOnPattern
-            (oper: OutputPatternElementReference)
+Definition applyLinkOnPattern
+            (oper: OutputPatternLink)
             (tr: Transformation)
             (sm: SourceModel)
             (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) : option TargetModelLink :=
@@ -127,9 +127,9 @@ Definition applyElementOnPattern
             (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
   flat_map (fun oper => 
     match (evalOutputPatternElementExpr sm sp iter ope) with 
-    | Some l => optionToList (applyReferenceOnPattern oper tr sm sp iter l)
+    | Some l => optionToList (applyLinkOnPattern oper tr sm sp iter l)
     | None => nil
-    end) (OutputPatternElement_getOutputElementReferences ope).
+    end) (OutputPatternElement_getOutputLinks ope).
 
 Definition applyIterationOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
   flat_map (fun o => applyElementOnPattern o tr sm sp iter)

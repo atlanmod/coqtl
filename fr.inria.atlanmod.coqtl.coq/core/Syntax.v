@@ -18,17 +18,17 @@ Context {tc: TransformationConfiguration}.
 
         Next, we model syntactic elements of any transformation specification that supported by the CoqTL engine. *)
 
-(** *** OutputPatternElementReference *)
+(** *** OutputPatternLink *)
 
-Inductive OutputPatternElementReference : Type :=
-  buildOutputPatternElementReference :
+Inductive OutputPatternLink : Type :=
+  buildOutputPatternLink :
     (list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink) 
-    -> OutputPatternElementReference.
+    -> OutputPatternLink.
 
-Definition OutputPatternElementReference_getLinkExpr (o: OutputPatternElementReference) : 
+Definition OutputPatternLink_getLinkExpr (o: OutputPatternLink) : 
     list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink :=
     match o with
-      buildOutputPatternElementReference y => y
+      buildOutputPatternLink y => y
     end.
 
 (** *** OutputPatternElement *)
@@ -37,7 +37,7 @@ Inductive OutputPatternElement : Type :=
   buildOutputPatternElement :
     string 
     -> (nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
-    -> (list OutputPatternElementReference) -> OutputPatternElement.
+    -> (list OutputPatternLink) -> OutputPatternElement.
 
 Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
   match o with
@@ -49,8 +49,8 @@ Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -
     buildOutputPatternElement _ y _ => y
   end.
 
-Definition OutputPatternElement_getOutputElementReferences (o: OutputPatternElement) :
-  list OutputPatternElementReference :=
+Definition OutputPatternElement_getOutputLinks (o: OutputPatternElement) :
+  list OutputPatternLink :=
   match o with
     buildOutputPatternElement _ _ y => y
       end.
@@ -116,5 +116,5 @@ Arguments Rule {_}.
 Arguments buildRule {_}.
 
 Arguments buildOutputPatternElement {_}.
-Arguments buildOutputPatternElementReference {_}.
+Arguments buildOutputPatternLink {_}.
 (* end hide *)

@@ -292,11 +292,11 @@ Proof.
   { specialize (option_res_dec (applyElementOnPattern r ope tr sm sp)). intros.
     specialize (H1 i H0). destruct H1. exists x. crush. }
   destruct H1.
-  assert (exists oper,  In oper (getOutputElementReferences  (getInTypes r) (getIteratorType r) ope) /\  applyReferenceOnPattern r ope oper tr sm sp i <> None).
+  assert (exists oper,  In oper (getOutputLinks  (getInTypes r) (getIteratorType r) ope) /\  applyLinkOnPattern r ope oper tr sm sp i <> None).
   { specialize (tr_applyElementOnPattern_non_None tr r sm sp i ope). intros. crush. }
   destruct H2.
-  assert ( applyReferenceOnPattern r ope x0 tr sm sp i = None).
-  { specialize (tr_applyReferenceOnPattern_None tr sm r sp i ope x0). intros. crush. }
+  assert ( applyLinkOnPattern r ope x0 tr sm sp i = None).
+  { specialize (tr_applyLinkOnPattern_None tr sm r sp i ope x0). intros. crush. }
   crush.
 Qed.
 
@@ -410,7 +410,7 @@ Proof.
   destruct H1.
   specialize (H1 H0).
   destruct H1. destruct H1.
-  specialize (tr_applyReferenceOnPattern_None_iterator tr sm r sp).
+  specialize (tr_applyLinkOnPattern_None_iterator tr sm r sp).
   intros.
   specialize (H4 i ope x H).
   crush.

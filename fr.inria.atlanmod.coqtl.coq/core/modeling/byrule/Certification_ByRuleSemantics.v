@@ -376,7 +376,7 @@ Instance ByRuleEngine :
   Transformation := Transformation;
   Rule := Rule;
   OutputPatternElement := OutputPatternElement;
-  OutputPatternElementReference := OutputPatternElementReference;
+  OutputPatternLink := OutputPatternLink;
 
   TraceLink := TraceLink;
 
@@ -386,7 +386,7 @@ Instance ByRuleEngine :
   getGuardExpr := Rule_getGuardExpr;
   getOutputPattern := Rule_getOutputPatternElements;
 
-  getOutputElementReferences := OutputPatternElement_getOutputElementReferences;
+  getOutputLinks := OutputPatternElement_getOutputLinks;
 
   execute := execute;
 
@@ -402,7 +402,7 @@ Instance ByRuleEngine :
   applyRuleOnPattern := applyRuleOnPattern;
   applyIterationOnPattern := applyIterationOnPattern;
   applyElementOnPattern := applyElementOnPattern;
-  applyReferenceOnPattern := applyReferenceOnPattern;
+  applyLinkOnPattern := applyLinkOnPattern;
 
   evalOutputPatternElementExpr := evalOutputPatternElementExpr;
   evalIteratorExpr := evalIteratorExpr;
@@ -446,13 +446,13 @@ Instance ByRuleEngine :
 
   tr_applyElementOnPattern_non_None := tr_applyElementOnPattern_non_None;
 
-  tr_applyReferenceOnPattern_None := tr_applyReferenceOnPattern_None;
-  tr_applyReferenceOnPattern_None_iterator := tr_applyReferenceOnPattern_None_iterator;
+  tr_applyLinkOnPattern_None := tr_applyLinkOnPattern_None;
+  tr_applyLinkOnPattern_None_iterator := tr_applyLinkOnPattern_None_iterator;
 
   tr_maxArity_in := tr_maxArity_in;
 
   tr_instantiateElementOnPattern_Leaf := tr_instantiateElementOnPattern_Leaf;
-  tr_applyReferenceOnPattern_Leaf := tr_applyReferenceOnPattern_Leaf;
+  tr_applyLinkOnPattern_Leaf := tr_applyLinkOnPattern_Leaf;
   tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
 
   tr_resolveAll_in := tr_resolveAllIter_in;

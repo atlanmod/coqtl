@@ -20,7 +20,7 @@ Fixpoint denoteFunction (sclasses : list SourceModelClass) (otype: Type) :=
   | cons class classes' => (denoteModelClass class) -> denoteFunction classes' otype
   end.
 
-Definition outputReferenceTypes
+Definition outputPatternLink
 (sclasses : list SourceModelClass) (tclass: TargetModelClass)  (tref: TargetModelReference):=
 denoteFunction (sclasses) ((denoteModelClass tclass) -> option (denoteModelReference tref)).
 
@@ -35,18 +35,18 @@ Definition iteratedListTypes
 Definition guardTypes (sclasses : list SourceModelClass) :=
   denoteFunction (sclasses) bool.
 
-Inductive ConcreteOutputPatternElementReference (InTypes: list SourceModelClass) (OutType:TargetModelClass) : Type :=
+Inductive ConcreteOutputPatternLink (InTypes: list SourceModelClass) (OutType:TargetModelClass) : Type :=
   link :
   forall (OutRef: TargetModelReference),
-      (list TraceLink -> nat -> SourceModel -> (outputReferenceTypes InTypes OutType OutRef)) ->
-      ConcreteOutputPatternElementReference InTypes OutType.
+      (list TraceLink -> nat -> SourceModel -> (outputPatternLink InTypes OutType OutRef)) ->
+      ConcreteOutputPatternLink InTypes OutType.
 
 Inductive ConcreteOutputPatternElement (InTypes: list SourceModelClass) : Type :=
   elem :
     forall (OutType:TargetModelClass),
       string ->
         (nat -> SourceModel -> (outputPatternElementTypes InTypes OutType)) 
-    -> (list (ConcreteOutputPatternElementReference InTypes OutType)) -> ConcreteOutputPatternElement InTypes.
+    -> (list (ConcreteOutputPatternLink InTypes OutType)) -> ConcreteOutputPatternElement InTypes.
 
 Inductive ConcreteRule : Type :=
   concreteRule :
@@ -64,13 +64,13 @@ Inductive ConcreteTransformation : Type :=
 
 (** ** Accessors **)
 
-Definition ConcreteOutputPatternElementReference_getRefType {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternElementReference InElTypes OutType) : TargetModelReference :=
+Definition ConcreteOutputPatternLink_getRefType {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternLink InElTypes OutType) : TargetModelReference :=
   match o with
     link _ _ y _ => y
   end.
 
-Definition ConcreteOutputPatternElementReference_getOutputReference {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternElementReference InElTypes OutType) :
-  list TraceLink -> nat -> SourceModel -> (outputReferenceTypes InElTypes OutType (ConcreteOutputPatternElementReference_getRefType o)).
+Definition ConcreteOutputPatternLink_getOutputPatternLink {InElTypes: list SourceModelClass} {OutType:TargetModelClass} (o: ConcreteOutputPatternLink InElTypes OutType) :
+  list TraceLink -> nat -> SourceModel -> (outputPatternLink InElTypes OutType (ConcreteOutputPatternLink_getRefType o)).
 Proof.
   destruct o eqn:ho.
   exact o0.
@@ -92,8 +92,8 @@ Definition ConcreteOutputPatternElement_getOutPatternElement {InElTypes: list So
     elem _ _ _ y _ => y
   end.
 
-Definition ConcreteOutputPatternElement_getOutputElementReferences {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternElement InElTypes) :
-  list (ConcreteOutputPatternElementReference InElTypes (ConcreteOutputPatternElement_getOutType o)) :=
+Definition ConcreteOutputPatternElement_getOutputLinks {InElTypes: list SourceModelClass} (o: ConcreteOutputPatternElement InElTypes) :
+  list (ConcreteOutputPatternLink InElTypes (ConcreteOutputPatternElement_getOutType o)) :=
   match o with
     elem _ _ _ _ y => y
   end.

@@ -19,8 +19,8 @@ Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfigurat
 
 (** * Apply **)
 
-Definition applyReferenceOnPatternTraces
-            (oper: OutputPatternElementReference)
+Definition applyLinkOnPatternTraces
+            (oper: OutputPatternLink)
             (tr: Transformation)
             (sm: SourceModel)
             (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink): option TargetModelLink :=
@@ -33,9 +33,9 @@ Definition applyElementOnPatternTraces
             (sp: list SourceModelElement) (iter: nat) (tls: list TraceLink): list TargetModelLink :=
   flat_map (fun oper => 
     match (evalOutputPatternElementExpr sm sp iter ope) with 
-    | Some l => optionToList (applyReferenceOnPatternTraces oper tr sm sp iter l tls)
+    | Some l => optionToList (applyLinkOnPatternTraces oper tr sm sp iter l tls)
     | None => nil
-    end) (OutputPatternElement_getOutputElementReferences ope).
+    end) (OutputPatternElement_getOutputLinks ope).
 
 Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) (tls: list TraceLink): list TargetModelLink :=
   flat_map (fun o => applyElementOnPatternTraces o tr sm sp iter tls)

@@ -29,7 +29,7 @@ Require Import examples.Class2Relational.RelationalMetamodel.
   unfold ConcreteSyntax.parse in Ht; 
   unfold ConcreteSyntax.parseRule in Ht;
   unfold ConcreteSyntax.parseOutputPatternElement in Ht;
-  unfold ConcreteSyntax.parseOutputPatternElementReference in Ht;
+  unfold ConcreteSyntax.parseOutputPatternLink in Ht;
   unfold Expressions.makeGuard in Ht;
   unfold Expressions.makeElement in Ht;
   unfold Expressions.makeIterator in Ht;
@@ -44,7 +44,7 @@ Ltac unfoldTransformation Tr :=
   unfold ConcreteSyntax.parse; 
   unfold ConcreteSyntax.parseRule;
   unfold ConcreteSyntax.parseOutputPatternElement;
-  unfold ConcreteSyntax.parseOutputPatternElementReference;
+  unfold ConcreteSyntax.parseOutputPatternLink;
   unfold Expressions.makeGuard;
   unfold Expressions.makeElement;
   unfold Expressions.makeIterator;

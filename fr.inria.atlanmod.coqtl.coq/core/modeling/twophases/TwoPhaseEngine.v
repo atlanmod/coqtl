@@ -59,7 +59,7 @@ Class TransformationEngineTrace (tc: TransformationConfiguration) (ts: Transform
     applyRuleOnPatternTraces: Rule -> Transformation -> SourceModel -> list SourceModelElement -> list TraceLink -> list TargetModelLink;
     applyIterationOnPatternTraces: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TraceLink -> list TargetModelLink;
     applyElementOnPatternTraces: OutputPatternElement -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TraceLink -> list TargetModelLink;
-    applyReferenceOnPatternTraces: OutputPatternElementReference -> Transformation -> SourceModel -> list SourceModelElement -> nat -> TargetModelElement -> list TraceLink -> option TargetModelLink;
+    applyLinkOnPatternTraces: OutputPatternLink -> Transformation -> SourceModel -> list SourceModelElement -> nat -> TargetModelElement -> list TraceLink -> option TargetModelLink;
 
     (** ** Theorems *)
 
@@ -138,16 +138,16 @@ Class TransformationEngineTrace (tc: TransformationConfiguration) (ts: Transform
           forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) 
                  (i:nat) (ope: OutputPatternElement)  (tls: list TraceLink),
             In tl (applyElementOnPatternTraces ope tr sm sp i tls) <->
-            (exists (oper: OutputPatternElementReference) (te: TargetModelElement),
-                In oper (OutputPatternElement_getOutputElementReferences ope) /\ 
+            (exists (oper: OutputPatternLink) (te: TargetModelElement),
+                In oper (OutputPatternElement_getOutputLinks ope) /\ 
                 (evalOutputPatternElementExpr sm sp i ope) = Some te /\
-                applyReferenceOnPatternTraces oper tr sm sp i te tls = Some tl);
+                applyLinkOnPatternTraces oper tr sm sp i te tls = Some tl);
 
-    tr_applyReferenceOnPatternTraces_leaf : 
-          forall (oper: OutputPatternElementReference)
+    tr_applyLinkOnPatternTraces_leaf : 
+          forall (oper: OutputPatternLink)
                  (tr: Transformation)
                  (sm: SourceModel)
                  (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink),
-            applyReferenceOnPatternTraces oper tr sm sp iter te tls  = evalOutputPatternLinkExpr sm sp te iter tls oper;
+            applyLinkOnPatternTraces oper tr sm sp iter te tls  = evalOutputPatternLinkExpr sm sp te iter tls oper;
 
   }.

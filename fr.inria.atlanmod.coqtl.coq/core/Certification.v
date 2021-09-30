@@ -175,10 +175,10 @@ Lemma tr_applyElementOnPattern_in :
     forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) 
             (i:nat) (ope: OutputPatternElement),
       In tl (applyElementOnPattern ope tr sm sp i ) <->
-      (exists (oper: OutputPatternElementReference) (te: TargetModelElement),
-          In oper (OutputPatternElement_getOutputElementReferences ope) /\ 
+      (exists (oper: OutputPatternLink) (te: TargetModelElement),
+          In oper (OutputPatternElement_getOutputLinks ope) /\ 
           (evalOutputPatternElementExpr sm sp i ope) = Some te /\
-          applyReferenceOnPattern oper tr sm sp i te = Some tl).
+          applyLinkOnPattern oper tr sm sp i te = Some tl).
 Proof.
   split.
   * intros.
@@ -188,7 +188,7 @@ Proof.
     unfold optionToList in H.
     destruct H.
     destruct (evalOutputPatternElementExpr sm sp i ope) eqn: eval_ca.
-    - destruct (applyReferenceOnPattern x tr sm sp i t) eqn: ref_ca.
+    - destruct (applyLinkOnPattern x tr sm sp i t) eqn: ref_ca.
       -- eexists t.
           split; crush.
       -- contradiction.
@@ -206,12 +206,12 @@ Proof.
     - crush.
 Qed.
 
-Lemma tr_applyReferenceOnPattern_leaf : 
-        forall (oper: OutputPatternElementReference)
+Lemma tr_applyLinkOnPattern_leaf : 
+        forall (oper: OutputPatternLink)
                 (tr: Transformation)
                 (sm: SourceModel)
                 (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink),
-          applyReferenceOnPattern oper tr sm sp iter te  = evalOutputPatternLinkExpr sm sp te iter (trace tr sm) oper.
+          applyLinkOnPattern oper tr sm sp iter te  = evalOutputPatternLinkExpr sm sp te iter (trace tr sm) oper.
 Proof.
   crush.
 Qed.
@@ -357,7 +357,7 @@ Instance CoqTLEngine :
     applyRuleOnPattern := applyRuleOnPattern;
     applyIterationOnPattern := applyIterationOnPattern;
     applyElementOnPattern := applyElementOnPattern;
-    applyReferenceOnPattern := applyReferenceOnPattern;
+    applyLinkOnPattern := applyLinkOnPattern;
 
     trace := trace;
 
@@ -381,7 +381,7 @@ Instance CoqTLEngine :
     tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
     tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
     tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
-    tr_applyReferenceOnPatternTraces_leaf := tr_applyReferenceOnPattern_leaf;
+    tr_applyLinkOnPatternTraces_leaf := tr_applyLinkOnPattern_leaf;
 
     tr_resolveAll_in := tr_resolveAllIter_in;
     tr_resolve_leaf := tr_resolveIter_leaf;
@@ -410,13 +410,13 @@ Instance CoqTLEngine :
 
     tr_applyElementOnPattern_non_None := tr_applyElementOnPattern_non_None;
 
-    tr_applyReferenceOnPattern_None := tr_applyReferenceOnPattern_None;
-    tr_applyReferenceOnPattern_None_iterator := tr_applyReferenceOnPattern_None_iterator;
+    tr_applyLinkOnPattern_None := tr_applyLinkOnPattern_None;
+    tr_applyLinkOnPattern_None_iterator := tr_applyLinkOnPattern_None_iterator;
 
     tr_maxArity_in := tr_maxArity_in;
 
     tr_instantiateElementOnPattern_Leaf := tr_instantiateElementOnPattern_Leaf;
-    tr_applyReferenceOnPattern_Leaf := tr_applyReferenceOnPattern_Leaf;
+    tr_applyLinkOnPattern_Leaf := tr_applyLinkOnPattern_Leaf;
     tr_matchRuleOnPattern_Leaf := tr_matchRuleOnPattern_Leaf;
 
     tr_resolveAll_in := tr_resolveAllIter_in;
