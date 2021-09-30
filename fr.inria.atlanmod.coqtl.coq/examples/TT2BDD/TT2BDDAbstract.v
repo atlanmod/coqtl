@@ -12,6 +12,7 @@ Require Import core.Syntax.
 Require Import core.Semantics.
 Require Import core.Model.
 Require Import core.EqDec.
+Require Import core.TransformationConfiguration.
 
 Require Import TT2BDD.TT.
 Require Import TT2BDD.BDD.
@@ -90,10 +91,13 @@ Definition list_max (l:list nat) := fold_right max 0 l.
 
   (* Eval compute in semantic (0::0::1::nil). *)
 
+  Instance TT2BDDConfiguration : TransformationConfiguration := {
+    SourceMetamodel := TTM;
+    TargetMetamodel := BDDM;
+  }.
+
 Definition TT2BDD :=
-  @buildTransformation 
-    TTElem TTRef BDDNode BDDEdge  (* source target elem ref types *)
-    1 (* max arity *)
+  @buildTransformation TT2BDDConfiguration 1
     [ (* rules *)
      (buildRule "Columns2Tree"  
         (fun m sp => option_map isColumn (hd_error sp))
@@ -104,7 +108,7 @@ Definition TT2BDD :=
               (fun tls i m col output => 
                 ulv <- (upper_level col);
                 ucol <- locate m ulv;
-                parent <- resolveIter' tls m "node" [ucol] ((div_roundup i 2)-1);
+                parent <- resolveIter tls m "node" [ucol] ((div_roundup i 2)-1);
                 Some (BuildBDDEdge output parent))]
         ]
       ) ;
@@ -119,7 +123,7 @@ Definition TT2BDD :=
                 col <- locate m height;             (* get node of depth *)
                 row <- hd_error sp;
                 input <- (Row_Input row);
-                parent <- resolveIter' tls m "node" [col] ((div_roundup (semantic input) 2)-1);   (* attach output to the corresponding leaf node*)
+                parent <- resolveIter tls m "node" [col] ((div_roundup (semantic input) 2)-1);   (* attach output to the corresponding leaf node*)
                 Some (BuildBDDEdge output parent) ) ]
         ]
       )

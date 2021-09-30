@@ -61,5 +61,5 @@ examples/Class2Relational/theorems/Column_name_uniqueness.v
 
 examples/TT2BDD/TT.v
 examples/TT2BDD/BDD.v
-#examples/TT2BDD/TT2BDDAbstract.v
+examples/TT2BDD/TT2BDDAbstract.v
 examples/TT2BDD/tests/TTModel.v
