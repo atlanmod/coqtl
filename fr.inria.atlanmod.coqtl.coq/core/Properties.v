@@ -7,7 +7,7 @@ Require Import EqNat.
 Require Import List.
 Require Import Expressions.
 Require Import core.utils.Utils.
-Require Import FunctionalExtensionality.
+Require Import PeanoNat.
 
 Definition transf_incl {tc: TransformationConfiguration} (t1 t2: Transformation) := True.
 Definition sourcemodel_incl {tc: TransformationConfiguration} (t1 t2: SourceModel) := True.
@@ -50,12 +50,8 @@ Proof.
     repeat rewrite flat_map_concat_map.
     f_equal.
     rewrite map_map.
-    f_equal.
-    apply functional_extensionality.
-    intros.
-    do 2 f_equal.
-    clear IHmodelElements.
-    Admitted.
+    reflexivity.
+Qed.
 
 Theorem confluence :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),

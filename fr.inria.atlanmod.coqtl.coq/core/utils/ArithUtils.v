@@ -21,7 +21,7 @@ Qed.
 Fixpoint indexes (length: nat) :=
   match length with
   | 0 => nil
-  | S length' => 0 :: (map (fun x => x + 1) (indexes length'))
+  | S length' => 0 :: (map (fun x => S x) (indexes length'))
   end.
 (*Fixpoint indexesFrom (length start:nat) : list nat :=
   match length with
