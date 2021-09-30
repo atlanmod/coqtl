@@ -296,14 +296,6 @@ Proof.
         crush.
 Qed.
 
-(*Theorem tr_resolve_in:
-  forall (tls: list TraceLink) (sm: SourceModel) (name: string)
-    (type: TargetModelClass) (sp: list SourceModelElement),
-    resolve tls sm name type sp = resolveIter tls sm name type sp 0.
-Proof.
-  crush.
-Qed.*)
-
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
 Theorem tr_resolveIter_leaf: 
   forall (tls:list TraceLink) (sm : SourceModel) (name: string)
