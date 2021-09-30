@@ -35,96 +35,96 @@ Definition list_max (l:list nat) := fold_right max 0 l.
    - 
  *)
 
-  Definition guard (sp: list TTElem) := 
-      match hd_error sp with
-      | Some e => isColumn e
-      | _ => false
-      end.
-
-
-  Definition iter_col (sp: list TTElem) := 
+Definition guard (sp: list TTElem) := 
     match hd_error sp with
-    | Some e => match (Column_Level e) with
-                | None => 0
-                | Some lv => (times (lv-1)) 
-                end
-    | _ => 0
-    end.
-    
-  Definition oelem_name (sp: list TTElem) (iter: nat) := 
-    match hd_error sp with
-    | Some e => append (Column_Name e) (natToString iter)
-    | _ => ""%string
+    | Some e => isColumn e
+    | _ => false
     end.
 
-  Definition upper_level (sp: list TTElem) := 
-    match hd_error sp with
-    | Some e => match (Column_Level e) with
-                | None => None
-                | Some n => Some (n - 1)
-                end 
-    | _ => None
-    end.
 
-  Definition locate (m: Model TTElem TTRef) (lv: nat) := 
-    find (fun e => match (Column_Level e) with
-            | None => false
-            | Some n => Nat.eqb n lv
-            end) (allModelElements m).
-
-  Definition output_name (sp: list TTElem) := 
-    match hd_error sp with
-    | Some e => match (Row_Output e) with
-                | None => ""%string
-                | Some str => append "S_" str
-                end 
-    | _ => ""%string
-    end.
-
-  Definition maxLv (m: Model TTElem TTRef) := list_max (optionList2List (map Column_Level (allModelElements m))).
+Definition iter_col (sp: list TTElem) := 
+  match hd_error sp with
+  | Some e => match (Column_Level e) with
+              | None => 0
+              | Some lv => (times (lv-1)) 
+              end
+  | _ => 0
+  end.
   
-  Fixpoint semantic (input: list nat) : nat :=
-    match input with
-    | nil => 0
-    | a :: r => a * pow 2 ((length input)-1) + semantic r
-    end.
+Definition oelem_name (sp: list TTElem) (iter: nat) := 
+  match hd_error sp with
+  | Some e => append (Column_Name e) (natToString iter)
+  | _ => ""%string
+  end.
 
-  (* Eval compute in semantic (0::0::1::nil). *)
+Definition upper_level (sp: list TTElem) := 
+  match hd_error sp with
+  | Some e => match (Column_Level e) with
+              | None => None
+              | Some n => Some (n - 1)
+              end 
+  | _ => None
+  end.
 
-  Instance TT2BDDConfiguration : TransformationConfiguration := {
-    SourceMetamodel := TTM;
-    TargetMetamodel := BDDM;
-  }.
+Definition locate (m: Model TTElem TTRef) (lv: nat) := 
+  find (fun e => match (Column_Level e) with
+          | None => false
+          | Some n => Nat.eqb n lv
+          end) (allModelElements m).
+
+Definition output_name (sp: list TTElem) := 
+  match hd_error sp with
+  | Some e => match (Row_Output e) with
+              | None => ""%string
+              | Some str => append "S_" str
+              end 
+  | _ => ""%string
+  end.
+
+Definition maxLv (m: Model TTElem TTRef) := list_max (optionList2List (map Column_Level (allModelElements m))).
+
+Fixpoint semantic (input: list nat) : nat :=
+  match input with
+  | nil => 0
+  | a :: r => a * pow 2 ((length input)-1) + semantic r
+  end.
+
+(* Eval compute in semantic (0::0::1::nil). *)
+
+Instance TT2BDDConfiguration : TransformationConfiguration := {
+  SourceMetamodel := TTM;
+  TargetMetamodel := BDDM;
+}.
 
 Definition TT2BDD :=
-  @buildTransformation TT2BDDConfiguration 1
-    [ (* rules *)
-     (buildRule "Columns2Tree"  
-        (fun m sp => option_map isColumn (hd_error sp))
-        (fun m col => Some (iter_col col))
-        [buildOutputPatternElement "node"
-            (fun i m col => Some (BuildBDDNode (oelem_name col i)))
-            [buildOutputPatternElementReference
-              (fun tls i m col output => 
-                ulv <- (upper_level col);
-                ucol <- locate m ulv;
-                parent <- resolveIter tls m "node" [ucol] ((div_roundup i 2)-1);
-                Some (BuildBDDEdge output parent))]
-        ]
-      ) ;
-      (buildRule "Row2Output"  
-        (fun m row => option_map isRow (hd_error row))  
-        (fun m row => Some 1)
-        [buildOutputPatternElement "output"
-            (fun i m row => Some (BuildBDDNode (output_name row)))
-            [buildOutputPatternElementReference
-              (fun tls i m sp output => 
-                height <- Some (maxLv m);           (* get depth *)
-                col <- locate m height;             (* get node of depth *)
-                row <- hd_error sp;
-                input <- (Row_Input row);
-                parent <- resolveIter tls m "node" [col] ((div_roundup (semantic input) 2)-1);   (* attach output to the corresponding leaf node*)
-                Some (BuildBDDEdge output parent) ) ]
-        ]
-      )
-    ]. 
+  buildTransformation 1
+  [ (* rules *)
+    (buildRule "Columns2Tree"  
+      (fun m sp => option_map isColumn (hd_error sp))
+      (fun m col => Some (iter_col col))
+      [buildOutputPatternElement "node"
+          (fun i m col => Some (BuildBDDNode (oelem_name col i)))
+          [buildOutputPatternLink
+            (fun tls i m col output => 
+              ulv <- (upper_level col);
+              ucol <- locate m ulv;
+              parent <- resolveIter tls m "node" [ucol] ((div_roundup i 2)-1);
+              Some (BuildBDDEdge output parent))]
+      ]
+    ) ;
+    (buildRule "Row2Output"  
+      (fun m row => option_map isRow (hd_error row))  
+      (fun m row => Some 1)
+      [buildOutputPatternElement "output"
+          (fun i m row => Some (BuildBDDNode (output_name row)))
+          [buildOutputPatternLink
+            (fun tls i m sp output => 
+              height <- Some (maxLv m);           (* get depth *)
+              col <- locate m height;             (* get node of depth *)
+              row <- hd_error sp;
+              input <- (Row_Input row);
+              parent <- resolveIter tls m "node" [col] ((div_roundup (semantic input) 2)-1);   (* attach output to the corresponding leaf node*)
+              Some (BuildBDDEdge output parent) ) ]
+      ]
+    )
+  ]. 
