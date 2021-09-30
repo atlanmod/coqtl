@@ -35,12 +35,13 @@ Proof.
       :: nil))
      ::nil)).
   intros.
-  unfold execute. simpl.
-  unfold instantiatePattern. simpl.
-  unfold instantiateRuleOnPattern. simpl.
-  unfold instantiateIterationOnPattern. simpl.
-  unfold evalIteratorExpr. simpl.
-  destruct (f sm). simpl.
+  unfold execute. 
+  unfold instantiatePattern. 
+  unfold instantiateRuleOnPattern. 
+  unfold instantiateIterationOnPattern. 
+  unfold evalIteratorExpr. 
+  simpl.
+  destruct (f sm).
   repeat rewrite <- app_nil_end.
   induction modelElements.
   * reflexivity.
