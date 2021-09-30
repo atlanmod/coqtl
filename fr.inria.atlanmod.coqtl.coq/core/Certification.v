@@ -93,7 +93,7 @@ Lemma tr_instantiateRuleOnPattern_in :
 forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat),
-      In i (indexes (evalIteratorExpr r sm sp)) /\
+      In i (seq 0 (evalIteratorExpr r sm sp)) /\
       In te (instantiateIterationOnPattern r sm sp i)).
 Proof.
   intros.
@@ -153,7 +153,7 @@ Lemma tr_applyRuleOnPattern_in :
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
       In tl (applyRuleOnPattern r tr sm sp) <->
       (exists (i: nat),
-          In i (indexes (evalIteratorExpr r sm sp)) /\
+          In i (seq 0 (evalIteratorExpr r sm sp)) /\
           In tl (applyIterationOnPattern r tr sm sp i)).
 Proof.
   intros.
@@ -423,7 +423,7 @@ Instance CoqTLEngine :
 
 Lemma tr_match_injective :
 forall (sm : SourceModel)(sp : list SourceModelElement)(r : Rule)(iter: nat),
-    In iter (indexes (evalIteratorExpr r sm sp)) /\ 
+    In iter (seq 0 (evalIteratorExpr r sm sp)) /\ 
     (exists ope, In ope (Rule_getOutputPatternElements r) /\  (evalOutputPatternElementExpr sm sp iter ope) <> None ) ->
       (exists (te: TargetModelElement),  In te (instantiateRuleOnPattern r sm sp) ).
 Proof.
@@ -458,7 +458,7 @@ Theorem tr_instantiateRuleAndIterationOnPattern_in :
 forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat) (ope: OutputPatternElement),
-      In i (indexes (evalIteratorExpr r sm sp)) /\
+      In i (seq 0 (evalIteratorExpr r sm sp)) /\
       In ope (Rule_getOutputPatternElements r) /\ 
         instantiateElementOnPattern ope sm sp i = Some te).
 Proof.
@@ -490,7 +490,7 @@ Theorem tr_instantiateRuleAndIterationOnPattern_in' :
 forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat),
-      In i (indexes (evalIteratorExpr r sm sp)) /\
+      In i (seq 0 (evalIteratorExpr r sm sp)) /\
       (exists (ope: OutputPatternElement),
       In ope (Rule_getOutputPatternElements r) /\ 
         instantiateElementOnPattern ope sm sp i = Some te)).

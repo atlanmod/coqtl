@@ -42,8 +42,6 @@ Require Import core.modeling.ModelingTransformationConfiguration.
     }
    } *)
 
-  Print Build_TransformationConfiguration.
-
 Instance C2RConfiguration : TransformationConfiguration := 
   Build_TransformationConfiguration ClassM RelationalM.
 

@@ -120,7 +120,7 @@ Lemma tr_traceRuleOnPattern_in:
 forall (r: Rule) (sm : SourceModel) (sp : list SourceModelElement) (tl : TraceLink),
   In tl (traceRuleOnPattern r sm sp) <->
   (exists (iter: nat),
-      In iter (indexes (evalIteratorExpr r sm sp)) /\
+      In iter (seq 0 (evalIteratorExpr r sm sp)) /\
       In tl (traceIterationOnPattern r sm sp iter)).
 Proof.
   intros.
@@ -193,7 +193,7 @@ Lemma tr_applyRuleOnPatternTraces_in :
 forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) (tls: list TraceLink),
     In tl (applyRuleOnPatternTraces r tr sm sp tls) <->
     (exists (i: nat),
-        In i (indexes (evalIteratorExpr r sm sp)) /\
+        In i (seq 0 (evalIteratorExpr r sm sp)) /\
         In tl (applyIterationOnPatternTraces r tr sm sp i tls)).
 Proof.
   intros.

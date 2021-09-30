@@ -33,7 +33,7 @@ Definition instantiateIterationOnPattern (r: Rule) (sm: SourceModel) (sp: list S
 
 Definition instantiateRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) :  list TargetModelElement :=
   flat_map (instantiateIterationOnPattern r sm sp)
-    (indexes (evalIteratorExpr r sm sp)).
+    (seq 0 (evalIteratorExpr r sm sp)).
 
 Definition instantiatePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TargetModelElement :=
   flat_map (fun r => instantiateRuleOnPattern r sm sp) (matchPattern tr sm sp).
@@ -59,7 +59,7 @@ Definition traceIterationOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceM
 
 Definition traceRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) :  list TraceLink :=
   flat_map (traceIterationOnPattern r sm sp)
-    (indexes (evalIteratorExpr r sm sp)).
+    (seq 0 (evalIteratorExpr r sm sp)).
 
 Definition tracePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TraceLink :=
   flat_map (fun r => traceRuleOnPattern r sm sp) (matchPattern tr sm sp).
@@ -137,7 +137,7 @@ Definition applyIterationOnPattern (r: Rule) (tr: Transformation) (sm: SourceMod
 
 Definition applyRuleOnPattern (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement): list TargetModelLink :=
   flat_map (applyIterationOnPattern r tr sm sp)
-    (indexes (evalIteratorExpr r sm sp)).
+    (seq 0 (evalIteratorExpr r sm sp)).
 
 Definition applyPattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TargetModelLink :=
   flat_map (fun r => applyRuleOnPattern r tr sm sp) (matchPattern tr sm sp).

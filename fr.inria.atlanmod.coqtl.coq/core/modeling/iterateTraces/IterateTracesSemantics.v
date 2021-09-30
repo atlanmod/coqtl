@@ -43,7 +43,7 @@ Definition applyIterationOnPatternTraces (r: Rule) (tr: Transformation) (sm: Sou
 
 Definition applyRuleOnPatternTraces (r: Rule) (tr: Transformation) (sm: SourceModel) (sp: list SourceModelElement) (tls: list TraceLink): list TargetModelLink :=
   flat_map (fun i => applyIterationOnPatternTraces r tr sm sp i tls)
-    (indexes (evalIteratorExpr r sm sp)).
+    (seq 0 (evalIteratorExpr r sm sp)).
 
 Definition applyPatternTraces (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tls: list TraceLink): list TargetModelLink :=
   flat_map (fun r => applyRuleOnPatternTraces r tr sm sp tls) (matchPattern tr sm sp).

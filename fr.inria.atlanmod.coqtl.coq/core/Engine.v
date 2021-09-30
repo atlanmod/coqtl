@@ -154,7 +154,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
       In te (instantiateRuleOnPattern r sm sp) <->
       (exists (i: nat),
-          In i (indexes (evalIteratorExpr r sm sp)) /\
+          In i (seq 0 (evalIteratorExpr r sm sp)) /\
           In te (instantiateIterationOnPattern r sm sp i));
 
    (** ** instantiateIterationOnPattern *)
@@ -188,7 +188,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
       forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink),
         In tl (applyRuleOnPattern r tr sm sp) <->
         (exists (i: nat),
-            In i (indexes (evalIteratorExpr r sm sp)) /\
+            In i (seq 0 (evalIteratorExpr r sm sp)) /\
             In tl (applyIterationOnPattern r tr sm sp i));
 
     (** ** applyIterationOnPattern *)
