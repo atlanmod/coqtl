@@ -91,10 +91,8 @@ Fixpoint semantic (input: list nat) : nat :=
 
 (* Eval compute in semantic (0::0::1::nil). *)
 
-Instance TT2BDDConfiguration : TransformationConfiguration := {
-  SourceMetamodel := TTM;
-  TargetMetamodel := BDDM;
-}.
+Instance TT2BDDConfiguration : TransformationConfiguration := 
+  Build_TransformationConfiguration TTM BDDM.
 
 Definition TT2BDD :=
   buildTransformation 1

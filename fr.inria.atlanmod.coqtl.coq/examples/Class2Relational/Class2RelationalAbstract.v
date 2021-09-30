@@ -41,15 +41,11 @@ Require Import Class2Relational.RelationalMetamodel.
     }
    } *)
 
-Instance C2RConfiguration : TransformationConfiguration := {
-  SourceMetamodel := ClassM;
-  TargetMetamodel := RelationalM;
-}.
-
-Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration := {
-  smm := ClassMetamodel;
-  tmm := RelationalMetamodel;
-}.
+Instance C2RConfiguration : TransformationConfiguration := 
+   Build_TransformationConfiguration ClassM RelationalM.
+ 
+Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration :=
+   Build_ModelingTransformationConfiguration C2RConfiguration ClassMetamodel RelationalMetamodel.
 
 Definition Class2Relational :=
   buildTransformation 1

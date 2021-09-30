@@ -42,15 +42,13 @@ Require Import core.modeling.ModelingTransformationConfiguration.
     }
    } *)
 
-Instance C2RConfiguration : TransformationConfiguration := {
-  SourceMetamodel := ClassM;
-  TargetMetamodel := RelationalM;
-}.
+  Print Build_TransformationConfiguration.
 
-Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration := {
-  smm := ClassMetamodel;
-  tmm := RelationalMetamodel;
-}.
+Instance C2RConfiguration : TransformationConfiguration := 
+  Build_TransformationConfiguration ClassM RelationalM.
+
+Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration :=
+  Build_ModelingTransformationConfiguration C2RConfiguration ClassMetamodel RelationalMetamodel.
 
 Open Scope coqtl.
 
