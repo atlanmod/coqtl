@@ -77,7 +77,4 @@ Inductive TTRef :=
 Definition evalTT (tt: Model TTElem TTRef) (ins: list bool) : bool := true.
 
 Instance TTM : Metamodel :=
-{
-  ModelElement := TTElem;
-  ModelLink := TTRef;
-}.
+  Build_Metamodel TTElem TTRef _.
