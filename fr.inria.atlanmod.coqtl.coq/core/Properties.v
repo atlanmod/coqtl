@@ -49,6 +49,7 @@ Proof.
     rewrite <- IHmodelElements at 2.
     repeat rewrite flat_map_concat_map.
     f_equal.
+    rewrite <- seq_shift.
     rewrite map_map.
     reflexivity.
 Qed.
