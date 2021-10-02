@@ -31,7 +31,7 @@ Proof.
      (fun sm sp => Some (length (allModelElements (f sm))))
       (buildOutputPatternElement "out"%string 
       (fun i sm sp => nth_error (allModelElements (f sm)) i)
-      nil 
+      (fun tls i sm sp te => None) 
       :: nil))
      ::nil)).
   intros.
