@@ -1,4 +1,5 @@
 Set Implicit Arguments.
+Require Import List.
 Scheme Equality for list.
 
 
@@ -29,3 +30,13 @@ Definition Model_beq {ME ML: Type} (ME_beq: ME -> ME -> bool) (ML_beq: ML -> ML 
 
 Definition Model_wellFormed {ME ML: Type} (m: Model ME ML): Prop :=
   (@modelElements ME ML m = nil) -> (@modelLinks ME ML m = nil).
+
+(*Definition Model_incl {ME ML: Type} (m1 m2: Model ME ML) := 
+  forall (e:ME) (l:ML),
+   count_occ' (@modelElements _ _ m1) e <= count_occ' (@modelElements _ _ m2) /\
+   count_occ' (@modelLinks _ _ m1) e <= count_occ' (@modelLinks _ _ m2).
+
+Definition Model_equiv {ME ML: Type} (m1 m2: Model ME ML)  := 
+  forall (e:ME) (l:ML),
+  count_occ' (@modelElements _ _ m1) e = count_occ' (@modelElements _ _ m2) /\
+  count_occ' (@modelLinks _ _ m1) e = count_occ' (@modelLinks _ _ m2).*)
