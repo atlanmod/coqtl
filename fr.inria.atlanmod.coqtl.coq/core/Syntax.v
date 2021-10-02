@@ -18,26 +18,13 @@ Context {tc: TransformationConfiguration}.
 
         Next, we model syntactic elements of any transformation specification that supported by the CoqTL engine. *)
 
-(** *** OutputPatternLink *)
-
-Inductive OutputPatternLink : Type :=
-  buildOutputPatternLink :
-    (list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink) 
-    -> OutputPatternLink.
-
-Definition OutputPatternLink_getLinkExpr (o: OutputPatternLink) : 
-    list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink :=
-    match o with
-      buildOutputPatternLink y => y
-    end.
-
 (** *** OutputPatternElement *)
 
 Inductive OutputPatternElement : Type :=
   buildOutputPatternElement :
     string 
     -> (nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
-    -> (list OutputPatternLink) -> OutputPatternElement.
+    -> (list TraceLink -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink)) -> OutputPatternElement.
 
 Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
   match o with
@@ -49,8 +36,7 @@ Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -
     buildOutputPatternElement _ y _ => y
   end.
 
-Definition OutputPatternElement_getOutputLinks (o: OutputPatternElement) :
-  list OutputPatternLink :=
+Definition OutputPatternLink_getLinkExpr (o: OutputPatternElement) :=
   match o with
     buildOutputPatternElement _ _ y => y
       end.
@@ -116,5 +102,4 @@ Arguments Rule {_}.
 Arguments buildRule {_}.
 
 Arguments buildOutputPatternElement {_}.
-Arguments buildOutputPatternLink {_}.
 (* end hide *)

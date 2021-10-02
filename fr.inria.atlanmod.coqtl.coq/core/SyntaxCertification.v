@@ -15,7 +15,6 @@ Instance CoqTLSyntax :
       Transformation := Transformation;
       Rule := Rule;
       OutputPatternElement := OutputPatternElement;
-      OutputPatternLink := OutputPatternLink;
 
       TraceLink := TraceLink;
 
@@ -23,8 +22,6 @@ Instance CoqTLSyntax :
       Transformation_getRules := Transformation_getRules;
 
       Rule_getOutputPatternElements := Rule_getOutputPatternElements;
-
-      OutputPatternElement_getOutputLinks := OutputPatternElement_getOutputLinks;
 
       TraceLink_getSourcePattern := TraceLink_getSourcePattern;
       TraceLink_getIterator := TraceLink_getIterator;

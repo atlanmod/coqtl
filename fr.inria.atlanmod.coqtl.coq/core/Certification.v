@@ -171,51 +171,17 @@ Proof.
   apply in_flat_map.
 Qed.
 
-Lemma tr_applyElementOnPattern_in : 
-    forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) 
-            (i:nat) (ope: OutputPatternElement),
-      In tl (applyElementOnPattern ope tr sm sp i ) <->
-      (exists (oper: OutputPatternLink) (te: TargetModelElement),
-          In oper (OutputPatternElement_getOutputLinks ope) /\ 
-          (evalOutputPatternElementExpr sm sp i ope) = Some te /\
-          applyLinkOnPattern oper tr sm sp i te = Some tl).
+Lemma tr_applyElementOnPattern_leaf : 
+forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) 
+       (i:nat) (ope: OutputPatternElement),
+  evalOutputPatternElementExpr sm sp i ope = Some te ->
+  applyElementOnPattern ope tr sm sp i = optionListToList (evalOutputPatternLinkExpr sm sp te i (trace tr sm) ope).
 Proof.
-  split.
-  * intros.
-    apply in_flat_map in H.
-    destruct H.
-    exists x.
-    unfold optionToList in H.
-    destruct H.
-    destruct (evalOutputPatternElementExpr sm sp i ope) eqn: eval_ca.
-    - destruct (applyLinkOnPattern x tr sm sp i t) eqn: ref_ca.
-      -- eexists t.
-          split; crush.
-      -- contradiction.
-    - contradiction.
-  * intros.
-    apply in_flat_map.
-    destruct H.
-    exists x.
-    unfold optionToList.
-    destruct H.
-    destruct H.
-    destruct H0.
-    split.
-    - assumption.
-    - crush.
-Qed.
-
-Lemma tr_applyLinkOnPattern_leaf : 
-        forall (oper: OutputPatternLink)
-                (tr: Transformation)
-                (sm: SourceModel)
-                (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink),
-          applyLinkOnPattern oper tr sm sp iter te  = evalOutputPatternLinkExpr sm sp te iter (trace tr sm) oper.
-Proof.
-  crush.
-Qed.
-
+  intros.
+  destruct (evalOutputPatternLinkExpr sm sp te i (trace tr sm) ope) eqn:dst.
+  * unfold applyElementOnPattern. crush.
+  * unfold applyElementOnPattern. crush.
+Qed.  
 
 (*TODO
 Lemma maxArity_length:
@@ -349,7 +315,6 @@ Instance CoqTLEngine :
     applyRuleOnPattern := applyRuleOnPattern;
     applyIterationOnPattern := applyIterationOnPattern;
     applyElementOnPattern := applyElementOnPattern;
-    applyLinkOnPattern := applyLinkOnPattern;
 
     trace := trace;
 
@@ -372,8 +337,7 @@ Instance CoqTLEngine :
     tr_applyPattern_in := tr_applyPattern_in;
     tr_applyRuleOnPattern_in := tr_applyRuleOnPattern_in;
     tr_applyIterationOnPattern_in := tr_applyIterationOnPattern_in;
-    tr_applyElementOnPattern_in := tr_applyElementOnPattern_in;
-    tr_applyLinkOnPatternTraces_leaf := tr_applyLinkOnPattern_leaf;
+    tr_applyElementOnPattern_leaf := tr_applyElementOnPattern_leaf;
 
     tr_resolveAll_in := tr_resolveAllIter_in;
     tr_resolve_leaf := tr_resolveIter_leaf;

@@ -43,7 +43,6 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
     Transformation: Type;
     Rule: Type;
     OutputPatternElement: Type;
-    OutputPatternLink: Type;
     TraceLink: Type;
 
     (** ** Accessors *)
@@ -53,8 +52,6 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
   
     Rule_getOutputPatternElements: Rule -> list OutputPatternElement;
 
-    OutputPatternElement_getOutputLinks: OutputPatternElement -> list OutputPatternLink;
-
     TraceLink_getSourcePattern: TraceLink -> list SourceModelElement;
     TraceLink_getIterator: TraceLink -> nat;
     TraceLink_getName: TraceLink -> string;
@@ -62,7 +59,7 @@ Class TransformationSyntax (tc: TransformationConfiguration) := {
 
     evalOutputPatternElementExpr: SourceModel -> list SourceModelElement -> nat -> OutputPatternElement -> option TargetModelElement;
     evalIteratorExpr: Rule -> SourceModel -> list SourceModelElement -> nat;
-    evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternLink -> option TargetModelLink;
+    evalOutputPatternLinkExpr: SourceModel -> list SourceModelElement -> TargetModelElement -> nat -> list TraceLink -> OutputPatternElement -> option (list TargetModelLink);
     evalGuardExpr: Rule->SourceModel->list SourceModelElement->option bool;
 }.
   
@@ -89,7 +86,6 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
     applyRuleOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> list TargetModelLink;
     applyIterationOnPattern: Rule -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
     applyElementOnPattern: OutputPatternElement -> Transformation -> SourceModel -> list SourceModelElement -> nat -> list TargetModelLink;
-    applyLinkOnPattern: OutputPatternLink -> Transformation -> SourceModel -> list SourceModelElement -> nat -> TargetModelElement -> option TargetModelLink;
     
     trace: Transformation -> SourceModel -> list TraceLink; 
 
@@ -202,23 +198,11 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
 
     (** ** applyElementOnPattern *)
 
-    tr_applyElementOnPattern_in : 
-      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (tl : TargetModelLink) 
+    tr_applyElementOnPattern_leaf : 
+      forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) 
              (i:nat) (ope: OutputPatternElement),
-        In tl (applyElementOnPattern ope tr sm sp i ) <->
-        (exists (oper: OutputPatternLink) (te: TargetModelElement),
-            In oper (OutputPatternElement_getOutputLinks ope) /\ 
-            (evalOutputPatternElementExpr sm sp i ope) = Some te /\
-            applyLinkOnPattern oper tr sm sp i te = Some tl);
-
-    (** ** applyLinkOnPattern *)
-
-    tr_applyLinkOnPatternTraces_leaf : 
-          forall (oper: OutputPatternLink)
-                 (tr: Transformation)
-                 (sm: SourceModel)
-                 (sp: list SourceModelElement) (iter: nat) (te: TargetModelElement) (tls: list TraceLink),
-            applyLinkOnPattern oper tr sm sp iter te  = evalOutputPatternLinkExpr sm sp te iter (trace tr sm) oper;
+        evalOutputPatternElementExpr sm sp i ope = Some te ->
+        applyElementOnPattern ope tr sm sp i = optionListToList (evalOutputPatternLinkExpr sm sp te i (trace tr sm) ope);
 
     (** ** resolve *)
 

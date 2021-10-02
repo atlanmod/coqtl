@@ -51,8 +51,8 @@ Definition evalOutputPatternElementExpr (sm: SourceModel) (sp: list SourceModelE
 
 Definition evalOutputPatternLinkExpr
             (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: nat) (tr: list TraceLink)
-            (o: OutputPatternLink)
-  : option TargetModelLink :=
+            (o: OutputPatternElement)
+  : option (list TargetModelLink) :=
 (evalExpr (OutputPatternLink_getLinkExpr o) tr iter sm sp oe).
 
 End Expressions.
