@@ -26,3 +26,6 @@ Definition allModelLinks {ModelElement: Type} {ModelLink: Type} (m: Model ModelE
 Definition Model_beq {ME ML: Type} (ME_beq: ME -> ME -> bool) (ML_beq: ML -> ML -> bool) (m1 m2: Model ME ML) :=
   andb (list_beq ME_beq (@modelElements _ _ m1) (@modelElements _ _ m2))
   (list_beq ML_beq (@modelLinks _ _ m1) (@modelLinks _ _ m2)).
+
+Definition Model_wellFormed {ME ML: Type} (ME_beq: ME -> ME -> bool) (ML_beq: ML -> ML -> bool) (m: Model ME ML): Prop :=
+  (modelLinks <> nil) -> (modelElements <> nil).
