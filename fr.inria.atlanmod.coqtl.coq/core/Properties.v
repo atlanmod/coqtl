@@ -40,7 +40,6 @@ Proof.
   intros.
   exists (toTransformation tc f).
   intros.
-  apply (H sm) in H0.
   unfold execute.
   unfold applyPattern.
   unfold applyRuleOnPattern.
@@ -55,6 +54,7 @@ Proof.
   unfold evalIteratorExpr.
   unfold evalExpr.
   simpl.
+  apply (H sm) in H0.
   destruct (f sm). simpl.
   f_equal.
   - clear H. clear H0.
@@ -89,7 +89,6 @@ Proof.
         apply Lt.lt_S_n in H1.
         destruct (nth_error l a); reflexivity.
 Qed.
-
 
 Theorem confluence :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
