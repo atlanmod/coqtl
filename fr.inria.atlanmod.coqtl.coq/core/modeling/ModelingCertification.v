@@ -4,14 +4,17 @@ Require Import Bool.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
-Require Import core.modeling.Metamodel.
-Require Import core.modeling.ConcreteExpressions.
+Require Import core.TransformationConfiguration.
 Require Import core.Engine.
-Require Import core.modeling.ModelingEngine.
 Require Import core.Semantics.
-Require Import core.modeling.ModelingSemantics.
 Require Import core.Certification.
 Require Import core.Syntax.
+Require Import core.modeling.ModelingEngine.
+Require Import core.modeling.ModelingMetamodel.
+Require Import core.modeling.ConcreteExpressions.
+Require Import core.modeling.ModelingSemantics.
+Require Import core.modeling.ModelingTransformationConfiguration.
+
 
 Section IterateTracesCertification.
 

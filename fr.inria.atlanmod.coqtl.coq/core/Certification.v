@@ -277,12 +277,12 @@ Proof.
 intros.
 unfold resolveIter in H.
 destruct (find (fun tl: TraceLink => 
-(list_beq SourceModelElement (@elements_eqb smm) (@TraceLink_getSourcePattern tc tl) sp) &&
+(Semantics.list_beq TransformationConfiguration.SourceModelElement SourceElement_eqb (@TraceLink_getSourcePattern tc tl) sp) &&
 ((TraceLink_getIterator tl) =? iter) &&
-((TraceLink_getName tl) =? name)%string) tls) eqn: find.
+((TraceLink_getName tl) =? name)%string) tls) eqn: find_ca.
 - exists t.
-  apply find_some in find.
-  destruct find.
+  apply find_some in find_ca.
+  destruct find_ca.
   symmetry in H1.
   apply andb_true_eq in H1.
   destruct H1.
@@ -291,9 +291,9 @@ destruct (find (fun tl: TraceLink =>
   crush.
   -- apply beq_nat_true. crush.
   -- apply String.eqb_eq. crush.
-Admitted.
-(**- crush.
-Qed.**)
+- inversion H.
+Qed.
+
 
 Instance CoqTLEngine :
   TransformationEngine CoqTLSyntax :=
