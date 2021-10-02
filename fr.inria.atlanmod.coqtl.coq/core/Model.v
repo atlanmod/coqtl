@@ -28,4 +28,4 @@ Definition Model_beq {ME ML: Type} (ME_beq: ME -> ME -> bool) (ML_beq: ML -> ML 
   (list_beq ML_beq (@modelLinks _ _ m1) (@modelLinks _ _ m2)).
 
 Definition Model_wellFormed {ME ML: Type} (m: Model ME ML): Prop :=
-  (modelElements = nil) -> (modelLinks = nil).
+  (@modelElements ME ML m = nil) -> (@modelLinks ME ML m = nil).
