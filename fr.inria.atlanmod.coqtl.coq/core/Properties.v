@@ -33,9 +33,8 @@ Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel ->
 
 Theorem universality :
 forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel),
-  (forall (sm: SourceModel), Model_wellFormed sm -> Model_wellFormed (f sm)) ->
   exists (t: Transformation), 
-    forall (sm: SourceModel), execute t sm = f sm.
+    forall (sm: SourceModel), Model_wellFormed (f sm) -> execute t sm = f sm.
 Proof.
   intros.
   exists (toTransformation tc f).
@@ -68,11 +67,7 @@ Proof.
       rewrite map_map.
       reflexivity.
   - destruct modelElements eqn:dst.
-    * simpl.
-      unfold Model_wellFormed in H.
-      symmetry.
-      (*apply H with (sm:=sm).*)
-      admit.
+    * crush.
     * simpl. 
       repeat rewrite app_nil_r.
       rewrite app_nil_end.
@@ -90,7 +85,8 @@ Proof.
         simpl in H1.
         apply Lt.lt_S_n in H1.
         destruct (nth_error l a); reflexivity.
-Admitted.
+Qed.
+
 
 Theorem confluence :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
