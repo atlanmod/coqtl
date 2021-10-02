@@ -27,17 +27,17 @@ core/EngineProofs.v
 core/SyntaxCertification.v
 core/Certification.v
 
-core/modeling/ModelingMetamodel.v
-core/modeling/ModelingTransformationConfiguration.v
-core/modeling/ConcreteSyntax.v
-core/modeling/Parser.v
-core/modeling/ConcreteExpressions.v
-core/modeling/ModelingEngine.v
-core/modeling/ModelingSemantics.v
+#core/modeling/ModelingMetamodel.v
+#core/modeling/ModelingTransformationConfiguration.v
+#core/modeling/ConcreteSyntax.v
+#core/modeling/Parser.v
+#core/modeling/ConcreteExpressions.v
+#core/modeling/ModelingEngine.v
+#core/modeling/ModelingSemantics.v
 #core/modeling/ModelingCertification.v
 
-core/modeling/twophases/TwoPhaseEngine.v
-core/modeling/twophases/TwoPhaseSemantics.v
+#core/modeling/twophases/TwoPhaseEngine.v
+#core/modeling/twophases/TwoPhaseSemantics.v
 #core/modeling/twophases/TwoPhaseCertification.v
 
 #core/modeling/iteratetraces/IterateTracesSemantics.v
@@ -46,20 +46,21 @@ core/modeling/twophases/TwoPhaseSemantics.v
 #core/modeling/byrule/ByRuleSemantics.v
 #core/modeling/byrule/Certification_ByRuleSemantics.v
 
-examples/Class2Relational/ClassMetamodel.v
-examples/Class2Relational/RelationalMetamodel.v
-examples/Class2Relational/Class2RelationalAbstract.v
-examples/Class2Relational/Class2Relational.v
-examples/Class2Relational/tests/PersonModel.v
-examples/Class2Relational/tests/PersonTest.v
-examples/Class2Relational/theorems/All_classes_instantiate_impl.v
-examples/Class2Relational/theorems/All_classes_match_impl.v
-examples/Class2Relational/theorems/Relational_name_definedness.v
-examples/Class2Relational/theorems/Table_name_uniqueness.v
-examples/Class2Relational/theorems/Attribute_name_preservation.v
-examples/Class2Relational/theorems/Column_name_uniqueness.v
+#examples/Class2Relational/ClassMetamodel.v
+#examples/Class2Relational/RelationalMetamodel.v
+#examples/Class2Relational/Class2RelationalAbstract.v
+#examples/Class2Relational/Class2Relational.v
+#examples/Class2Relational/tests/PersonModel.v
+#examples/Class2Relational/tests/PersonTest.v
+#examples/Class2Relational/theorems/All_classes_instantiate_impl.v
+#examples/Class2Relational/theorems/All_classes_match_impl.v
+#examples/Class2Relational/theorems/Relational_name_definedness.v
+#examples/Class2Relational/theorems/Table_name_uniqueness.v
+#examples/Class2Relational/theorems/Attribute_name_preservation.v
+#examples/Class2Relational/theorems/Column_name_uniqueness.v
 
 examples/TT2BDD/TT.v
 examples/TT2BDD/BDD.v
 examples/TT2BDD/TT2BDDAbstract.v
 examples/TT2BDD/tests/TTModel.v
+examples/TT2BDD/tests/TT2BDD_TTModel.v
