@@ -33,29 +33,31 @@ Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel ->
 
 Theorem universality :
 forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel),
+  (forall (sm: SourceModel), Model_wellFormed sm -> Model_wellFormed (f sm)) ->
   exists (t: Transformation), 
-    forall (sm: SourceModel), Model_wellFormed (f sm) -> execute t sm = f sm.
+    forall (sm: SourceModel), Model_wellFormed sm -> execute t sm = f sm.
 Proof.
   intros.
   exists (toTransformation tc f).
   intros.
-  unfold execute. 
-  unfold applyPattern. 
+  apply (H sm) in H0.
+  unfold execute.
+  unfold applyPattern.
   unfold applyRuleOnPattern.
-  unfold applyIterationOnPattern. 
-  unfold applyElementOnPattern. 
+  unfold applyIterationOnPattern.
+  unfold applyElementOnPattern.
   unfold evalOutputPatternLinkExpr.
-  unfold instantiatePattern. 
-  unfold instantiateRuleOnPattern. 
-  unfold instantiateIterationOnPattern. 
-  unfold instantiateElementOnPattern. 
-  unfold evalOutputPatternElementExpr. 
-  unfold evalIteratorExpr. 
+  unfold instantiatePattern.
+  unfold instantiateRuleOnPattern.
+  unfold instantiateIterationOnPattern.
+  unfold instantiateElementOnPattern.
+  unfold evalOutputPatternElementExpr.
+  unfold evalIteratorExpr.
   unfold evalExpr.
   simpl.
   destruct (f sm). simpl.
   f_equal.
-  - clear H.
+  - clear H. clear H0.
     induction modelElements.
     * reflexivity.
     * simpl.
@@ -67,8 +69,9 @@ Proof.
       rewrite map_map.
       reflexivity.
   - destruct modelElements eqn:dst.
-    * crush.
-    * simpl. 
+    * crush. 
+    * clear H0.
+      simpl. 
       repeat rewrite app_nil_r.
       rewrite app_nil_end.
       f_equal.
