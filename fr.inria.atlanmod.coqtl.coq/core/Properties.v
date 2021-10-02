@@ -8,6 +8,7 @@ Require Import List.
 Require Import Expressions.
 Require Import core.utils.Utils.
 Require Import PeanoNat.
+Require Import Lia.
 
 Definition transf_incl {tc: TransformationConfiguration} (t1 t2: Transformation) := True.
 Definition sourcemodel_incl {tc: TransformationConfiguration} (t1 t2: SourceModel) := True.
@@ -19,39 +20,71 @@ Admitted.
 
 (* Compute elementAt 3 (indexedElements 1 (3::4::5::nil)). *)
 
-Theorem universality_elements :
+Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel -> TargetModel) := 
+  (buildTransformation 0 [
+    (buildRule "rule"%string 
+      (fun sm sp => match sp with nil => Some true | _ => Some false end)
+      (fun sm sp => Some (length (allModelElements (f sm))))
+      [(buildOutputPatternElement "out"%string 
+         (fun i sm sp => nth_error (allModelElements (f sm)) i)
+         (fun tls i sm sp te => match i with 0 => Some (allModelLinks (f sm)) | _ => None end))
+      ])
+  ]).
+
+Theorem universality :
 forall (tc: TransformationConfiguration) (f: SourceModel -> TargetModel),
   exists (t: Transformation), 
-  forall (sm: SourceModel), allModelElements (execute t sm) = allModelElements (f sm).
+  forall (sm: SourceModel), allModelElements (f sm) <> nil -> execute t sm = f sm.
 Proof.
   intros.
-  exists (buildTransformation 0 
-    ((buildRule "rule"%string 
-     (fun sm sp => match sp with nil => Some true | _ => Some false end)
-     (fun sm sp => Some (length (allModelElements (f sm))))
-      (buildOutputPatternElement "out"%string 
-      (fun i sm sp => nth_error (allModelElements (f sm)) i)
-      (fun tls i sm sp te => None) 
-      :: nil))
-     ::nil)).
+  exists (toTransformation tc f).
   intros.
   unfold execute. 
+  unfold applyPattern. 
+  unfold applyRuleOnPattern.
+  unfold applyIterationOnPattern. 
+  unfold applyElementOnPattern. 
+  unfold evalOutputPatternLinkExpr.
   unfold instantiatePattern. 
   unfold instantiateRuleOnPattern. 
   unfold instantiateIterationOnPattern. 
+  unfold instantiateElementOnPattern. 
+  unfold evalOutputPatternElementExpr. 
   unfold evalIteratorExpr. 
+  unfold evalExpr.
   simpl.
-  destruct (f sm).
-  induction modelElements.
-  * reflexivity.
-  * simpl.
-    f_equal.
-    rewrite <- IHmodelElements at 2.
-    repeat rewrite flat_map_concat_map.
-    f_equal.
-    rewrite <- seq_shift.
-    rewrite map_map.
-    reflexivity.
+  destruct (f sm). simpl.
+  f_equal.
+  - clear H.
+    induction modelElements.
+    * reflexivity.
+    * simpl.
+      f_equal.
+      rewrite <- IHmodelElements at 2.
+      repeat rewrite flat_map_concat_map.
+      f_equal.
+      rewrite <- seq_shift.
+      rewrite map_map.
+      reflexivity.
+  - destruct modelElements.
+    * simpl. contradiction.
+    * simpl. 
+      repeat rewrite app_nil_r.
+      rewrite app_nil_end.
+      f_equal.
+      apply in_flat_map_nil.
+      intros.
+      rewrite app_nil_r.
+      destruct a.
+      + exfalso. 
+        rewrite in_seq in H0.
+        lia.
+      + simpl.
+        rewrite in_seq in H0.
+        destruct H0.
+        simpl in H1.
+        apply Lt.lt_S_n in H1.
+        destruct (nth_error modelElements a); reflexivity.
 Qed.
 
 Theorem confluence :
