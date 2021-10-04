@@ -56,14 +56,12 @@ Definition Class2Relational :=
         [buildOutputPatternElement "tab"
           (makeElement [ClassClass] TableClass
             (fun i m c => BuildTable (getClassId c) (getClassName c)))
-          [buildOutputPatternLink
             (makeLink [ClassClass] TableClass TableColumnsReference
             (fun tls i m c t =>
               attrs <- getClassAttributes c m;
               cols <- resolveAll tls m "col" ColumnClass 
                 (singletons (map (ClassMetamodel_toObject AttributeClass) attrs));
               return BuildTableColumns t cols))
-          ]
         ];
       buildRule "Attribute2Column"
         (makeGuard [AttributeClass] (fun m a => negb (getAttributeDerived a)))
@@ -71,12 +69,10 @@ Definition Class2Relational :=
         [buildOutputPatternElement "col"
           (makeElement [AttributeClass] ColumnClass
             (fun i m a => BuildColumn (getAttributeId a) (getAttributeName a)))
-          [buildOutputPatternLink
             (makeLink [AttributeClass] ColumnClass ColumnReferenceReference
               (fun tls i m a c =>
                 cl <- getAttributeType a m;
                 tb <- resolve tls m "tab" TableClass [ClassMetamodel_toObject ClassClass cl];
                 return BuildColumnReference c tb))
-          ]
         ]
     ].

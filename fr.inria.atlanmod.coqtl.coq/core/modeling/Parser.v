@@ -16,15 +16,19 @@ Section Parser.
 Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}.
 
 Definition parseOutputPatternLink (intypes: list SourceModelClass) (outtype: TargetModelClass)
-  (cr: ConcreteOutputPatternLink intypes outtype): OutputPatternLink :=
-  buildOutputPatternLink 
+  (cr: ConcreteOutputPatternLink intypes outtype) := 
     (makeLink intypes outtype (ConcreteOutputPatternLink_getRefType cr) (ConcreteOutputPatternLink_getOutputPatternLink cr)).
+
+Definition parseOutputPatternLinks (intypes: list SourceModelClass) (outtype: TargetModelClass)
+  (cr: list (ConcreteOutputPatternLink intypes outtype)) := 
+    fun (tls:list TraceLink) (iter:nat) (sm:SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) =>
+    Some (flat_map (fun (x: ConcreteOutputPatternLink intypes outtype) => optionListToList (parseOutputPatternLink intypes outtype x tls iter sm sp te)) cr).
 
 Definition parseOutputPatternElement (intypes: list SourceModelClass) (co: ConcreteOutputPatternElement intypes) : OutputPatternElement :=
   buildOutputPatternElement
     (ConcreteOutputPatternElement_getName co)
     (makeElement intypes (ConcreteOutputPatternElement_getOutType co) (ConcreteOutputPatternElement_getOutPatternElement co))
-    (map (parseOutputPatternLink intypes (ConcreteOutputPatternElement_getOutType co)) (ConcreteOutputPatternElement_getOutputLinks co)).
+    (parseOutputPatternLinks intypes (ConcreteOutputPatternElement_getOutType co) (ConcreteOutputPatternElement_getOutputLinks co)).
 
 Definition parseRule(cr: ConcreteRule) : Rule :=
   buildRule

@@ -74,11 +74,11 @@ Defined.
 Definition wrapOptionLink
   (l : list SourceModelClass) (t : TargetModelClass) (r : TargetModelReference)
   (imp : denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
-  (list SourceModelElement) -> TargetModelElement -> option TargetModelLink.
+  (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink).
 Proof.
   revert l imp. fix Hl 1. intros l imp sl v.
   destruct l as [ | l0 l'], sl as [ | s0 sl'].
-  - refine (xv <- toModelClass t v; xr <- imp xv; return (toModelLink r xr)).
+  - refine (xv <- toModelClass t v; xr <- imp xv; return [toModelLink r xr]).
   - exact None.
   - exact None.
   - exact (x0 <- toModelClass l0 s0; Hl l' (imp x0) sl' v).
@@ -109,7 +109,7 @@ Definition makeElement (l : list SourceModelClass) (t : TargetModelClass)
 
 Definition LinkFunction : Type :=
   list TraceLink
-  -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option TargetModelLink.
+  -> nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink).
 Definition makeLink (l : list SourceModelClass) (t : TargetModelClass) (r : TargetModelReference)
   (imp : list TraceLink -> nat -> SourceModel -> denoteSignature l (denoteModelClass t -> option (denoteModelReference r))) :
   LinkFunction :=
