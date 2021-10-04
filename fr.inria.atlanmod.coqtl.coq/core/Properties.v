@@ -15,11 +15,6 @@ Definition sourcemodel_incl {tc: TransformationConfiguration} (t1 t2: SourceMode
 Definition targetmodel_incl {tc: TransformationConfiguration} (t1 t2: TargetModel) := True.
 Definition targetmodel_equiv {tc: TransformationConfiguration} (t1 t2: TargetModel) := True.
 
-Definition Rule_eqdec: forall {tc: TransformationConfiguration}  (x y:Rule), {x = y} + {x <> y}.
-Admitted.
-
-(* Compute elementAt 3 (indexedElements 1 (3::4::5::nil)). *)
-
 Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel -> TargetModel) := 
   (buildTransformation 0 [
     (buildRule "rule"%string 
@@ -90,10 +85,17 @@ Proof.
         destruct (nth_error l a); reflexivity.
 Qed.
 
+Definition Rule_eqdec: forall {tc: TransformationConfiguration}  (x y:Rule), {x = y} + {x <> y}.
+Admitted.
+
+Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
+  forall (r:Rule),
+  count_occ' Rule_eqdec (Transformation_getRules t1) r = count_occ' Rule_eqdec (Transformation_getRules t2) r.
+
 Theorem confluence :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
-  (forall (r: Rule), count_occ Rule_eqdec (Transformation_getRules t1) r = count_occ Rule_eqdec (Transformation_getRules t2) r)
-  -> targetmodel_equiv (execute t1 sm) (execute t2 sm).
+  Transformation_equiv t1 t2 -> targetmodel_equiv (execute t1 sm) (execute t2 sm).
+Proof.
 Admitted.
 
 Theorem additivity :
