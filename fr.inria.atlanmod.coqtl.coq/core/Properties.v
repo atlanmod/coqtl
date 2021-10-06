@@ -202,33 +202,62 @@ Definition Transformation_incl_links {tc: TransformationConfiguration} (t1 t2: T
 Theorem additivity_links :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
   (Transformation_incl_links t1 t2 -> 
-    incl (allModelLinks (execute t1 sm)) (allModelLinks (execute t2 sm))).
+    Model_incl (execute t1 sm) (execute t2 sm)).
 Proof.
   simpl.
+  unfold Model_incl.
   unfold incl.
   intros.
-  apply in_flat_map in H0. repeat destruct H0. 
-  apply in_flat_map in H1. repeat destruct H1.
-  apply filter_In in H1. destruct H1.
-  destruct H.
-  apply in_flat_map. exists x.
   split.
-  * unfold allTuples.
-    unfold maxArity.
-    rewrite <- H.
-    assumption.
-  * apply in_flat_map.
-    pose (H4 x0).
-    destruct o.
-    + assumption.
-    + exists x0.
+  --  intros.
+      apply in_flat_map in H0. repeat destruct H0. 
+      apply in_flat_map in H1. repeat destruct H1.
+      apply filter_In in H1. destruct H1.
+      destruct H.
+      apply in_flat_map. exists x.
       split.
-      - unfold matchPattern.
-        apply filter_In.
-        split.
-        ** assumption.
-        ** assumption.
-      - Admitted.
+      * unfold allTuples.
+        unfold maxArity.
+        rewrite <- H.
+        assumption.
+      * apply in_flat_map.
+        pose (H4 x0).
+        destruct o.
+        + assumption.
+        + exists x0.
+          split.
+          - unfold matchPattern.
+            apply filter_In.
+            split.
+            ** assumption.
+            ** assumption.
+          - assumption.
+        + destruct H5.
+          exists x1.
+          admit.
+  --  intros.
+      apply in_flat_map in H0. repeat destruct H0. 
+      apply in_flat_map in H1. repeat destruct H1.
+      apply filter_In in H1. destruct H1.
+      destruct H.
+      apply in_flat_map. exists x.
+      split.
+      * unfold allTuples.
+        unfold maxArity.
+        rewrite <- H.
+        assumption.
+      * apply in_flat_map.
+        pose (H4 x0).
+        destruct o.
+        + assumption.
+        + exists x0.
+          split.
+          - unfold matchPattern.
+            apply filter_In.
+            split.
+            ** assumption.
+            ** assumption.
+          - Admitted.
 
 Definition monotonicity (tc: TransformationConfiguration) (t: Transformation) :=
   forall (sm1 sm2: SourceModel),
