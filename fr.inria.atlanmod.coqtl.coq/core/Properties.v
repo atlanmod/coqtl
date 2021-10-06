@@ -278,12 +278,122 @@ Definition Transformation_incl_links {tc: TransformationConfiguration} (t1 t2: T
        Rule_getIteratorExpr r1 = Rule_getIteratorExpr r2 /\
        forall (o1: OutputPatternElement), In o1 (Rule_getOutputPatternElements r1) ->
          ( In o1 (Rule_getOutputPatternElements r2) \/
-          ( OutputPatternLink_getLinkExpr o1 = (fun _ _ _ _ _ => None) /\
+          ( OutputPatternElement_getLinkExpr o1 = (fun _ _ _ _ _ => None) /\
             exists (o2: OutputPatternElement), 
             In o2 (Rule_getOutputPatternElements r2) /\ 
               OutputPatternElement_getName o1 = OutputPatternElement_getName o2 /\
               OutputPatternElement_getElementExpr o1 = OutputPatternElement_getElementExpr o2
             )))).
+
+Fixpoint Rule_incl_patternElements {tc: TransformationConfiguration} (l1 l2: list OutputPatternElement) : Prop :=
+  match l1, l2 with
+  | o1 :: l1', o2 :: l2' => 
+      OutputPatternElement_getName o1 = OutputPatternElement_getName o2 
+      /\ OutputPatternElement_getElementExpr o1 = OutputPatternElement_getElementExpr o2
+      /\ (OutputPatternElement_getLinkExpr o1 = OutputPatternElement_getLinkExpr o2 \/ 
+          OutputPatternElement_getLinkExpr o1 = (fun _ _ _ _ _ => None))
+      /\ Rule_incl_patternElements l1' l2'
+  | nil, nil => True
+  | _, _ => False
+  end.
+
+Fixpoint Transformation_incl_rules {tc: TransformationConfiguration} (l1 l2: list Rule) : Prop :=
+  match l1, l2 with
+  | r1 :: l1', r2 :: l2' => 
+      Rule_getName r1 = Rule_getName r2
+      /\ Rule_getGuardExpr r1 = Rule_getGuardExpr r2  
+      /\ Rule_getIteratorExpr r1 = Rule_getIteratorExpr r2
+      /\ Rule_incl_patternElements (Rule_getOutputPatternElements r1) (Rule_getOutputPatternElements r2) 
+      /\ Transformation_incl_rules l1' l2'
+  | nil, nil => True
+  | _, _ => False
+  end.
+
+Definition Transformation_incl_links' {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
+  (Transformation_getArity t1 = Transformation_getArity t2) /\ 
+  (Transformation_incl_rules (Transformation_getRules t1) (Transformation_getRules t2)).
+
+Theorem additivity_links :
+forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
+  (Transformation_incl_links' t1 t2 -> 
+    Model_incl (execute t1 sm) (execute t2 sm)).
+Proof.
+  simpl.
+  unfold Model_incl.
+  unfold incl.
+  intros.
+  assert (trace t1 sm = trace t2 sm) as treq. {
+    unfold trace, tracePattern.
+    f_equal.
+    - apply functional_extensionality.
+      intros.
+      repeat rewrite flat_map_concat_map.
+      f_equal.
+      admit.
+  }
+  split.
+  --  intros.
+      apply in_flat_map in H0. repeat destruct H0. 
+      apply in_flat_map in H1. repeat destruct H1.
+      apply filter_In in H1. destruct H1.
+      destruct H.
+      apply H4 in H1. 
+      apply in_flat_map. exists x.
+      split.
+      * unfold allTuples.
+        unfold maxArity.
+        rewrite <- H.
+        assumption.
+      * apply in_flat_map.
+        destruct H1.
+        + exists x0.
+          split.
+          - unfold matchPattern.
+            apply filter_In.
+            split.
+            ** assumption.
+            ** assumption.
+          - assumption.
+        + repeat destruct H1.
+          destruct H5, H6, H7.
+          exists x1.
+          split.
+          - unfold matchPattern.
+            apply filter_In.
+            split.
+            ** assumption.
+            ** unfold matchRuleOnPattern in *.
+               unfold evalGuardExpr in *.
+               rewrite <- H6.
+               assumption.
+          - apply in_flat_map in H2. repeat destruct H2.
+            apply in_flat_map in H9. repeat destruct H9.
+            apply in_flat_map.
+            apply H8 in H9.
+            exists x2.
+            repeat destruct H9.
+            ** split.
+               *** unfold evalIteratorExpr in *.
+                   rewrite <- H7.
+                   assumption.
+               *** apply in_flat_map.
+                   exists x3.
+                   split.
+                   --- assumption.
+                   --- assumption.
+            ** split.
+               ***  unfold evalIteratorExpr in *.
+                    rewrite <- H7.
+                    assumption.
+                *** destruct H11, H9.
+                    apply in_flat_map.
+                    exists x4.
+                    split.
+                    --- assumption.
+                    --- unfold instantiateElementOnPattern, evalOutputPatternElementExpr in *.
+                        destruct H11.
+                        rewrite <- H12.
+                        assumption.
 
 Theorem additivity_links :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),

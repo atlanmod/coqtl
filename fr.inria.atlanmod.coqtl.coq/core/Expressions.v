@@ -53,6 +53,6 @@ Definition evalOutputPatternLinkExpr
             (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: nat) (tr: list TraceLink)
             (o: OutputPatternElement)
   : option (list TargetModelLink) :=
-(evalExpr (OutputPatternLink_getLinkExpr o) tr iter sm sp oe).
+(evalExpr (OutputPatternElement_getLinkExpr o) tr iter sm sp oe).
 
 End Expressions.

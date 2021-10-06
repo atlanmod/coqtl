@@ -36,7 +36,7 @@ Definition OutputPatternElement_getElementExpr (o: OutputPatternElement) : nat -
     buildOutputPatternElement _ y _ => y
   end.
 
-Definition OutputPatternLink_getLinkExpr (o: OutputPatternElement) :=
+Definition OutputPatternElement_getLinkExpr (o: OutputPatternElement) :=
   match o with
     buildOutputPatternElement _ _ y => y
       end.
