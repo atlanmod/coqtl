@@ -112,9 +112,34 @@ Admitted.
 (* Version with set semantics for rules*)
 Theorem additivity_elements :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
-  incl (Transformation_getRules t1) (Transformation_getRules t2) -> 
+  (incl (Transformation_getRules t1) (Transformation_getRules t2) /\ 
+    (Transformation_getArity t1 = Transformation_getArity t2)) -> 
     incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm)).
-Admitted.
+Proof.
+  simpl.
+  unfold incl.
+  intros.
+  apply in_flat_map in H0. repeat destruct H0. 
+  apply in_flat_map in H1. repeat destruct H1.
+  apply filter_In in H1. destruct H1.
+  destruct H.
+  apply in_flat_map. exists x.
+  split.
+  * unfold allTuples.
+    unfold maxArity.
+    rewrite <- H4.
+    assumption.
+  * apply in_flat_map.
+    exists x0.
+    split.
+    + unfold matchPattern.
+      apply filter_In.
+      split.
+      - apply H.
+        assumption.
+      - assumption.
+    + assumption.
+Qed.   
 
 (* TODO add version for links*)
 
