@@ -322,78 +322,48 @@ Proof.
   unfold Model_incl.
   unfold incl.
   intros.
-  assert (trace t1 sm = trace t2 sm) as treq. {
-    unfold trace, tracePattern.
-    f_equal.
-    - apply functional_extensionality.
-      intros.
-      repeat rewrite flat_map_concat_map.
-      f_equal.
-      admit.
-  }
-  split.
-  --  intros.
-      apply in_flat_map in H0. repeat destruct H0. 
-      apply in_flat_map in H1. repeat destruct H1.
-      apply filter_In in H1. destruct H1.
-      destruct H.
-      apply H4 in H1. 
-      apply in_flat_map. exists x.
-      split.
-      * unfold allTuples.
-        unfold maxArity.
-        rewrite <- H.
-        assumption.
-      * apply in_flat_map.
-        destruct H1.
-        + exists x0.
-          split.
-          - unfold matchPattern.
-            apply filter_In.
-            split.
-            ** assumption.
-            ** assumption.
-          - assumption.
-        + repeat destruct H1.
-          destruct H5, H6, H7.
-          exists x1.
-          split.
-          - unfold matchPattern.
-            apply filter_In.
-            split.
-            ** assumption.
-            ** unfold matchRuleOnPattern in *.
-               unfold evalGuardExpr in *.
-               rewrite <- H6.
-               assumption.
-          - apply in_flat_map in H2. repeat destruct H2.
-            apply in_flat_map in H9. repeat destruct H9.
-            apply in_flat_map.
-            apply H8 in H9.
-            exists x2.
-            repeat destruct H9.
-            ** split.
-               *** unfold evalIteratorExpr in *.
-                   rewrite <- H7.
-                   assumption.
-               *** apply in_flat_map.
-                   exists x3.
-                   split.
-                   --- assumption.
-                   --- assumption.
-            ** split.
-               ***  unfold evalIteratorExpr in *.
-                    rewrite <- H7.
-                    assumption.
-                *** destruct H11, H9.
-                    apply in_flat_map.
-                    exists x4.
-                    split.
-                    --- assumption.
-                    --- unfold instantiateElementOnPattern, evalOutputPatternElementExpr in *.
-                        destruct H11.
-                        rewrite <- H12.
-                        assumption.
+  unfold Transformation_incl_links' in H.
+  destruct H.
+  destruct t1 as [n1 l1].
+  destruct t2 as [n2 l2].
+  generalize dependent l2.
+  induction l1.
+  - simpl.
+    split.
+    + intros.
+      apply in_flat_map in H1.
+      repeat destruct H1.
+      apply in_flat_map in H2.
+      repeat destruct H2.
+    + intros.
+      apply in_flat_map in H1.
+      repeat destruct H1.
+      apply in_flat_map in H2.
+      repeat destruct H2.
+  - intro lind.
+    intros.
+    simpl in H, H0.
+    destruct lind.
+    + contradiction.
+    + destruct H0, H1, H2, H3.
+      simpl in *.
+      rewrite <- H.
+      apply IHl1 with (l2:=lind) in H.
+      * destruct H.
+        split.
+        -- intros.
+           apply in_flat_map in H6. repeat destruct H6.
+           apply in_flat_map. exists x.
+           split. assumption.
+           apply in_flat_map in H7. repeat destruct H7.
+           apply in_flat_map. exists x0.
+           split. 
+           ++ apply filter_In in H7. destruct H7.
+              apply filter_In. 
+              split.
+              ** simpl in H7.
+                 pose (H a0).
+Admitted.
 
 Theorem additivity_links :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
