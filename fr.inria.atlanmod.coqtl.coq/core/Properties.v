@@ -88,9 +88,20 @@ Qed.
 Definition Rule_eqdec: forall {tc: TransformationConfiguration}  (x y:Rule), {x = y} + {x <> y}.
 Admitted.
 
+(* Multiset semantics: we think that the list of rules represents a multiset/bag*)
 Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
   forall (r:Rule),
   count_occ' Rule_eqdec (Transformation_getRules t1) r = count_occ' Rule_eqdec (Transformation_getRules t2) r.
+
+(* another way to represent multiset semantics*)
+(* Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
+  sub_set (Transformation_getRules t1) (Transformation_getRules t2) /\ 
+  sub_set (Transformation_getRules t1) (Transformation_getRules t2).*)
+
+(* Set semantics: we think that the list of rules represents a set (we don't allow two rules to have the same name)*)
+Definition Transformation_equiv' {tc: TransformationConfiguration} (t1 t2: Transformation) := 
+  forall (r:Rule),
+  In r (Transformation_getRules t1) <-> In r (Transformation_getRules t2).
 
 Theorem confluence :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
@@ -98,10 +109,14 @@ forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceMode
 Proof.
 Admitted.
 
-Theorem additivity :
+(* Version with set semantics for rules*)
+Theorem additivity_elements :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
-  transf_incl t1 t2 -> targetmodel_incl (execute t1 sm) (execute t2 sm).
+  incl (Transformation_getRules t1) (Transformation_getRules t2) -> 
+    incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm)).
 Admitted.
+
+(* TODO add version for links*)
 
 Definition monotonicity (tc: TransformationConfiguration) (t: Transformation) :=
   forall (sm1 sm2: SourceModel),
