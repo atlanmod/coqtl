@@ -259,6 +259,10 @@ Proof.
             ** assumption.
           - Admitted.
 
+Definition SourceModel_incl {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
+  incl (allModelElements m1) (allModelElements m2) /\
+  incl (allModelLinks m1) (allModelLinks m2).
+
 Definition monotonicity (tc: TransformationConfiguration) (t: Transformation) :=
   forall (sm1 sm2: SourceModel),
-  sourcemodel_incl sm1 sm2 -> targetmodel_incl (execute t sm1) (execute t sm2).
+  SourceModel_incl sm1 sm2 -> Model_incl (execute t sm1) (execute t sm2).
