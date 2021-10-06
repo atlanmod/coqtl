@@ -194,20 +194,41 @@ Definition Transformation_incl_links {tc: TransformationConfiguration} (t1 t2: T
          (In o1 (Rule_getOutputPatternElements r2) \/
           (exists (o2: OutputPatternElement), 
             In o2 (Rule_getOutputPatternElements r2) /\ 
-            o2 = match o1 with buildOutputPatternElement n e l => 
-              buildOutputPatternElement n e (fun _ _ _ _ _ => None) end
+              OutputPatternElement_getName o1 = OutputPatternElement_getName o2 /\
+              OutputPatternElement_getElementExpr o1 = OutputPatternElement_getElementExpr o2 /\ 
+              OutputPatternLink_getLinkExpr o2 = fun _ _ _ _ _ => None
             )))).
 
-(* Theorem additivity_links :
-forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel) (r: Rule),
-  (Transformation_getArity t1 = Transformation_getArity t2) /\ 
-  In r (Transformation_getRules t1) -> 
-    (In r (Transformation_getRules t2) 
-      \/ 
-      (exists (r1:Rule) (o: OutputPatternElement), In r1 (Transformation_getRules t2) /\ 
-        In o (Rule_getOutputPatternElements r1) /\ 
-        r1 = match r with buildRule n e l => buildRule n e (fun _ _ _ _ _ => None ) end)) -> 
-        incl (allModelLins (execute t1 sm)) (allModelLinks (execute t2 sm)).*)
+Theorem additivity_links :
+forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
+  (Transformation_incl_links t1 t2 -> 
+    incl (allModelLinks (execute t1 sm)) (allModelLinks (execute t2 sm))).
+Proof.
+  simpl.
+  unfold incl.
+  intros.
+  apply in_flat_map in H0. repeat destruct H0. 
+  apply in_flat_map in H1. repeat destruct H1.
+  apply filter_In in H1. destruct H1.
+  destruct H.
+  apply in_flat_map. exists x.
+  split.
+  * unfold allTuples.
+    unfold maxArity.
+    rewrite <- H.
+    assumption.
+  * apply in_flat_map.
+    pose (H4 x0).
+    destruct o.
+    + assumption.
+    + exists x0.
+      split.
+      - unfold matchPattern.
+        apply filter_In.
+        split.
+        ** assumption.
+        ** assumption.
+      - Admitted.
 
 Definition monotonicity (tc: TransformationConfiguration) (t: Transformation) :=
   forall (sm1 sm2: SourceModel),
