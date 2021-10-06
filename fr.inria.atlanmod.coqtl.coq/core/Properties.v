@@ -271,8 +271,12 @@ Definition Transformation_incl_links {tc: TransformationConfiguration} (t1 t2: T
   forall (r1: Rule), In r1 (Transformation_getRules t1) ->
     (In r1 (Transformation_getRules t2) \/
      (exists (r2:Rule),
+       In r2 (Transformation_getRules t2) /\
+       Rule_getName r1 = Rule_getName r2 /\
+       Rule_getGuardExpr r1 = Rule_getGuardExpr r2 /\
+       Rule_getIteratorExpr r1 = Rule_getIteratorExpr r2 /\
        forall (o1: OutputPatternElement), In o1 (Rule_getOutputPatternElements r1) ->
-         (In o1 (Rule_getOutputPatternElements r2) \/
+         ( In o1 (Rule_getOutputPatternElements r2) \/
           (exists (o2: OutputPatternElement), 
             In o2 (Rule_getOutputPatternElements r2) /\ 
               OutputPatternElement_getName o1 = OutputPatternElement_getName o2 /\
@@ -295,6 +299,7 @@ Proof.
       apply in_flat_map in H1. repeat destruct H1.
       apply filter_In in H1. destruct H1.
       destruct H.
+      apply H4 in H1. 
       apply in_flat_map. exists x.
       split.
       * unfold allTuples.
@@ -302,9 +307,7 @@ Proof.
         rewrite <- H.
         assumption.
       * apply in_flat_map.
-        pose (H4 x0).
-        destruct o.
-        + assumption.
+        destruct H1.
         + exists x0.
           split.
           - unfold matchPattern.
@@ -313,9 +316,45 @@ Proof.
             ** assumption.
             ** assumption.
           - assumption.
-        + destruct H5.
+        + repeat destruct H1.
+          destruct H5, H6, H7.
           exists x1.
-          admit.
+          split.
+          - unfold matchPattern.
+            apply filter_In.
+            split.
+            ** assumption.
+            ** unfold matchRuleOnPattern in *.
+               unfold evalGuardExpr in *.
+               rewrite <- H6.
+               assumption.
+          - apply in_flat_map in H2. repeat destruct H2.
+            apply in_flat_map in H9. repeat destruct H9.
+            apply in_flat_map.
+            apply H8 in H9.
+            exists x2.
+            repeat destruct H9.
+            ** split.
+               *** unfold evalIteratorExpr in *.
+                   rewrite <- H7.
+                   assumption.
+               *** apply in_flat_map.
+                   exists x3.
+                   split.
+                   --- assumption.
+                   --- assumption.
+            ** split.
+               ***  unfold evalIteratorExpr in *.
+                    rewrite <- H7.
+                    assumption.
+                *** apply in_flat_map.
+                    exists x4.
+                    split.
+                    --- assumption.
+                    --- unfold instantiateElementOnPattern, evalOutputPatternElementExpr in *.
+                        destruct H11, H12.
+                        rewrite <- H12.
+                        assumption.
   --  intros.
       apply in_flat_map in H0. repeat destruct H0. 
       apply in_flat_map in H1. repeat destruct H1.
