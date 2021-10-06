@@ -9,6 +9,7 @@ Require Import Expressions.
 Require Import core.utils.Utils.
 Require Import PeanoNat.
 Require Import Lia.
+Require Import FunctionalExtensionality.
 
 Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel -> TargetModel) := 
   (buildTransformation 0 [
@@ -277,11 +278,11 @@ Definition Transformation_incl_links {tc: TransformationConfiguration} (t1 t2: T
        Rule_getIteratorExpr r1 = Rule_getIteratorExpr r2 /\
        forall (o1: OutputPatternElement), In o1 (Rule_getOutputPatternElements r1) ->
          ( In o1 (Rule_getOutputPatternElements r2) \/
-          (exists (o2: OutputPatternElement), 
+          ( OutputPatternLink_getLinkExpr o1 = (fun _ _ _ _ _ => None) /\
+            exists (o2: OutputPatternElement), 
             In o2 (Rule_getOutputPatternElements r2) /\ 
               OutputPatternElement_getName o1 = OutputPatternElement_getName o2 /\
-              OutputPatternElement_getElementExpr o1 = OutputPatternElement_getElementExpr o2 /\ 
-              OutputPatternLink_getLinkExpr o2 = fun _ _ _ _ _ => None
+              OutputPatternElement_getElementExpr o1 = OutputPatternElement_getElementExpr o2
             )))).
 
 Theorem additivity_links :
@@ -293,6 +294,15 @@ Proof.
   unfold Model_incl.
   unfold incl.
   intros.
+  assert (trace t1 sm = trace t2 sm) as treq. {
+    unfold trace, tracePattern.
+    f_equal.
+    - apply functional_extensionality.
+      intros.
+      repeat rewrite flat_map_concat_map.
+      f_equal.
+      admit.
+  }
   split.
   --  intros.
       apply in_flat_map in H0. repeat destruct H0. 
@@ -347,12 +357,13 @@ Proof.
                ***  unfold evalIteratorExpr in *.
                     rewrite <- H7.
                     assumption.
-                *** apply in_flat_map.
+                *** destruct H11, H9.
+                    apply in_flat_map.
                     exists x4.
                     split.
                     --- assumption.
                     --- unfold instantiateElementOnPattern, evalOutputPatternElementExpr in *.
-                        destruct H11, H12.
+                        destruct H11.
                         rewrite <- H12.
                         assumption.
   --  intros.
@@ -377,7 +388,55 @@ Proof.
             split.
             ** assumption.
             ** assumption.
-          - Admitted.
+          - apply in_flat_map in H2. repeat destruct H2.
+            apply in_flat_map.
+            exists x1.
+            split.
+            ++ assumption.
+            ++ apply in_flat_map in H6. repeat destruct H6.
+               apply in_flat_map.
+               exists x2.
+               split.
+               ** assumption.
+               ** unfold applyElementOnPattern in *.
+                  rewrite <- treq.
+                  assumption.
+        + repeat destruct H5.
+          destruct H6, H7, H8.
+          exists x1.
+          split.
+          - unfold matchPattern.
+            apply filter_In.
+            split.
+            ** assumption.
+            ** unfold matchRuleOnPattern, evalGuardExpr.
+               rewrite <- H7.
+               assumption.
+          - apply in_flat_map in H2. repeat destruct H2.
+            apply in_flat_map.
+            exists x2.
+            split.
+            ** unfold evalIteratorExpr in *.
+               rewrite <- H8.
+               assumption.
+            ** apply in_flat_map in H10. repeat destruct H10.
+               apply in_flat_map.
+               apply H9 in H10.
+               destruct H10.
+               ++ exists x3.
+                  split.
+                  --- assumption.
+                  --- unfold applyElementOnPattern, evalOutputPatternElementExpr in *.
+                      rewrite <- treq.
+                      assumption.
+               ++ destruct H10.
+                  unfold applyElementOnPattern, evalOutputPatternLinkExpr in *.
+                  rewrite H10 in H11.
+                  simpl in H11.
+                  destruct (evalOutputPatternElementExpr sm x x2 x3).
+                  --- contradiction.
+                  --- contradiction.
+Admitted.
 
 Definition SourceModel_incl {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
   incl (allModelElements m1) (allModelElements m2) /\
