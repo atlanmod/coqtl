@@ -109,12 +109,26 @@ forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceMode
 Proof.
 Admitted.
 
+Definition Model_incl {tc: TransformationConfiguration}  (m1 m2: TargetModel) : Prop := 
+  incl (allModelElements m1) (allModelElements m2) /\
+  incl (allModelLinks m1) (allModelLinks m2).
+
+Definition Transformation_incl_elements {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
+  (Transformation_getArity t1 = Transformation_getArity t2) /\ 
+  forall (r1: Rule), In r1 (Transformation_getRules t1) ->
+    (In r1 (Transformation_getRules t2) \/
+     (exists (r2:Rule), 
+       In r2 (Transformation_getRules t2) /\
+         Rule_getName r1 = Rule_getName r2 /\
+         Rule_getGuardExpr r1 = Rule_getGuardExpr r2 /\
+         Rule_getIteratorExpr r1 = Rule_getIteratorExpr r2 /\
+         incl (Rule_getOutputPatternElements r1) (Rule_getOutputPatternElements r2))).
+
 (* Version with set semantics for rules*)
 Theorem additivity_elements :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
-  (incl (Transformation_getRules t1) (Transformation_getRules t2) /\ 
-    (Transformation_getArity t1 = Transformation_getArity t2)) -> 
-    incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm)).
+  (Transformation_incl_elements t1 t2 -> 
+    incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm))).
 Proof.
   simpl.
   unfold incl.
@@ -127,21 +141,73 @@ Proof.
   split.
   * unfold allTuples.
     unfold maxArity.
-    rewrite <- H4.
+    rewrite <- H.
     assumption.
   * apply in_flat_map.
-    exists x0.
-    split.
-    + unfold matchPattern.
-      apply filter_In.
-      split.
-      - apply H.
-        assumption.
-      - assumption.
+    pose (H4 x0).
+    destruct o.
     + assumption.
-Qed.   
+    + exists x0.
+      split.
+      - unfold matchPattern.
+        apply filter_In.
+        split.
+        ** assumption.
+        ** assumption.
+      - assumption.
+    + destruct H5.
+      exists x1.
+      destruct H5, H6, H7, H8.  
+      split.
+      - unfold matchPattern.
+        apply filter_In.
+        split.
+        ** assumption.
+        ** unfold matchRuleOnPattern, evalGuardExpr. 
+           rewrite <- H7.
+           unfold matchRuleOnPattern, evalGuardExpr in H3.
+           assumption.
+      - unfold instantiateRuleOnPattern, evalIteratorExpr, instantiateIterationOnPattern.
+        unfold instantiateRuleOnPattern, evalIteratorExpr, instantiateIterationOnPattern in H2.
+        rewrite <- H8.
+        apply in_flat_map in H2. repeat destruct H2. 
+        apply in_flat_map. 
+        exists x2.
+        split.
+        ** assumption.
+        ** apply in_flat_map in H10. repeat destruct H10. 
+            apply in_flat_map.
+            exists x3.
+            split.
+            ++ unfold incl in H9.
+               apply (H9 x3).
+               assumption.
+            ++ assumption. 
+Qed.
 
-(* TODO add version for links*)
+Definition Transformation_incl_links {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
+  (Transformation_getArity t1 = Transformation_getArity t2) /\ 
+  forall (r1: Rule), In r1 (Transformation_getRules t1) ->
+    (In r1 (Transformation_getRules t2) \/
+     (exists (r2:Rule),
+       forall (o1: OutputPatternElement), In o1 (Rule_getOutputPatternElements r1) ->
+         (In o1 (Rule_getOutputPatternElements r2) \/
+          (exists (o2: OutputPatternElement), 
+            In o2 (Rule_getOutputPatternElements r2) /\ 
+            o2 = match o1 with buildOutputPatternElement n e l => 
+              buildOutputPatternElement n e (fun _ _ _ _ _ => None) end
+            )))).
+
+(* Theorem additivity_links :
+forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel) (r: Rule),
+  (Transformation_getArity t1 = Transformation_getArity t2) /\ 
+  In r (Transformation_getRules t1) -> 
+    (In r (Transformation_getRules t2) 
+      \/ 
+      (exists (r1:Rule) (o: OutputPatternElement), In r1 (Transformation_getRules t2) /\ 
+        In o (Rule_getOutputPatternElements r1) /\ 
+        r1 = match r with buildRule n e l => buildRule n e (fun _ _ _ _ _ => None ) end)) -> 
+        incl (allModelLins (execute t1 sm)) (allModelLinks (execute t2 sm)).*)
 
 Definition monotonicity (tc: TransformationConfiguration) (t: Transformation) :=
   forall (sm1 sm2: SourceModel),
