@@ -360,7 +360,7 @@ split.
        +++  apply in_flat_map.
             specialize (Transformation_incl_rules_exists tc (Transformation_getRules t1) (Transformation_getRules t2) r1 H0).
             intros.
-            assert (In r1 (Transformation_getRules t1)). { admit. }
+            assert (In r1 (Transformation_getRules t1)). { unfold matchPattern in H2. apply filter_In in H2. destruct H2. exact H2. }
             specialize (H6 H7).
             repeat destruct H6.
             destruct H8.
