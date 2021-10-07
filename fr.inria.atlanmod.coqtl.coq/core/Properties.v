@@ -85,9 +85,9 @@ Definition Rule_eqdec: forall {tc: TransformationConfiguration}  (x y:Rule), {x 
 Admitted.
 
 (* Multiset semantics: we think that the list of rules represents a multiset/bag*)
-Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
+(* Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
   forall (r:Rule),
-  count_occ' Rule_eqdec (Transformation_getRules t1) r = count_occ' Rule_eqdec (Transformation_getRules t2) r.
+  count_occ' Rule_eqdec (Transformation_getRules t1) r = count_occ' Rule_eqdec (Transformation_getRules t2) r. *)
 
 (* another way to represent multiset semantics*)
 (* Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
