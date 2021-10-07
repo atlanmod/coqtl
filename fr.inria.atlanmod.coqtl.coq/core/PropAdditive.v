@@ -23,6 +23,50 @@ Fixpoint Rule_incl_patternElements {tc: TransformationConfiguration} (l1 l2: lis
   | _, _ => False
   end.
 
+Lemma Rule_incl_patternElements_exists:
+  forall (tc: TransformationConfiguration) opes1 opes2 o1,
+    Rule_incl_patternElements opes1 opes2 -> In o1 opes1 ->
+      (exists o2, In o2 opes2 /\ 
+         OutputPatternElement_getName o1 = OutputPatternElement_getName o2 
+      /\ OutputPatternElement_getElementExpr o1 = OutputPatternElement_getElementExpr o2
+      /\ (OutputPatternElement_getLinkExpr o1 = OutputPatternElement_getLinkExpr o2 \/ 
+          OutputPatternElement_getLinkExpr o1 = (fun _ _ _ _ _ => None)) ).
+Proof.
+intros.
+revert H.
+revert opes2.
+revert H0.
+induction opes1.
+- contradiction.
+- intros.
+  simpl in H0.
+  destruct H0.
+  --  unfold Rule_incl_patternElements in H.
+      destruct opes2.
+      + contradiction.
+      + exists o.
+      split; crush.
+  --  induction opes2.
+      + unfold Rule_incl_patternElements in H.
+        contradiction.
+      + clear IHopes2.
+        assert (Rule_incl_patternElements opes1 opes2).
+        {
+        unfold Rule_incl_patternElements.
+        unfold Rule_incl_patternElements in H.
+        crush.
+        }
+        specialize (IHopes1 H0 opes2 H1).
+        destruct IHopes1.
+        destruct H2.
+        exists x.
+        split; auto.
+        simpl.
+        right.
+        auto.
+Qed.
+
+
 Fixpoint Transformation_incl_rules {tc: TransformationConfiguration} (l1 l2: list Rule) : Prop :=
   match l1, l2 with
   | r1 :: l1', r2 :: l2' => 
@@ -337,7 +381,89 @@ Proof.
   unfold Transformation_incl_links.
 intros.
 split.
-- admit.
+- intro.
+  simpl.
+  destruct H.
+  intros.
+  apply in_flat_map in H1 as [sp].
+  destruct H1.
+  apply in_flat_map in H2 as [r1].
+  destruct H2.
+  apply in_flat_map in H3 as [iter1].
+  destruct H3.
+  apply in_flat_map in H4 as [ope].
+  destruct H4.
+  unfold instantiateElementOnPattern in H5.
+  destruct (evalOutputPatternElementExpr sm sp iter1 ope) eqn: outExpr.
+  + simpl in H5.
+    destruct H5.
+    ++ apply in_flat_map.
+exists sp.
+assert ((allTuples t1 sm) = (allTuples t2 sm)) as allTup. { 
+  unfold allTuples.
+  unfold maxArity.
+  rewrite H.
+  auto.
+}
+split.
++++ rewrite <- allTup. exact H1.
++++ apply in_flat_map.
+    specialize (Transformation_incl_rules_exists tc (Transformation_getRules t1) (Transformation_getRules t2) r1 H0).
+    intros.
+    assert (In r1 (Transformation_getRules t1)). { unfold matchPattern in H2. apply filter_In in H2. destruct H2. exact H2. }
+    specialize (H6 H7).
+    repeat destruct H6.
+    destruct H8.
+    destruct H8.
+    rename x into r2.
+    exists r2.
+    split.
+    ++++  unfold matchPattern in H2.
+          apply filter_In in H2.
+          unfold matchPattern.
+          apply filter_In.
+          split.
+          * auto.
+          * destruct H2.
+            unfold matchRuleOnPattern, evalGuardExpr.
+          unfold matchRuleOnPattern, evalGuardExpr in H8.
+          destruct H9.
+          rewrite <- H9.
+          auto.
+    ++++  apply in_flat_map.
+          exists iter1.
+          split.
+          +++++ unfold evalIteratorExpr.
+                unfold evalIteratorExpr in H3.
+                destruct H9.
+                destruct H9.
+                rewrite <- H9.
+                auto.
+          +++++ unfold instantiateIterationOnPattern.
+                unfold instantiateElementOnPattern.
+                assert (exists ope2, In ope2 (Rule_getOutputPatternElements r2) /\ evalOutputPatternElementExpr sm sp iter1 ope2 = return a).
+                {
+                destruct H9.
+                destruct H9.
+                specialize Rule_incl_patternElements_exists.
+                intros.
+                specialize (H11 tc (Rule_getOutputPatternElements r1) (Rule_getOutputPatternElements r2)).
+                specialize (H11 ope H10 H4).
+                destruct H11.
+                destruct H11.
+                destruct H12.
+                destruct H13.
+                clear H14.
+                exists x.
+                split; auto.
+                unfold evalOutputPatternElementExpr.
+                unfold evalOutputPatternElementExpr in outExpr.
+                rewrite <- H13.
+                rewrite <- H5.
+                auto.
+                }
+    ++ contradiction.
+  + contradiction.
 - intro.
   simpl.
   destruct H.
@@ -387,32 +513,25 @@ split.
                   destruct H9.
                   rewrite <- H9.
                   auto.
-            ++++ apply in_flat_map.
-            exists iter1.
-            split.
-            +++++ unfold evalIteratorExpr.
-                  unfold evalIteratorExpr in H3.
-                  destruct H9.
-                  destruct H9.
-                  rewrite <- H9.
-                  auto.
-            +++++ apply in_flat_map.
-            exists ope.
-            split.
-            * admit. (* by H4 H9 *)
-            * unfold applyElementOnPattern.
-            rewrite outExpr.
+            ++++  apply in_flat_map.
+                  exists iter1.
+                  split.
+                  +++++ unfold evalIteratorExpr.
+                        unfold evalIteratorExpr in H3.
+                        destruct H9.
+                        destruct H9.
+                        rewrite <- H9.
+                        auto.
+                  +++++ (* TODO don't in_flat_map here  *)
 
-            assert ((trace t1 sm) = (trace t2 sm)).
-            { 
-              apply trace_eq.
-              unfold Transformation_incl_links; auto.
-            }
-
-            rewrite <- H8.
-            rewrite linkExpr.
-            simpl.
-            exact H5.
+                        assert ((trace t1 sm) = (trace t2 sm)).
+                        { 
+                          apply trace_eq.
+                          unfold Transformation_incl_links; auto.
+                        }
+                        unfold applyIterationOnPattern.
+                        unfold applyElementOnPattern.
+                        admit.
     ++ contradiction.
   + contradiction.
 Admitted.
