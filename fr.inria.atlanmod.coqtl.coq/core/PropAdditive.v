@@ -47,7 +47,8 @@ Definition Model_incl {tc: TransformationConfiguration}  (m1 m2: TargetModel) : 
 Lemma Transformation_incl_rules_exists:
   forall (tc: TransformationConfiguration) (rs1 rs2: list Rule) (r1: Rule),
     Transformation_incl_rules rs1 rs2 -> In r1 rs1 ->
-      (exists r2, Rule_getName r1 = Rule_getName r2
+      (exists r2, In r2 rs2 /\ 
+         Rule_getName r1 = Rule_getName r2
       /\ Rule_getGuardExpr r1 = Rule_getGuardExpr r2  
       /\ Rule_getIteratorExpr r1 = Rule_getIteratorExpr r2
       /\ Rule_incl_patternElements (Rule_getOutputPatternElements r1) (Rule_getOutputPatternElements r2) ).
@@ -77,6 +78,12 @@ induction rs1.
         crush.
         }
         specialize (IHrs1 H0 rs2 H1).
+        destruct IHrs1.
+        destruct H2.
+        exists x.
+        split; auto.
+        simpl.
+        right.
         auto.
 Qed.
 
@@ -368,7 +375,18 @@ split.
             rename x into r2.
             exists r2.
             split.
-            ++++ admit. (* by H2 H6 *)
+            ++++  unfold matchPattern in H2.
+                  apply filter_In in H2.
+                  unfold matchPattern.
+                  apply filter_In.
+                  split.
+                  * auto.
+                  * destruct H2.
+                    unfold matchRuleOnPattern, evalGuardExpr.
+                  unfold matchRuleOnPattern, evalGuardExpr in H8.
+                  destruct H9.
+                  rewrite <- H9.
+                  auto.
             ++++ apply in_flat_map.
             exists iter1.
             split.
