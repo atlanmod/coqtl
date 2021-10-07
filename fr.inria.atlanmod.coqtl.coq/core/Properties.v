@@ -81,8 +81,8 @@ Proof.
         destruct (nth_error l a); reflexivity.
 Qed.
 
-Definition Rule_eqdec: forall {tc: TransformationConfiguration}  (x y:Rule), {x = y} + {x <> y}.
-Admitted.
+(*Definition Rule_eqdec: forall {tc: TransformationConfiguration}  (x y:Rule), {x = y} + {x <> y}.
+Admitted.*)
 
 (* Multiset semantics: we think that the list of rules represents a multiset/bag*)
 (* Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
@@ -95,7 +95,7 @@ Admitted.
   sub_set (Transformation_getRules t1) (Transformation_getRules t2).*)
 
 (* Set semantics: we think that the list of rules represents a set (we don't allow two rules to have the same name)*)
-Definition Transformation_equiv' {tc: TransformationConfiguration} (t1 t2: Transformation) := 
+Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
   forall (r:Rule),
   In r (Transformation_getRules t1) <-> In r (Transformation_getRules t2).
@@ -107,10 +107,10 @@ Definition TargetModel_equiv {tc: TransformationConfiguration} (m1 m2: TargetMod
   
 Theorem confluence :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
-  Transformation_equiv' t1 t2 -> TargetModel_equiv (execute t1 sm) (execute t2 sm).
+  Transformation_equiv t1 t2 -> TargetModel_equiv (execute t1 sm) (execute t2 sm).
 Proof.
   unfold TargetModel_equiv.
-  unfold Transformation_equiv'.
+  unfold Transformation_equiv.
   simpl.
   intros.
   destruct H.
@@ -191,7 +191,7 @@ Proof.
                  }
 Admitted.
 
-Definition Model_incl {tc: TransformationConfiguration}  (m1 m2: TargetModel) : Prop := 
+Definition TargetModel_incl {tc: TransformationConfiguration}  (m1 m2: TargetModel) : Prop := 
   incl (allModelElements m1) (allModelElements m2) /\
   incl (allModelLinks m1) (allModelLinks m2).
 
@@ -298,10 +298,10 @@ Definition Transformation_incl_links {tc: TransformationConfiguration} (t1 t2: T
 Theorem additivity_links :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
   (Transformation_incl_links t1 t2 -> 
-    Model_incl (execute t1 sm) (execute t2 sm)).
+    TargetModel_incl (execute t1 sm) (execute t2 sm)).
 Proof.
   simpl.
-  unfold Model_incl.
+  unfold TargetModel_incl.
   unfold incl.
   intros.
   unfold Transformation_incl_links in H.
@@ -353,4 +353,4 @@ Definition SourceModel_incl {tc: TransformationConfiguration}  (m1 m2: SourceMod
 
 Definition monotonicity (tc: TransformationConfiguration) (t: Transformation) :=
   forall (sm1 sm2: SourceModel),
-  SourceModel_incl sm1 sm2 -> Model_incl (execute t sm1) (execute t sm2).
+  SourceModel_incl sm1 sm2 -> TargetModel_incl (execute t sm1) (execute t sm2).
