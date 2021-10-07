@@ -462,6 +462,17 @@ split.
                 rewrite <- H5.
                 auto.
                 }
+                destruct H8.
+                apply in_flat_map.
+                exists x.
+                split.
+                * destruct H8.
+                  auto.
+                * destruct H8.
+                rewrite H10.
+                simpl.
+                left.
+                auto.
     ++ contradiction.
   + contradiction.
 - intro.
