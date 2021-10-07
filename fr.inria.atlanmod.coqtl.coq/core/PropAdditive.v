@@ -390,7 +390,12 @@ split.
             ++++ apply in_flat_map.
             exists iter1.
             split.
-            +++++ admit. (* by H3 H8 *)
+            +++++ unfold evalIteratorExpr.
+                  unfold evalIteratorExpr in H3.
+                  destruct H9.
+                  destruct H9.
+                  rewrite <- H9.
+                  auto.
             +++++ apply in_flat_map.
             exists ope.
             split.
@@ -404,7 +409,7 @@ split.
               unfold Transformation_incl_links; auto.
             }
 
-            rewrite <- H10.
+            rewrite <- H8.
             rewrite linkExpr.
             simpl.
             exact H5.
