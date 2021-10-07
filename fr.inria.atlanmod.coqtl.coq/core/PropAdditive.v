@@ -540,12 +540,56 @@ split.
                           apply trace_eq.
                           unfold Transformation_incl_links; auto.
                         }
-                        unfold applyIterationOnPattern.
-                        unfold applyElementOnPattern.
-                        admit.
+                unfold applyIterationOnPattern.
+                unfold applyElementOnPattern.
+                assert (exists ope2, In ope2 (Rule_getOutputPatternElements r2) /\ 
+evalOutputPatternElementExpr sm sp iter1 ope2 = return t /\
+evalOutputPatternLinkExpr sm sp t iter1 (trace t1 sm) ope2 = return l).
+                {
+                destruct H9.
+                destruct H9.
+                destruct H10.
+                specialize Rule_incl_patternElements_exists.
+                intros.
+                specialize (H11 tc (Rule_getOutputPatternElements r1) (Rule_getOutputPatternElements r2)).
+                specialize (H11 ope H10 H4).
+                destruct H11.
+                destruct H11.
+                destruct H12.
+                destruct H13.
+                
+                exists x.
+                split; auto.
+                split.
+                * unfold evalOutputPatternElementExpr.
+                  unfold evalOutputPatternElementExpr in outExpr.
+                  rewrite <- H13.
+                  auto.       
+                * unfold evalOutputPatternLinkExpr.
+                unfold evalOutputPatternLinkExpr in linkExpr.
+                destruct H14.
+                ** rewrite <- H14.
+                   auto.
+                ** rewrite H14 in linkExpr.
+                unfold evalExpr in linkExpr.
+                inversion linkExpr.
+                }
+                destruct H10.
+                apply in_flat_map.
+                exists x.
+                split.
+                * destruct H10.
+                  auto.
+                * destruct H10.
+                  destruct H11.
+                  rewrite H11.
+                  rewrite <- H8.
+                  rewrite H12.
+                  simpl.
+                  exact H5.
     ++ contradiction.
   + contradiction.
-Admitted.
+Qed.
 
 Lemma testInductionOrder: forall l1 l2: list nat, 
   length l1 = length l2 ->
