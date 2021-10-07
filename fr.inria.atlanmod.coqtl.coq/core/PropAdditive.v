@@ -51,8 +51,34 @@ Lemma Transformation_incl_rules_exists:
       /\ Rule_getGuardExpr r1 = Rule_getGuardExpr r2  
       /\ Rule_getIteratorExpr r1 = Rule_getIteratorExpr r2
       /\ Rule_incl_patternElements (Rule_getOutputPatternElements r1) (Rule_getOutputPatternElements r2) ).
-Admitted.
-
+Proof.
+intros.
+revert H.
+revert rs2.
+revert H0.
+induction rs1.
+- contradiction.
+- intros.
+  simpl in H0.
+  destruct H0.
+  --  unfold Transformation_incl_rules in H.
+      destruct rs2.
+      + contradiction.
+      + exists r.
+      split; crush.
+  --  induction rs2.
+      + unfold Transformation_incl_rules in H.
+        contradiction.
+      + clear IHrs2.
+        assert (Transformation_incl_rules rs1 rs2).
+        {
+        unfold Transformation_incl_rules.
+        unfold Transformation_incl_rules in H.
+        crush.
+        }
+        specialize (IHrs1 H0 rs2 H1).
+        auto.
+Qed.
 
 Lemma Rule_incl_patternElements_eq:
   forall  (tc: TransformationConfiguration)  x x0 sm opes1 opes2,
