@@ -586,12 +586,11 @@ Qed.
 
 Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
-  forall (r:Rule),
-  In r (Transformation_getRules t1) <-> In r (Transformation_getRules t2).
+  Transformation_incl_links t1 t2 /\ Transformation_incl_links t2 t1.
 
 Definition TargetModel_equiv {tc: TransformationConfiguration} t1 t2 sm :=
    Model_incl (execute t1 sm) (execute t2 sm) /\  Model_incl (execute t2 sm) (execute t1 sm).
-  
+
 Theorem confluence :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
   Transformation_equiv t1 t2 -> TargetModel_equiv t1 t2 sm.
@@ -601,10 +600,10 @@ unfold Transformation_equiv in tr_eq.
 destruct tr_eq.
 unfold TargetModel_equiv.
 split.
-- assert (Transformation_incl_links t1 t2). admit.
+- assert (Transformation_incl_links t1 t2). destruct H0. auto.
   specialize (confluence_lem tc t1 t2 sm H1). auto.
-- assert (Transformation_incl_links t2 t1). admit.
+- assert (Transformation_incl_links t2 t1). destruct H0. auto.
   specialize (confluence_lem tc t2 t1 sm H1). auto.
-Admitted.
+Qed.
 
 
