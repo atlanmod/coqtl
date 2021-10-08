@@ -11,6 +11,86 @@ Require Import PeanoNat.
 Require Import Lia.
 Require Import FunctionalExtensionality.
 
+(*************************************************************)
+(** * Additivity in Rule and OutputPatternElement contexts   *)
+(*************************************************************)
+
+Definition Transformation_incl_elements {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
+  (Transformation_getArity t1 = Transformation_getArity t2) /\ 
+  forall (r1: Rule), In r1 (Transformation_getRules t1) ->
+    (In r1 (Transformation_getRules t2) \/
+     (exists (r2:Rule), 
+       In r2 (Transformation_getRules t2) /\
+         Rule_getName r1 = Rule_getName r2 /\
+         Rule_getGuardExpr r1 = Rule_getGuardExpr r2 /\
+         Rule_getIteratorExpr r1 = Rule_getIteratorExpr r2 /\
+         incl (Rule_getOutputPatternElements r1) (Rule_getOutputPatternElements r2))).
+
+(* Version with set semantics for rules*)
+Theorem additivity_elements :
+forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
+  (Transformation_incl_elements t1 t2 -> 
+    incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm))).
+Proof.
+  simpl.
+  unfold incl.
+  intros.
+  apply in_flat_map in H0. repeat destruct H0. 
+  apply in_flat_map in H1. repeat destruct H1.
+  apply filter_In in H1. destruct H1.
+  destruct H.
+  apply in_flat_map. exists x.
+  split.
+  * unfold allTuples.
+    unfold maxArity.
+    rewrite <- H.
+    assumption.
+  * apply in_flat_map.
+    pose (H4 x0).
+    destruct o.
+    + assumption.
+    + exists x0.
+      split.
+      - unfold matchPattern.
+        apply filter_In.
+        split.
+        ** assumption.
+        ** assumption.
+      - assumption.
+    + destruct H5.
+      exists x1.
+      destruct H5, H6, H7, H8.  
+      split.
+      - unfold matchPattern.
+        apply filter_In.
+        split.
+        ** assumption.
+        ** unfold matchRuleOnPattern, evalGuardExpr. 
+           rewrite <- H7.
+           unfold matchRuleOnPattern, evalGuardExpr in H3.
+           assumption.
+      - unfold instantiateRuleOnPattern, evalIteratorExpr, instantiateIterationOnPattern.
+        unfold instantiateRuleOnPattern, evalIteratorExpr, instantiateIterationOnPattern in H2.
+        rewrite <- H8.
+        apply in_flat_map in H2. repeat destruct H2. 
+        apply in_flat_map. 
+        exists x2.
+        split.
+        ** assumption.
+        ** apply in_flat_map in H10. repeat destruct H10. 
+            apply in_flat_map.
+            exists x3.
+            split.
+            ++ unfold incl in H9.
+               apply (H9 x3).
+               assumption.
+            ++ assumption. 
+Qed.
+
+(*********************************************************)
+(** * Additivity in OutputPatternLink context            *)
+(*********************************************************)
+
 Fixpoint Rule_incl_patternElements {tc: TransformationConfiguration} (l1 l2: list OutputPatternElement) : Prop :=
   match l1, l2 with
   | o1 :: l1', o2 :: l2' => 
@@ -586,18 +666,4 @@ split.
                           exact H5.
     ++ contradiction.
   + contradiction.
-Qed.
-
-Lemma testInductionOrder: forall l1 l2: list nat, 
-  length l1 = length l2 ->
-  map (fun n => 0) l1 = map (fun n => 0) l2.
-Proof.
-induction l1, l2.
-- crush.
-- crush.
-- crush.
-- specialize (IHl1 l2).
-intro.
-simpl.
-crush.
 Qed.

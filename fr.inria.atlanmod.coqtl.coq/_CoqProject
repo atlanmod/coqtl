@@ -27,6 +27,7 @@ core/EngineProofs.v
 core/SyntaxCertification.v
 core/Certification.v
 core/Properties.v
+core/Additivity.v
 
 core/modeling/ModelingMetamodel.v
 core/modeling/ModelingTransformationConfiguration.v
