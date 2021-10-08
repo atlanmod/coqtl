@@ -11,6 +11,11 @@ Require Import PeanoNat.
 Require Import Lia.
 Require Import FunctionalExtensionality.
 
+
+(*************************************************************)
+(** * Universality                                           *)
+(*************************************************************)
+
 Definition toTransformation (tc: TransformationConfiguration) (f: SourceModel -> TargetModel) := 
   (buildTransformation 0 [
     (buildRule "rule"%string 
@@ -81,8 +86,9 @@ Proof.
         destruct (nth_error l a); reflexivity.
 Qed.
 
-(*Definition Rule_eqdec: forall {tc: TransformationConfiguration}  (x y:Rule), {x = y} + {x <> y}.
-Admitted.*)
+(*************************************************************)
+(** * Confluence                                             *)
+(*************************************************************)
 
 (* Multiset semantics: we think that the list of rules represents a multiset/bag*)
 (* Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
@@ -190,6 +196,10 @@ Proof.
                    admit. (* requires reordering for rules *)
                  }
 Admitted.
+
+(*************************************************************)
+(** * Monotonicity                                           *)
+(*************************************************************)
 
 Definition SourceModel_incl {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
   incl (allModelElements m1) (allModelElements m2) /\
