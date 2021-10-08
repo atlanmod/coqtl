@@ -397,3 +397,36 @@ Proof.
   destruct (ClassMetamodel_eqClass_dec c0 AttributeClass); crush.
 Qed.
 
+Lemma Class_dec :
+  forall x y : Class, {x = y} + {x <> y}.
+Proof.
+  decide equality.
+  - apply String.string_dec.
+  - apply Nat.eq_dec.
+Qed.
+
+Lemma Attribute_dec :
+  forall x y : Attribute, {x = y} + {x <> y}.
+Proof.
+  decide equality.
+  - apply String.string_dec.
+  - apply Bool.bool_dec.
+  - apply Nat.eq_dec.
+Qed.
+
+Lemma eq_dec : forall (x y : ClassMetamodel_Object), {x = y} + {x <> y}.
+  intros.
+  destruct x as [[] x], y as [[] y]; try (right; discriminate).
+  - destruct (Class_dec x y) as [H | H].
+    + left. congruence.
+    + right. contradict H.
+      inversion H.
+      apply Eqdep.EqdepTheory.inj_pair2 in H1.
+      assumption.
+  - destruct (Attribute_dec x y) as [H | H].
+    + left. congruence.
+    + right. contradict H.
+      inversion H.
+      apply Eqdep.EqdepTheory.inj_pair2 in H1.
+      assumption.
+Qed.
