@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ATOM xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns="ATOM" title="Example ATOM" id="urn:uuid:60a76c80-d399-11d9-b91C-0003939e0af6" subtitle="Insert witty or insightful remark here" rights="" icon="" logo="" lastUpdate="2003-12-13T18:30:02Z">
+  <links rel="" hrefl="http://example.org" type="" hreflang="" title=""/>
+  <categories term="Film" scheme="lesheme1" label="lelabel"/>
+  <categories term="Movie" scheme="lesheme2" label="lelabel"/>
+  <authors name="John Doe" uri="" email="johndoe@example.com"/>
+  <entrie title="Atom-Powered Robots Run Amok" id="urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a" rights="" summary="Some text." lastUpdate="2003-12-13T18:30:02Z">
+    <links rel="" hrefl="http://example.org/2003/12/13/atom03" type="" hreflang="" title=""/>
+  </entrie>
+</ATOM>

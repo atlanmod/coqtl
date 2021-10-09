@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ATOM xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns="ATOM" title="Atoute.org" subtitle="" rights="" lastUpdate="">
+  <links hrefl="http://www.atoute.org/"/>
+  <authors name="" email=""/>
+  <entrie title="La page du médecin" id="" summary="">
+    <links hrefl="http://www.atoute.org/page_du_medecin/spe/mg/mg_1024.htm"/>
+  </entrie>
+  <entrie title="Outils de recherche pour professionnels" id="" summary="">
+    <links hrefl="http://www.atoute.org/medecine_pro.htm"/>
+  </entrie>
+  <entrie title="Dictionnaires médicaux" id="" summary="">
+    <links hrefl="http://www.atoute.org/dictionnaire_medical.htm"/>
+  </entrie>
+</ATOM>

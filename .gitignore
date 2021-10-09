@@ -38,3 +38,5 @@ nra.cache
 *.vok
 *.vos
 */.vscode/settings.json
+
+fr.inria.atlanmod.coqtl.coq/build/

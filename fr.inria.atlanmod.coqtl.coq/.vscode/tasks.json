@@ -18,6 +18,24 @@
             "type": "shell",
             "command": "./clean.sh",
             "problemMatcher": []
-        }
+        },
+        {
+            "label": "xmi2v Exemple-ATOM.xmi",
+            "type": "shell",
+            "command": "java",
+            "args": ["-jar", "./build/libs/fr.inria.atlanmod.coqtl.generators-all.jar", 
+                "RSS2ATOM",
+                "ATOM",
+                "./examples/RSS2ATOM/ATOM.ecore",
+                "./examples/RSS2ATOM/tests/Exemple-ATOM.xmi", 
+                "./examples/RSS2ATOM/tests/Exemple-ATOM.v"],
+            "problemMatcher": []
+        },
+        {
+            "label": "xmi2v ATOM.ecore",
+            "type": "shell",
+            "command": "java -jar ./build/libs/fr.inria.atlanmod.coqtl.generators-all.jar RSS2ATOM ATOM ./examples/RSS2ATOM/ATOM.ecore ./examples/RSS2ATOM/tests/Exemple-ATOM.xmi ./examples/RSS2ATOM/tests/Exemple-ATOM.v",
+            "problemMatcher": []
+        },
     ]
 }
