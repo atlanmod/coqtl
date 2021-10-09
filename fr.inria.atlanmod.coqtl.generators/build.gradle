@@ -1,32 +1,32 @@
 plugins {
-	id 'org.xtext.xtend' version '2.0.8'
   id 'application'
-  id 'com.github.johnrengelman.shadow' version '6.0.0'
+  id 'org.xtext.xtend' version '3.0.0-M1'
+  id "org.xtext.builder" version "3.0.0-M1"
+  //id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
 
 repositories {
-  jcenter()
+  mavenCentral()
 }
 
 sourceSets {
   main.xtend.srcDirs = ['src']
 }
- 
+
+sourceCompatibility = 8
+
 jar {
     manifest {
         attributes 'Main-Class': 'fr.inria.atlanmod.coqtl.xmi.core.XMIGeneratorDriver'
     }
 }
 
-sourceCompatibility = 8
-
 application {
     mainClassName = 'fr.inria.atlanmod.coqtl.xmi.core.XMIGeneratorDriver'
 }
 
 dependencies {
-  compile 'org.eclipse.xtend:org.eclipse.xtend.lib:2.23.0'
-  compile files('libs/org.eclipse.emf.common-2.22.0.jar', 
-    'libs/org.eclipse.emf.ecore-2.22.0.jar', 
-    'libs/org.eclipse.emf.ecore.xmi-2.22.0.jar')
-} 
+  implementation 'org.eclipse.xtend:org.eclipse.xtend.lib:2.25.0'
+  implementation 'org.eclipse.emf:org.eclipse.emf.ecore:2.25.0'
+  implementation 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.16.0'
+}
