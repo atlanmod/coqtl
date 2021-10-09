@@ -15,6 +15,30 @@ Require Import FunctionalExtensionality.
 (** * Additivity in Rule and OutputPatternElement contexts   *)
 (*************************************************************)
 
+
+Inductive subseq {A: Type} : list A -> list A -> Prop :=
+  | s_nil : forall l, subseq nil l
+  | s_true : forall x xs ys, subseq xs ys -> subseq (x::xs) (x::ys)
+  | s_false : forall y xs ys, subseq xs ys -> subseq xs (y::ys).
+
+Inductive Transformation_incl_rules' {tc: TransformationConfiguration}  : list Rule -> list Rule -> Prop :=
+  | incl_rules_nil : forall l, Transformation_incl_rules' nil l
+  | incl_rules_true : forall x xs ys, Transformation_incl_rules' xs ys -> Transformation_incl_rules' (x::xs) (x::ys)
+  | incl_rules_true2 : forall x y xs ys, Transformation_incl_rules' xs ys 
+    -> subseq (Rule_getOutputPatternElements x) (Rule_getOutputPatternElements y) 
+    -> Transformation_incl_rules' (x::xs) (y::ys)
+  | incl_rules_false : forall y xs ys, Transformation_incl_rules' xs ys -> Transformation_incl_rules' xs (y::ys).
+
+Definition Transformation_incl_elements' {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
+  (Transformation_getArity t1 = Transformation_getArity t2) /\ 
+  Transformation_incl_rules' (Transformation_getRules t1) (Transformation_getRules t2). 
+
+Theorem additivity_elements_correct :
+forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
+  (Transformation_incl_elements' t1 t2 -> 
+    incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm))).
+Admitted.
+
 Definition Transformation_incl_elements {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
   forall (r1: Rule), In r1 (Transformation_getRules t1) ->
