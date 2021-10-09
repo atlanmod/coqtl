@@ -20,20 +20,20 @@ Inductive subseq {A: Type} : list A -> list A -> Prop :=
   | s_true : forall x xs ys, subseq xs ys -> subseq (x::xs) (x::ys)
   | s_false : forall y xs ys, subseq xs ys -> subseq xs (y::ys).
 
-Definition Transformation_incl_rules {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
+Definition Transformation_incl_rules'' {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
   subseq (Transformation_getRules t1) (Transformation_getRules t2). 
 
 Theorem additivity_rules :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
-  (Transformation_incl_rules t1 t2 -> 
+  (Transformation_incl_rules'' t1 t2 -> 
     incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm))).
 Admitted.
 
 Inductive Transformation_incl_rules' {tc: TransformationConfiguration}  : list Rule -> list Rule -> Prop :=
   | incl_rules_nil : forall l, Transformation_incl_rules' nil l
-  | incl_rules_true : forall x xs ys, Transformation_incl_rules' xs ys -> Transformation_incl_rules' (x::xs) (x::ys)
-  | incl_rules_true2 : forall x y xs ys, Transformation_incl_rules' xs ys 
+  | incl_rules_eq : forall x xs ys, Transformation_incl_rules' xs ys -> Transformation_incl_rules' (x::xs) (x::ys)
+  | incl_rules_diff : forall x y xs ys, Transformation_incl_rules' xs ys 
     -> Rule_getName x = Rule_getName y
     -> Rule_getGuardExpr x = Rule_getGuardExpr y  
     -> Rule_getIteratorExpr x = Rule_getIteratorExpr y
