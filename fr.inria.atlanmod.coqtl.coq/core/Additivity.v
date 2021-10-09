@@ -12,7 +12,7 @@ Require Import Lia.
 Require Import FunctionalExtensionality.
 
 (*************************************************************)
-(** * Additivity in Rule and OutputPatternElement contexts   *)
+(** * Additivity in Rule context                             *)
 (*************************************************************)
 
 Inductive subseq {A: Type} : list A -> list A -> Prop :=
@@ -29,6 +29,10 @@ forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceMode
   (Transformation_incl_rules'' t1 t2 -> 
     incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm))).
 Admitted.
+
+(*************************************************************)
+(** * Additivity in OutputPatternElement context             *)
+(*************************************************************)
 
 Inductive Transformation_incl_rules' {tc: TransformationConfiguration}  : list Rule -> list Rule -> Prop :=
   | incl_rules_nil : forall l, Transformation_incl_rules' nil l
