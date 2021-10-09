@@ -20,6 +20,15 @@
             "problemMatcher": []
         },
         {
+            "label": "ecore2v ATOM.ecore",
+            "type": "shell",
+            "command": "java",
+            "args": ["-cp", "./build/libs/fr.inria.atlanmod.coqtl.generators-all.jar", "fr.inria.atlanmod.coqtl.ecore.core.EcoreGeneratorDriver",
+                "./examples/RSS2ATOM/ATOM.ecore",
+                "./examples/RSS2ATOM/ATOM.v"],
+            "problemMatcher": []
+        },
+        {
             "label": "xmi2v Exemple-ATOM.xmi",
             "type": "shell",
             "command": "java",
@@ -29,15 +38,6 @@
                 "./examples/RSS2ATOM/ATOM.ecore",
                 "./examples/RSS2ATOM/tests/Exemple-ATOM.xmi", 
                 "./examples/RSS2ATOM/tests/Exemple-ATOM.v"],
-            "problemMatcher": []
-        },
-        {
-            "label": "ecore2v ATOM.ecore",
-            "type": "shell",
-            "command": "java",
-            "args": ["-cp", "./build/libs/fr.inria.atlanmod.coqtl.generators-all.jar", "fr.inria.atlanmod.coqtl.ecore.core.EcoreGeneratorDriver",
-                "./examples/RSS2ATOM/ATOM.ecore",
-                "./examples/RSS2ATOM/ATOM.v"],
             "problemMatcher": []
         },
     ]
