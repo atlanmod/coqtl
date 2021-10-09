@@ -27,10 +27,12 @@ core/EngineProofs.v
 core/SyntaxCertification.v
 core/Certification.v
 
-core/properties/Properties.v
 core/properties/AdditivityRule.v
 core/properties/AdditivityElement.v
 core/properties/AdditivityLink.v
+core/properties/Universality.v
+core/properties/Confluence.v
+core/properties/TransformationProperties.v
 
 core/modeling/ModelingMetamodel.v
 core/modeling/ModelingTransformationConfiguration.v
