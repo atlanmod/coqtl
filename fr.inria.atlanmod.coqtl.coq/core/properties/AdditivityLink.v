@@ -11,6 +11,28 @@ Require Import PeanoNat.
 Require Import Lia.
 Require Import FunctionalExtensionality.
 
+Inductive Rule_incl_patternElements' {tc: TransformationConfiguration} : list OutputPatternElement -> list OutputPatternElement -> Prop :=
+  | incl_e_nil : Rule_incl_patternElements' nil nil
+  | incl_e_diff : forall x y xs ys, Rule_incl_patternElements' xs ys 
+    -> OutputPatternElement_getName x = OutputPatternElement_getName y 
+    -> OutputPatternElement_getElementExpr x = OutputPatternElement_getElementExpr y
+    -> (OutputPatternElement_getLinkExpr x = OutputPatternElement_getLinkExpr y \/ 
+        OutputPatternElement_getLinkExpr x = (fun _ _ _ _ _ => None))
+    -> Rule_incl_patternElements' (x::xs) (y::ys).
+
+Inductive Transformation_incl_rules' {tc: TransformationConfiguration} : list Rule -> list Rule -> Prop :=
+  | incl_rules_nil : Transformation_incl_rules' nil nil
+  | incl_rules_diff : forall x y xs ys, Transformation_incl_rules' xs ys 
+    -> Rule_getName x = Rule_getName y
+    -> Rule_getGuardExpr x = Rule_getGuardExpr y  
+    -> Rule_getIteratorExpr x = Rule_getIteratorExpr y
+    -> Rule_incl_patternElements' (Rule_getOutputPatternElements x) (Rule_getOutputPatternElements y)
+    -> Transformation_incl_rules' (x::xs) (y::ys).
+
+Definition Transformation_incl_links' {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
+  (Transformation_getArity t1 = Transformation_getArity t2) /\ 
+  (Transformation_incl_rules' (Transformation_getRules t1) (Transformation_getRules t2)). 
+
 (*********************************************************)
 (** * Additivity in OutputPatternLink context            *)
 (*********************************************************)
