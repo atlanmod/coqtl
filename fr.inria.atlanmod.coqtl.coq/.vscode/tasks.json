@@ -20,12 +20,11 @@
             "problemMatcher": []
         },
         {
-            "label": "ecore2v ATOM.ecore",
+            "label": "ecore2v on current file",
             "type": "shell",
             "command": "java",
             "args": ["-cp", "./build/libs/fr.inria.atlanmod.coqtl.generators-all.jar", "fr.inria.atlanmod.coqtl.ecore.core.EcoreGeneratorDriver",
-                "./examples/RSS2ATOM/ATOM.ecore",
-                "./examples/RSS2ATOM/ATOM.v"],
+                "${relativeFile}"],
             "problemMatcher": []
         },
         {
