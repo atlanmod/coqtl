@@ -1,6 +1,11 @@
 Require Import List Omega.
 Require Import core.utils.CpdtTactics.
 
+Inductive subseq {A: Type} : list A -> list A -> Prop :=
+  | s_nil : forall l, subseq nil l
+  | s_true : forall x xs ys, subseq xs ys -> subseq (x::xs) (x::ys)
+  | s_false : forall y xs ys, subseq xs ys -> subseq xs (y::ys).
+
 Definition listToListList {A : Type} (l : list A) : list (list A) :=
   map (fun e:A => e::nil) l.
 

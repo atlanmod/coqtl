@@ -15,11 +15,6 @@ Require Import FunctionalExtensionality.
 (** * Additivity in Rule context                             *)
 (*************************************************************)
 
-Inductive subseq {A: Type} : list A -> list A -> Prop :=
-  | s_nil : forall l, subseq nil l
-  | s_true : forall x xs ys, subseq xs ys -> subseq (x::xs) (x::ys)
-  | s_false : forall y xs ys, subseq xs ys -> subseq xs (y::ys).
-
 Definition Transformation_incl_rules'' {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
   subseq (Transformation_getRules t1) (Transformation_getRules t2). 
