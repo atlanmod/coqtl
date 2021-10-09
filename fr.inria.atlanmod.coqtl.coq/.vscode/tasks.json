@@ -7,7 +7,6 @@
             "label": "make",
             "type": "shell",
             "command": "make",
-            "problemMatcher": [],
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -16,16 +15,14 @@
         {
             "label": "clean",
             "type": "shell",
-            "command": "./clean.sh",
-            "problemMatcher": []
+            "command": "./clean.sh"
         },
         {
             "label": "ecore2v on current file",
             "type": "shell",
             "command": "java",
             "args": ["-cp", "./build/libs/fr.inria.atlanmod.coqtl.generators-all.jar", "fr.inria.atlanmod.coqtl.ecore.core.EcoreGeneratorDriver",
-                "${relativeFile}"],
-            "problemMatcher": []
+                "${relativeFile}"]
         },
         {
             "label": "xmi2v Exemple-ATOM.xmi",
@@ -33,8 +30,7 @@
             "command": "java",
             "args": ["-jar", "./build/libs/fr.inria.atlanmod.coqtl.generators-all.jar", 
                 "./examples/RSS2ATOM/tests/Exemple-ATOM.xmi",
-                "./examples/RSS2ATOM/ATOM.ecore" ],
-            "problemMatcher": []
+                "./examples/RSS2ATOM/ATOM.ecore" ]
         },
     ]
 }
