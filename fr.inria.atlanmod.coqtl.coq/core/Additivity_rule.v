@@ -16,23 +16,23 @@ Require Import FunctionalExtensionality.
 (** * Additivity in Rule context                             *)
 (*************************************************************)
 
-Definition Transformation_incl_rules''' {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
-  (Transformation_getArity t1 = Transformation_getArity t2) /\ 
-  subseq (Transformation_getRules t1) (Transformation_getRules t2). 
-
-
 Definition Transformation_incl_rules'' {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
+  (Transformation_getArity t1 = Transformation_getArity t2) /\ 
+  subseq (Transformation_getRules t1) (Transformation_getRules t2).
+
+
+Definition Transformation_incl_rules''' {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
   forall r: Rule, In r (Transformation_getRules t1) -> In r (Transformation_getRules t2).
 
 
 Lemma tr_incl_equiv:
   forall (tc: TransformationConfiguration) t1 t2,
-    Transformation_incl_rules''' t1 t2 -> Transformation_incl_rules'' t1 t2.
+    Transformation_incl_rules'' t1 t2 -> Transformation_incl_rules''' t1 t2.
 Proof.
 intros.
 destruct  H.
-unfold Transformation_incl_rules''.
+unfold Transformation_incl_rules'''.
 split. 
 * auto.
 * intro.
@@ -55,7 +55,7 @@ Qed.
 
 Lemma additivity_rules_general :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
-  (Transformation_incl_rules'' t1 t2 -> 
+  (Transformation_incl_rules''' t1 t2 -> 
     incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm))).
 Proof.
 simpl.
@@ -80,9 +80,9 @@ split.
   + auto.
 Qed.
 
-Theorem additivity_rules:
+Theorem additivity_rules :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
-  (Transformation_incl_rules''' t1 t2 -> 
+  (Transformation_incl_rules'' t1 t2 -> 
     incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm))).
 Proof.
 intros.
