@@ -34,14 +34,16 @@ Admitted.
 (** * Additivity in OutputPatternElement context             *)
 (*************************************************************)
 
+Definition Rule_incl_elements {tc: TransformationConfiguration} (x y: Rule) : Prop :=
+  Rule_getName x = Rule_getName y
+  /\ Rule_getGuardExpr x = Rule_getGuardExpr y  
+  /\ Rule_getIteratorExpr x = Rule_getIteratorExpr y
+  /\ subseq (Rule_getOutputPatternElements x) (Rule_getOutputPatternElements y).
+
 Inductive Transformation_incl_rules' {tc: TransformationConfiguration}  : list Rule -> list Rule -> Prop :=
-  | incl_rules_nil : forall l, Transformation_incl_rules' nil l
-  | incl_rules_eq : forall x xs ys, Transformation_incl_rules' xs ys -> Transformation_incl_rules' (x::xs) (x::ys)
+  | incl_rules_nil : Transformation_incl_rules' nil nil
   | incl_rules_diff : forall x y xs ys, Transformation_incl_rules' xs ys 
-    -> Rule_getName x = Rule_getName y
-    -> Rule_getGuardExpr x = Rule_getGuardExpr y  
-    -> Rule_getIteratorExpr x = Rule_getIteratorExpr y
-    -> subseq (Rule_getOutputPatternElements x) (Rule_getOutputPatternElements y) 
+    -> Rule_incl_elements x y
     -> Transformation_incl_rules' (x::xs) (y::ys).
 
 Definition Transformation_incl_elements'' {tc: TransformationConfiguration} (t1 t2: Transformation) : Prop :=
