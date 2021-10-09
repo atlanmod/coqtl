@@ -32,11 +32,8 @@
             "type": "shell",
             "command": "java",
             "args": ["-jar", "./build/libs/fr.inria.atlanmod.coqtl.generators-all.jar", 
-                "RSS2ATOM",
-                "ATOM",
-                "./examples/RSS2ATOM/ATOM.ecore",
-                "./examples/RSS2ATOM/tests/Exemple-ATOM.xmi", 
-                "./examples/RSS2ATOM/tests/Exemple-ATOM.v"],
+                "./examples/RSS2ATOM/tests/Exemple-ATOM.xmi",
+                "./examples/RSS2ATOM/ATOM.ecore" ],
             "problemMatcher": []
         },
     ]

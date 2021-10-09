@@ -3,6 +3,7 @@ package fr.inria.atlanmod.coqtl.xmi.core
 import fr.inria.atlanmod.coqtl.util.EMFUtil
 import fr.inria.atlanmod.coqtl.util.URIUtil
 import org.eclipse.emf.common.util.URI
+import java.io.File
 
 class XMIGeneratorDriver {
 	
@@ -21,21 +22,22 @@ class XMIGeneratorDriver {
 	
 	def static void main(String[] args) {
 		
-		if(args.length < 5){
+		if(args.length < 2){
 			println("Input of xmi2v:");
-			println("1. example name, e.g. TT2BDD");
-			println("2. metamodel name, e.g. TT");
-			println("3. metamodel relative path, e.g. /./resources/TT2BDD/TT.ecore");
-			println("4. model relative path, e.g. /./resources/TT2BDD/tt.xor.xmi");
-			println("5. output path, e.g. /./resources/model.v");
+			println("1. model relative path, e.g. /./resources/TT2BDD/tt.xor.xmi");
+			println("2. metamodel relative path, e.g. /./resources/TT2BDD/TT.ecore");
+			println("3. (optional) output path, e.g. /./resources/TT2BDD/tt.xor.v");
 			System.exit(0)
 		}
 		
-		val exname = args.get(0)
-		val mmname = args.get(1)
-		val mm_path = args.get(2)
-		val m_path = args.get(3)
-		val output_path = args.get(4)
+		val m_path = args.get(0)
+		val mm_path = args.get(1)
+		var output_path = ""
+
+		if(args.length == 3)
+		  	output_path = args.get(2)
+		else
+			output_path = args.get(0).substring(0, args.get(0).length() - 3)+"v"
 		
 		//val m_path = "./resources/TT2BDD/tt.xor.xmi"
 		//val mm_path = "./resources/TT2BDD/TT.ecore"
@@ -46,7 +48,11 @@ class XMIGeneratorDriver {
 		val m_uri = URI.createFileURI(m_path);
 		val mm_uri = URI.createFileURI(mm_path)
 		val output_uri = URI.createFileURI(output_path);
-			
+		
+		val f = new File(mm_path);
+		val exname = f.getParentFile().getName()
+		val mmname = f.getName().substring(0, f.getName().length() - 6)
+
         doGeneration(mm_uri, m_uri, output_uri, exname, mmname)
 
     }
