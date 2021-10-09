@@ -22,7 +22,7 @@ class XMIGeneratorDriver {
 	def static void main(String[] args) {
 		
 		if(args.length < 5){
-			println("Input of XMI2Coq:");
+			println("Input of xmi2v:");
 			println("1. example name, e.g. TT2BDD");
 			println("2. metamodel name, e.g. TT");
 			println("3. metamodel relative path, e.g. /./resources/TT2BDD/TT.ecore");
