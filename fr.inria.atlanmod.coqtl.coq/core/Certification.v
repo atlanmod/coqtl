@@ -450,7 +450,7 @@ Proof.
       auto. 
 Qed.
 
-Theorem tr_instantiateRuleAndIterationOnPattern_in' :
+(*Theorem tr_instantiateRuleAndIterationOnPattern_in' :
 forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelElement) (te : TargetModelElement),
   In te (instantiateRuleOnPattern r sm sp) <->
   (exists (i: nat),
@@ -460,8 +460,7 @@ forall (tr: Transformation) (r : Rule) (sm : SourceModel) (sp: list SourceModelE
         instantiateElementOnPattern ope sm sp i = Some te)).
 Proof.
   intros.
-  specialize (tr_instantiateRuleOnPattern_in tr r sm sp te) as inst.
-Admitted. (* 
+  specialize (tr_instantiateRuleOnPattern_in tr r sm sp te) as inst. 
   rewrite tr_instantiateIterationOnPattern_in with (r:=r) (sp:=sp) (te:=te) (sm:=sm)  in inst.
   assumption. *)
 
