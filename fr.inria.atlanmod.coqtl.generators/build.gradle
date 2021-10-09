@@ -1,8 +1,7 @@
 plugins {
   id 'application'
   id 'org.xtext.xtend' version '3.0.0-M1'
-  id "org.xtext.builder" version "3.0.0-M1"
-  //id 'com.github.johnrengelman.shadow' version '7.1.0'
+  id 'com.github.johnrengelman.shadow' version '7.1.0'
 }
 
 repositories {
