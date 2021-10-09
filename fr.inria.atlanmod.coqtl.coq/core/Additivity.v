@@ -25,6 +25,9 @@ Inductive Transformation_incl_rules' {tc: TransformationConfiguration}  : list R
   | incl_rules_nil : forall l, Transformation_incl_rules' nil l
   | incl_rules_true : forall x xs ys, Transformation_incl_rules' xs ys -> Transformation_incl_rules' (x::xs) (x::ys)
   | incl_rules_true2 : forall x y xs ys, Transformation_incl_rules' xs ys 
+    -> Rule_getName x = Rule_getName y
+    -> Rule_getGuardExpr x = Rule_getGuardExpr y  
+    -> Rule_getIteratorExpr x = Rule_getIteratorExpr y
     -> subseq (Rule_getOutputPatternElements x) (Rule_getOutputPatternElements y) 
     -> Transformation_incl_rules' (x::xs) (y::ys)
   | incl_rules_false : forall y xs ys, Transformation_incl_rules' xs ys -> Transformation_incl_rules' xs (y::ys).
