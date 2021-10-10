@@ -3,7 +3,7 @@ Require Import String.
 
 Require Import core.Model.
 
-Require Import examples.Class2Relational.ClassMetamodel.
+Require Import transformations.Class2Relational.ClassMetamodel.
 
 (* 
     Class id=0 name='Person'

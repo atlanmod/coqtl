@@ -7,7 +7,7 @@
 Require Import List.
 Require Import core.Model.
 Require Import String.
-Require Import examples.TT2BDD.BDDv2.
+Require Import transformations.TT2BDD.BDDv2.
 
 
 Definition InputModel : Model bddMetamodel_EObject bddMetamodel_ELink :=

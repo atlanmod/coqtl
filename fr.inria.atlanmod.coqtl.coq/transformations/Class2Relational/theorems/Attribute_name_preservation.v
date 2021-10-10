@@ -11,9 +11,9 @@ Require Import core.Model.
 Require Import core.Semantics.
 Require Import core.Certification.
 
-Require Import examples.Class2Relational.Class2Relational.
-Require Import examples.Class2Relational.ClassMetamodel.
-Require Import examples.Class2Relational.RelationalMetamodel.
+Require Import transformations.Class2Relational.Class2Relational.
+Require Import transformations.Class2Relational.ClassMetamodel.
+Require Import transformations.Class2Relational.RelationalMetamodel.
 
 
 Theorem Attribute_name_preservation:

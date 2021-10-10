@@ -8,8 +8,8 @@ Require Import Bool.
 Require Import core.utils.Utils.
 Require Import core.Model.
 
-Require Import examples.TT2BDD.TT.
-Require Import examples.TT2BDD.BDD.
+Require Import transformations.TT2BDD.TT.
+Require Import transformations.TT2BDD.BDD.
 
 Definition TTable_OR : Model TTElem TTRef :=
   (Build_Model

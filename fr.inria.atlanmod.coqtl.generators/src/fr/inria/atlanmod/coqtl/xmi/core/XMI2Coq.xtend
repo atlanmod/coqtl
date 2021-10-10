@@ -37,7 +37,7 @@ class XMI2Coq {
 		Require Import List.
 		Require Import core.Model.
 		Require Import String.
-		Require Import examples.«ns».«meta».
+		Require Import transformations.«ns».«meta».
 		
 		«var allEObjects = new HashSet»
 		«val root = eobjects.get(0)»

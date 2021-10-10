@@ -7,7 +7,7 @@
 Require Import List.
 Require Import core.Model.
 Require Import String.
-Require Import examples.RSS2ATOM.ATOM.
+Require Import transformations.RSS2ATOM.ATOM.
 
 
 Definition InputModel : Model ATOMMetamodel_EObject ATOMMetamodel_ELink :=

@@ -19,9 +19,9 @@ Require Import core.Certification.
 Require Import core.modeling.ModelingMetamodel.
 Require Import core.Model.
 
-Require Import examples.Class2Relational.Class2Relational.
-Require Import examples.Class2Relational.ClassMetamodel.
-Require Import examples.Class2Relational.RelationalMetamodel.
+Require Import transformations.Class2Relational.Class2Relational.
+Require Import transformations.Class2Relational.ClassMetamodel.
+Require Import transformations.Class2Relational.RelationalMetamodel.
 
 Theorem Column_name_uniqueness:
 forall (cm : ClassModel) (rm : RelationalModel), 

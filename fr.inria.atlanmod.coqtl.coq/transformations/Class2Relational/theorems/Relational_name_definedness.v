@@ -20,9 +20,9 @@ Require Import core.Model.
 Require Import core.Syntax.
 Require Import core.Engine.
 
-Require Import examples.Class2Relational.Class2Relational.
-Require Import examples.Class2Relational.ClassMetamodel.
-Require Import examples.Class2Relational.RelationalMetamodel.
+Require Import transformations.Class2Relational.Class2Relational.
+Require Import transformations.Class2Relational.ClassMetamodel.
+Require Import transformations.Class2Relational.RelationalMetamodel.
 
 (*Ltac unfoldTransformationIn Tr Ht := 
   unfold Tr in Ht;

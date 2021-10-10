@@ -9,9 +9,9 @@ Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.Semantics.
 
-Require Import examples.TT2BDD.TT.
-Require Import examples.TT2BDD.BDD.
-Require Import examples.TT2BDD.TT2BDDAbstract.
-Require Import examples.TT2BDD.tests.TTModel.
+Require Import transformations.TT2BDD.TT.
+Require Import transformations.TT2BDD.BDD.
+Require Import transformations.TT2BDD.TT2BDDAbstract.
+Require Import transformations.TT2BDD.tests.TTModel.
 
 Compute (execute TT2BDD TTable_OR).

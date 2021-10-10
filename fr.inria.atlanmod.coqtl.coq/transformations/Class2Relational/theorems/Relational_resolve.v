@@ -12,9 +12,9 @@ Require Import core.Certification.
 Require Import core.modeling.Metamodel.
 Require Import core.Model.
 
-Require Import examples.Class2Relational.Class2Relational.
-Require Import examples.Class2Relational.ClassMetamodel.
-Require Import examples.Class2Relational.RelationalMetamodel.
+Require Import transformations.Class2Relational.Class2Relational.
+Require Import transformations.Class2Relational.ClassMetamodel.
+Require Import transformations.Class2Relational.RelationalMetamodel.
 
 
 Theorem Relational_Column_Reference_definedness:
