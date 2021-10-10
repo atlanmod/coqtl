@@ -89,21 +89,13 @@ Lemma tuple_length:
   In sp (tuples_up_to_n sm n) -> length sp <= n.
 Proof.
 intros.
-destruct sm eqn: sm_ca.
 induction n; crush.
-induction n.
-- crush.
--
-simpl in H.
-remember ((map (cons a) (tuples_of_length_n (a :: l) n) ++
-        prod_cons l (tuples_of_length_n (a :: l) n))) as l1.
-remember (tuples_up_to_n (a :: l) n) as l2.
+Search (In _ (_ ++ _)).
 apply in_app_or in H.
 destruct H.
-+ admit. 
-+ crush.
+- admit.
+- crush.
 Admitted.
-
 
 
 Lemma allTuples_impl:
