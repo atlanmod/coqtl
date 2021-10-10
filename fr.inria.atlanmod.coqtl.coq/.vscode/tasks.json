@@ -10,27 +10,45 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": []
         },
         {
             "label": "clean",
             "type": "shell",
-            "command": "./clean.sh"
+            "command": "./clean.sh",
+            "problemMatcher": []
         },
         {
             "label": "ecore2v on current file",
             "type": "shell",
             "command": "java",
-            "args": ["-cp", "./build/libs/fr.inria.atlanmod.coqtl.generators-all.jar", "fr.inria.atlanmod.coqtl.ecore.core.EcoreGeneratorDriver",
-                "${relativeFile}"]
+            "args": [
+                "-cp",
+                "./build/libs/fr.inria.atlanmod.coqtl.generators-all.jar",
+                "fr.inria.atlanmod.coqtl.ecore.core.EcoreGeneratorDriver",
+                "${relativeFile}"
+            ],
+            "problemMatcher": []
         },
         {
-            "label": "xmi2v Exemple-ATOM.xmi",
+            "label": "xmi2v on current file",
             "type": "shell",
             "command": "java",
-            "args": ["-jar", "./build/libs/fr.inria.atlanmod.coqtl.generators-all.jar", 
-                "./examples/RSS2ATOM/tests/Exemple-ATOM.xmi",
-                "./examples/RSS2ATOM/ATOM.ecore" ]
-        },
+            "args": [
+                "-jar",
+                "./build/libs/fr.inria.atlanmod.coqtl.generators-all.jar",
+                "${relativeFile}",
+                "${input:metamodelPath}"
+            ],
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+        "type": "promptString",
+        "id": "metamodelPath",
+        "description": "Path of the metamodel ecore file"
+        }
     ]
 }
