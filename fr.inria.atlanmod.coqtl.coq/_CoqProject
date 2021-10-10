@@ -44,6 +44,9 @@ core/modeling/Parser.v
 core/modeling/ModelingSemantics.v
 #core/modeling/ModelingCertification.v
 
+core/modeling/properties/ModelingAdditivityRule.v
+core/modeling/properties/ModelingAdditivityRuleExt.v
+
 #core/modeling/twophases/TwoPhaseEngine.v
 #core/modeling/twophases/TwoPhaseSemantics.v
 #core/modeling/twophases/TwoPhaseCertification.v

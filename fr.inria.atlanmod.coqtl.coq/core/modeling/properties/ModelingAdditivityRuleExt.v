@@ -21,10 +21,10 @@ Require Import Lia.
 (** * Additivity in Rule context                             *)
 (*************************************************************)
 
-Definition CocreteTransformation_incl_rules {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc} (t1 t2: ConcreteTransformation) : Prop :=
+Definition ConcreteTransformation_incl_rules {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc} (t1 t2: ConcreteTransformation) : Prop :=
     subseq (ConcreteTransformation_getConcreteRules t1) (ConcreteTransformation_getConcreteRules t2).
 
-Lemma CocreteTransformation_incl_rules_imply:
+Lemma ConcreteTransformation_incl_rules_imply:
  forall {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc} rs1 rs2,
   subseq rs1 rs2 ->
     (max (map (length (A:=SourceModelClass)) (map ConcreteRule_getInTypes rs1)   )) <= 
@@ -61,11 +61,11 @@ Qed.
 Theorem additivity_modeling_rules :
 forall (tc: TransformationConfiguration) (mtc: ModelingTransformationConfiguration tc) 
   (t1 t2: ConcreteTransformation) (sm: SourceModel),
-  (CocreteTransformation_incl_rules t1 t2 -> 
+  (ConcreteTransformation_incl_rules t1 t2 -> 
     incl (allModelElements (execute (parse t1) sm)) (allModelElements (execute (parse t2) sm))).
 Proof.
 intros.
-specialize (CocreteTransformation_incl_rules_imply (ConcreteTransformation_getConcreteRules t1) (ConcreteTransformation_getConcreteRules t2) H).
+specialize (ConcreteTransformation_incl_rules_imply (ConcreteTransformation_getConcreteRules t1) (ConcreteTransformation_getConcreteRules t2) H).
 intros.
 specialize (maxArity_impl t1 t2 H0).
 intros.
@@ -73,7 +73,7 @@ apply (additivity_rules).
 unfold Transformation_incl_rules''.
 split.
 - auto.
-- unfold CocreteTransformation_incl_rules in H.
+- unfold ConcreteTransformation_incl_rules in H.
   simpl.
   apply subseq_parseRule_eq.
   auto.
