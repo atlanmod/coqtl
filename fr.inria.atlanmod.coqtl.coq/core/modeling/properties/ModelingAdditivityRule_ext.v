@@ -84,18 +84,49 @@ split.
     auto.
 Qed.
 
+
+Lemma tuples_up_to_n_size:
+  forall A (a: list A) (sm: list A) n,
+   In a (tuples_of_length_n sm n) -> length a = n.
+Proof.
+intros.
+revert H.
+revert a.
+induction n.
+- intros. simpl in H; crush.
+- intros. simpl in H.
+  apply in_flat_map in H.
+  destruct H.
+  destruct H.
+  remember ((tuples_of_length_n sm n)) as l.
+  apply in_map_iff in H0.
+  destruct H0.
+  destruct H0.
+  specialize (IHn x0 H1).
+  crush.
+Qed.
+
+
 Lemma tuple_length:
  forall {A: Type} (sp: list A) sm n,
   In sp (tuples_up_to_n sm n) -> length sp <= n.
 Proof.
 intros.
 induction n; crush.
-Search (In _ (_ ++ _)).
 apply in_app_or in H.
 destruct H.
-- admit.
+- unfold prod_cons in H.
+  apply in_flat_map in H.
+  destruct H.
+  destruct H.
+  apply in_map_iff in H0.
+  destruct H0.
+  destruct H0.
+  specialize (tuples_up_to_n_size A x0 sm n H1).
+  intros.
+  crush.
 - crush.
-Admitted.
+Qed.
 
 
 Lemma allTuples_impl:
