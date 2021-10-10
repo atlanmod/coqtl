@@ -16,6 +16,8 @@ Require Import Lia.
 
 
 
+
+
 (*************************************************************)
 (** * Additivity in Rule context                             *)
 (*************************************************************)
@@ -27,8 +29,7 @@ Definition CocreteTransformation_incl_rules' {tc: TransformationConfiguration} {
     subseq (map parseRule (ConcreteTransformation_getConcreteRules t1))
            (map parseRule (ConcreteTransformation_getConcreteRules t2)).
 
-Definition CocreteTransformation_incl_rules {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc} (t1 t2: ConcreteTransformation) : Prop :=
-  subseq (ConcreteTransformation_getConcreteRules t1) (ConcreteTransformation_getConcreteRules t2).
+
 
 Theorem parse_eq:
   forall (tc: TransformationConfiguration) (mtc: ModelingTransformationConfiguration tc)  t1 t2,
@@ -74,7 +75,7 @@ induction crs1.
 Qed.
 
 
-Theorem additivity_modeling_rules :
+Theorem additivity_modeling_rules' :
 forall (tc: TransformationConfiguration) (mtc: ModelingTransformationConfiguration tc) 
   (t1 t2: ConcreteTransformation) (sm: SourceModel),
   (CocreteTransformation_incl_rules' t1 t2 -> 
@@ -88,3 +89,47 @@ apply H1.
 apply H0.
 apply H.
 Qed.
+
+
+Lemma subseq_parseRule_eq:
+  forall (tc: TransformationConfiguration) (mtc: ModelingTransformationConfiguration tc) rs1 rs2,
+   subseq rs1 rs2 ->
+   subseq (map parseRule rs1) (map parseRule rs2).
+Proof.
+intros.
+induction H.
+- simpl. apply s_nil.
+- simpl. apply s_true. auto.
+- simpl. apply s_false. auto.
+Qed.
+
+Definition CocreteTransformation_incl_rules {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc} (t1 t2: ConcreteTransformation) : Prop :=
+  (max (map (length (A:=SourceModelClass)) (map ConcreteRule_getInTypes (ConcreteTransformation_getConcreteRules t1))   )) = 
+  (max (map (length (A:=SourceModelClass)) (map ConcreteRule_getInTypes (ConcreteTransformation_getConcreteRules t2))   )) /\
+    subseq (ConcreteTransformation_getConcreteRules t1) (ConcreteTransformation_getConcreteRules t2).
+
+Lemma CocreteTransformation_incl_rules_eq:
+  forall (tc: TransformationConfiguration) (mtc: ModelingTransformationConfiguration tc) t1 t2,
+    CocreteTransformation_incl_rules t1 t2 -> CocreteTransformation_incl_rules' t1 t2.
+Proof.
+intros.
+unfold CocreteTransformation_incl_rules in H.
+unfold CocreteTransformation_incl_rules.
+split.
+- destruct H. auto.
+- destruct H. apply subseq_parseRule_eq. auto.
+Qed.
+
+
+Theorem additivity_modeling_rules :
+forall (tc: TransformationConfiguration) (mtc: ModelingTransformationConfiguration tc) 
+  (t1 t2: ConcreteTransformation) (sm: SourceModel),
+  (CocreteTransformation_incl_rules t1 t2 -> 
+    incl (allModelElements (execute (parse t1) sm)) (allModelElements (execute (parse t2) sm))).
+Proof.
+intros.
+apply additivity_modeling_rules'.
+apply CocreteTransformation_incl_rules_eq.
+auto.
+Qed.
+
