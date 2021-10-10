@@ -84,6 +84,27 @@ split.
     auto.
 Qed.
 
+Lemma tuple_length:
+ forall {A: Type} (sp: list A) sm n,
+  In sp (tuples_up_to_n sm n) -> length sp <= n.
+Proof.
+intros.
+destruct sm eqn: sm_ca.
+induction n; crush.
+induction n.
+- crush.
+-
+simpl in H.
+remember ((map (cons a) (tuples_of_length_n (a :: l) n) ++
+        prod_cons l (tuples_of_length_n (a :: l) n))) as l1.
+remember (tuples_up_to_n (a :: l) n) as l2.
+apply in_app_or in H.
+destruct H.
++ admit. 
++ crush.
+Admitted.
+
+
 
 Lemma allTuples_impl:
  forall (tc: TransformationConfiguration) t1 t2 x sm,
@@ -98,19 +119,22 @@ unfold allTuples.
 unfold allTuples in H0.
 simpl.
 simpl in H0.
-revert H0.
-revert H.
-revert a2.
-induction a1,a2.
+destruct a1, a2.
 - auto.
 - intros. simpl in H0.
-  destruct H0. admit. crush.
+  destruct H0. 
+  + apply tuples_up_to_n_incl_length; crush.
+    unfold incl.
+    intros.
+    contradiction.
+  + crush.
 - crush.
-- admit.
-Admitted.
-
-
-
+- apply tuples_up_to_n_incl_length.
+  Search tuples_up_to_n.
+  apply tuples_up_to_n_incl in H0.
+  + auto.
+  + specialize (tuple_length x (allModelElements sm) (S a1) H0). crush.
+Qed.
 
 Lemma additivity_rules_general :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
