@@ -98,13 +98,37 @@ Theorem tr_resolveIter_leaf:
     resolveIter tls sm name type sp iter = return x ->
       (exists (tl : TraceLink),
         In tl tls /\
+        Is_true (list_beq SourceModelElement SourceElement_eqb (TraceLink_getSourcePattern tl) sp) /\
         ((TraceLink_getIterator tl) = iter) /\ 
         ((TraceLink_getName tl) = name)%string /\
         (toModelClass type (TraceLink_getTargetElement tl) = Some x)). 
 Proof.
 intros.
 unfold resolveIter in H.
-Admitted.
+destruct (Semantics.resolveIter tls sm name sp iter) eqn: resolve_ca.
+- simpl in H.
+  unfold Semantics.resolveIter in resolve_ca.
+  destruct ( find
+               (fun tl : TraceLink =>
+                Semantics.list_beq SourceModelElement SourceElement_eqb
+                  (TraceLink_getSourcePattern tl) sp &&
+                (TraceLink_getIterator tl =? iter) &&
+                (TraceLink_getName tl =? name)%string)) eqn: find_ca.
+  -- apply find_some in find_ca.
+     destruct find_ca.
+     exists t0.
+     symmetry in H1.
+     apply andb_true_eq in H1.
+     destruct H1.
+     apply andb_true_eq in H1.
+     destruct H1.
+     crush.
+     --- apply beq_nat_true. crush.
+     --- apply String.eqb_eq. crush.
+  -- inversion resolve_ca.
+- simpl in H. inversion H.
+Qed.
+
 
 Instance ModelingCoqTLEngine :
   ModelingTransformationEngine tc mtc:=
