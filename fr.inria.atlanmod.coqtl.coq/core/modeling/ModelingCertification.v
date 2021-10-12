@@ -5,6 +5,7 @@ Require Import Bool.
 Require Import core.utils.Utils.
 Require Import core.Model.
 Require Import core.TransformationConfiguration.
+Require Import core.SyntaxCertification.
 Require Import core.Engine.
 Require Import core.Semantics.
 Require Import core.Certification.
@@ -130,21 +131,22 @@ destruct (Semantics.resolveIter tls sm name sp iter) eqn: resolve_ca.
 Qed.
 
 
+
+Definition CoqTLEngine_a : TransformationEngine CoqTLSyntax.
+Proof.
+(* exact CoqTLEngine. <- problem here *) 
+Admitted. 
+
+
+
+Check (@ModelingTransformationEngine tc mtc CoqTLSyntax).
+
 Instance ModelingCoqTLEngine :
-  ModelingTransformationEngine tc mtc:=
-  {
-    SourceModelClass := SourceModelClass;
-    SourceModelReference := SourceModelReference;
-    TargetModelClass := TargetModelClass;
-    TargetModelReference := TargetModelReference;
-
-    resolveAll := resolveAllIter;
-    resolve := resolveIter;
-
-    (* lemmas *)
-
-    tr_resolveAll_in := tr_resolveAllIter_in;
-    tr_resolve_Leaf := tr_resolveIter_leaf;
-  }. 
+ (@ModelingTransformationEngine tc mtc CoqTLSyntax) CoqTLEngine_a.
+Proof.
+eexists.
+exact tr_resolveAllIter_in.
+exact tr_resolveIter_leaf.
+Qed.
 
 End IterateTracesCertification.
