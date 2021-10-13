@@ -19,7 +19,7 @@ Require Import core.modeling.ModelingSemantics.
 Require Import core.modeling.ModelingTransformationConfiguration.
 
 
-Section IterateTracesCertification.
+Section ModelingCertification.
 
 (* Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}. *) 
 
@@ -232,4 +232,4 @@ exact tr_resolveAllIter_in.
 exact tr_resolveIter_leaf.
 Qed.
 
-End IterateTracesCertification.
+End ModelingCertification.
