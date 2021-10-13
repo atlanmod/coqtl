@@ -48,7 +48,6 @@ class Ecore2Coq {
 			Inductive «eClass.name» : Set :=
 			  Build«eClass.name» :
 			  «IF eClass.ESuperTypes.size>0»(* Inheritence Attribute *) «eClass.ESuperTypes.get(0).name» -> «ENDIF»
-			  (* id *) string ->
 			  «FOR eAttribute : eClass.EAttributes»
 			    (* «eAttribute.name» *) «AttributeType2Coq(eAttribute)» ->
 			  «ENDFOR»
@@ -74,13 +73,11 @@ class Ecore2Coq {
 			  «IF eClass.ESuperTypes.size>0»
 			  «val supName = eClass.ESuperTypes.get(0).name»
 			  Definition «eClass.name»_get«supName.toFirstUpper» («v» : «eClass.name») : «supName» :=
-			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«supName.toLowerCase»«ENDIF» id «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «supName.toLowerCase» end.
+			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«supName.toLowerCase»«ENDIF» «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «supName.toLowerCase» end.
 			  «ENDIF»	
-			  Definition «eClass.name»_getId («v» : «eClass.name») : string :=
-			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«eClass.ESuperTypes.get(0).name.toLowerCase»«ENDIF» id «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => id end.
 			  «FOR eAttribute : eClass.EAttributes»
 			  Definition «eClass.name»_get«eAttribute.name.toFirstUpper» («v» : «eClass.name») : «AttributeType2Coq(eAttribute)» :=
-			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«eClass.ESuperTypes.get(0).name.toLowerCase»«ENDIF» id «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «eAttribute.name» end.
+			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«eClass.ESuperTypes.get(0).name.toLowerCase»«ENDIF» «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «eAttribute.name» end.
 			  «ENDFOR»	 
 			   
 		«ENDFOR»
@@ -244,9 +241,7 @@ class Ecore2Coq {
 				  (Build_«mm_elink» «mm_eref_qarg» t).
 		
 		
-		(* Accessors on model *)
 		(* Equality for Types *)
-		(*? We currently define eq for Eclass on their fist attribute *)
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))
 		»Definition beq_«eClass.name» («arg1(eClass.name)» : «eClass.name») («arg2(eClass.name)» : «eClass.name») : bool :=
 			«IF eClass.ESuperTypes.size > 0 »
@@ -322,14 +317,6 @@ class Ecore2Coq {
 			«ENDFOR»
 
 		«ENDFOR»
-		
-		Definition «mm»_defaultInstanceOfEClass («mm_eclass_qarg»: «mm_eclass») : («mm»_getTypeByEClass «mm_eclass_qarg») :=
-		  match «mm_eclass_qarg» with
-		  «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
-		   | «eClass.name»«Keywords.PostfixEClass» => 
-		   «EMFUtil.PrintDefaultValue(eClass)»
-		  «ENDFOR»
-		  end.
 		
 		(* Typeclass Instances *)
 		
@@ -415,7 +402,16 @@ class Ecore2Coq {
 
 /**
  * Removed
- * 
+
+  
+        Definition «mm»_defaultInstanceOfEClass («mm_eclass_qarg»: «mm_eclass») : («mm»_getTypeByEClass «mm_eclass_qarg») :=
+		  match «mm_eclass_qarg» with
+		  «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
+		   | «eClass.name»«Keywords.PostfixEClass» => 
+		   «EMFUtil.PrintDefaultValue(eClass)»
+		  «ENDFOR»
+		  end.
+		  
 	get id of every eobject:
 		Definition «mm»_getId («mm_eobject_qarg» : «mm_eobject») : nat :=
 		  match «mm_eobject_qarg» with
