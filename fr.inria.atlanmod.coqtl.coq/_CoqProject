@@ -57,6 +57,9 @@ core/modeling/properties/ModelingAdditivityRuleExt.v
 #core/modeling/byrule/ByRuleSemantics.v
 #core/modeling/byrule/Certification_ByRuleSemantics.v
 
+transformations/Class2RelationalTest/ClassMetamodel.v
+transformations/Class2RelationalTest/RelationalMetamodel.v
+
 transformations/Class2Relational/ClassMetamodel.v
 transformations/Class2Relational/RelationalMetamodel.v
 transformations/Class2Relational/Class2RelationalAbstract.v
