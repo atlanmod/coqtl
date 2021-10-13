@@ -31,8 +31,8 @@ class EcoreGeneratorDriver {
 
 		if(args.length < 1){
 			println("Input of ecore2v:");
-			println("1. metamodel relative path, e.g. /./resources/TT2BDD/TT.ecore");
-			println("2. (optional) output file path, e.g. /./resources/TT2BDD/TT.v");
+			println("1. metamodel relative path, e.g. ./resources/TT2BDD/TT.ecore");
+			println("2. (optional) output file path, e.g. ./resources/TT2BDD/TT.v");
 			System.exit(0)
 		}
 
