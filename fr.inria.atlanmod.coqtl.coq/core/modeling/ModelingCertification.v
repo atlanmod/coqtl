@@ -8,6 +8,8 @@ Require Import core.TransformationConfiguration.
 Require Import core.SyntaxCertification.
 Require Import core.Engine.
 Require Import core.Semantics.
+Require Import core.EqDec.
+Require Import core.Metamodel.
 Require Import core.Certification.
 Require Import core.Syntax.
 Require Import core.modeling.ModelingEngine.
@@ -19,7 +21,7 @@ Require Import core.modeling.ModelingTransformationConfiguration.
 
 Section IterateTracesCertification.
 
-Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}. 
+(* Context {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}. *) 
 
 (** * Resolve *)
 
@@ -32,7 +34,9 @@ Proof.
 Qed. *)
 
 Theorem tr_resolveAllIter_in:
-  forall (tls: list TraceLink) (sm: SourceModel) (name: string)
+  forall 
+     {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}
+    (tls: list TraceLink) (sm: SourceModel) (name: string)
     (type: TargetModelClass) (sps: list(list SourceModelElement)) (iter: nat)
     (te: denoteModelClass type),
     (exists tes: list (denoteModelClass type),
@@ -94,7 +98,9 @@ Qed. *)
 
 (* this one direction, the other one is not true since exists cannot gurantee uniqueness in find *)
 Theorem tr_resolveIter_leaf:
-  forall (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
+  forall 
+     {tc: TransformationConfiguration} {mtc: ModelingTransformationConfiguration tc}
+    (tls:list TraceLink) (sm : SourceModel) (name: string) (type: TargetModelClass)
     (sp: list SourceModelElement) (iter: nat) (x: denoteModelClass type),
     resolveIter tls sm name type sp iter = return x ->
       (exists (tl : TraceLink),
@@ -131,18 +137,95 @@ destruct (Semantics.resolveIter tls sm name sp iter) eqn: resolve_ca.
 Qed.
 
 
-
-Definition CoqTLEngine_a : TransformationEngine CoqTLSyntax.
-Proof.
-(* exact CoqTLEngine. <- problem here *) 
-Admitted. 
+(* Set Typeclasses Debug Verbosity 2. *)
 
 
+Context {SourceModelElement SourceModelLink: Type}.
+Context {eqdec_sme: EqDec SourceModelElement}. (* need decidable equality on source model elements *)
+Context {TargetModelElement TargetModelLink: Type}.
+Context {eqdec_tme: EqDec TargetModelElement}. (* need decidable equality on source model elements *)
 
-Check (@ModelingTransformationEngine tc mtc CoqTLSyntax).
+Instance smm : Metamodel := {
+  ModelElement := SourceModelElement;
+  ModelLink := SourceModelLink;
+  elements_eqdec := eqdec_sme;
+}.
 
-Instance ModelingCoqTLEngine :
- (@ModelingTransformationEngine tc mtc CoqTLSyntax) CoqTLEngine_a.
+Instance tmm : Metamodel := {
+  ModelElement := TargetModelElement;
+  ModelLink := TargetModelLink;
+  elements_eqdec := eqdec_tme;
+}.
+
+Instance tc : TransformationConfiguration := {
+  SourceMetamodel := smm;
+  TargetMetamodel := tmm;
+}.
+
+Context {SourceModelClass SourceModelReference: Type}.
+Context {TargetModelClass TargetModelReference: Type}.
+
+Context {denoteSourceElemSubType : SourceModelClass -> Set}.
+Context {toSourceElemSubType: forall (t: SourceModelClass), SourceModelElement -> option (denoteSourceElemSubType t)}.
+Context {toSourceElemSumType: forall (t: SourceModelClass), (denoteSourceElemSubType t) -> SourceModelElement}.
+
+Context {denoteSourceLinkSubType : SourceModelReference -> Set}.
+Context {toSourceLinkSubType: forall (t: SourceModelReference), SourceModelLink -> option (denoteSourceLinkSubType t)}.
+Context {toSourceLinkSumType: forall (t: SourceModelReference), (denoteSourceLinkSubType t) -> SourceModelLink}.
+
+Context {denoteTargetElemSubType : TargetModelClass -> Set}.
+Context {toTargetElemSubType: forall (t: TargetModelClass), TargetModelElement -> option (denoteTargetElemSubType t)}.
+Context {toTargetElemSumType: forall (t: TargetModelClass), (denoteTargetElemSubType t) -> TargetModelElement}.
+
+Context {denoteTargetLinkSubType : TargetModelReference -> Set}.
+Context {toTargetLinkSubType: forall (t: TargetModelReference), TargetModelLink -> option (denoteTargetLinkSubType t)}.
+Context {toTargetLinkSumType: forall (t: TargetModelReference), (denoteTargetLinkSubType t) -> TargetModelLink}.
+
+
+Instance SourceElements : Sum SourceModelElement SourceModelClass := {
+denoteSubType := denoteSourceElemSubType;
+toSubType := toSourceElemSubType;
+toSumType := toSourceElemSumType;
+}.
+
+Instance SourceLinks : Sum SourceModelLink SourceModelReference := {
+denoteSubType := denoteSourceLinkSubType;
+toSubType := toSourceLinkSubType;
+toSumType := toSourceLinkSumType;
+}.
+
+Instance TargetElements : Sum TargetModelElement TargetModelClass:= {
+denoteSubType := denoteTargetElemSubType;
+toSubType := toTargetElemSubType;
+toSumType := toTargetElemSumType;
+}.
+
+Instance TargetLinks : Sum TargetModelLink TargetModelReference:= {
+denoteSubType := denoteTargetLinkSubType;
+toSubType := toTargetLinkSubType;
+toSumType := toTargetLinkSumType;
+}.
+
+Instance msmm: ModelingMetamodel SourceMetamodel:= {
+  ModelClass := SourceModelClass;
+  ModelReference := SourceModelReference;
+  elements := SourceElements;
+  links := SourceLinks;
+}.
+
+Instance mtmm: ModelingMetamodel TargetMetamodel := {
+  ModelClass := TargetModelClass;
+  ModelReference := TargetModelReference;
+  elements := TargetElements;
+  links := TargetLinks;
+}.
+
+Instance mtc : ModelingTransformationConfiguration tc := {
+  smm := msmm;
+  tmm := mtmm;
+}.
+
+Instance ModelingCoqTLEngine : @ModelingTransformationEngine _ _ _ CoqTLEngine.
 Proof.
 eexists.
 exact tr_resolveAllIter_in.
