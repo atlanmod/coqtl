@@ -134,8 +134,8 @@ apply ConcreteTransformation_incl_rules_eq.
 auto.
 Qed.
 
-Theorem arity_incl :
+(* Theorem arity_incl :
 forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
   ((Transformation_getArity t1) <= (Transformation_getArity t2) /\ (Transformation_getRules t1) = (Transformation_getRules t2)) -> 
     incl (allModelElements (execute t1 sm)) (allModelElements (execute t2 sm)).
-Admitted.
+Admitted. *)
