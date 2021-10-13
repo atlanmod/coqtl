@@ -273,6 +273,14 @@ class Ecore2Coq {
 		
 		«ENDFOR»
 		
+		Definition beq_«mm_eobject» (c1 : «mm_eobject») (c2 : «mm_eobject») : bool :=
+		  match c1, c2 with
+		  «FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
+		  | Build_«mm_eobject» «eClass.name»«Keywords.PostfixEClass» o1, Build_«mm_eobject» «eClass.name»«Keywords.PostfixEClass» o2 => beq_«eClass.name» o1 o2
+		  «ENDFOR»
+		  | _, _ => false
+		  end.
+		  
 		«val candidates = new HashSet»
 		«FOR eSuper : ePackage.EClassifiers.filter(typeof(EClass))»
 			«FOR eSub : ePackage.EClassifiers.filter(typeof(EClass))»
@@ -323,36 +331,46 @@ class Ecore2Coq {
 		  «ENDFOR»
 		  end.
 		
-		(* Typeclass Instance *)
-		Instance «mm» : Metamodel «mm_eobject» «mm_elink» «mm_eclass» «mm_eref» :=
-		  {
-		    denoteModelClass := «mm»_getTypeByEClass;
-		    denoteModelReference := «mm»_getTypeByEReference;
-		    toModelClass := «mm»_toEClass;
-		    toModelReference := «mm»_toEReference;
-		    toModelElement := «mm»_toEObjectOfEClass;
-		    toModelLink := «mm»_toELinkOfEReference;
-		    bottomModelClass := «mm»_defaultInstanceOfEClass;
+		(* Typeclass Instances *)
 		
-		    (* Theorems *)
-		    eqModelClass_dec := «mm»_eqEClass_dec;
-		    eqModelReference_dec := «mm»_eqEReference_dec;
+		Instance «mm»_«Keywords.ElementSum» : Sum «mm_eobject» «mm_eclass» :=
+		{
+			denoteSubType := «mm»_getTypeByEClass;
+			toSubType := «mm»_toEClass;
+			toSumType := «mm»_toEObjectOfEClass;
+		}.
 		
-		    (* Constructors *)
-		    BuildModelElement := Build_«mm_eobject»;
-		    BuildModelLink := Build_«mm_elink»;
-		  }.
-		  
+		Instance «mm»_«Keywords.LinkSum» : Sum «mm_elink» «mm_eref» :=
+		{
+			denoteSubType := «mm»_getTypeByEReference;
+			toSubType := «mm»_toEReference;
+			toSumType := «mm»_toELinkOfEReference;
+		}.
+		
+		Instance «mm»_EqDec : EqDec «mm_eobject» := {
+		    eq_b := beq_«mm_eobject»;
+		}.
+
+		Instance «mm»_«Keywords.MetamodelTypeClassName»_instance : 
+			«Keywords.MetamodelTypeClassName» :=
+		{
+			ModelElement := «mm_eobject»;
+			ModelLink := «mm_elink»;
+		}.
+		
+		Instance «mm»_«Keywords.ModelingMetamodelTypeClassName»_instance : 
+			«Keywords.ModelingMetamodelTypeClassName» «mm»_«Keywords.MetamodelTypeClassName»_instance :=
+		{ 
+		    elements := «mm»_«Keywords.ElementSum»;
+		    links := «mm»_«Keywords.LinkSum»; 
+		}.
+		
 		(* Useful lemmas *)
+		
 		Lemma «ePackage.name»_invert : 
-		  forall («mm_eclass_qarg»: «mm_eclass») (t1 t2: «mm»_getTypeByEClass «mm_eclass_qarg»), Build_«mm_eobject» «mm_eclass_qarg» t1 = Build_«mm_eobject» «mm_eclass_qarg» t2 -> t1 = t2.
-		Proof.
-		  intros.
-		  inversion H.
-		  apply inj_pair2_eq_dec in H1.
-		  exact H1.
-		  apply «mm»_eqEClass_dec.
-		Qed.
+		  forall («mm_eclass_qarg»: «mm_eclass») (t1 t2: «mm»_getTypeByEClass «mm_eclass_qarg»), 
+		    Build_«mm_eobject» «mm_eclass_qarg» t1 = Build_«mm_eobject» «mm_eclass_qarg» t2 -> t1 = t2.
+		Admitted.
 	'''
 	
 	
