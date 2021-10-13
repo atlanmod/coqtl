@@ -29,17 +29,19 @@ class Ecore2Coq {
 		
 		(* Coq libraries *)
 		Require Import String.
+		Require Import Bool.
 		Require Import List.      (* sequence *)
 		Require Import Multiset.  (* bag *)
 		Require Import ListSet.   (* set *)
 		Require Import Omega.
-		Require Import Bool.
-		
-		Require Import core.utils.TopUtils.
-		Require Import core.Metamodel.
-		Require Import core.Model.
-		
 		Require Import Coq.Logic.Eqdep_dec.
+		
+		Require Import core.EqDec.
+		Require Import core.utils.Utils.
+		Require Import core.Metamodel.
+		Require Import core.modeling.ModelingMetamodel.
+		Require Import core.Model.
+		Require Import core.utils.CpdtTactics.
 
 		(* Base types *)
 		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
