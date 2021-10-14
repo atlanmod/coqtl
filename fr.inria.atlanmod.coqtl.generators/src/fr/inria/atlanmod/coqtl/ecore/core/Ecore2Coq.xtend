@@ -185,6 +185,9 @@ class Ecore2Coq {
 		 | Build_«mm_elink» : 
 		    forall («mm_eref_qarg»:«mm_eref»), («Keywords.Link_denoteSubType_FunName(mm)» «mm_eref_qarg») -> «mm_elink».
 		
+		(* TODO *)
+		Definition beq_«mm_elink» (l1 : «mm_elink») (l2 : «mm_elink») : bool := true.
+		
 		(* Reflective functions *)
 		Lemma «mm»_eqEClass_dec : 
 		 forall («mm_eclass_qarg1»:«mm_eclass») («mm_eclass_qarg2»:«mm_eclass»), { «mm_eclass_qarg1» = «mm_eclass_qarg2» } + { «mm_eclass_qarg1» <> «mm_eclass_qarg2» }.
