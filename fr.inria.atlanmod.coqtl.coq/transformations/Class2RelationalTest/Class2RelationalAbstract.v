@@ -41,6 +41,7 @@ Require Import Class2RelationalTest.RelationalMetamodel.
     }
    } *)
 
+
 Instance C2RConfiguration : TransformationConfiguration := 
    Build_TransformationConfiguration ClassMetamodel_Metamodel_instance RelationalMetamodel_Metamodel_instance.
  
@@ -53,28 +54,28 @@ Definition Class2Relational :=
   buildTransformation 1
     [
       buildRule "Class2Table"
-        (makeGuard [ClassEClass] (fun m c => true))
-        (makeIterator [ClassEClass] (fun m c => 1))
+        (makeGuard [ClassClass] (fun m c => true))
+        (makeIterator [ClassClass] (fun m c => 1))
         [buildOutputPatternElement "tab"
-          (makeElement [ClassEClass] TableEClass
+          (makeElement [ClassClass] TableClass
             (fun i m c => BuildTable (Class_getId c) (Class_getName c)))
-            (makeLink [ClassEClass] TableEClass TableColumnsEReference
+            (makeLink [ClassClass] TableClass TableColumnsReference
             (fun tls i m c t =>
               attrs <- Class_getAttributes c m;
-              cols <- resolveAll tls m "col" ColumnEClass 
-                (singletons (map (ClassMetamodel_toEObjectOfEClass AttributeEClass) attrs));
+              cols <- resolveAll tls m "col" ColumnClass 
+                (singletons (map (ClassMetamodel_toObject AttributeClass) attrs));
               return BuildTableColumns t cols))
         ];
       buildRule "Attribute2Column"
-        (makeGuard [AttributeEClass] (fun m a => negb (Attribute_getMultiValued a)))
-        (makeIterator [AttributeEClass] (fun m a => 1))
+        (makeGuard [AttributeClass] (fun m a => negb (Attribute_getMultiValued a)))
+        (makeIterator [AttributeClass] (fun m a => 1))
         [buildOutputPatternElement "col"
-          (makeElement [AttributeEClass] ColumnEClass
+          (makeElement [AttributeClass] ColumnClass
             (fun i m a => BuildColumn (Attribute_getId a) (Attribute_getName a)))
-            (makeLink [AttributeEClass] ColumnEClass ColumnReferenceEReference
+            (makeLink [AttributeClass] ColumnClass ColumnReferenceReference
               (fun tls i m a c =>
                 cl <- Attribute_getType a m;
-                tb <- resolve tls m "tab" TableEClass [ClassMetamodel_toEObjectOfEClass ClassEClass cl];
+                tb <- resolve tls m "tab" TableClass [ClassMetamodel_toObject ClassClass cl];
                 return BuildColumnReference c tb))
         ]
     ].

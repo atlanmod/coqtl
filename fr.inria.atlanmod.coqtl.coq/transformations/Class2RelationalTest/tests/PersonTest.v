@@ -15,20 +15,17 @@ Require Import transformations.Class2RelationalTest.tests.PersonModel.
 
 (* Expected Output :
       = {|
-       Model.modelElements := RelationalMetamodel_BuildEObject TableClass
-                                (BuildTable 0 "Person")
-                              :: RelationalMetamodel_BuildEObject ColumnClass
-                                   (BuildColumn 1 "parent") :: nil;
-       Model.modelLinks := RelationalMetamodel_BuildELink
-                             TableColumnsReference
-                             (BuildTableColumns (BuildTable 0 "Person")
-                                (BuildColumn 1 "parent" :: nil))
-                           :: RelationalMetamodel_BuildELink
-                                ColumnReferenceReference
-                                (BuildColumnReference
-                                   (BuildColumn 1 "parent")
-                                   (BuildTable 0 "Person")) :: nil |}
-     : TargetModel RelationalMetamodel_EObject RelationalMetamodel_ELink
+       modelElements := [Build_RelationalMetamodel_Object TableClass
+                           (BuildTable 0 "Person");
+                        Build_RelationalMetamodel_Object ColumnClass
+                          (BuildColumn 1 "parent")];
+       modelLinks := [Build_RelationalMetamodel_Link TableColumnsReference
+                        (BuildTableColumns (BuildTable 0 "Person")
+                           [BuildColumn 1 "parent"]);
+                     Build_RelationalMetamodel_Link ColumnReferenceReference
+                       (BuildColumnReference (BuildColumn 1 "parent")
+                          (BuildTable 0 "Person"))] |}
+     : TransformationConfiguration.TargetModel
 *)
 
 (* Expected output (short):
@@ -40,15 +37,15 @@ Compute
   (Model_beq beq_RelationalMetamodel_Object beq_RelationalMetamodel_Link 
     (execute Class2Relational PersonModel) 
     {|
-       Model.modelElements := RelationalMetamodel_BuildObject TableClass
+       Model.modelElements := Build_RelationalMetamodel_Object TableClass
                                 (BuildTable 0 "Person")
-                              :: RelationalMetamodel_BuildObject ColumnClass
+                              :: Build_RelationalMetamodel_Object ColumnClass
                                    (BuildColumn 1 "parent") :: nil;
-       Model.modelLinks := RelationalMetamodel_BuildLink
+       Model.modelLinks := Build_RelationalMetamodel_Link
                              TableColumnsReference
                              (BuildTableColumns (BuildTable 0 "Person")
                                 (BuildColumn 1 "parent" :: nil))
-                           :: RelationalMetamodel_BuildLink
+                           :: Build_RelationalMetamodel_Link
                                 ColumnReferenceReference
                                 (BuildColumnReference
                                    (BuildColumn 1 "parent")
