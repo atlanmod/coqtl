@@ -37,7 +37,7 @@ class XMI2Coq {
 		Require Import List.
 		Require Import core.Model.
 		Require Import String.
-		Require Import transformations.«ns».«meta».
+		Require Import transformations.«ns».«meta»«Keywords.PostfixMetamodel».
 		
 		«var allEObjects = new HashSet»
 		«val root = eobjects.get(0)»
@@ -78,7 +78,7 @@ class XMI2Coq {
 	
 	def BuildEObject(EObject eObject, EClass eClass) '''
 	«IF eClass.ESuperTypes.size>0»«BuildSuperEObject_prefix(eClass.ESuperTypes.get(0), eClass)»«ENDIF
-	»(Build«eClass.name» "«System.identityHashCode(eObject)+"_"+eClass.name»" «FOR sf: eClass.EAllAttributes SEPARATOR " "»«EMFUtil.PrintValue(eObject.eGet(sf))»«ENDFOR»)«
+	»(Build«eClass.name» «FOR sf: eClass.EAllAttributes SEPARATOR " "»«EMFUtil.PrintValue(eObject.eGet(sf))»«ENDFOR»)«
 	IF eClass.ESuperTypes.size>0»«BuildSuperEObject_surfix(eClass.ESuperTypes.get(0))»«ENDIF»'''
 			
 	def BuildELink(EObject eobject, EStructuralFeature sf)'''
@@ -88,9 +88,9 @@ class XMI2Coq {
 	def BuildEObject_inref(EObject eObject, EClass eClass) '''
 	«IF eClass.isAbstract
 	»«IF eObject.eClass.ESuperTypes.size>0»«BuildSuperEObject_inref_prefix(eObject.eClass.ESuperTypes.get(0), eObject.eClass, eClass)»«ENDIF
-	» (Build«eObject.eClass.name» "«System.identityHashCode(eObject)+"_"+eClass.name»" «FOR sf: eClass.EAllAttributes SEPARATOR " "»«EMFUtil.PrintValue(eObject.eGet(sf))»«ENDFOR») «
+	» (Build«eObject.eClass.name» «FOR sf: eClass.EAllAttributes SEPARATOR " "»«EMFUtil.PrintValue(eObject.eGet(sf))»«ENDFOR») «
 	IF eObject.eClass.ESuperTypes.size>0»«BuildSuperEObject_inref_surfix(eObject.eClass, eClass)»«ENDIF»«
-	ELSE» (Build«eObject.eClass.name» "«System.identityHashCode(eObject)+"_"+eClass.name»" «FOR sf: eClass.EAllAttributes SEPARATOR " "»«EMFUtil.PrintValue(eObject.eGet(sf))»«ENDFOR»)«ENDIF»'''
+	ELSE» (Build«eObject.eClass.name» «FOR sf: eClass.EAllAttributes SEPARATOR " "»«EMFUtil.PrintValue(eObject.eGet(sf))»«ENDFOR»)«ENDIF»'''
 	
 	def BuildSuperEObject_inref_prefix(EClass eSupClass, EClass eSubClass, EClass top) '''
 	«IF eSupClass.ESuperTypes.size > 0 && eSupClass.name != top.name»«BuildSuperEObject_inref_prefix(eSupClass.ESuperTypes.get(0), eSupClass, top)» «ENDIF
