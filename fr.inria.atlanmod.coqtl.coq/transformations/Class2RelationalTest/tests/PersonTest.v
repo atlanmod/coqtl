@@ -35,7 +35,7 @@ Require Import transformations.Class2RelationalTest.tests.PersonModel.
 
 Compute 
   (Model_beq beq_RelationalMetamodel_Object beq_RelationalMetamodel_Link 
-    (execute Class2Relational PersonModel) 
+    (execute Class2Relational InputModel) 
     {|
        Model.modelElements := Build_RelationalMetamodel_Object TableClass
                                 (BuildTable 0 "Person")
