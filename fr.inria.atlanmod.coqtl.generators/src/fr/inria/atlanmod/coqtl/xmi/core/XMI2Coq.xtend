@@ -52,7 +52,7 @@ class XMI2Coq {
 			(Build_Model
 				(
 				«FOR eobject : allEObjects»
-				(Build_«mm_eobject» «BuildTopSuperEClass(eobject.eClass)» «BuildEObject(eobject, eobject.eClass)») :: 
+				(Build_«mm_eobject» «BuildEClass(eobject.eClass)» «BuildEObject(eobject, eobject.eClass)») :: 
 				«ENDFOR»
 				nil)
 				(
@@ -65,6 +65,53 @@ class XMI2Coq {
 				nil)
 			).
 	'''
+	
+	def BuildEClass(EClass eClass) '''«eClass.name»«Keywords.PostfixEClass»'''
+	
+	def BuildEObject(EObject eObject, EClass eClass) '''
+	(Build«eClass.name» «IF eClass.ESuperTypes.size>0»«BuildEObject(eObject, eClass.ESuperTypes.get(0))»«ENDIF» «FOR sf: eClass.EAttributes SEPARATOR " "»«EMFUtil.PrintValue(eObject.eGet(sf), sf)»«ENDFOR»)'''
+	
+	def BuildELink(EObject eobject, EStructuralFeature sf)'''
+	«val sf_value = eobject.eGet(sf)»«val tp = sf.EType as EClass»
+	(Build«eobject.eClass.name»«sf.name.toFirstUpper» «BuildEObject(eobject, eobject.eClass)» «BuildEReference(sf_value, tp)»)'''
+	
+	//TODO pick up back reference?
+	def BuildEReference(Object sf_value, EClass tp) '''
+		«IF sf_value instanceof EList 
+		»«IF sf_value.size > 0»(«FOR v : sf_value.filter(typeof(EObject)) SEPARATOR " :: "»«BuildEObject(v, tp)»«ENDFOR» :: nil )«ELSE» nil «ENDIF»«
+		ELSEIF sf_value instanceof EObject
+		»«BuildEObject(sf_value as EObject, tp)»«
+		ENDIF»'''
+		
+	def HashSet<EObject> getAllEObjects(EObject o) {
+		var rtn = new HashSet
+		
+		if(!this.lookup.contains(o) && o instanceof DynamicEObjectImpl){
+			val eobject = o as DynamicEObjectImpl
+			rtn.add(eobject)
+			this.lookup.add(eobject)
+				
+			for(sf : eobject.eClass.EStructuralFeatures.filter(typeof(EReference))){
+				val sf_value = eobject.eGet(sf)
+				
+				if(sf_value instanceof EList){
+					for(v : sf_value.filter(typeof(EObject))){
+						rtn.addAll(getAllEObjects(v))
+					}
+				}else if(sf_value instanceof EObject){
+					rtn.addAll(getAllEObjects(sf_value))
+				}
+			}
+		}
+		
+		return rtn
+	}
+	
+}
+
+
+/*  old code generation schemema that might be used someday
+	
 	
 	def BuildTopSuperEClass(EClass eClass) '''
 	«IF eClass.ESuperTypes.size > 0 »«BuildTopSuperEClass(eClass.ESuperTypes.get(0))»«ELSE»«eClass.name»«Keywords.PostfixEClass»«ENDIF»'''
@@ -98,8 +145,8 @@ class XMI2Coq {
 	
 	def BuildSuperEObject_inref_surfix(EClass eClass, EClass top) '''
 	«IF eClass.ESuperTypes.size > 0 && eClass.ESuperTypes.get(0).name != top.name »«BuildSuperEObject_inref_surfix(eClass.ESuperTypes.get(0), top)»«ENDIF»)'''
-	
-	
+
+
 	//TODO pick up back reference?
 	def BuildEReference(Object sf_value, EClass tp) '''
 		«IF sf_value instanceof EList 
@@ -107,29 +154,8 @@ class XMI2Coq {
 		ELSEIF sf_value instanceof EObject
 		»«BuildEObject_inref(sf_value as EObject, tp)»«
 		ENDIF»'''
-	
-	def HashSet<EObject> getAllEObjects(EObject o) {
-		var rtn = new HashSet
-		
-		if(!this.lookup.contains(o) && o instanceof DynamicEObjectImpl){
-			val eobject = o as DynamicEObjectImpl
-			rtn.add(eobject)
-			this.lookup.add(eobject)
-				
-			for(sf : eobject.eClass.EStructuralFeatures.filter(typeof(EReference))){
-				val sf_value = eobject.eGet(sf)
-				
-				if(sf_value instanceof EList){
-					for(v : sf_value.filter(typeof(EObject))){
-						rtn.addAll(getAllEObjects(v))
-					}
-				}else if(sf_value instanceof EObject){
-					rtn.addAll(getAllEObjects(sf_value))
-				}
-			}
-		}
-		
-		return rtn
-	}
-	
-}
+
+*/
+
+
+
