@@ -151,8 +151,8 @@
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Contributor" eSuperTypes="#/0/Person"/>
   </ecore:EPackage>
-  <ecore:EPackage name="PrimitiveTypes">
-    <eClassifiers xsi:type="ecore:EDataType" name="String"/>
-    <eClassifiers xsi:type="ecore:EDataType" name="Integer"/>
+  <ecore:EPackage name="PrimitiveTypes" nsURI="PT" nsPrefix="PT">
+    <eClassifiers xsi:type="ecore:EDataType" name="String" instanceClassName="java.lang.String"/>
+    <eClassifiers xsi:type="ecore:EDataType" name="Integer" instanceClassName="int"/>
   </ecore:EPackage>
 </xmi:XMI>
