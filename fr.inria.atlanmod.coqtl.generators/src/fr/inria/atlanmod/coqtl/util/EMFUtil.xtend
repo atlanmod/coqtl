@@ -81,10 +81,14 @@ class EMFUtil {
 	/**
 	 * @return the string represtation of an {@code o}
 	 * */
-	def static PrintValue(Object o) '''
-		«IF o instanceof String»"«o.toString»"«
-		ELSEIF o != null»«o.toString»«ELSE
-		»""«ENDIF
-	»'''
+	def static PrintValue(Object o, EAttribute eAttribute) '''
+		«IF o == null»«PrintDefaultValue(eAttribute)»«
+		ELSE»«val eType = eAttribute.EType»«IF eType.name == 'EInt' || eType.name == 'Integer'»«o.toString»«
+				ELSEIF eType.name == 'EBoolean' || eType.name == 'Boolean'»«o.toString»«
+				ELSEIF eType.name == 'EString' || eType.name == 'String'»"«o.toString»"«
+				ELSE»We don't know how to print «eType.name» «ENDIF
+			»«
+		ENDIF»'''
+		
 	
 }
