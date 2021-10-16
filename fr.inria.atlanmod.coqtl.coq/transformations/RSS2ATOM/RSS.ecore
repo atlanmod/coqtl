@@ -32,11 +32,11 @@
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="rating" ordered="false"
           unique="false" eType="#/1/String"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="skipHours" ordered="false"
-          unique="false" upperBound="-1" eType="#/1/Integer"/>
+          unique="false" eType="#/1/Integer"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="pubDate" ordered="false"
           unique="false" eType="#/1/String"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="skipDays" ordered="false"
-          unique="false" lowerBound="1" upperBound="-1" eType="#/1/String"/>
+          unique="false" eType="#/1/String"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="lastBuildDate" ordered="false"
           unique="false" eType="#/1/String"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="rss" ordered="false"
