@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ATOM xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns="ATOM" title="Example ATOM" id="urn:uuid:60a76c80-d399-11d9-b91C-0003939e0af6" subtitle="Insert witty or insightful remark here" rights="" icon="" logo="" lastUpdate="2003-12-13T18:30:02Z">
   <links rel="" hrefl="http://example.org" type="" hreflang="" title=""/>
   <categories term="Film" scheme="lesheme1" label="lelabel"/>

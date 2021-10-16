@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns="RSS">
   <Channel title="Example ATOM" link="http://example.org" description="Insert witty or insightful remark here" copyright="" managingEditor="John Doe" webmaster="johndoe@example.com" lastBuildDate="2003-12-13T18:30:02Z">
     <image url=""/>
