@@ -92,10 +92,6 @@
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="text" ordered="false"
           unique="false" eType="#/1/String"/>
     </eClassifiers>
-    <eClassifiers xsi:type="ecore:EClass" name="OutOfLineContent" eSuperTypes="#/0/Content">
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="src" ordered="false"
-          unique="false" lowerBound="1" eType="#/1/String"/>
-    </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Generator">
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="uri" ordered="false"
           unique="false" eType="#/1/String"/>
