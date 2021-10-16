@@ -82,3 +82,6 @@ transformations/TT2BDD/BDD.v
 transformations/TT2BDD/TT2BDDAbstract.v
 transformations/TT2BDD/tests/TTModel.v
 transformations/TT2BDD/tests/TT2BDD_TTModel.v
+
+transformations/RSS2ATOM/RSS.v
+transformations/RSS2ATOM/ATOM.v
