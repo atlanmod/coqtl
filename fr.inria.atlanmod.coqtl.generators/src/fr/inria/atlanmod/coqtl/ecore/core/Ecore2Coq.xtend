@@ -58,7 +58,10 @@ class Ecore2Coq {
 		Require Import core.utils.CpdtTactics.
 
 		(* Base types *)
-		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
+		
+		«var eClasses = EMFUtil.getEClassifiersInorder(ePackage)»
+		
+		«FOR eClass : eClasses»
 			Inductive «eClass.name» : Set :=
 			  Build«eClass.name» :
 			  «IF eClass.ESuperTypes.size>0»(* Inheritence Attribute *) «eClass.ESuperTypes.get(0).name» -> «ENDIF»
@@ -66,10 +69,10 @@ class Ecore2Coq {
 			    (* «eAttribute.name» *) «AttributeType2Coq(eAttribute)» ->
 			  «ENDFOR»
 			  «eClass.name».
-			  
+			
 		«ENDFOR»	
 		
-		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
+		«FOR eClass : eClasses»
  			«FOR eReference : eClass.EReferences
             »Inductive «eClass.name»«eReference.name.toFirstUpper» : Set :=
  			   Build«eClass.name»«eReference.name.toFirstUpper» :
@@ -88,7 +91,7 @@ class Ecore2Coq {
 		
 		
 		(* Accessors *)
-		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))»
+		«FOR eClass : eClasses»
 			  «val v = eClass.name.toLowerCase.charAt(0)»
 			  «IF eClass.ESuperTypes.size>0»
 			  «val supName = eClass.ESuperTypes.get(0).name»
@@ -99,10 +102,10 @@ class Ecore2Coq {
 			  Definition «eClass.name»_get«eAttribute.name.toFirstUpper» («v» : «eClass.name») : «AttributeType2Coq(eAttribute)» :=
 			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«eClass.ESuperTypes.get(0).name.toLowerCase»«ENDIF» «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «eAttribute.name» end.
 			  «ENDFOR»	 
-			   
+			  
 		«ENDFOR»
 
-		«FOR eClass : ePackage.EClassifiers.filter(typeof(EClass))
+		«FOR eClass : eClasses
 		»Definition beq_«eClass.name» («arg1(eClass.name)» : «eClass.name») («arg2(eClass.name)» : «eClass.name») : bool :=
 			«IF eClass.ESuperTypes.size > 0 »
 		    	«val supName = eClass.ESuperTypes.get(0).name»

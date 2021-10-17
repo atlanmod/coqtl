@@ -1,19 +1,20 @@
 package fr.inria.atlanmod.coqtl.util
 
+import java.util.LinkedHashSet
+import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.ecore.EAttribute
+import org.eclipse.emf.ecore.EClass
+import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.resource.Resource
-import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
 import org.eclipse.emf.ecore.resource.ResourceSet
-import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
 import org.eclipse.emf.ecore.util.BasicExtendedMetaData
 import org.eclipse.emf.ecore.util.ExtendedMetaData
 import org.eclipse.emf.ecore.xmi.XMLResource
-import org.eclipse.emf.ecore.EObject
+import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl
-import org.eclipse.emf.ecore.EClass
-import org.eclipse.emf.ecore.EAttribute
-import org.eclipse.emf.ecore.xmi.XMIResource
+import org.eclipse.emf.ecore.EClassifier
 
 class EMFUtil {
 	
@@ -27,6 +28,38 @@ class EMFUtil {
 			}
 		}
 	}
+	
+	
+	/** 
+	 * @return eClasses in the order of parents, then children
+	 * */	
+	def static LinkedHashSet<EClass> getEClassifiersInorder(EPackage ePackage) {
+		var eClasses = ePackage.EClassifiers.filter(typeof(EClass))
+		var rtn = new LinkedHashSet();
+		
+		for(eClass : eClasses){
+			var superClasses = fixGetEClassifiersInorder(eClass)
+			rtn.addAll(superClasses)
+		}
+		
+		return rtn
+	}
+	
+	/** 
+	 * @return recursively compute eClass in the order of parents, then children
+	 * */
+	def static LinkedHashSet<EClass> fixGetEClassifiersInorder(EClass eClass) {
+		var rtn = new LinkedHashSet();
+		for(sup : eClass.ESuperTypes){
+			var supsup = fixGetEClassifiersInorder(sup)
+			rtn.addAll(supsup)
+			rtn.add(sup)
+		}
+		rtn.add(eClass)
+		return rtn
+	}
+	
+	
 	
 	/**
 	 * load ecore in memory from {@code path}.
