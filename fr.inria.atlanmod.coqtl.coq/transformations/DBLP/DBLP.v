@@ -12,7 +12,8 @@ Require Import Bool.
 Require Import List.      (* sequence *)
 Require Import Multiset.  (* bag *)
 Require Import ListSet.   (* set *)
-Require Import Omega.
+Require Import PeanoNat.
+Require Import EqNat.
 Require Import Coq.Logic.Eqdep_dec.
 
 Require Import core.EqDec.

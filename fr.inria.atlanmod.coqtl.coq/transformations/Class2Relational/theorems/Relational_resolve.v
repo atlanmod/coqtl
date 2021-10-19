@@ -4,7 +4,6 @@ Require Import Arith.
 Require Import Coq.Arith.Gt.
 Require Import Coq.Arith.EqNat.
 Require Import List.
-Require Import Omega.
 
 Require Import core.utils.Utils.
 Require Import core.Semantics.

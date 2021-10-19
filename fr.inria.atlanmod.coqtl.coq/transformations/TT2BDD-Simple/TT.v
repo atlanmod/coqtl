@@ -1,7 +1,6 @@
 Require Import List.      (* sequence *)
 Require Import Multiset.  (* bag *)
 Require Import ListSet.   (* set *)
-Require Import Omega.
 Require Import Bool.
 Require Import String.
 Open Scope string.

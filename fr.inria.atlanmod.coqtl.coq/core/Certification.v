@@ -1,5 +1,8 @@
 Require Import String.
-Require Import Omega.
+
+Require Import Lia.
+Require Import Nat.
+Require Import EqNat.
 Require Import Bool.
 
 Require Import core.utils.Utils.

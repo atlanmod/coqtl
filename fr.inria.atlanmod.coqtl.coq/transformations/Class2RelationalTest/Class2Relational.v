@@ -2,7 +2,6 @@ Require Import String.
 Require Import List.
 Require Import Multiset.
 Require Import ListSet.
-Require Import Omega.
 
 Require Import core.utils.Utils.
 

@@ -1,4 +1,4 @@
-Require Import List Omega.
+Require Import List.
 Require Export core.utils.CpdtTactics.
 
 Definition map_cons {A : Type} (a: A) (l : list (list A)) : list (list A) :=

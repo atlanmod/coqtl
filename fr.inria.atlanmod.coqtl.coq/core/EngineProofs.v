@@ -20,7 +20,6 @@
  Require Import List.
  Require Import Multiset.
  Require Import ListSet.
- Require Import Omega.
 
  Require Import core.Model.
  Require Import core.utils.Utils.

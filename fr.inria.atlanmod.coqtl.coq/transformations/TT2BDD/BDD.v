@@ -2,7 +2,6 @@ Require Import String.
 Require Import List.      (* sequence *)
 Require Import Multiset.  (* bag *)
 Require Import ListSet.   (* set *)
-Require Import Omega.
 Require Import Bool.
 Require Import core.Metamodel.
 Require Import core.EqDec.

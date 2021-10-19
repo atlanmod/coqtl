@@ -1,4 +1,5 @@
-Require Import List Omega.
+Require Import List.
+Require Import EqNat.
 Require Import core.utils.CpdtTactics.
 
 Inductive subseq {A: Type} : list A -> list A -> Prop :=
