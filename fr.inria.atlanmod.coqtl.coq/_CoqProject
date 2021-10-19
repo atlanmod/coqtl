@@ -1,3 +1,5 @@
+INSTALLDEFAULTROOT = .
+
 -R core core
 -R transformations transformations
 
