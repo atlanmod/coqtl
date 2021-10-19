@@ -901,33 +901,33 @@ Definition Category_getItemsObject (ca_arg : Category) (m : RSSModel) : option (
 
 
 (* Typeclass Instances *)	
-Instance RSSMetamodel_ElementSum : Sum RSSMetamodel_Object RSSMetamodel_Class :=
+#[export] Instance RSSMetamodel_ElementSum : Sum RSSMetamodel_Object RSSMetamodel_Class :=
 {
 	denoteSubType := RSSMetamodel_getTypeByClass;
 	toSubType := RSSMetamodel_toClass;
 	toSumType := RSSMetamodel_toObject;
 }.
 
-Instance RSSMetamodel_LinkSum : Sum RSSMetamodel_Link RSSMetamodel_Reference :=
+#[export] Instance RSSMetamodel_LinkSum : Sum RSSMetamodel_Link RSSMetamodel_Reference :=
 {
 	denoteSubType := RSSMetamodel_getTypeByReference;
 	toSubType := RSSMetamodel_toReference;
 	toSumType := RSSMetamodel_toLink;
 }.
 
-Instance RSSMetamodel_EqDec : EqDec RSSMetamodel_Object := {
+#[export] Instance RSSMetamodel_EqDec : EqDec RSSMetamodel_Object := {
     eq_b := beq_RSSMetamodel_Object;
 }.
 
-Instance RSSMetamodel_Metamodel_instance : 
+#[export] Instance RSSMetamodel_Metamodel_Instance : 
 	Metamodel :=
 {
 	ModelElement := RSSMetamodel_Object;
 	ModelLink := RSSMetamodel_Link;
 }.
 
-Instance RSSMetamodel_ModelingMetamodel_instance : 
-	ModelingMetamodel RSSMetamodel_Metamodel_instance :=
+#[export] Instance RSSMetamodel_ModelingMetamodel_Instance : 
+	ModelingMetamodel RSSMetamodel_Metamodel_Instance :=
 { 
     elements := RSSMetamodel_ElementSum;
     links := RSSMetamodel_LinkSum; 

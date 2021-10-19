@@ -229,33 +229,33 @@ Definition Attribute_getTypeObject (at_arg : Attribute) (m : ClassModel) : optio
 
 
 (* Typeclass Instances *)	
-Instance ClassMetamodel_ElementSum : Sum ClassMetamodel_Object ClassMetamodel_Class :=
+#[export] Instance ClassMetamodel_ElementSum : Sum ClassMetamodel_Object ClassMetamodel_Class :=
 {
 	denoteSubType := ClassMetamodel_getTypeByClass;
 	toSubType := ClassMetamodel_toClass;
 	toSumType := ClassMetamodel_toObject;
 }.
 
-Instance ClassMetamodel_LinkSum : Sum ClassMetamodel_Link ClassMetamodel_Reference :=
+#[export] Instance ClassMetamodel_LinkSum : Sum ClassMetamodel_Link ClassMetamodel_Reference :=
 {
 	denoteSubType := ClassMetamodel_getTypeByReference;
 	toSubType := ClassMetamodel_toReference;
 	toSumType := ClassMetamodel_toLink;
 }.
 
-Instance ClassMetamodel_EqDec : EqDec ClassMetamodel_Object := {
+#[export] Instance ClassMetamodel_EqDec : EqDec ClassMetamodel_Object := {
     eq_b := beq_ClassMetamodel_Object;
 }.
 
-Instance ClassMetamodel_Metamodel_instance : 
+#[export] Instance ClassMetamodel_Metamodel_Instance : 
 	Metamodel :=
 {
 	ModelElement := ClassMetamodel_Object;
 	ModelLink := ClassMetamodel_Link;
 }.
 
-Instance ClassMetamodel_ModelingMetamodel_instance : 
-	ModelingMetamodel ClassMetamodel_Metamodel_instance :=
+#[export] Instance ClassMetamodel_ModelingMetamodel_Instance : 
+	ModelingMetamodel ClassMetamodel_Metamodel_Instance :=
 { 
     elements := ClassMetamodel_ElementSum;
     links := ClassMetamodel_LinkSum; 

@@ -144,19 +144,19 @@ Context {eqdec_sme: EqDec SourceModelElement}. (* need decidable equality on sou
 Context {TargetModelElement TargetModelLink: Type}.
 Context {eqdec_tme: EqDec TargetModelElement}. (* need decidable equality on source model elements *)
 
-Instance smm : Metamodel := {
+#[export] Instance smm : Metamodel := {
   ModelElement := SourceModelElement;
   ModelLink := SourceModelLink;
   elements_eqdec := eqdec_sme;
 }.
 
-Instance tmm : Metamodel := {
+#[export] Instance tmm : Metamodel := {
   ModelElement := TargetModelElement;
   ModelLink := TargetModelLink;
   elements_eqdec := eqdec_tme;
 }.
 
-Instance tc : TransformationConfiguration := {
+#[export] Instance tc : TransformationConfiguration := {
   SourceMetamodel := smm;
   TargetMetamodel := tmm;
 }.
@@ -181,50 +181,50 @@ Context {toTargetLinkSubType: forall (t: TargetModelReference), TargetModelLink 
 Context {toTargetLinkSumType: forall (t: TargetModelReference), (denoteTargetLinkSubType t) -> TargetModelLink}.
 
 
-Instance SourceElements : Sum SourceModelElement SourceModelClass := {
+#[export] Instance SourceElements : Sum SourceModelElement SourceModelClass := {
 denoteSubType := denoteSourceElemSubType;
 toSubType := toSourceElemSubType;
 toSumType := toSourceElemSumType;
 }.
 
-Instance SourceLinks : Sum SourceModelLink SourceModelReference := {
+#[export] Instance SourceLinks : Sum SourceModelLink SourceModelReference := {
 denoteSubType := denoteSourceLinkSubType;
 toSubType := toSourceLinkSubType;
 toSumType := toSourceLinkSumType;
 }.
 
-Instance TargetElements : Sum TargetModelElement TargetModelClass:= {
+#[export] Instance TargetElements : Sum TargetModelElement TargetModelClass:= {
 denoteSubType := denoteTargetElemSubType;
 toSubType := toTargetElemSubType;
 toSumType := toTargetElemSumType;
 }.
 
-Instance TargetLinks : Sum TargetModelLink TargetModelReference:= {
+#[export] Instance TargetLinks : Sum TargetModelLink TargetModelReference:= {
 denoteSubType := denoteTargetLinkSubType;
 toSubType := toTargetLinkSubType;
 toSumType := toTargetLinkSumType;
 }.
 
-Instance msmm: ModelingMetamodel SourceMetamodel:= {
+#[export] Instance msmm: ModelingMetamodel SourceMetamodel:= {
   ModelClass := SourceModelClass;
   ModelReference := SourceModelReference;
   elements := SourceElements;
   links := SourceLinks;
 }.
 
-Instance mtmm: ModelingMetamodel TargetMetamodel := {
+#[export] Instance mtmm: ModelingMetamodel TargetMetamodel := {
   ModelClass := TargetModelClass;
   ModelReference := TargetModelReference;
   elements := TargetElements;
   links := TargetLinks;
 }.
 
-Instance mtc : ModelingTransformationConfiguration tc := {
+#[export] Instance mtc : ModelingTransformationConfiguration tc := {
   smm := msmm;
   tmm := mtmm;
 }.
 
-Instance ModelingCoqTLEngine : @ModelingTransformationEngine _ _ _ CoqTLEngine.
+#[export] Instance ModelingCoqTLEngine : @ModelingTransformationEngine _ _ _ CoqTLEngine.
 Proof.
 eexists.
 exact tr_resolveAllIter_in.

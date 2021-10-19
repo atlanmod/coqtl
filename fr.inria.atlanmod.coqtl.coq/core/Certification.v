@@ -23,19 +23,19 @@ Context {eqdec_sme: EqDec SourceModelElement}. (* need decidable equality on sou
 Context {TargetModelElement TargetModelLink: Type}.
 Context {eqdec_tme: EqDec TargetModelElement}. (* need decidable equality on source model elements *)
 
-Instance smm : Metamodel := {
+#[export] Instance smm : Metamodel := {
   ModelElement := SourceModelElement;
   ModelLink := SourceModelLink;
   elements_eqdec := eqdec_sme;
 }.
 
-Instance tmm : Metamodel := {
+#[export] Instance tmm : Metamodel := {
   ModelElement := TargetModelElement;
   ModelLink := TargetModelLink;
   elements_eqdec := eqdec_tme;
 }.
 
-Instance tc : TransformationConfiguration := {
+#[export] Instance tc : TransformationConfiguration := {
   SourceMetamodel := smm;
   TargetMetamodel := tmm;
 }.
@@ -298,7 +298,7 @@ destruct (find (fun tl: TraceLink =>
 Qed.
 
 
-Instance CoqTLEngine :
+#[export] Instance CoqTLEngine :
   TransformationEngine CoqTLSyntax :=
   {
 

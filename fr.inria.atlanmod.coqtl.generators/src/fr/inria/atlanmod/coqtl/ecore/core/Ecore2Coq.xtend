@@ -295,33 +295,33 @@ class Ecore2Coq {
 		«ENDFOR»
 		
 		(* Typeclass Instances *)	
-		Instance «mm»_«Keywords.ElementSum» : Sum «mm_eobject» «mm_eclass» :=
+		#[export] Instance «mm»_«Keywords.ElementSum» : Sum «mm_eobject» «mm_eclass» :=
 		{
 			denoteSubType := «Keywords.Elem_denoteSubType_FunName(mm)»;
 			toSubType := «Keywords.Elem_toSubType_FunName(mm)»;
 			toSumType := «Keywords.Elem_toSumType_FunName(mm)»;
 		}.
 		
-		Instance «mm»_«Keywords.LinkSum» : Sum «mm_elink» «mm_eref» :=
+		#[export] Instance «mm»_«Keywords.LinkSum» : Sum «mm_elink» «mm_eref» :=
 		{
 			denoteSubType := «Keywords.Link_denoteSubType_FunName(mm)»;
 			toSubType := «Keywords.Link_toSubType_FunName(mm)»;
 			toSumType := «Keywords.Link_toSumType_FunName(mm)»;
 		}.
 		
-		Instance «mm»_EqDec : EqDec «mm_eobject» := {
+		#[export] Instance «mm»_EqDec : EqDec «mm_eobject» := {
 		    eq_b := beq_«mm_eobject»;
 		}.
 
-		Instance «mm»_«Keywords.MetamodelTypeClassName»_instance : 
+		#[export] Instance «mm»_«Keywords.MetamodelTypeClassName»_Instance : 
 			«Keywords.MetamodelTypeClassName» :=
 		{
 			ModelElement := «mm_eobject»;
 			ModelLink := «mm_elink»;
 		}.
 		
-		Instance «mm»_«Keywords.ModelingMetamodelTypeClassName»_instance : 
-			«Keywords.ModelingMetamodelTypeClassName» «mm»_«Keywords.MetamodelTypeClassName»_instance :=
+		#[export] Instance «mm»_«Keywords.ModelingMetamodelTypeClassName»_Instance : 
+			«Keywords.ModelingMetamodelTypeClassName» «mm»_«Keywords.MetamodelTypeClassName»_Instance :=
 		{ 
 		    elements := «mm»_«Keywords.ElementSum»;
 		    links := «mm»_«Keywords.LinkSum»; 

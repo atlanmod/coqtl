@@ -41,13 +41,13 @@ Require Import core.modeling.ModelingTransformationConfiguration.
     }
    } *)
 
-Instance C2RConfiguration : TransformationConfiguration := 
-   Build_TransformationConfiguration ClassMetamodel_Metamodel_instance RelationalMetamodel_Metamodel_instance.
+#[export] Instance C2RConfiguration : TransformationConfiguration := 
+   Build_TransformationConfiguration ClassMetamodel_Metamodel_Instance RelationalMetamodel_Metamodel_Instance.
  
-Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration :=
+#[export] Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration :=
    Build_ModelingTransformationConfiguration C2RConfiguration 
-     ClassMetamodel_ModelingMetamodel_instance 
-     RelationalMetamodel_ModelingMetamodel_instance.
+     ClassMetamodel_ModelingMetamodel_Instance 
+     RelationalMetamodel_ModelingMetamodel_Instance.
 
 Open Scope coqtl.
 

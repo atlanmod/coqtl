@@ -323,7 +323,7 @@ Proof.
   crush.
 Qed.
 
-(*Instance TwoPhaseCoqTLEngine :
+(*#[export] Instance TwoPhaseCoqTLEngine :
 TransformationEngineModeling (@ModelingCoqTLEngine SourceModelElement SourceModelLink TargetModelElement TargetModelLink):=
 {
   SourceModelClass := SourceModelClass;
@@ -340,7 +340,7 @@ TransformationEngineModeling (@ModelingCoqTLEngine SourceModelElement SourceMode
   tr_resolve_Leaf := tr_resolveIter_leaf;
 }. 
 
-Instance CoqTLEngine :
+#[export] Instance CoqTLEngine :
   TransformationEngine :=
   {
     SourceModelElement := SourceModelElement;
@@ -460,7 +460,7 @@ Instance CoqTLEngine :
   }.*)
 
 
-(* Instance CoqTLEngineTrace :
+(* #[export] Instance CoqTLEngineTrace :
   (TransformationEngineTrace CoqTLEngine).
 Proof.
   eexists.

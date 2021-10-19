@@ -361,7 +361,7 @@ Proof.
     split. trivial. trivial.
 Qed. 
 
-Instance ByRuleEngine :
+#[export] Instance ByRuleEngine :
   TransformationEngine :=
 {
   SourceModelElement := SourceModelElement;

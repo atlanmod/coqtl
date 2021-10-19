@@ -225,33 +225,33 @@ Definition Column_getReferenceObject (co_arg : Column) (m : RelationalModel) : o
 
 
 (* Typeclass Instances *)	
-Instance RelationalMetamodel_ElementSum : Sum RelationalMetamodel_Object RelationalMetamodel_Class :=
+#[export] Instance RelationalMetamodel_ElementSum : Sum RelationalMetamodel_Object RelationalMetamodel_Class :=
 {
 	denoteSubType := RelationalMetamodel_getTypeByClass;
 	toSubType := RelationalMetamodel_toClass;
 	toSumType := RelationalMetamodel_toObject;
 }.
 
-Instance RelationalMetamodel_LinkSum : Sum RelationalMetamodel_Link RelationalMetamodel_Reference :=
+#[export] Instance RelationalMetamodel_LinkSum : Sum RelationalMetamodel_Link RelationalMetamodel_Reference :=
 {
 	denoteSubType := RelationalMetamodel_getTypeByReference;
 	toSubType := RelationalMetamodel_toReference;
 	toSumType := RelationalMetamodel_toLink;
 }.
 
-Instance RelationalMetamodel_EqDec : EqDec RelationalMetamodel_Object := {
+#[export] Instance RelationalMetamodel_EqDec : EqDec RelationalMetamodel_Object := {
     eq_b := beq_RelationalMetamodel_Object;
 }.
 
-Instance RelationalMetamodel_Metamodel_instance : 
+#[export] Instance RelationalMetamodel_Metamodel_Instance : 
 	Metamodel :=
 {
 	ModelElement := RelationalMetamodel_Object;
 	ModelLink := RelationalMetamodel_Link;
 }.
 
-Instance RelationalMetamodel_ModelingMetamodel_instance : 
-	ModelingMetamodel RelationalMetamodel_Metamodel_instance :=
+#[export] Instance RelationalMetamodel_ModelingMetamodel_Instance : 
+	ModelingMetamodel RelationalMetamodel_Metamodel_Instance :=
 { 
     elements := RelationalMetamodel_ElementSum;
     links := RelationalMetamodel_LinkSum; 

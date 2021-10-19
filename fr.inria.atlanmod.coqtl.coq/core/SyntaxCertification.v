@@ -7,7 +7,7 @@ Section SyntaxCertification.
 
 Context {tc: TransformationConfiguration}.
 
-Instance CoqTLSyntax :
+#[export] Instance CoqTLSyntax :
   TransformationSyntax tc :=
   {
       (* syntax and accessors *)

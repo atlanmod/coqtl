@@ -1156,33 +1156,33 @@ Definition Www_getEditorsObjects (ww_arg : Www) (m : DBLPModel) : option (list D
 
 
 (* Typeclass Instances *)	
-Instance DBLPMetamodel_ElementSum : Sum DBLPMetamodel_Object DBLPMetamodel_Class :=
+#[export] Instance DBLPMetamodel_ElementSum : Sum DBLPMetamodel_Object DBLPMetamodel_Class :=
 {
 	denoteSubType := DBLPMetamodel_getTypeByClass;
 	toSubType := DBLPMetamodel_toClass;
 	toSumType := DBLPMetamodel_toObject;
 }.
 
-Instance DBLPMetamodel_LinkSum : Sum DBLPMetamodel_Link DBLPMetamodel_Reference :=
+#[export] Instance DBLPMetamodel_LinkSum : Sum DBLPMetamodel_Link DBLPMetamodel_Reference :=
 {
 	denoteSubType := DBLPMetamodel_getTypeByReference;
 	toSubType := DBLPMetamodel_toReference;
 	toSumType := DBLPMetamodel_toLink;
 }.
 
-Instance DBLPMetamodel_EqDec : EqDec DBLPMetamodel_Object := {
+#[export] Instance DBLPMetamodel_EqDec : EqDec DBLPMetamodel_Object := {
     eq_b := beq_DBLPMetamodel_Object;
 }.
 
-Instance DBLPMetamodel_Metamodel_instance : 
+#[export] Instance DBLPMetamodel_Metamodel_Instance : 
 	Metamodel :=
 {
 	ModelElement := DBLPMetamodel_Object;
 	ModelLink := DBLPMetamodel_Link;
 }.
 
-Instance DBLPMetamodel_ModelingMetamodel_instance : 
-	ModelingMetamodel DBLPMetamodel_Metamodel_instance :=
+#[export] Instance DBLPMetamodel_ModelingMetamodel_Instance : 
+	ModelingMetamodel DBLPMetamodel_Metamodel_Instance :=
 { 
     elements := DBLPMetamodel_ElementSum;
     links := DBLPMetamodel_LinkSum; 

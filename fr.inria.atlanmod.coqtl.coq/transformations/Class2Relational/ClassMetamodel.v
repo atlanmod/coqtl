@@ -312,9 +312,9 @@ Definition ClassMetamodel_defaultInstanceOfClass (c: ClassMetamodel_Class) : (Cl
   | AttributeClass => (BuildAttribute 0 false "")
   end.
 
-(* Typeclass Instance *)
+(* Typeclass #[export] Instance *)
 
-Instance ClassElementSum : Sum ClassMetamodel_Object ClassMetamodel_Class :=
+#[export] Instance ClassElementSum : Sum ClassMetamodel_Object ClassMetamodel_Class :=
 {
   denoteSubType := ClassMetamodel_getTypeByClass;
   toSubType := ClassMetamodel_toClass;
@@ -324,24 +324,24 @@ Instance ClassElementSum : Sum ClassMetamodel_Object ClassMetamodel_Class :=
 (* TODO *)
 Definition beq_ClassMetamodel_Link (c1 : ClassMetamodel_Link) (c2 : ClassMetamodel_Link) : bool := true.
 
-Instance ClassLinkSum : Sum ClassMetamodel_Link ClassMetamodel_Reference :=
+#[export] Instance ClassLinkSum : Sum ClassMetamodel_Link ClassMetamodel_Reference :=
 {
   denoteSubType := ClassMetamodel_getTypeByReference;
   toSubType := ClassMetamodel_toReference;
   toSumType := ClassMetamodel_toLink;
 }.
 
-Instance ClassMetamodel_EqDec : EqDec ClassMetamodel_Object := {
+#[export] Instance ClassMetamodel_EqDec : EqDec ClassMetamodel_Object := {
     eq_b := beq_ClassMetamodel_Object;
 }.
 
-Instance ClassM : Metamodel :=
+#[export] Instance ClassM : Metamodel :=
 {
   ModelElement := ClassMetamodel_Object;
   ModelLink := ClassMetamodel_Link;
 }.
 
-Instance ClassMetamodel : ModelingMetamodel ClassM :=
+#[export] Instance ClassMetamodel : ModelingMetamodel ClassM :=
 { 
     elements := ClassElementSum;
     links := ClassLinkSum; 
