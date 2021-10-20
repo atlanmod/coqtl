@@ -534,8 +534,8 @@ Definition beq_TTMetamodel_Object (c1 : TTMetamodel_EObject) (c2 : TTMetamodel_E
   | Build_TTMetamodel_EObject LocatedElementEClass o1, Build_TTMetamodel_EObject LocatedElementEClass o2 => beq_LocatedElement o1 o2
   end.
 
-(* Typeclass #[export] Instance *)
-#[export] Instance TTMetamodel : Metamodel TTMetamodel_EObject TTMetamodel_ELink TTMetamodel_EClass TTMetamodel_EReference :=
+(* Typeclass Instance *)
+Instance TTMetamodel : Metamodel TTMetamodel_EObject TTMetamodel_ELink TTMetamodel_EClass TTMetamodel_EReference :=
   {
     denoteModelClass := TTMetamodel_getTypeByEClass;
     denoteModelReference := TTMetamodel_getTypeByEReference;

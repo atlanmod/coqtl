@@ -602,8 +602,8 @@ Definition beq_bddMetamodel_Object (c1 : bddMetamodel_EObject) (c2 : bddMetamode
   end.
 
 
-(* Typeclass #[export] Instance *)
-#[export] Instance bddMetamodel : Metamodel bddMetamodel_EObject bddMetamodel_ELink bddMetamodel_EClass bddMetamodel_EReference :=
+(* Typeclass Instance *)
+Instance bddMetamodel : Metamodel bddMetamodel_EObject bddMetamodel_ELink bddMetamodel_EClass bddMetamodel_EReference :=
   {
     denoteModelClass := bddMetamodel_getTypeByEClass;
     denoteModelReference := bddMetamodel_getTypeByEReference;

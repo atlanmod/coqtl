@@ -367,7 +367,7 @@ Proof.
   crush.
 Qed.
 (*
-#[export] Instance CoqTLEngine :
+Instance CoqTLEngine :
   TransformationEngine :=
   {
     SourceModelElement := SourceModelElement;
@@ -487,7 +487,7 @@ Qed.
   }.
 
 
-#[export] Instance CoqTLEngineTrace :
+Instance CoqTLEngineTrace :
   (TransformationEngineTrace CoqTLEngine).
 Proof.
   eexists.

@@ -41,10 +41,10 @@ Require Import Class2RelationalTest.RelationalMetamodel.
    } *)
 
 
-#[export] Instance C2RConfiguration : TransformationConfiguration := 
+Instance C2RConfiguration : TransformationConfiguration := 
    Build_TransformationConfiguration ClassMetamodel_Metamodel_Instance RelationalMetamodel_Metamodel_Instance.
  
-#[export] Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration :=
+Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration :=
    Build_ModelingTransformationConfiguration C2RConfiguration 
      ClassMetamodel_ModelingMetamodel_Instance 
      RelationalMetamodel_ModelingMetamodel_Instance.

@@ -483,32 +483,32 @@ Definition Clique_getPersonsObjects (cl_arg : Clique) (m : moviesModel) : option
 
 
 (* Typeclass Instances *)	
-#[export] Instance moviesMetamodel_ElementSum : Sum moviesMetamodel_Object moviesMetamodel_Class :=
+Instance moviesMetamodel_ElementSum : Sum moviesMetamodel_Object moviesMetamodel_Class :=
 {
 	denoteSubType := moviesMetamodel_getTypeByClass;
 	toSubType := moviesMetamodel_toClass;
 	toSumType := moviesMetamodel_toObject;
 }.
 
-#[export] Instance moviesMetamodel_LinkSum : Sum moviesMetamodel_Link moviesMetamodel_Reference :=
+Instance moviesMetamodel_LinkSum : Sum moviesMetamodel_Link moviesMetamodel_Reference :=
 {
 	denoteSubType := moviesMetamodel_getTypeByReference;
 	toSubType := moviesMetamodel_toReference;
 	toSumType := moviesMetamodel_toLink;
 }.
 
-#[export] Instance moviesMetamodel_EqDec : EqDec moviesMetamodel_Object := {
+Instance moviesMetamodel_EqDec : EqDec moviesMetamodel_Object := {
     eq_b := beq_moviesMetamodel_Object;
 }.
 
-#[export] Instance moviesMetamodel_Metamodel_Instance : 
+Instance moviesMetamodel_Metamodel_Instance : 
 	Metamodel :=
 {
 	ModelElement := moviesMetamodel_Object;
 	ModelLink := moviesMetamodel_Link;
 }.
 
-#[export] Instance moviesMetamodel_ModelingMetamodel_Instance : 
+Instance moviesMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel moviesMetamodel_Metamodel_Instance :=
 { 
     elements := moviesMetamodel_ElementSum;

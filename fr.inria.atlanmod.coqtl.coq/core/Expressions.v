@@ -26,7 +26,7 @@ Definition evalExpr3 {A B C D:Type} (f: Expr3 A B C D) (a: A) (b: B) (c: C) := f
 Definition evalExpr4 {A B C D E:Type} (f: Expr4 A B C D E) (a: A) (b: B) (c: C) (d: D):= f a b c d.
 Definition evalExpr5 {A B C D E F:Type} (f: Expr5 A B C D E F) (a: A) (b: B) (c: C) (d: D) (e: E):= f a b c d e.*)
 
-(*   #[export] #[export] Instance baseExpression :
+(*   Instance baseExpression :
   Expression := {
     Expr2 {A B C: Type} := A -> B -> C;
     evalExpr2 {A B C:Type} (f: A -> B -> C) (a: A) (b: B) := f a b;

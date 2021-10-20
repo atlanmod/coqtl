@@ -336,7 +336,7 @@ exact H1.
 apply RelationalMetamodel_eqReference_dec.
 Qed.
 
-  #[export] Instance RelationalElementSum : Sum RelationalMetamodel_Object RelationalMetamodel_Class :=
+  Instance RelationalElementSum : Sum RelationalMetamodel_Object RelationalMetamodel_Class :=
   {
     denoteSubType := RelationalMetamodel_getTypeByClass;
     toSubType := toRelationalMetamodel_Class;
@@ -346,25 +346,25 @@ Qed.
   (* TODO *)
   Definition beq_RelationalMetamodel_Link (c1 : RelationalMetamodel_Link) (c2 : RelationalMetamodel_Link) : bool := true.
   
-  #[export] Instance RelationalMetamodel_EqDec : EqDec RelationalMetamodel_Object := {
+  Instance RelationalMetamodel_EqDec : EqDec RelationalMetamodel_Object := {
     eq_b := beq_RelationalMetamodel_Object;
   }.
 
 
-  #[export] Instance RelationalLinkSum : Sum RelationalMetamodel_Link RelationalMetamodel_Reference :=
+  Instance RelationalLinkSum : Sum RelationalMetamodel_Link RelationalMetamodel_Reference :=
   {
     denoteSubType := RelationalMetamodel_getTypeByReference;
     toSubType := toRelationalMetamodel_Reference;
     toSumType := RelationalMetamodel_toLink;
   }.
   
-  #[export] Instance RelationalM : Metamodel :=
+  Instance RelationalM : Metamodel :=
   {
     ModelElement := RelationalMetamodel_Object;
     ModelLink := RelationalMetamodel_Link;
   }.
 
-  #[export] Instance RelationalMetamodel : ModelingMetamodel RelationalM :=
+  Instance RelationalMetamodel : ModelingMetamodel RelationalM :=
   { 
       elements := RelationalElementSum;
       links := RelationalLinkSum;

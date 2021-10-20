@@ -90,7 +90,7 @@ Fixpoint semantic (input: list nat) : nat :=
 
 (* Eval compute in semantic (0::0::1::nil). *)
 
-#[export] Instance TT2BDDConfiguration : TransformationConfiguration := 
+Instance TT2BDDConfiguration : TransformationConfiguration := 
   Build_TransformationConfiguration TTM BDDM.
 
 Definition TT2BDD :=
