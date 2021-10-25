@@ -59,13 +59,6 @@ core/modeling/properties/ModelingAdditivityRuleExt.v
 #core/modeling/byrule/ByRuleSemantics.v
 #core/modeling/byrule/Certification_ByRuleSemantics.v
 
-transformations/Class2RelationalTest/ClassMetamodel.v
-transformations/Class2RelationalTest/RelationalMetamodel.v
-transformations/Class2RelationalTest/Class2RelationalAbstract.v
-transformations/Class2RelationalTest/Class2Relational.v
-transformations/Class2RelationalTest/tests/PersonModel.v
-transformations/Class2RelationalTest/tests/PersonTest.v
-
 transformations/Class2Relational/ClassMetamodel.v
 transformations/Class2Relational/RelationalMetamodel.v
 transformations/Class2Relational/Class2RelationalAbstract.v
@@ -78,6 +71,11 @@ transformations/Class2Relational/theorems/Relational_name_definedness.v
 transformations/Class2Relational/theorems/Table_name_uniqueness.v
 transformations/Class2Relational/theorems/Attribute_name_preservation.v
 transformations/Class2Relational/theorems/Column_name_uniqueness.v
+
+transformations/Class2RelationalModel/ClassMetamodel.v
+transformations/Class2RelationalModel/RelationalMetamodel.v
+transformations/Class2RelationalModel/Class2Relational.v
+transformations/Class2RelationalModel/theorems/resolve.v
 
 transformations/TT2BDD/TT.v
 transformations/TT2BDD/BDD.v
