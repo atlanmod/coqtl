@@ -67,15 +67,13 @@ transformations/Class2Relational/tests/PersonModel.v
 transformations/Class2Relational/tests/PersonTest.v
 transformations/Class2Relational/theorems/All_classes_instantiate_impl.v
 transformations/Class2Relational/theorems/All_classes_match_impl.v
-transformations/Class2Relational/theorems/Relational_name_definedness.v
+transformations/Class2Relational/theorems/Relational_name_definedness_spec.v
 transformations/Class2Relational/theorems/Table_name_uniqueness.v
 transformations/Class2Relational/theorems/Attribute_name_preservation.v
 transformations/Class2Relational/theorems/Column_name_uniqueness.v
+transformations/Class2Relational/theorems/Relational_resolve_spec.v
 
-transformations/Class2RelationalModel/ClassMetamodel.v
-transformations/Class2RelationalModel/RelationalMetamodel.v
-transformations/Class2RelationalModel/Class2Relational.v
-transformations/Class2RelationalModel/theorems/resolve.v
+
 
 transformations/TT2BDD/TT.v
 transformations/TT2BDD/BDD.v
