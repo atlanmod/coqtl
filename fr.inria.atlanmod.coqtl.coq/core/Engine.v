@@ -227,3 +227,33 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
          (TraceLink_getTargetElement tl) = x);
          
   }.
+
+Theorem tr_execute_pattern_in :
+      forall (tc: TransformationConfiguration) (ts: TransformationSyntax tc) (eng: TransformationEngine ts) 
+      (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
+      In te (allModelElements (execute tr sm)) <->
+      (exists (sp : list SourceModelElement) (r : Rule),
+          In sp (allTuples tr sm) /\
+          In r (Transformation_getRules tr) /\
+          matchRuleOnPattern r sm sp = true /\
+          In te (instantiateRuleOnPattern r sm sp)).
+Proof.
+  intros.
+  rewrite tr_execute_in_elements. 
+  split.
+  * intros. repeat destruct H. 
+    apply tr_instantiatePattern_in in H0.
+    repeat destruct H0. 
+    apply tr_matchPattern_in in H0.
+    exists x.
+    exists x0.
+    crush.
+  * intros. repeat destruct H. destruct H0. destruct H1.
+    exists x.
+    crush.
+    apply tr_instantiatePattern_in.
+    exists x0.
+    crush.
+    apply tr_matchPattern_in.
+    crush.
+Qed.
