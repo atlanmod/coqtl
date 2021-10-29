@@ -228,7 +228,7 @@ Class TransformationEngine (tc: TransformationConfiguration) (ts: Transformation
          
   }.
 
-Theorem tr_execute_pattern_in :
+Theorem tr_execute_rule_in :
       forall (tc: TransformationConfiguration) (ts: TransformationSyntax tc) (eng: TransformationEngine ts) 
       (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
       In te (allModelElements (execute tr sm)) <->
@@ -259,7 +259,7 @@ Proof.
 Qed.
 
 
-Theorem tr_execute_rule_in :
+Theorem tr_execute_iteration_in :
       forall (tc: TransformationConfiguration) (ts: TransformationSyntax tc) (eng: TransformationEngine ts) 
       (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
       In te (allModelElements (execute tr sm)) <->
@@ -271,7 +271,7 @@ Theorem tr_execute_rule_in :
           In te (instantiateIterationOnPattern r sm sp i)).
 Proof.
   intros.
-  rewrite tr_execute_pattern_in.
+  rewrite tr_execute_rule_in.
   split.
   * intros. repeat destruct H. destruct H0, H1.
     apply tr_instantiateRuleOnPattern_in in H2.
@@ -288,4 +288,31 @@ Proof.
     crush.
 Qed.
   
-  
+Theorem tr_execute_element_in :
+      forall (tc: TransformationConfiguration) (ts: TransformationSyntax tc) (eng: TransformationEngine ts) 
+      (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
+      In te (allModelElements (execute tr sm)) <->
+      (exists (sp : list SourceModelElement) (r : Rule) (i: nat) (ope: OutputPatternElement),
+          In sp (allTuples tr sm) /\
+          In r (Transformation_getRules tr) /\
+          matchRuleOnPattern r sm sp = true /\
+          In i (seq 0 (evalIteratorExpr r sm sp)) /\
+          In ope (Rule_getOutputPatternElements r) /\ 
+          instantiateElementOnPattern ope sm sp i = Some te).
+Proof.
+  intros.
+  rewrite tr_execute_iteration_in.
+  split.
+  * intros. repeat destruct H. destruct H0, H1, H2.
+    apply tr_instantiateIterationOnPattern_in in H3.
+    destruct H3.
+    exists x, x0, x1, x2.
+    crush.
+  * intros. repeat destruct H. destruct H0, H1, H2, H3.
+    exists x, x0, x1.
+    crush.
+    apply tr_instantiateIterationOnPattern_in.
+    exists x2.
+    crush.
+Qed.
+
