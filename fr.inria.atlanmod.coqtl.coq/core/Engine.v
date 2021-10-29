@@ -258,7 +258,6 @@ Proof.
     crush.
 Qed.
 
-
 Theorem tr_execute_iteration_in :
       forall (tc: TransformationConfiguration) (ts: TransformationSyntax tc) (eng: TransformationEngine ts) 
       (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
@@ -316,3 +315,33 @@ Proof.
     crush.
 Qed.
 
+Theorem tr_execute_element_leaf :
+      forall (tc: TransformationConfiguration) (ts: TransformationSyntax tc) (eng: TransformationEngine ts) 
+      (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
+      In te (allModelElements (execute tr sm)) <->
+      (exists (sp : list SourceModelElement) (r : Rule) (i: nat) (ope: OutputPatternElement),
+          In sp (allTuples tr sm) /\
+          In r (Transformation_getRules tr) /\
+          evalGuardExpr r sm sp = Some true /\
+          In i (seq 0 (evalIteratorExpr r sm sp)) /\
+          In ope (Rule_getOutputPatternElements r) /\ 
+          evalOutputPatternElementExpr sm sp i ope = Some te).
+Proof.
+  intros.
+  rewrite tr_execute_element_in.
+  split.
+  * intros. repeat destruct H. destruct H0, H1, H2, H3.
+    rewrite tr_matchRuleOnPattern_leaf in H1. 
+    rewrite tr_instantiateElementOnPattern_leaf in H4.
+    exists x, x0, x1, x2.
+    destruct (evalGuardExpr x0 sm x). destruct b.
+    crush. crush. crush. crush.
+  * intros. repeat destruct H. destruct H0, H1, H2, H3.
+    exists x, x0, x1, x2.
+    crush.
+    rewrite tr_matchRuleOnPattern_leaf.
+    destruct (evalGuardExpr x0 sm x). destruct b.
+    crush. crush. crush. crush.
+    rewrite tr_instantiateElementOnPattern_leaf.
+    crush.
+Qed.
