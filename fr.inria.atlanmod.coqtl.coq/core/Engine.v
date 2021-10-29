@@ -248,7 +248,7 @@ Proof.
     exists x.
     exists x0.
     crush.
-  * intros. repeat destruct H. destruct H0. destruct H1.
+  * intros. repeat destruct H. destruct H0, H1.
     exists x.
     crush.
     apply tr_instantiatePattern_in.
@@ -257,3 +257,35 @@ Proof.
     apply tr_matchPattern_in.
     crush.
 Qed.
+
+
+Theorem tr_execute_rule_in :
+      forall (tc: TransformationConfiguration) (ts: TransformationSyntax tc) (eng: TransformationEngine ts) 
+      (tr: Transformation) (sm : SourceModel) (te : TargetModelElement),
+      In te (allModelElements (execute tr sm)) <->
+      (exists (sp : list SourceModelElement) (r : Rule) (i: nat),
+          In sp (allTuples tr sm) /\
+          In r (Transformation_getRules tr) /\
+          matchRuleOnPattern r sm sp = true /\
+          In i (seq 0 (evalIteratorExpr r sm sp)) /\
+          In te (instantiateIterationOnPattern r sm sp i)).
+Proof.
+  intros.
+  rewrite tr_execute_pattern_in.
+  split.
+  * intros. repeat destruct H. destruct H0, H1.
+    apply tr_instantiateRuleOnPattern_in in H2.
+    destruct H2.
+    exists x, x0, x1.
+    crush.
+    exact tr.
+  * intros. repeat destruct H. destruct H0, H1, H2.
+    exists x, x0.
+    crush.
+    apply tr_instantiateRuleOnPattern_in.
+    exact tr.
+    exists x1.
+    crush.
+Qed.
+  
+  
