@@ -229,4 +229,41 @@ Proof.
     + crush.
 Qed.
 
-(*TODO similar for Exists*)
+Theorem Forall_expressions_suff :
+forall (tc: TransformationConfiguration) (p: TargetModelElement -> Prop) 
+  (sm: SourceModel) (tr: Transformation),
+    Forall 
+      (fun r => 
+        forall sp i o, In o (Rule_getOutputPatternElements r) -> 
+          match evalOutputPatternElementExpr sm sp i o with
+          | Some e => p e | None => True end)
+      (Transformation_getRules tr) 
+      -> Forall p (allModelElements (execute tr sm)).
+Proof.
+  simpl.
+  intros.
+  rewrite Forall_flat_map.
+  unfold instantiatePattern. 
+  unfold matchPattern.
+  rewrite !Forall_forall.
+  intros.
+    rewrite !Forall_forall.
+    intros.
+    apply in_flat_map in H1. repeat destruct H1.
+    apply filter_In in H1. destruct H1.
+    rewrite !Forall_forall in H.
+    specialize (H x1 H1 x).
+    unfold instantiateRuleOnPattern in H2.
+    apply in_flat_map in H2. repeat destruct H2.
+    unfold instantiateIterationOnPattern in H4.
+    apply in_flat_map in H4. repeat destruct H4.
+    specialize (H x2 x3 H4).
+    unfold matchRuleOnPattern in H3.
+    destruct (evalGuardExpr x1 sm x). destruct b.
+    + unfold instantiateElementOnPattern in H5. 
+      destruct (evalOutputPatternElementExpr sm x x2 x3).
+      * crush.
+      * crush.
+    + crush.
+    + crush.
+Qed.
