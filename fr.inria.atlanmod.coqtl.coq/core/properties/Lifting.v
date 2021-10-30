@@ -102,7 +102,7 @@ Qed.
 
 Theorem Forall_rules_suff' :
 forall (tc: TransformationConfiguration) (p: TargetModelElement -> Prop) 
-  (sm: SourceModel) (tr: Transformation) (sp: list SourceModelElement) (t: TargetModelElement),
+  (sm: SourceModel) (tr: Transformation),
     Forall 
       (fun r => forall sp t, In sp (allTuples tr sm) -> 
          In t (instantiateRuleOnPattern r sm sp) -> p t)
@@ -128,7 +128,7 @@ Qed.
 
 Theorem Forall_rules_suff'' :
 forall (tc: TransformationConfiguration) (p: TargetModelElement -> Prop) 
-  (sm: SourceModel) (tr: Transformation) (sp: list SourceModelElement) (t: TargetModelElement),
+  (sm: SourceModel) (tr: Transformation),
     Forall 
       (fun r => forall sp t, In t (instantiateRuleOnPattern r sm sp) -> p t)
       (Transformation_getRules tr) 
