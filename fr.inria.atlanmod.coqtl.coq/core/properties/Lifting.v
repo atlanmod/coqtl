@@ -106,7 +106,7 @@ forall (tc: TransformationConfiguration) (p: TargetModelElement -> Prop)
     Forall 
       (fun r => forall sp t, In sp (allTuples tr sm) -> 
          In t (instantiateRuleOnPattern r sm sp) -> p t)
-    (Transformation_getRules tr) 
+      (Transformation_getRules tr) 
     -> Forall p (allModelElements (execute tr sm)).
 Proof.
     simpl.
@@ -124,6 +124,31 @@ Proof.
       specialize (H x1 H1).
       specialize (H x x0 H0 H2).
       crush.
+Qed.
+
+Theorem Forall_rules_suff'' :
+forall (tc: TransformationConfiguration) (p: TargetModelElement -> Prop) 
+  (sm: SourceModel) (tr: Transformation) (sp: list SourceModelElement) (t: TargetModelElement),
+    Forall 
+      (fun r => forall sp t, In t (instantiateRuleOnPattern r sm sp) -> p t)
+      (Transformation_getRules tr) 
+        -> Forall p (allModelElements (execute tr sm)).
+Proof.
+    simpl.
+    intros.
+    rewrite Forall_flat_map.
+    unfold instantiatePattern. 
+    unfold matchPattern.
+    rewrite !Forall_forall.
+    intros.
+    rewrite !Forall_forall.
+    intros.
+    apply in_flat_map in H1. repeat destruct H1.
+    apply filter_In in H1. destruct H1.
+    rewrite !Forall_forall in H.
+    specialize (H x1 H1).
+    specialize (H x x0 H2).
+    crush.
 Qed.
 
 Theorem Forall_expressions :
