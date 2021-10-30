@@ -267,3 +267,5 @@ Proof.
     + crush.
     + crush.
 Qed.
+
+(* TODO: same for links and Exists *)
