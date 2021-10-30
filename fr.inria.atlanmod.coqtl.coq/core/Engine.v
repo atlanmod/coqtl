@@ -245,8 +245,7 @@ Proof.
     apply tr_instantiatePattern_in in H0.
     repeat destruct H0. 
     apply tr_matchPattern_in in H0.
-    exists x.
-    exists x0.
+    exists x, x0.
     crush.
   * intros. repeat destruct H. destruct H0, H1.
     exists x.
@@ -345,3 +344,5 @@ Proof.
     rewrite tr_instantiateElementOnPattern_leaf.
     crush.
 Qed.
+
+(* TODO: similar for links *)
