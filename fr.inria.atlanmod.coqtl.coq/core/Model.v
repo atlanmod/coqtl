@@ -45,3 +45,8 @@ Definition Model_app {ME ML: Type} (m1 m2: Model ME ML) :=
   Build_Model 
     (app (@modelElements _ _ m1) (@modelElements _ _ m2))
     (app (@modelLinks _ _ m1) (@modelLinks _ _ m2)).
+
+Definition Model_concat {ME ML: Type} (ms: list (Model ME ML)) := 
+  Build_Model 
+    (flat_map (@modelElements _ _) ms)
+    (flat_map (@modelLinks _ _) ms).
