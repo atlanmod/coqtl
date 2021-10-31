@@ -11,8 +11,6 @@ Require Import PeanoNat.
 Require Import Lia.
 Require Import FunctionalExtensionality.
 
-Search flat_map.
-
 Theorem Forall_patterns :
 forall (tc: TransformationConfiguration) (p: TargetModelElement -> Prop) 
     (sm: SourceModel) (tr: Transformation),
