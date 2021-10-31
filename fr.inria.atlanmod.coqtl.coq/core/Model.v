@@ -40,3 +40,8 @@ Definition Model_equiv {ME ML: Type} (m1 m2: Model ME ML)  :=
   forall (e:ME) (l:ML),
   count_occ' (@modelElements _ _ m1) e = count_occ' (@modelElements _ _ m2) /\
   count_occ' (@modelLinks _ _ m1) e = count_occ' (@modelLinks _ _ m2).*)
+
+Definition Model_app {ME ML: Type} (m1 m2: Model ME ML) := 
+  Build_Model 
+    (app (@modelElements _ _ m1) (@modelElements _ _ m2))
+    (app (@modelLinks _ _ m1) (@modelLinks _ _ m2)).
