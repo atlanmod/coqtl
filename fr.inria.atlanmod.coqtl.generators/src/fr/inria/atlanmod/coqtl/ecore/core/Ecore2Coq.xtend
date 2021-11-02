@@ -50,6 +50,7 @@ class Ecore2Coq {
 		Require Import PeanoNat.
 		Require Import EqNat.
 		Require Import Coq.Logic.Eqdep_dec.
+		Scheme Equality for option. (* equality for option type *)
 		
 		Require Import core.EqDec.
 		Require Import core.utils.Utils.
@@ -67,7 +68,7 @@ class Ecore2Coq {
 			  Build«eClass.name» :
 			  «IF eClass.ESuperTypes.size>0»(* Inheritence Attribute *) «eClass.ESuperTypes.get(0).name» -> «ENDIF»
 			  «FOR eAttribute : eClass.EAttributes»
-			    (* «eAttribute.name» *) «AttributeType2Coq(eAttribute)» ->
+			    (* «eAttribute.name» *) «IF eAttribute.lowerBound != 1» option «ENDIF» «AttributeType2Coq(eAttribute)» ->
 			  «ENDFOR»
 			  «eClass.name».
 			
@@ -100,7 +101,7 @@ class Ecore2Coq {
 			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«supName.toLowerCase»«ENDIF» «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «supName.toLowerCase» end.
 			  «ENDIF»	
 			  «FOR eAttribute : eClass.EAttributes»
-			  Definition «eClass.name»_get«eAttribute.name.toFirstUpper» («v» : «eClass.name») : «AttributeType2Coq(eAttribute)» :=
+			  Definition «eClass.name»_get«eAttribute.name.toFirstUpper» («v» : «eClass.name») : «IF eAttribute.lowerBound != 1» option «ENDIF» «AttributeType2Coq(eAttribute)» :=
 			    match «v» with Build«eClass.name» «IF eClass.ESuperTypes.size>0»«eClass.ESuperTypes.get(0).name.toLowerCase»«ENDIF» «FOR eAttributeCtr : eClass.EAttributes»«eAttributeCtr.name» «ENDFOR» => «eAttribute.name» end.
 			  «ENDFOR»	 
 			  
@@ -114,7 +115,7 @@ class Ecore2Coq {
 		    	«IF eClass.EAttributes.size > 0»
 		    	beq_«eClass.ESuperTypes.get(0).name» («supAcc» «arg1(eClass.name)») («supAcc» «arg2(eClass.name)») &&
 		    	«FOR eAttribute : eClass.EAttributes SEPARATOR " && "
-		    	»( beq_«AttributeType2Coq(eAttribute)» («eClass.name»_get«eAttribute.name.toFirstUpper» «arg1(eClass.name)») («eClass.name»_get«eAttribute.name.toFirstUpper» «arg2(eClass.name)») )
+		    	»( «IF eAttribute.lowerBound != 1» option_beq «AttributeType2Coq(eAttribute)» «ENDIF» beq_«AttributeType2Coq(eAttribute)» («eClass.name»_get«eAttribute.name.toFirstUpper» «arg1(eClass.name)») («eClass.name»_get«eAttribute.name.toFirstUpper» «arg2(eClass.name)») )
 				«ENDFOR»
 		    	«ELSE»
 		    	beq_«eClass.ESuperTypes.get(0).name» («supAcc» «arg1(eClass.name)») («supAcc» «arg2(eClass.name)»)
@@ -122,7 +123,7 @@ class Ecore2Coq {
 		    «ELSE»
 		    	«IF eClass.EAttributes.size > 0»
 		    	«FOR eAttribute : eClass.EAttributes SEPARATOR " && "
-		    	»( beq_«AttributeType2Coq(eAttribute)» («eClass.name»_get«eAttribute.name.toFirstUpper» «arg1(eClass.name)») («eClass.name»_get«eAttribute.name.toFirstUpper» «arg2(eClass.name)») )
+		    	»( «IF eAttribute.lowerBound != 1» option_beq «AttributeType2Coq(eAttribute)» «ENDIF» beq_«AttributeType2Coq(eAttribute)» («eClass.name»_get«eAttribute.name.toFirstUpper» «arg1(eClass.name)») («eClass.name»_get«eAttribute.name.toFirstUpper» «arg2(eClass.name)») )
 				«ENDFOR»
 		    	«ELSE»
 		    	(true)
