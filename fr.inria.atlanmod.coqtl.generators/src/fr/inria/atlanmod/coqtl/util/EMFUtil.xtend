@@ -90,11 +90,12 @@ class EMFUtil {
 	 * */
 	def static PrintDefaultValue(EAttribute eAttribute) '''
 		«val eType = eAttribute.EType»
-		«IF eType.name == 'EInt' || eType.name == 'Integer'»0«
+		«IF eAttribute.lowerBound != 1» None «ELSE
+		»«IF eType.name == 'EInt' || eType.name == 'Integer'»0«
 		ELSEIF eType.name == 'EBoolean' || eType.name == 'Boolean'»true«
 		ELSEIF eType.name == 'EString' || eType.name == 'String'»""«
 		ELSE»We don't know how to print «eType.name» «ENDIF
-	»'''
+	»«ENDIF»'''
 	
 	/**
 	 * @return the default value of an {@code EClass}
@@ -116,11 +117,12 @@ class EMFUtil {
 	 * */
 	def static PrintValue(Object o, EAttribute eAttribute) '''
 		«IF o == null»«PrintDefaultValue(eAttribute)»«
-		ELSE»«val eType = eAttribute.EType»«IF eType.name == 'EInt' || eType.name == 'Integer'»«o.toString»«
+		ELSE»«IF eAttribute.lowerBound != 1» (Some «ENDIF
+				»«val eType = eAttribute.EType»«IF eType.name == 'EInt' || eType.name == 'Integer'»«o.toString»«
 				ELSEIF eType.name == 'EBoolean' || eType.name == 'Boolean'»«o.toString»«
 				ELSEIF eType.name == 'EString' || eType.name == 'String'»"«o.toString»"«
 				ELSE»We don't know how to print «eType.name» «ENDIF
-			»«
+			»«IF eAttribute.lowerBound != 1»)«ENDIF»«
 		ENDIF»'''
 		
 	

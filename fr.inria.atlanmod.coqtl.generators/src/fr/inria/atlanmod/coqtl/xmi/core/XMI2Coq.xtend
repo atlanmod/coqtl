@@ -38,6 +38,7 @@ class XMI2Coq {
 		Require Import core.Model.
 		Require Import String.
 		Require Import transformations.«ns».«meta».
+		Open Scope string_scope.
 		
 		«var allEObjects = new HashSet»
 		«val root = eobjects.get(0)»
