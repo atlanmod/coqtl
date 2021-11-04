@@ -266,4 +266,27 @@ Proof.
     + crush.
 Qed.
 
+Theorem Forall_rules_patterns :
+forall (tc: TransformationConfiguration) (correct: list SourceModelElement -> TargetModelElement -> Prop) 
+  (sm: SourceModel) (tr: Transformation),
+    Forall 
+      (fun r => forall sp t, In t (instantiateRuleOnPattern r sm sp) -> correct sp t)
+      (Transformation_getRules tr) 
+        -> 
+    Forall
+      (fun sp => Forall (correct sp) (instantiatePattern tr sm sp)) 
+    (allTuples tr sm).
+Proof.
+  intros tc correct sm tr.
+  rewrite! Forall_forall.
+  intros.
+  rewrite! Forall_forall.
+  unfold instantiatePattern, matchPattern.
+  intros.
+  apply in_flat_map in H1. repeat destruct H1.
+  apply filter_In in H1. destruct H1.
+  specialize (H x1 H1 x x0 H2).
+  crush.
+Qed.
+
 (* TODO: same for links and Exists *)
