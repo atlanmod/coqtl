@@ -270,6 +270,47 @@ Theorem Forall_rules_patterns :
 forall (tc: TransformationConfiguration) (correct: list SourceModelElement -> TargetModelElement -> Prop) 
   (sm: SourceModel) (tr: Transformation),
     Forall 
+      (fun r => forall sp t, 
+       In sp (allTuples tr sm) -> matchRuleOnPattern r sm sp = true 
+         -> In t (instantiateRuleOnPattern r sm sp) -> correct sp t)
+      (Transformation_getRules tr) 
+        <-> 
+    Forall
+      (fun sp => Forall (correct sp) (instantiatePattern tr sm sp)) 
+    (allTuples tr sm).
+Proof.
+  intros tc correct sm tr.
+  rewrite! Forall_forall.
+  split.
+  - intros.
+    rewrite! Forall_forall.
+    unfold instantiatePattern, matchPattern.
+    intros.
+    apply in_flat_map in H1. repeat destruct H1.
+    apply filter_In in H1. destruct H1.
+    specialize (H x1 H1 x x0 H0 H3).
+    crush.
+  - intros.
+    specialize (H sp).
+    rewrite! Forall_forall in H.
+    specialize (H H1 t).
+    assert (In t (instantiatePattern tr sm sp)). {
+      unfold instantiatePattern, matchPattern.
+      apply in_flat_map.
+      exists x.
+      split.
+      - apply filter_In.
+        split. assumption. assumption.
+      - assumption.  
+    }
+    specialize (H H4).
+    crush.
+Qed.
+
+Theorem Forall_rules_patterns_suff :
+forall (tc: TransformationConfiguration) (correct: list SourceModelElement -> TargetModelElement -> Prop) 
+  (sm: SourceModel) (tr: Transformation),
+    Forall 
       (fun r => forall sp t, In t (instantiateRuleOnPattern r sm sp) -> correct sp t)
       (Transformation_getRules tr) 
         -> 
