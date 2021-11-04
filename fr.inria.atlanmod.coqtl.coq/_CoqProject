@@ -14,6 +14,7 @@ core/utils/PrintUtils.v
 core/utils/PropUtils.v
 core/utils/StringUtils.v
 core/utils/TupleUtils.v
+core/utils/OptionUtils.v
 core/utils/Utils.v
 
 core/Expressions.v

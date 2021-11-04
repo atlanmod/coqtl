@@ -9,4 +9,5 @@ Require Export core.utils.StringUtils.
 Require Export core.utils.PrintUtils.
 Require Export core.utils.BoolUtils.
 Require Export core.utils.DatatypeUtils.
+Require Export core.utils.OptionUtils.
 Require Export core.utils.CpdtTactics.
