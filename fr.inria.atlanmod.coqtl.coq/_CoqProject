@@ -90,3 +90,6 @@ transformations/RSS2ATOM/ATOMFlattened.v
 transformations/DBLP/DBLP.v
 transformations/IMDB/MOVIES.v
 
+core/test/iExpressions.v
+core/test/iSyntax.v
+core/test/iSemantics.v
