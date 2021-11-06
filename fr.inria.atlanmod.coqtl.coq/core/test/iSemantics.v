@@ -119,7 +119,7 @@ Definition applyElementOnPattern
             (sm: SourceModel)
             (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
   match (evalOutputPatternElementExpr sm sp iter ope) with 
-  | Some l => optionListToList (evalOutputPatternLinkExpr sm sp l iter ope)
+  | Some l => optionListToList (evalOutputPatternLinkExpr sm sp l (OutputPatternElement_getResolve ope) iter ope)
   | None => nil
   end.
 

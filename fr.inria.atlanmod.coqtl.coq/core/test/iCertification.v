@@ -181,10 +181,10 @@ Lemma tr_applyElementOnPattern_leaf :
 forall (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) (te: TargetModelElement) 
        (i:nat) (ope: OutputPatternElement),
   evalOutputPatternElementExpr sm sp i ope = Some te ->
-  applyElementOnPattern ope tr sm sp i = optionListToList (evalOutputPatternLinkExpr sm sp te i ope).
+  applyElementOnPattern ope tr sm sp i = optionListToList (evalOutputPatternLinkExpr sm sp te (OutputPatternElement_getResolve ope) i ope).
 Proof.
   intros.
-  destruct (evalOutputPatternLinkExpr sm sp te i ope) eqn:dst.
+  destruct (evalOutputPatternLinkExpr sm sp te (OutputPatternElement_getResolve ope) i ope) eqn:dst.
   * unfold applyElementOnPattern. crush.
   * unfold applyElementOnPattern. crush.
 Qed.  

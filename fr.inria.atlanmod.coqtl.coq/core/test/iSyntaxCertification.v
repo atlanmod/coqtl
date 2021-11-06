@@ -10,7 +10,7 @@ Context {tc: TransformationConfiguration}.
 Definition evalOutputPatternLinkExpr_wrapper (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: nat)
             (l: list TraceLink) (o: OutputPatternElement)
   : option (list TargetModelLink) :=
-(evalOutputPatternLinkExpr sm sp oe iter o).
+(evalOutputPatternLinkExpr sm sp oe (OutputPatternElement_getResolve o) iter o).
 
 Instance CoqTLSyntax :
   TransformationSyntax tc :=

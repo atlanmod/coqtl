@@ -24,8 +24,9 @@ Inductive OutputPatternElement : Type :=
   buildOutputPatternElement :
     (* id *) string 
     (* element expr *) -> (nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
-    (* link expr *) -> (string -> nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
-                         -> (nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink)) -> OutputPatternElement.
+    (* resolve *) -> (string -> nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement)
+    (* link expr *) -> ((string -> nat -> SourceModel -> (list SourceModelElement) -> option TargetModelElement) 
+                         -> (nat -> SourceModel -> (list SourceModelElement) -> TargetModelElement -> option (list TargetModelLink))) -> OutputPatternElement.
 
  
 Definition OutputPatternElement_getName (o: OutputPatternElement) : string :=
