@@ -36,7 +36,7 @@ core/properties/AdditivityElement.v
 core/properties/AdditivityLink.v
 core/properties/Universality.v
 core/properties/Confluence.v
-core/properties/TransformationProperties.v
+core/properties/Monotonicity.v
 #core/properties/Lifting.v
 
 core/modeling/ModelingMetamodel.v
