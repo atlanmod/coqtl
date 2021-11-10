@@ -74,21 +74,18 @@ Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
 
 Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
             (sp: list SourceModelElement)
-            (iter : nat) : option TargetModelElement :=
-let tl := find (fun tl: TraceLink => 
+            (iter : nat) : list TargetModelElement :=
+let tl := filter (fun tl: TraceLink => 
   (list_beq SourceModelElement SourceElement_eqb (TraceLink_getSourcePattern tl) sp) &&
   ((TraceLink_getIterator tl) =? iter) &&
   ((TraceLink_getName tl) =? name)%string) tls in
-match tl with
-  | Some tl' => Some (TraceLink_getTargetElement tl')
-  | None => None
-end.
+  map (TraceLink_getTargetElement) tl.
 
 Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (sp: list SourceModelElement) : option TargetModelElement :=
+  (sp: list SourceModelElement) : list TargetModelElement :=
   resolveIter tr sm name sp 0.
 
-Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
+(* Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
   (sps: list(list SourceModelElement)) (iter: nat)
   : option (list TargetModelElement) :=
   Some (flat_map (fun l:(list SourceModelElement) => optionToList (resolveIter tr sm name l iter)) sps).
@@ -109,9 +106,14 @@ Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
   match sp with 
   | Some sp' => resolveAll tr sm name sp'
   | None => None
-  end.
+  end. *)
 
 (** * Apply **)
+
+
+
+
+
 
 Definition applyElementOnPattern
             (ope: OutputPatternElement)
@@ -119,7 +121,7 @@ Definition applyElementOnPattern
             (sm: SourceModel)
             (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
   match (evalOutputPatternElementExpr sm sp iter ope) with 
-  | Some l => optionListToList (evalOutputPatternLinkExpr sm sp l (OutputPatternElement_getResolve ope) iter ope)
+  | Some l => optionListToList (evalOutputPatternLinkExpr sm sp l (resolveIter (trace tr sm)) iter ope)
   | None => nil
   end.
 

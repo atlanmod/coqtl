@@ -26,6 +26,8 @@ Require Import FunctionalExtensionality.
   sub_set (Transformation_getRules t1) (Transformation_getRules t2) /\ 
   sub_set (Transformation_getRules t1) (Transformation_getRules t2).*)
 
+Context (tc: TransformationConfiguration).
+
 (* Set semantics: we think that the list of rules represents a set (we don't allow two rules to have the same name)*)
 Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
@@ -36,9 +38,30 @@ Definition TargetModel_equiv {tc: TransformationConfiguration} (m1 m2: TargetMod
   forall (e: TargetModelElement) (l: TargetModelLink),
    (In e (allModelElements m1) <-> In e (allModelElements m2)) /\
     (In l (allModelLinks m1) <-> In l (allModelLinks m2)).
-  
+
+
+Theorem trace_eq :
+forall  t1 t2 sm tl,
+  Transformation_equiv t1 t2 -> 
+   In tl (trace t1 sm) <-> In tl (trace t2 sm).
+Proof.
+Abort.
+
+Lemma resolveIter_eq :
+forall  {A:Type} t1 t2 (tl:A) f,
+  In tl t1 <-> In tl t2 ->
+   In tl (filter f t1) <-> In tl (filter f t2).
+Proof.
+Abort.
+
+
+
+
+
+
+
 Theorem confluence :
-forall (tc: TransformationConfiguration) (t1 t2: Transformation) (sm: SourceModel),
+forall  (t1 t2: Transformation) (sm: SourceModel),
   Transformation_equiv t1 t2 -> TargetModel_equiv (execute t1 sm) (execute t2 sm).
 Proof.
   unfold TargetModel_equiv.

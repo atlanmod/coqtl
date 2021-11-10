@@ -94,5 +94,5 @@ core/test/iExpressions.v
 core/test/iSyntax.v
 core/test/iSemantics.v
 core/test/iSyntaxCertification.v
-core/test/iCertification.v
-core/test/properties/iConfluence.v
+#core/test/iCertification.v
+#core/test/properties/iConfluence.v

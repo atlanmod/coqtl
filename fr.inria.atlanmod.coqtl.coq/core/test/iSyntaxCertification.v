@@ -1,5 +1,6 @@
 Require Import core.Engine.
 Require Import core.test.iSyntax.
+Require Import core.test.iSemantics.
 Require Import core.test.iExpressions.
 Require Import core.TransformationConfiguration.
 
@@ -10,7 +11,7 @@ Context {tc: TransformationConfiguration}.
 Definition evalOutputPatternLinkExpr_wrapper (sm: SourceModel) (sp: list SourceModelElement) (oe: TargetModelElement) (iter: nat)
             (l: list TraceLink) (o: OutputPatternElement)
   : option (list TargetModelLink) :=
-(evalOutputPatternLinkExpr sm sp oe (OutputPatternElement_getResolve o) iter o).
+(evalOutputPatternLinkExpr sm sp oe (resolveIter l) iter o).
 
 Instance CoqTLSyntax :
   TransformationSyntax tc :=
