@@ -74,15 +74,18 @@ Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
 
 Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
             (sp: list SourceModelElement)
-            (iter : nat) : list TargetModelElement :=
+            (iter : nat) : option TargetModelElement :=
 let tl := filter (fun tl: TraceLink => 
   (list_beq SourceModelElement SourceElement_eqb (TraceLink_getSourcePattern tl) sp) &&
   ((TraceLink_getIterator tl) =? iter) &&
   ((TraceLink_getName tl) =? name)%string) tls in
-  map (TraceLink_getTargetElement) tl.
+  match length tl with
+  | 1 => tr <- nth_error tl 0; return TraceLink_getTargetElement tr
+  | _ => None
+  end.
 
 Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
-  (sp: list SourceModelElement) : list TargetModelElement :=
+  (sp: list SourceModelElement) : option TargetModelElement :=
   resolveIter tr sm name sp 0.
 
 (* Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
@@ -121,7 +124,7 @@ Definition applyElementOnPattern
             (sm: SourceModel)
             (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
   match (evalOutputPatternElementExpr sm sp iter ope) with 
-  | Some l => optionListToList (evalOutputPatternLinkExpr sm sp l (resolveIter (trace tr sm)) iter ope)
+  | Some l => optionListToList (evalOutputPatternLinkExpr sm sp l (resolve (trace tr sm)) ope)
   | None => nil
   end.
 
