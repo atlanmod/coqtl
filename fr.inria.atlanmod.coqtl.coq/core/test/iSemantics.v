@@ -72,17 +72,39 @@ Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceM
 Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
   flat_map (tracePattern tr sm) (allTuples tr sm).  
 
+
+Fixpoint contains {A:Type} (eq_dec: A->A->bool) (x: A) (l: list A) : bool :=
+  match l with
+  | nil => false
+  | h :: tl => (if (eq_dec h x) then true else (contains eq_dec x tl))
+  end.
+
+Fixpoint unique {A:Type} (eq_dec: A->A->bool) (l: list A) :=
+  match l with
+   | hd :: tl => if contains eq_dec hd tl then unique eq_dec tl else hd :: unique eq_dec tl
+   | nil => nil
+  end.
+
+Definition eqb_trace (a b: TraceLink ) : bool :=
+  match a, b with
+   (buildTraceLink (sp1, it1, n1) te1),  (buildTraceLink (sp2, it2, n2) te2) =>
+      (list_beq SourceModelElement SourceElement_eqb sp1 sp2) &&
+      (it1 =? it2) &&
+      (n1 =? n2)%string
+  end.
+
 Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
             (sp: list SourceModelElement)
             (iter : nat) : option TargetModelElement :=
-let tl := filter (fun tl: TraceLink => 
+let tlsf := filter (fun tl: TraceLink => 
   (list_beq SourceModelElement SourceElement_eqb (TraceLink_getSourcePattern tl) sp) &&
   ((TraceLink_getIterator tl) =? iter) &&
   ((TraceLink_getName tl) =? name)%string) tls in
-  match length tl with
-  | 1 => tr <- nth_error tl 0; return TraceLink_getTargetElement tr
-  | _ => None
-  end.
+  let tlsfu := unique eqb_trace tlsf in
+    match length tlsfu with
+    | 1 => tr <- nth_error tlsfu 0; return TraceLink_getTargetElement tr
+    | _ => None
+    end.
 
 Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
   (sp: list SourceModelElement) : option TargetModelElement :=
