@@ -1,6 +1,81 @@
 Require Import List.
 Require Import EqNat.
 Require Import core.utils.CpdtTactics.
+Require Import Lia.
+
+Definition set_eq {A:Type} (t1 t2: list A) := incl t1 t2 /\ incl t2 t1.
+
+
+
+Lemma incl_mutual_length_eq :
+forall {A:Type} (t1 t2: list A),
+  NoDup t1 -> NoDup t2 ->
+  set_eq t1 t2 ->
+    length t1 = length t2.
+Proof.
+intros A t1 t2 nd1 nd2 seteq.
+unfold set_eq in seteq. destruct seteq as [incl1 incl2].
+specialize (NoDup_incl_length nd1 incl1).
+specialize (NoDup_incl_length nd2 incl2).
+intros lt1 lt2.
+lia.
+Qed.
+
+Lemma incl_filter_mutual :
+forall {A:Type} t1 t2,
+  set_eq t1 t2 ->
+    forall f:A->bool, 
+      set_eq (filter f t1) (filter f t2).
+Proof.
+unfold set_eq. intros. destruct H. unfold incl. revert H. revert H0. revert t2.
+induction t1.
+- split.
+  + intros; specialize (H0 a). simpl in H1. inversion H1.
+  + destruct t2; auto. specialize (H0 a). crush. 
+- intros.
+  induction t2.
+  + split; specialize (H a); crush. 
+  + split; intros; apply filter_In; apply filter_In in H1; split; crush.
+Qed.
+
+Lemma filter_mutual_length_eq :
+forall {A:Type} (t1 t2: list A) f,
+  NoDup t1 -> NoDup t2 ->
+  set_eq t1 t2 ->
+    length (filter f t1) = length (filter f t2).
+Proof.
+unfold set_eq.
+intros A t1 t2 f nd1 nd2 incl.
+apply (NoDup_filter f) in nd1.
+apply (NoDup_filter f) in nd2.
+specialize (incl_filter_mutual t1 t2 incl f). intros incl3. destruct incl3 as [incl3 incl4].
+specialize (NoDup_incl_length nd1 incl3). intro lt1.
+specialize (NoDup_incl_length nd2 incl4). intro lt2.
+lia.
+Qed.
+
+Lemma set_eq_imply_nth_error_eq :
+forall  {A:Type} (l1 l2: list A),
+  NoDup l1 -> NoDup l2 ->
+  set_eq l1 l2 -> 
+    length l1 = 1 -> 
+      nth_error l1 0 = nth_error l2 0.
+Proof.
+intros A l1 l2 nod1 nod2 seteq len.
+specialize (incl_mutual_length_eq l1 l2 nod1 nod2 seteq). intro leneq. 
+unfold set_eq in seteq.
+destruct seteq as [incl1 incl2].
+unfold incl in *.
+unfold nth_error.
+destruct l1 eqn:l1_ca.
++ crush.
++ destruct l2 eqn: l2_ca.
+  ++ specialize (incl1 a). crush.
+  ++ assert (l = nil) as l_nil. { simpl in len. apply length_zero_iff_nil. crush. }
+     assert (l0 = nil) as l0_nil. { simpl in leneq. rewrite l_nil in leneq. simpl in leneq. apply length_zero_iff_nil. crush. }
+     rewrite l_nil in incl1. rewrite l0_nil in incl1.
+     specialize (incl1 a). crush.
+Qed.
 
 Inductive subseq {A: Type} : list A -> list A -> Prop :=
   | s_nil : forall l, subseq nil l
