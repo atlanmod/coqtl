@@ -30,6 +30,12 @@ Require Import FunctionalExtensionality.
 Section iConfluence.
 Context (tc: TransformationConfiguration).
 
+
+(* a rule is well formed if all its outpatternname are different *)
+
+(* if a well formed rule r1 is not in tr, then all r0 in tr, r0's outpatternname are different from r1 *)
+
+
 (* Set semantics: we think that the list of rules represents a set (we don't allow two rules to have the same name)*)
 Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
@@ -60,6 +66,10 @@ induction (Transformation_getRules t1).
   ++ simpl. auto.
 + apply NoDup_cons_iff in H. destruct H.
   specialize (IHl H0).
+
+
+
+
 Admitted.
 
 Lemma tr_set_eq_imply_trace_eq :
@@ -138,11 +148,11 @@ forall  t1 t2 sm,
 Proof.
 intros t1 t2 sm treq.
 split.
-+ admit.
++ apply rule_nodup_imply_trace_nodup. unfold Transformation_equiv in treq. crush.
 + split.
-  ++ admit.
+  ++ apply rule_nodup_imply_trace_nodup. unfold Transformation_equiv in treq. crush.
   ++ apply tr_set_eq_imply_trace_eq. crush.
-Admitted.
+Qed.
 
 Lemma resolveIter_eq :
 forall  t1 t2 sm,
