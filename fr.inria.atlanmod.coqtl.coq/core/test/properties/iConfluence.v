@@ -62,6 +62,72 @@ induction (Transformation_getRules t1).
   specialize (IHl H0).
 Admitted.
 
+Lemma tr_set_eq_imply_trace_eq :
+forall  t1 t2 sm,
+ Transformation_equiv t1 t2 -> 
+   set_eq (trace t1 sm) (trace t2 sm).
+Proof.
+intros t1 t2 sm treq.
+repeat split.
++ unfold Transformation_equiv in treq.
+  destruct treq. destruct H0. 
+  clear H1. (* they probably not useful *)
+  unfold set_eq in H0.
+  destruct H0.
+  unfold incl in *.
+  intros.
+  apply (in_flat_map) in H2.
+  destruct H2 as [sp sp_cond].
+  destruct sp_cond.
+  apply (in_flat_map).
+  exists sp.
+  split. 
+  ++  unfold allTuples in *.
+      unfold maxArity in *.
+      rewrite <- H. exact H2.
+  ++  apply (in_flat_map) in H3.
+      apply (in_flat_map).
+      destruct H3.
+      exists x.
+      split.
+      * destruct H3.
+        unfold matchPattern in *.
+        apply filter_In.
+        apply filter_In in H3.
+        destruct H3.
+        specialize (H0 x).
+        split; crush.
+      * crush.
++ unfold Transformation_equiv in treq.
+  destruct treq. destruct H0. 
+  clear H1. (* they probably not useful *)
+  unfold set_eq in H0.
+  destruct H0.
+  unfold incl in *.
+  intros.
+  apply (in_flat_map) in H2.
+  destruct H2 as [sp sp_cond].
+  destruct sp_cond.
+  apply (in_flat_map).
+  exists sp.
+  split. 
+  ++  unfold allTuples in *.
+      unfold maxArity in *.
+      rewrite H. exact H2.
+  ++  apply (in_flat_map) in H3.
+      apply (in_flat_map).
+      destruct H3.
+      exists x.
+      split.
+      * destruct H3.
+        unfold matchPattern in *.
+        apply filter_In.
+        apply filter_In in H3.
+        destruct H3.
+        specialize (H0 x).
+        split; crush.
+      * crush.
+Qed.
 
 Lemma tr_set_eq_imply :
 forall  t1 t2 sm,
@@ -70,6 +136,12 @@ forall  t1 t2 sm,
    NoDup (trace t2 sm) /\ 
    set_eq (trace t1 sm) (trace t2 sm).
 Proof.
+intros t1 t2 sm treq.
+split.
++ admit.
++ split.
+  ++ admit.
+  ++ apply tr_set_eq_imply_trace_eq. crush.
 Admitted.
 
 Lemma resolveIter_eq :
