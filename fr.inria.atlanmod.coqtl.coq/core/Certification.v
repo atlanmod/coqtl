@@ -214,6 +214,13 @@ Proof.
   - assumption.
 Qed.
 
+
+Lemma allTuples_not_incl_length:
+  forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
+  length sp > maxArity tr -> not (In sp (allTuples tr sm)).
+Proof.
+Admitted.
+
 (** * Resolve *)
 
 Theorem tr_resolveAll_in:

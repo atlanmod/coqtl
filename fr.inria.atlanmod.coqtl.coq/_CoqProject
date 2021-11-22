@@ -95,4 +95,9 @@ core/test/iSyntax.v
 core/test/iSemantics.v
 core/test/iSyntaxCertification.v
 #core/test/iCertification.v
-#core/test/properties/iConfluence.v
+core/test/properties/iConfluence.v
+
+transformations/Families2Persons/tests/sampleFamilies.v
+transformations/Families2Persons/Families.v
+transformations/Families2Persons/Persons.v
+transformations/Families2Persons/Families2Persons.v
