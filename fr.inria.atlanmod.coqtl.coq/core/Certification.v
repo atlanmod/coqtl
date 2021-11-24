@@ -219,7 +219,14 @@ Lemma allTuples_not_incl_length:
   forall (sp : list SourceModelElement) (tr: Transformation) (sm: SourceModel), 
   length sp > maxArity tr -> not (In sp (allTuples tr sm)).
 Proof.
-Admitted.
+intros sp tr sm c.
+apply Gt.gt_not_le in c.
+revert c.
+apply contraposition.
+unfold allTuples.
+specialize (tuple_length sp (allModelElements sm) (maxArity tr)).
+crush.
+Qed.
 
 (** * Resolve *)
 
