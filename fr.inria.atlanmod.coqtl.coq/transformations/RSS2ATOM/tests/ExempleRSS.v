@@ -11,7 +11,7 @@ Require Import transformations.RSS2ATOM.RSS.
 Open Scope string_scope.
 
 
-Definition InputModel : Model RSSMetamodel_Object RSSMetamodel_Link :=
+Definition ExempleRSS : Model RSSMetamodel_Object RSSMetamodel_Link :=
 	(Build_Model
 		(
 		(Build_RSSMetamodel_Object ImageClass (BuildImage  "" "" ""  None   (Some 0)  (Some 0))) :: 

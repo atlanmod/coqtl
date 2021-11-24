@@ -25,5 +25,7 @@ Instance RSS2ATOMConfiguration : ModelingTransformationConfiguration R2AConfigur
 
 Open Scope coqtl.
 
+Definition RSS2ATOM :=
+  transformation nil.
 
 Close Scope coqtl.
