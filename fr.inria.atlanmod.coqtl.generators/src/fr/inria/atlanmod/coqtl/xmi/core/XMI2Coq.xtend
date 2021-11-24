@@ -27,7 +27,7 @@ class XMI2Coq {
 	/* 
 	 * Entry point of model to Boogie transformation
 	 * */ 
-	def mapEObjects(EList<EObject> eobjects, String ns, String meta) '''
+	def mapEObjects(EList<EObject> eobjects, String ns, String meta, String filename) '''
 		(********************************************************************
 			@name Coq declarations for model
 			@date «new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date)»
@@ -49,7 +49,7 @@ class XMI2Coq {
 		«FOR eobject: eobjects.filter(typeof(EObject))»		
 			«val ignore = allEObjects.addAll(getAllEObjects(eobject))»		
 		«ENDFOR»
-		Definition InputModel : Model «mm_eobject» «mm_elink» :=
+		Definition «filename» : Model «mm_eobject» «mm_elink» :=
 			(Build_Model
 				(
 				«FOR eobject : allEObjects»
