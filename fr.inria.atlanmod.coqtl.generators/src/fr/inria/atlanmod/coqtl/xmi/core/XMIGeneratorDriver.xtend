@@ -21,9 +21,8 @@ class XMIGeneratorDriver {
 	}
 	
 	
-	def static getFileName(URI m_path){
-		var i = m_path.segmentCount()
-		var f = m_path.trimFileExtension().segment(i-1)
+	def static getFileName(URI m_path, int level){
+		var f = m_path.trimFileExtension().segment(level)
 		return f.toString
 	}
 	
@@ -56,11 +55,9 @@ class XMIGeneratorDriver {
 		val mm_uri = URI.createFileURI(mm_path)
 		val output_uri = URI.createFileURI(output_path);
 		
-		
-		val f = new File(mm_path);
-		val exname = f.getParentFile().getName()
-		val mmname = f.getName().substring(0, f.getName().length() - 6)
-		val filename = getFileName(m_uri)
+		val exname = getFileName(mm_uri, mm_uri.segmentCount-2)
+		val mmname = getFileName(mm_uri, mm_uri.segmentCount-1)
+		val filename = getFileName(m_uri, m_uri.segmentCount-1)
 		
         doGeneration(mm_uri, m_uri, output_uri, exname, mmname, filename)
 
