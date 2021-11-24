@@ -86,6 +86,11 @@ transformations/TT2BDD/tests/TT2BDD_TTModel.v
 transformations/RSS2ATOM/RSS.v
 transformations/RSS2ATOM/ATOM.v
 transformations/RSS2ATOM/ATOMFlattened.v
+transformations/RSS2ATOM/RSS2ATOM.v
+transformations/RSS2ATOM/tests/ExempleRSS.v
+transformations/RSS2ATOM/tests/Exemple1RSS.v
+transformations/RSS2ATOM/tests/ExempleATOM.v
+transformations/RSS2ATOM/tests/Exemple1ATOM.v
 
 transformations/DBLP/DBLP.v
 transformations/IMDB/MOVIES.v
