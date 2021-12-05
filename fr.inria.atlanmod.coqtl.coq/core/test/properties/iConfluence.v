@@ -31,6 +31,8 @@ Section iConfluence.
 Context (tc: TransformationConfiguration).
 
 
+(* can't use nodup cause it requires deciability on Rule *)
+
 (* a rule is well formed if all its outpatternname are different *)
 
 (* if a well formed rule r1 is not in tr, then all r0 in tr, r0's outpatternname are different from r1 *)
