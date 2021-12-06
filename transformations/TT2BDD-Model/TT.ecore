@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="TT" nsURI="https://www.transformation-tool-contest.eu/2019/tt"
+    nsPrefix="tt">
+  <eClassifiers xsi:type="ecore:EClass" name="LocatedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="location" ordered="false"
+        unique="false" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TruthTable" eSuperTypes="#//LocatedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" ordered="false" unique="false"
+        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="ports" ordered="false"
+        lowerBound="1" upperBound="-1" eType="#//Port" containment="true" eOpposite="#//Port/owner"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="rows" ordered="false" lowerBound="2"
+        upperBound="-1" eType="#//Row" containment="true" eOpposite="#//Row/owner"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Port" abstract="true" eSuperTypes="#//LocatedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" ordered="false" unique="false"
+        lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" ordered="false"
+        lowerBound="1" eType="#//TruthTable" eOpposite="#//TruthTable/ports"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="cells" ordered="false"
+        upperBound="-1" eType="#//Cell" eOpposite="#//Cell/port"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="InputPort" eSuperTypes="#//Port"/>
+  <eClassifiers xsi:type="ecore:EClass" name="OutputPort" eSuperTypes="#//Port"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Row" eSuperTypes="#//LocatedElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" ordered="false"
+        lowerBound="1" eType="#//TruthTable" eOpposite="#//TruthTable/rows"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="cells" ordered="false"
+        lowerBound="1" upperBound="-1" eType="#//Cell" containment="true" eOpposite="#//Cell/owner"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Cell" eSuperTypes="#//LocatedElement">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" ordered="false"
+        unique="false" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EBoolean"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="owner" ordered="false"
+        lowerBound="1" eType="#//Row" eOpposite="#//Row/cells"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="port" ordered="false" lowerBound="1"
+        eType="#//Port" eOpposite="#//Port/cells"/>
+  </eClassifiers>
+</ecore:EPackage>

@@ -1,5 +1,3 @@
-.project
-
 .*.aux
 *.a
 *.cma
@@ -31,17 +29,10 @@ nia.cache
 nlia.cache
 nra.cache
 
-*/Makefile
-*/Makefile.conf
-*/CoqMakefile.conf
+Makefile
+Makefile.conf
+CoqMakefile.conf
 *.d
 *.vok
 *.vos
-*/.vscode/settings.json
-
-fr.inria.atlanmod.coqtl.coq/build/
-fr.inria.atlanmod.coqtl.generators/.settings/org.eclipse.buildship.core.prefs
-fr.inria.atlanmod.coqtl.generators/.settings/org.eclipse.core.resources.prefs
-fr.inria.atlanmod.coqtl.generators/.settings/org.eclipse.xtend.core.Xtend.prefs
-fr.inria.atlanmod.coqtl.generators/.settings/org.eclipse.xtext.java.Java.prefs
-fr.inria.atlanmod.coqtl.generators/.settings/org.eclipse.buildship.core.prefs
+.vscode/settings.json
