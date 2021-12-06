@@ -29,10 +29,10 @@ nia.cache
 nlia.cache
 nra.cache
 
-*/Makefile
-*/Makefile.conf
-*/CoqMakefile.conf
+Makefile
+Makefile.conf
+CoqMakefile.conf
 *.d
 *.vok
 *.vos
-*/.vscode/settings.json
+.vscode/settings.json
