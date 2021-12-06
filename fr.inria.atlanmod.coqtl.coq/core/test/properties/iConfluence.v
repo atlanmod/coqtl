@@ -32,6 +32,14 @@ Context (tc: TransformationConfiguration).
 
 
 (* can't use nodup cause it requires deciability on Rule *)
+Lemma eq_dec : forall a b : Rule, {a = b} + {a <> b}.
+Proof.
+Admitted.
+
+Scheme Equality for list.
+Check list_beq.
+
+
 
 (* a rule is well formed if all its outpatternname are different *)
 
