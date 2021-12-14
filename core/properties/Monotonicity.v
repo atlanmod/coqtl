@@ -17,110 +17,56 @@ Require Import FunctionalExtensionality.
 (*************************************************************)
 
 Definition SourceModel_incl {tc: TransformationConfiguration}  (m1 m2: SourceModel) : Prop := 
-  incl (allModelElements m1) (allModelElements m2).
-(* /\ incl (allModelLinks m1) (allModelLinks m2). *)
+  incl (allModelElements m1) (allModelElements m2)
+/\ incl (allModelLinks m1) (allModelLinks m2). 
 
 Definition TargetModel_incl {tc: TransformationConfiguration}  (m1 m2: TargetModel) : Prop := 
-  incl (allModelElements m1) (allModelElements m2).
-(* /\ incl (allModelLinks m1) (allModelLinks m2). *)
+  incl (allModelElements m1) (allModelElements m2)
+/\ incl (allModelLinks m1) (allModelLinks m2). 
 
 Definition monotonicity (tc: TransformationConfiguration) (t: Transformation) :=
   forall (sm1 sm2: SourceModel),
   SourceModel_incl sm1 sm2 -> TargetModel_incl (execute t sm1) (execute t sm2).
 
-
-Lemma instantiatePattern_distributive:
-forall (tc: TransformationConfiguration),
-  forall a0 sp sm1 n a l,
-In a0 (instantiatePattern (buildTransformation n (a :: l)) sm1 sp) <->
-In a0 (instantiatePattern (buildTransformation n [a]) sm1 sp) \/
-In a0 (instantiatePattern (buildTransformation n l) sm1 sp).
+Lemma test:
+forall (tc: TransformationConfiguration) ,
+forall a x0 tr sm1 x,
+In x0 (matchPattern tr sm1 x) ->
+In x0 (Transformation_getRules tr) ->
+In x (allTuples tr sm1) ->
+In a (applyRuleOnPattern x0 tr sm1 x) ->
+In a (allModelLinks
+          (execute (buildTransformation (Transformation_getArity tr) [x0]) sm1)).
 Proof.
 intros.
+unfold execute.
+simpl.
+apply in_flat_map.
+exists x.
 split.
-+ intro.
-  unfold instantiatePattern in H.
-  unfold instantiateRuleOnPattern  in H.
-  unfold instantiateIterationOnPattern in H.
-  unfold matchPattern in H.
-  simpl in H.
-  unfold instantiatePattern.
-  unfold instantiateRuleOnPattern.
-  unfold instantiateIterationOnPattern.
-  unfold matchPattern.
-  simpl. 
-  remember ((fun r : Rule =>
-  flat_map
-    (fun iter : nat =>
-     flat_map
-       (fun o : OutputPatternElement =>
-        optionToList (instantiateElementOnPattern o sm1 sp iter))
-       (Rule_getOutputPatternElements r))
-    (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
-  remember (filter (fun r : Rule => matchRuleOnPattern r sm1 sp) l) as l1.
-  destruct (matchRuleOnPattern a sm1 sp) eqn: ca.
-  - apply in_flat_map in H.
-    destruct H. destruct H.
-    destruct H.
-    -- rewrite <- H in H0. left. apply in_flat_map. exists x. crush.
-    -- right. apply in_flat_map. exists x. crush.
-  - right. auto.
-+ intro.
-unfold instantiatePattern.
-unfold instantiateRuleOnPattern.
-unfold instantiateIterationOnPattern.
-unfold matchPattern.
-simpl. 
-remember ((fun r : Rule =>
-flat_map
-  (fun iter : nat =>
-   flat_map
-     (fun o : OutputPatternElement =>
-      optionToList (instantiateElementOnPattern o sm1 sp iter))
-     (Rule_getOutputPatternElements r))
-  (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
-remember (filter (fun r : Rule => matchRuleOnPattern r sm1 sp) l) as l1.
-destruct (matchRuleOnPattern a sm1 sp) eqn: ca.
-++ destruct H.
-- unfold instantiatePattern in H.
-unfold instantiateRuleOnPattern in H.
-unfold instantiateIterationOnPattern in H.
-unfold matchPattern in H.
-simpl in H.
-rewrite ca in H.
-rewrite <- Heqf in H.
-apply in_flat_map in H. destruct H.
-apply in_flat_map. exists x. split. crush. crush. 
-- unfold instantiatePattern in H.
-unfold instantiateRuleOnPattern in H.
-unfold instantiateIterationOnPattern in H.
-unfold matchPattern in H.
-simpl in H.
-rewrite <- Heqf in H.
-apply in_flat_map in H.
-destruct H.
+- unfold allTuples in *. crush.
+- apply in_flat_map.
+exists x0.
+split.
+unfold matchPattern in *.
+apply filter_In in H.
+apply filter_In.
+crush.
 apply in_flat_map.
-exists x. split; crush.
-++ destruct H. 
-unfold instantiatePattern in H.
-unfold instantiateRuleOnPattern in H.
-unfold instantiateIterationOnPattern in H.
-unfold matchPattern in H.
-simpl in H.
-rewrite ca in H.
-rewrite <- Heqf in H.
-simpl in H. inversion H.
-unfold instantiatePattern in H.
-unfold instantiateRuleOnPattern in H.
-unfold instantiateIterationOnPattern in H.
-unfold matchPattern in H.
-simpl in H.
-rewrite <- Heqf in H.
-apply in_flat_map in H.
-destruct H.
+apply in_flat_map in H2.
+destruct H2. destruct H2.
+exists x1. crush.
 apply in_flat_map.
-exists x. split; crush.
-Qed.
+apply in_flat_map in H3.
+destruct H3. destruct H3.
+exists x2. crush. 
+unfold applyElementOnPattern in *.
+destruct (evalOutputPatternElementExpr sm1 x x1 x2). 
++ admit.
++ auto.
+ 
+
+Abort.
 
 
 Theorem monotonicity_lifting :
@@ -132,94 +78,90 @@ Theorem monotonicity_lifting :
         -> monotonicity tc tr.
 Proof.
 intros.
-destruct tr.
-induction l.
-- unfold monotonicity .
-  intros.
-  unfold TargetModel_incl.
-  unfold incl.
-  intros.
-  simpl in H1.
-  apply in_flat_map in H1.
-  destruct H1. destruct H1.
-  unfold instantiatePattern in H2.
-  simpl in H2.
-  inversion H2.
-- simpl in H.
-  simpl in IHl.
-  specialize (Forall_inv H).
-  intro. simpl in H0.
-  specialize (Forall_inv_tail H).
-  intro. simpl in H1.
-  specialize (IHl H1).
-  clear H1.
-  unfold monotonicity.
-  intros.
-  unfold TargetModel_incl.
-  unfold execute.
-  simpl.
-  unfold incl.
-  intros.
+unfold monotonicity.
+unfold TargetModel_incl.
+intros.
+split.
++ admit. (* see Monotonicity_elems *)
++ unfold execute.
+simpl.
+unfold incl.
+intros.
+rewrite Forall_forall in H.
+unfold monotonicity in H.
+apply in_flat_map in H1.
+destruct H1. destruct H1.
+apply in_flat_map in H2.
+destruct H2. destruct H2.
 
-  apply in_flat_map in H2.
-  destruct H2. destruct H2.
+assert (In x0 (Transformation_getRules tr)).
+{ unfold matchPattern in H2. apply filter_In in H2. crush. }
 
-  unfold monotonicity in IHl.
-  unfold TargetModel_incl in IHl.
-  unfold incl in IHl.
-  specialize (IHl sm1 sm2 H1 a0).
+specialize (H x0 H4 sm1 sm2 H0).
 
-  unfold monotonicity in H0.
-  unfold TargetModel_incl in H0.
-  unfold incl in H0.
-  specialize (H0 sm1 sm2 H1 a0).
+unfold TargetModel_incl in H.
+unfold incl in H.
+destruct H.
+specialize (H5 a).
 
-  specialize (instantiatePattern_distributive tc a0 x sm1 n a l).
-  intro.
-  destruct H4.
-  specialize (H4 H3).
-  destruct H4.
-  + unfold execute in H0.
-    simpl in H0.
-    assert (In a0
-    (flat_map (instantiatePattern (buildTransformation n [a]) sm1)
-      (allTuples (buildTransformation n [a]) sm1))).
-    {  apply in_flat_map. exists x. crush. }
-    specialize (H0 H6).
-    apply in_flat_map.
-    apply in_flat_map in H0.
-    destruct H0. destruct H0.
-    exists x0. split.
-    ++ unfold allTuples. simpl.
-    unfold allTuples in H0. simpl in H0. auto.
-    ++ specialize (instantiatePattern_distributive tc a0 x0 sm2 n a l).
-    intro.
-    destruct H8.
-    apply H9.
-    left. auto.
-  + clear H0.
-  unfold execute in IHl.
-    simpl in IHl.
-    assert (In a0
-    (flat_map (instantiatePattern (buildTransformation n l) sm1)
-      (allTuples (buildTransformation n l) sm1))).
-    { apply in_flat_map. exists x. crush. }
-    specialize (IHl H0).
-    apply in_flat_map.
-    apply in_flat_map in IHl.
-    destruct IHl. destruct H6.
-    exists x0. split.
-    ++ unfold allTuples. simpl.
-    unfold allTuples in H6. simpl in H6. auto.
-    ++ specialize (instantiatePattern_distributive tc a0 x0 sm2 n a l).
-    intro.
-    destruct H8.
-    apply H9.
-    right. auto.
-Qed.
+
+assert (In a
+       (allModelLinks
+          (execute (buildTransformation (Transformation_getArity tr) [x0]) sm1))).
+{ admit. }
 
 
 
+Abort.
+
+
+
+
+
+
+
+
+(* 
+
+specialize (H5 H6).
+apply in_flat_map in H5.
+destruct H5.
+destruct H5.
+apply in_flat_map.
+exists x1.
+split.
+- unfold allTuples in *. crush.
+- admit.
+
+unfold applyPattern in H7.
+unfold applyRuleOnPattern in H7.
+unfold applyIterationOnPattern in H7.
+unfold applyElementOnPattern in H7.
+unfold matchPattern in H7.
+simpl in H7.
+destruct (matchRuleOnPattern x0 sm2 x1).
+remember ((fun r : Rule =>
+           flat_map
+             (fun iter : nat =>
+              flat_map
+                (fun o : OutputPatternElement =>
+                 match evalOutputPatternElementExpr sm2 x1 iter o with
+                 | return l =>
+                     optionListToList
+                       (evalOutputPatternLinkExpr sm2 x1 l iter
+                          (trace (buildTransformation (Transformation_getArity tr) [x0])
+                             sm2) o)
+                 | None => nil
+                 end) (Rule_getOutputPatternElements r))
+             (seq 0 (evalIteratorExpr r sm2 x1)))) as f.
+
+unfold applyPattern.
+unfold applyRuleOnPattern.
+unfold applyIterationOnPattern.
+unfold applyElementOnPattern.
+unfold matchPattern.
+simpl.
+ *)
 
 
 
