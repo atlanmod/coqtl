@@ -28,46 +28,6 @@ Definition monotonicity (tc: TransformationConfiguration) (t: Transformation) :=
   forall (sm1 sm2: SourceModel),
   SourceModel_incl sm1 sm2 -> TargetModel_incl (execute t sm1) (execute t sm2).
 
-Lemma test:
-forall (tc: TransformationConfiguration) ,
-forall a x0 tr sm1 x,
-In x0 (matchPattern tr sm1 x) ->
-In x0 (Transformation_getRules tr) ->
-In x (allTuples tr sm1) ->
-In a (applyRuleOnPattern x0 tr sm1 x) ->
-In a (allModelLinks
-          (execute (buildTransformation (Transformation_getArity tr) [x0]) sm1)).
-Proof.
-intros.
-unfold execute.
-simpl.
-apply in_flat_map.
-exists x.
-split.
-- unfold allTuples in *. crush.
-- apply in_flat_map.
-exists x0.
-split.
-unfold matchPattern in *.
-apply filter_In in H.
-apply filter_In.
-crush.
-apply in_flat_map.
-apply in_flat_map in H2.
-destruct H2. destruct H2.
-exists x1. crush.
-apply in_flat_map.
-apply in_flat_map in H3.
-destruct H3. destruct H3.
-exists x2. crush. 
-unfold applyElementOnPattern in *.
-destruct (evalOutputPatternElementExpr sm1 x x1 x2). 
-+ admit.
-+ auto.
- 
-
-Abort.
-
 
 Theorem monotonicity_lifting :
   forall (tc: TransformationConfiguration) 
@@ -83,12 +43,14 @@ unfold TargetModel_incl.
 intros.
 split.
 + admit. (* see Monotonicity_elems *)
-+ unfold execute.
++ rewrite Forall_forall in H.
+unfold monotonicity in H.
+
+ unfold execute.
 simpl.
 unfold incl.
 intros.
-rewrite Forall_forall in H.
-unfold monotonicity in H.
+
 apply in_flat_map in H1.
 destruct H1. destruct H1.
 apply in_flat_map in H2.
@@ -103,12 +65,43 @@ unfold TargetModel_incl in H.
 unfold incl in H.
 destruct H.
 specialize (H5 a).
+clear H.
 
 
 assert (In a
        (allModelLinks
           (execute (buildTransformation (Transformation_getArity tr) [x0]) sm1))).
-{ admit. }
+{ 
+
+intros.
+unfold execute.
+simpl.
+apply in_flat_map.
+exists x.
+split.
+- unfold allTuples in *. crush.
+- apply in_flat_map.
+exists x0.
+split.
+unfold matchPattern in *.
+apply filter_In in H2.
+apply filter_In.
+crush.
+apply in_flat_map.
+apply in_flat_map in H3.
+destruct H3. 
+destruct H.
+exists x1. crush.
+apply in_flat_map.
+apply in_flat_map in H3.
+destruct H3. destruct H3.
+exists x2. crush. 
+unfold applyElementOnPattern in *.
+destruct (evalOutputPatternElementExpr sm1 x x1 x2). 
++ admit.  (* <-- trace *)
++ auto.
+
+}
 
 
 
