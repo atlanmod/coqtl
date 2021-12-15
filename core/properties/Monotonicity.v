@@ -42,31 +42,66 @@ unfold monotonicity.
 unfold TargetModel_incl.
 intros.
 split.
-+ admit. (* see Monotonicity_elems *)
++ rewrite Forall_forall in H. unfold monotonicity in H. 
+  unfold execute. simpl. unfold incl. intros.
+  apply in_flat_map in H1. destruct H1. destruct H1.
+  apply in_flat_map in H2. destruct H2. destruct H2.
+
+  assert (In x0 (Transformation_getRules tr)).
+  { unfold matchPattern in H2. apply filter_In in H2. destruct H2. exact H2. }
+
+  specialize (H x0 H4 sm1 sm2 H0).
+  unfold TargetModel_incl in H.
+  simpl in H. destruct H. clear H5.
+  unfold incl in H. specialize (H a).
+
+  assert (In a (flat_map 
+    (instantiatePattern (buildTransformation (Transformation_getArity tr) [x0]) sm1) 
+    (allTuples (buildTransformation (Transformation_getArity tr) [x0]) sm1))).
+  { clear H.
+  apply in_flat_map. exists x.
+  split.
+  - unfold allTuples in *. crush.
+  - unfold instantiatePattern in *.
+  apply in_flat_map. exists x0. split.
+  -- unfold matchPattern in *. apply filter_In. apply filter_In in H2. crush.
+  -- auto.
+  }
+
+  specialize (H H5). clear H5.
+  apply in_flat_map in H. destruct H. destruct H.
+  apply in_flat_map. exists x1.
+  split.
+  - unfold allTuples in *. crush.
+  - unfold instantiatePattern in *.
+  apply in_flat_map in H5. destruct H5. destruct H5.
+  apply in_flat_map. exists x2. split.
+  -- unfold matchPattern in *. apply filter_In. apply filter_In in H5. crush.
+  -- auto.
+
 + rewrite Forall_forall in H.
-unfold monotonicity in H.
+  unfold monotonicity in H.
 
- unfold execute.
-simpl.
-unfold incl.
-intros.
+  unfold execute.
+  simpl.
+  unfold incl.
+  intros.
 
-apply in_flat_map in H1.
-destruct H1. destruct H1.
-apply in_flat_map in H2.
-destruct H2. destruct H2.
+  apply in_flat_map in H1.
+  destruct H1. destruct H1.
+  apply in_flat_map in H2.
+  destruct H2. destruct H2.
 
-assert (In x0 (Transformation_getRules tr)).
-{ unfold matchPattern in H2. apply filter_In in H2. crush. }
+  assert (In x0 (Transformation_getRules tr)).
+  { unfold matchPattern in H2. apply filter_In in H2. crush. }
 
-specialize (H x0 H4 sm1 sm2 H0).
+  specialize (H x0 H4 sm1 sm2 H0).
 
-unfold TargetModel_incl in H.
-unfold incl in H.
-destruct H.
-specialize (H5 a).
-clear H.
-
+  unfold TargetModel_incl in H.
+  unfold incl in H.
+  destruct H.
+  specialize (H5 a).
+  clear H.
 
 assert (In a
        (allModelLinks
