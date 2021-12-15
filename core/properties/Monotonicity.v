@@ -39,6 +39,8 @@ Proof.
 intros tc tr mono. unfold monotonicity. unfold TargetModel_incl.
 intros sm1 sm2 sm_incl. split.
 + (* mono_lift_elem *)
+
+  (* prove In e (exeucte tr sm1) *)
   rewrite Forall_forall in mono. unfold monotonicity in mono. 
   unfold execute. simpl. unfold incl. intros e in_sm1.
   apply in_flat_map in in_sm1. 
@@ -54,6 +56,7 @@ intros sm1 sm2 sm_incl. split.
   simpl in mono. destruct mono as [elem_incl link_incl]. clear link_incl.
   unfold incl in elem_incl. specialize (elem_incl e).
 
+  (* prove In e (exeucte tr sm1) -> In e (exeucte tr_singleton sm1) *)
   remember (buildTransformation (Transformation_getArity tr) [r]) as tr_singleton.
   assert (In e (flat_map (instantiatePattern tr_singleton sm1)
                (allTuples tr_singleton sm1))) as in_e_single.
@@ -67,6 +70,7 @@ intros sm1 sm2 sm_incl. split.
       -- auto.
   }
 
+  (* prove In e (exeucte tr_singleton sm2) -> In e (exeucte tr sm2) *)
   specialize (elem_incl in_e_single). clear in_e_single.
   apply in_flat_map in elem_incl.
   destruct elem_incl as [sp2 temp]. destruct temp as [in_sp2 in_e_sm2].
