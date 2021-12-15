@@ -28,7 +28,6 @@ Definition monotonicity (tc: TransformationConfiguration) (t: Transformation) :=
   forall (sm1 sm2: SourceModel),
   SourceModel_incl sm1 sm2 -> TargetModel_incl (execute t sm1) (execute t sm2).
 
-
 Theorem monotonicity_lifting :
   forall (tc: TransformationConfiguration) 
   (tr: Transformation),
@@ -37,49 +36,53 @@ Theorem monotonicity_lifting :
       (Transformation_getRules tr) 
         -> monotonicity tc tr.
 Proof.
-intros.
-unfold monotonicity.
-unfold TargetModel_incl.
-intros.
-split.
-+ rewrite Forall_forall in H. unfold monotonicity in H. 
-  unfold execute. simpl. unfold incl. intros.
-  apply in_flat_map in H1. destruct H1. destruct H1.
-  apply in_flat_map in H2. destruct H2. destruct H2.
+intros tc tr mono. unfold monotonicity. unfold TargetModel_incl.
+intros sm1 sm2 sm_incl. split.
++ (* mono_lift_elem *)
+  rewrite Forall_forall in mono. unfold monotonicity in mono. 
+  unfold execute. simpl. unfold incl. intros e in_sm1.
+  apply in_flat_map in in_sm1. 
+  destruct in_sm1 as [sp temp]. destruct temp as [in_sp in_e].
+  apply in_flat_map in in_e. 
+  destruct in_e as [r temp]. destruct temp as [in_r in_e].
 
-  assert (In x0 (Transformation_getRules tr)).
-  { unfold matchPattern in H2. apply filter_In in H2. destruct H2. exact H2. }
+  assert (In r (Transformation_getRules tr)) as in_tr.
+  { unfold matchPattern in in_r. apply filter_In in in_r. crush. }
 
-  specialize (H x0 H4 sm1 sm2 H0).
-  unfold TargetModel_incl in H.
-  simpl in H. destruct H. clear H5.
-  unfold incl in H. specialize (H a).
+  specialize (mono r in_tr sm1 sm2 sm_incl).
+  unfold TargetModel_incl in mono.
+  simpl in mono. destruct mono as [elem_incl link_incl]. clear link_incl.
+  unfold incl in elem_incl. specialize (elem_incl e).
 
-  assert (In a (flat_map 
-    (instantiatePattern (buildTransformation (Transformation_getArity tr) [x0]) sm1) 
-    (allTuples (buildTransformation (Transformation_getArity tr) [x0]) sm1))).
-  { clear H.
-  apply in_flat_map. exists x.
-  split.
-  - unfold allTuples in *. crush.
-  - unfold instantiatePattern in *.
-  apply in_flat_map. exists x0. split.
-  -- unfold matchPattern in *. apply filter_In. apply filter_In in H2. crush.
-  -- auto.
+  remember (buildTransformation (Transformation_getArity tr) [r]) as tr_singleton.
+  assert (In e (flat_map (instantiatePattern tr_singleton sm1)
+               (allTuples tr_singleton sm1))) as in_e_single.
+  { clear elem_incl.
+    apply in_flat_map. exists sp. split.
+    - unfold allTuples in *. crush.
+    - unfold instantiatePattern in *.
+      apply in_flat_map. exists r. split.
+      -- unfold matchPattern in *. 
+        apply filter_In. apply filter_In in in_r. crush.
+      -- auto.
   }
 
-  specialize (H H5). clear H5.
-  apply in_flat_map in H. destruct H. destruct H.
-  apply in_flat_map. exists x1.
+  specialize (elem_incl in_e_single). clear in_e_single.
+  apply in_flat_map in elem_incl.
+  destruct elem_incl as [sp2 temp]. destruct temp as [in_sp2 in_e_sm2].
+  apply in_flat_map. exists sp2.
   split.
   - unfold allTuples in *. crush.
   - unfold instantiatePattern in *.
-  apply in_flat_map in H5. destruct H5. destruct H5.
-  apply in_flat_map. exists x2. split.
-  -- unfold matchPattern in *. apply filter_In. apply filter_In in H5. crush.
-  -- auto.
+    apply in_flat_map in in_e_sm2. 
+    destruct in_e_sm2 as [r2 temp]. destruct temp as [in_r2 in_e_sm2].
+    apply in_flat_map. exists r2. split.
+    -- unfold matchPattern in *. 
+       apply filter_In. apply filter_In in in_r2. crush.
+    -- auto.
 
-+ rewrite Forall_forall in H.
++ (* mono_lift_links *)
+(* rewrite Forall_forall in H.
   unfold monotonicity in H.
 
   unfold execute.
@@ -138,7 +141,7 @@ destruct (evalOutputPatternElementExpr sm1 x x1 x2).
 
 }
 
-
+*)
 
 Abort.
 
