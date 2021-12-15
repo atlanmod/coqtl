@@ -149,47 +149,101 @@ Abort.
 
 
 
-(* 
-
-specialize (H5 H6).
-apply in_flat_map in H5.
-destruct H5.
-destruct H5.
-apply in_flat_map.
-exists x1.
+(* sth. useful on instantiatePattern *)
+Lemma instantiatePattern_distributive:
+forall (tc: TransformationConfiguration),
+  forall a0 sp sm1 n a l,
+In a0 (instantiatePattern (buildTransformation n (a :: l)) sm1 sp) <->
+In a0 (instantiatePattern (buildTransformation n [a]) sm1 sp) \/
+In a0 (instantiatePattern (buildTransformation n l) sm1 sp).
+Proof.
+intros.
 split.
-- unfold allTuples in *. crush.
-- admit.
-
-unfold applyPattern in H7.
-unfold applyRuleOnPattern in H7.
-unfold applyIterationOnPattern in H7.
-unfold applyElementOnPattern in H7.
-unfold matchPattern in H7.
-simpl in H7.
-destruct (matchRuleOnPattern x0 sm2 x1).
-remember ((fun r : Rule =>
-           flat_map
-             (fun iter : nat =>
-              flat_map
-                (fun o : OutputPatternElement =>
-                 match evalOutputPatternElementExpr sm2 x1 iter o with
-                 | return l =>
-                     optionListToList
-                       (evalOutputPatternLinkExpr sm2 x1 l iter
-                          (trace (buildTransformation (Transformation_getArity tr) [x0])
-                             sm2) o)
-                 | None => nil
-                 end) (Rule_getOutputPatternElements r))
-             (seq 0 (evalIteratorExpr r sm2 x1)))) as f.
-
-unfold applyPattern.
-unfold applyRuleOnPattern.
-unfold applyIterationOnPattern.
-unfold applyElementOnPattern.
++ intro.
+  unfold instantiatePattern in H.
+  unfold instantiateRuleOnPattern  in H.
+  unfold instantiateIterationOnPattern in H.
+  unfold matchPattern in H.
+  simpl in H.
+  unfold instantiatePattern.
+  unfold instantiateRuleOnPattern.
+  unfold instantiateIterationOnPattern.
+  unfold matchPattern.
+  simpl. 
+  remember ((fun r : Rule =>
+  flat_map
+    (fun iter : nat =>
+     flat_map
+       (fun o : OutputPatternElement =>
+        optionToList (instantiateElementOnPattern o sm1 sp iter))
+       (Rule_getOutputPatternElements r))
+    (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
+  remember (filter (fun r : Rule => matchRuleOnPattern r sm1 sp) l) as l1.
+  destruct (matchRuleOnPattern a sm1 sp) eqn: ca.
+  - apply in_flat_map in H.
+    destruct H. destruct H.
+    destruct H.
+    -- rewrite <- H in H0. left. apply in_flat_map. exists x. crush.
+    -- right. apply in_flat_map. exists x. crush.
+  - right. auto.
++ intro.
+unfold instantiatePattern.
+unfold instantiateRuleOnPattern.
+unfold instantiateIterationOnPattern.
 unfold matchPattern.
-simpl.
- *)
+simpl. 
+remember ((fun r : Rule =>
+flat_map
+  (fun iter : nat =>
+   flat_map
+     (fun o : OutputPatternElement =>
+      optionToList (instantiateElementOnPattern o sm1 sp iter))
+     (Rule_getOutputPatternElements r))
+  (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
+remember (filter (fun r : Rule => matchRuleOnPattern r sm1 sp) l) as l1.
+destruct (matchRuleOnPattern a sm1 sp) eqn: ca.
+++ destruct H.
+- unfold instantiatePattern in H.
+unfold instantiateRuleOnPattern in H.
+unfold instantiateIterationOnPattern in H.
+unfold matchPattern in H.
+simpl in H.
+rewrite ca in H.
+rewrite <- Heqf in H.
+apply in_flat_map in H. destruct H.
+apply in_flat_map. exists x. split. crush. crush. 
+- unfold instantiatePattern in H.
+unfold instantiateRuleOnPattern in H.
+unfold instantiateIterationOnPattern in H.
+unfold matchPattern in H.
+simpl in H.
+rewrite <- Heqf in H.
+apply in_flat_map in H.
+destruct H.
+apply in_flat_map.
+exists x. split; crush.
+++ destruct H. 
+unfold instantiatePattern in H.
+unfold instantiateRuleOnPattern in H.
+unfold instantiateIterationOnPattern in H.
+unfold matchPattern in H.
+simpl in H.
+rewrite ca in H.
+rewrite <- Heqf in H.
+simpl in H. inversion H.
+unfold instantiatePattern in H.
+unfold instantiateRuleOnPattern in H.
+unfold instantiateIterationOnPattern in H.
+unfold matchPattern in H.
+simpl in H.
+rewrite <- Heqf in H.
+apply in_flat_map in H.
+destruct H.
+apply in_flat_map.
+exists x. split; crush.
+Qed.
+
+
 
 
 
