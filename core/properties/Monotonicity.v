@@ -48,19 +48,11 @@ intros sm1 sm2 sm_incl. split.
   apply in_flat_map in in_e. 
   destruct in_e as [r temp]. destruct temp as [in_r in_e].
 
-  assert (In r (Transformation_getRules tr)) as in_tr.
-  { unfold matchPattern in in_r. apply filter_In in in_r. crush. }
-
-  specialize (mono r in_tr sm1 sm2 sm_incl).
-  unfold TargetModel_incl in mono.
-  simpl in mono. destruct mono as [elem_incl link_incl]. clear link_incl.
-  unfold incl in elem_incl. specialize (elem_incl e).
-
   (* prove In e (exeucte tr sm1) -> In e (exeucte tr_singleton sm1) *)
   remember (buildTransformation (Transformation_getArity tr) [r]) as tr_singleton.
   assert (In e (flat_map (instantiatePattern tr_singleton sm1)
                (allTuples tr_singleton sm1))) as in_e_single.
-  { clear elem_incl.
+  { 
     apply in_flat_map. exists sp. split.
     - unfold allTuples in *. crush.
     - unfold instantiatePattern in *.
@@ -70,7 +62,17 @@ intros sm1 sm2 sm_incl. split.
       -- auto.
   }
 
+  (* by mono In e (exeucte tr_singleton sm1) -> 
+             In e (exeucte tr_singleton sm2) *)
+  assert (In r (Transformation_getRules tr)) as in_tr.
+  { unfold matchPattern in in_r. apply filter_In in in_r. crush. }
+  specialize (mono r in_tr sm1 sm2 sm_incl).
+  unfold TargetModel_incl in mono.
+  simpl in mono. destruct mono as [elem_incl link_incl]. clear link_incl.
+  unfold incl in elem_incl. specialize (elem_incl e).
+
   (* prove In e (exeucte tr_singleton sm2) -> In e (exeucte tr sm2) *)
+  rewrite <- Heqtr_singleton in elem_incl.
   specialize (elem_incl in_e_single). clear in_e_single.
   apply in_flat_map in elem_incl.
   destruct elem_incl as [sp2 temp]. destruct temp as [in_sp2 in_e_sm2].
@@ -86,68 +88,40 @@ intros sm1 sm2 sm_incl. split.
     -- auto.
 
 + (* mono_lift_links *)
-(* rewrite Forall_forall in H.
-  unfold monotonicity in H.
 
-  unfold execute.
-  simpl.
-  unfold incl.
-  intros.
+  (* prove In l (exeucte tr sm1) *)
+  rewrite Forall_forall in mono. unfold monotonicity in mono. 
+  unfold execute. simpl. unfold incl. intros l in_sm1.
+  apply in_flat_map in in_sm1. 
+  destruct in_sm1 as [sp temp]. destruct temp as [in_sp in_l_sm1].
+  apply in_flat_map in in_l_sm1. 
+  destruct in_l_sm1 as [r temp]. destruct temp as [in_r in_l_sm1].
 
-  apply in_flat_map in H1.
-  destruct H1. destruct H1.
-  apply in_flat_map in H2.
-  destruct H2. destruct H2.
-
-  assert (In x0 (Transformation_getRules tr)).
-  { unfold matchPattern in H2. apply filter_In in H2. crush. }
-
-  specialize (H x0 H4 sm1 sm2 H0).
-
-  unfold TargetModel_incl in H.
-  unfold incl in H.
-  destruct H.
-  specialize (H5 a).
-  clear H.
-
-assert (In a
-       (allModelLinks
-          (execute (buildTransformation (Transformation_getArity tr) [x0]) sm1))).
-{ 
-
-intros.
-unfold execute.
-simpl.
-apply in_flat_map.
-exists x.
-split.
-- unfold allTuples in *. crush.
-- apply in_flat_map.
-exists x0.
-split.
-unfold matchPattern in *.
-apply filter_In in H2.
-apply filter_In.
-crush.
-apply in_flat_map.
-apply in_flat_map in H3.
-destruct H3. 
-destruct H.
-exists x1. crush.
-apply in_flat_map.
-apply in_flat_map in H3.
-destruct H3. destruct H3.
-exists x2. crush. 
-unfold applyElementOnPattern in *.
-destruct (evalOutputPatternElementExpr sm1 x x1 x2). 
-+ admit.  (* <-- trace *)
-+ auto.
-
-}
-
-*)
-
+  (* prove In l (exeucte tr sm1) -> In l (exeucte tr_singleton sm1) *)
+  remember (buildTransformation (Transformation_getArity tr) [r]) as tr_singleton.
+  assert (In l (flat_map (applyPattern tr_singleton sm1)
+               (allTuples tr_singleton sm1))) as in_l_single.
+  { apply in_flat_map. exists sp. split.
+    - unfold allTuples in *. crush.
+    - unfold applyPattern in *.
+      apply in_flat_map. exists r. split.
+      -- unfold matchPattern in *. 
+         apply filter_In. apply filter_In in in_r. crush.
+      -- apply in_flat_map in in_l_sm1. 
+         destruct in_l_sm1 as [it temp]. destruct temp as [it_in in_l_sm1].
+         apply in_flat_map. exists it. split.
+         + auto.
+         + apply in_flat_map in in_l_sm1.
+           destruct in_l_sm1 as [ope temp]. destruct temp as [ope_in in_l_sm1].
+           apply in_flat_map. exists ope. split.
+           ++ auto.
+           ++ unfold applyElementOnPattern in *.
+              destruct (evalOutputPatternElementExpr sm1 sp it). 
+(* not hold: 
+  (evalOutputPatternLinkExpr sm1 sp t it (trace tr sm1) ope) -> 
+  (evalOutputPatternLinkExpr sm1 sp t it (trace tr_singleton sm1) ope) *)
 Abort.
+
 
 
 
