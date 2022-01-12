@@ -16,18 +16,119 @@
 
  **)
 
- Require Import String.
- Require Import List.
- Require Import Multiset.
- Require Import ListSet.
 
+ Require Import core.Semantics.
+ Require Import core.Syntax.
  Require Import core.Model.
+ Require Import core.TransformationConfiguration.
+ Require Import String.
+ Require Import EqNat.
+ Require Import List.
+ Require Import Expressions.
  Require Import core.utils.Utils.
- Require Import core.Engine.
+ Require Import PeanoNat.
+ Require Import Lia.
+ Require Import FunctionalExtensionality.
 
 (*********************************************************)
 (** * Metatheorems for relational Transformation Engines *)
 (*********************************************************)
+
+
+
+(* decompose instantiatePattern results *)
+Lemma instantiatePattern_distributive:
+forall (tc: TransformationConfiguration),
+  forall a0 sp sm1 n a l,
+In a0 (instantiatePattern (buildTransformation n (a :: l)) sm1 sp) <->
+In a0 (instantiatePattern (buildTransformation n [a]) sm1 sp) \/
+In a0 (instantiatePattern (buildTransformation n l) sm1 sp).
+Proof.
+intros.
+split.
++ intro.
+  unfold instantiatePattern in H.
+  unfold instantiateRuleOnPattern  in H.
+  unfold instantiateIterationOnPattern in H.
+  unfold matchPattern in H.
+  simpl in H.
+  unfold instantiatePattern.
+  unfold instantiateRuleOnPattern.
+  unfold instantiateIterationOnPattern.
+  unfold matchPattern.
+  simpl. 
+  remember ((fun r : Rule =>
+  flat_map
+    (fun iter : nat =>
+     flat_map
+       (fun o : OutputPatternElement =>
+        optionToList (instantiateElementOnPattern o sm1 sp iter))
+       (Rule_getOutputPatternElements r))
+    (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
+  remember (filter (fun r : Rule => matchRuleOnPattern r sm1 sp) l) as l1.
+  destruct (matchRuleOnPattern a sm1 sp) eqn: ca.
+  - apply in_flat_map in H.
+    destruct H. destruct H.
+    destruct H.
+    -- rewrite <- H in H0. left. apply in_flat_map. exists x. crush.
+    -- right. apply in_flat_map. exists x. crush.
+  - right. auto.
++ intro.
+unfold instantiatePattern.
+unfold instantiateRuleOnPattern.
+unfold instantiateIterationOnPattern.
+unfold matchPattern.
+simpl. 
+remember ((fun r : Rule =>
+flat_map
+  (fun iter : nat =>
+   flat_map
+     (fun o : OutputPatternElement =>
+      optionToList (instantiateElementOnPattern o sm1 sp iter))
+     (Rule_getOutputPatternElements r))
+  (seq 0 (evalIteratorExpr r sm1 sp)))) as f.
+remember (filter (fun r : Rule => matchRuleOnPattern r sm1 sp) l) as l1.
+destruct (matchRuleOnPattern a sm1 sp) eqn: ca.
+++ destruct H.
+- unfold instantiatePattern in H.
+unfold instantiateRuleOnPattern in H.
+unfold instantiateIterationOnPattern in H.
+unfold matchPattern in H.
+simpl in H.
+rewrite ca in H.
+rewrite <- Heqf in H.
+apply in_flat_map in H. destruct H.
+apply in_flat_map. exists x. split. crush. crush. 
+- unfold instantiatePattern in H.
+unfold instantiateRuleOnPattern in H.
+unfold instantiateIterationOnPattern in H.
+unfold matchPattern in H.
+simpl in H.
+rewrite <- Heqf in H.
+apply in_flat_map in H.
+destruct H.
+apply in_flat_map.
+exists x. split; crush.
+++ destruct H. 
+unfold instantiatePattern in H.
+unfold instantiateRuleOnPattern in H.
+unfold instantiateIterationOnPattern in H.
+unfold matchPattern in H.
+simpl in H.
+rewrite ca in H.
+rewrite <- Heqf in H.
+simpl in H. inversion H.
+unfold instantiatePattern in H.
+unfold instantiateRuleOnPattern in H.
+unfold instantiateIterationOnPattern in H.
+unfold matchPattern in H.
+simpl in H.
+rewrite <- Heqf in H.
+apply in_flat_map in H.
+destruct H.
+apply in_flat_map.
+exists x. split; crush.
+Qed.
 
 (** ** maxArity **)
 
