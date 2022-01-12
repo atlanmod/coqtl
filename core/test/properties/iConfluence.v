@@ -30,20 +30,51 @@ Require Import FunctionalExtensionality.
 Section iConfluence.
 Context (tc: TransformationConfiguration).
 
-
-(* can't use nodup cause it requires deciability on Rule *)
-Lemma eq_dec : forall a b : Rule, {a = b} + {a <> b}.
+(* step.0 put source and target element deciability in a type class *)
+Lemma TargetModelElement_dec : 
+  forall a b : TargetModelElement, {a = b} + {a <> b}.
 Proof.
 Admitted.
 
-Scheme Equality for list.
-Check list_beq.
+Lemma SourceModelElement_dec : 
+  forall a b : SourceModelElement, {a = b} + {a <> b}.
+Proof.
+Admitted.
 
+(* step.1 trace deciability *)
+Lemma Trace_dec : forall a b : TraceLink, {a = b} + {a <> b}.
+Proof.
+repeat decide equality.
+apply TargetModelElement_dec.
+apply SourceModelElement_dec.
+Qed.
 
-
+(* step.2 Nodup (trace [r] sm) *)
+(* proposal: well formed rule *)
 (* a rule is well formed if all its outpatternname are different *)
+Lemma nodup_single_rule:
+forall r sm sp,
+   nodup Trace_dec (traceRuleOnPattern r sm sp) = (traceRuleOnPattern r sm sp).
+Proof.
+intros r sm sp.
+unfold nodup.
+induction (traceRuleOnPattern r sm sp).
+auto.
+simpl.
+destruct (in_dec Trace_dec a l).
+- simpl. admit.
+-
+Admitted.
 
-(* if a well formed rule r1 is not in tr, then all r0 in tr, r0's outpatternname are different from r1 *)
+  
+
+
+(* step.3 .
+ *)
+
+(* step.4 Nodup l /\ Nodup l' /\  forall e, In e l -> ~ In e l' ->
+  Nodup l ++ l'
+ *)
 
 
 (* Set semantics: we think that the list of rules represents a set (we don't allow two rules to have the same name)*)
