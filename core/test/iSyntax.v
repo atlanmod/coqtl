@@ -93,12 +93,6 @@ Definition Transformation_getArity (x : Transformation) : nat :=
 Definition Transformation_getRules (x : Transformation) : list Rule :=
   match x with buildTransformation _ y => y end.
 
-
-Definition rule_eq r1 r2 :=
-  Rule_getGuardExpr r1 = Rule_getGuardExpr r2 ->
-  Rule_getOutputPatternElements r1 = Rule_getOutputPatternElements r2.
-
-
 End Syntax.
 
 (* begin hide *)
