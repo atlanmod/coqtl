@@ -38,16 +38,7 @@ Repository structure
 
 Compilation
 ------
-<<<<<<< HEAD
 See [compilation](https://github.com/atlanmod/CoqTL/wiki/Compiling-CoqTL) on the wiki.
-=======
-CoqTL
-* **Coq v.8.11.1**
-
-EMF2Coq Code Generator
-* **EMF v.2.12** 
-* **XTEND v.2.10**
->>>>>>> 6cbea525ec1cbdd6b95ed3fa624e831797093871
 
 Issues
 ------
@@ -55,12 +46,8 @@ If you experience issues installing or using CoqTL, you can submit an issue on [
 
 > Massimo Tisi: massimo.tisi@imt-atlantique.fr
 
-<<<<<<< HEAD
 > Zheng Cheng: zheng.cheng@inria.fr
 
 License
 ------
 CoqTL itself is licensed under Eclipse Public License (v2). See LICENSE.md in the root directory for details. Third party libraries are under independent licenses, see their source files for details.
-=======
-> Zheng Cheng: zheng.cheng@imt-atlantique.fr
->>>>>>> 6cbea525ec1cbdd6b95ed3fa624e831797093871
