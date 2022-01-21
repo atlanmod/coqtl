@@ -28,7 +28,6 @@ lia.cache
 nia.cache
 nlia.cache
 nra.cache
-
 Makefile
 Makefile.conf
 CoqMakefile.conf
