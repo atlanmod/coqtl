@@ -1,0 +1,149 @@
+-- @name		ATOM 1.0
+-- @version		1.2
+-- @domains	
+-- @authors		David Touzet (david.touzet@univ-nantes.fr)
+-- @date		2005/11/01
+-- @Modified by Youssef Srour (srour.youssef@gmail.com)  24/06/2006
+-- @description	This metamodel describes ATOM. Atom is an XML-based document format for the syndication of web content such as weblogs and news headlines, and an HTTP-based protocol for editing weblogs based on the format.
+-- @see			http://www.atomenabled.org/developers/syndication/, http://en.wikipedia.org/wiki/Atom_%28standard%29
+
+package ATOM {
+	
+-- Begin Class ATOM
+	class ATOM {
+		attribute title : String;
+		attribute id : String;
+		attribute subtitle[0-1] : String;
+		attribute rights[0-1] : String;
+		attribute icon[0-1] : String;
+		attribute logo[0-1] : String;
+		attribute lastUpdate  : String;
+		
+		reference links[1-*] container : Link oppositeOf atom;
+		reference generator[0-1] container : Generator;
+		reference categories[0-*] container : Category oppositeOf atom;
+		reference authors[1-*] container : Author oppositeOf atom;
+		reference contributors[*] container : Contributor;
+		reference entrie[*] container : Entry oppositeOf atom ;
+	}-- End Class ATOM
+	
+	
+-- Begin Class Entry
+	class Entry {
+		attribute title : String;
+		attribute id : String;
+		attribute rights[0-1] : String;
+		attribute summary[0-1] : String;
+		attribute published[0-1] : String;
+		attribute lastUpdate : String;
+		
+		reference links[1-*] container : Link oppositeOf entry;
+		reference source[0-1] container : Source;		
+		reference content[0-1] container : Content;
+		reference categories[*] container : Category oppositeOf entry;
+		reference authors[1-*] container : Author ;
+		reference contributors[*] container : Contributor;
+		reference atom : ATOM oppositeOf entrie;
+	}-- End Class Entry
+
+-- Begin Class Source
+	class Source {
+		attribute id[0-1] : String;
+		attribute icon[0-1] : String;
+		attribute logo[0-1] : String;
+		attribute rights[0-1] : String;
+		attribute title[0-1] : String;
+		attribute subtitle[0-1] : String;
+		attribute lastUpdate[0-1] : String;
+		
+		reference links[*] container : Link;		
+		reference generator[0-1] container : Generator;
+		reference contributors[*] container : Contributor;
+		reference categories[*] container : Category;
+		reference author[0-1] container : Author;
+	}-- End Class Source
+
+-- Begin Class Content
+	abstract class Content {
+		attribute type[0-1] : String;
+		attribute mode[0-1] : String;
+		attribute text[0-1] : String;
+	}-- End Class Content
+
+-- Begin Class InLineTextContent
+	class InLineTextContent extends Content {
+	}-- End Class InLineTextContent
+
+-- Begin Class InLineXHTMLContent
+	class InLineXHTMLContent extends Content {
+	}-- End Class InLineXHTMLContent
+
+-- Begin Class InLineOtherContent
+	class InLineOtherContent extends Content {
+	}-- End Class InLineOtherContent
+
+-- Begin Class OutOfLineContent
+	class OutOfLineContent extends Content {
+		attribute src : String;
+	}-- End Class OutOfLineContent
+
+-- Begin Class Generator
+	class Generator {
+		attribute uri[0-1] : String;
+		attribute version[0-1] : String;
+		attribute name : String;
+	}-- End Class Generator
+
+-- Begin Class Category
+	class Category {
+		attribute term : String;
+		attribute scheme[0-1] : String;
+		attribute label[0-1] : String;
+		reference atom : ATOM oppositeOf categories;
+		reference entry : Entry oppositeOf categories;
+	}-- End Class Category
+
+-- Begin Class Link
+	class Link {
+		
+		attribute rel[0-1] : String;
+		attribute hrefl[0-1] : String;
+		attribute type[0-1] : String;
+		attribute hreflang[0-1] : String;
+		attribute title[0-1] : String;
+		attribute lenght[0-1] : Integer;
+		reference atom : ATOM oppositeOf links;
+		reference entry : Entry oppositeOf links;
+	}-- End Class Link
+
+-- Begin Class Person
+	class Person {
+		attribute name : String;
+		attribute uri[0-1] : String;
+		attribute email[0-1] : String;
+		
+	}-- End Class Person
+
+-- Begin Class Author
+	class Author extends Person {
+    	reference atom : ATOM oppositeOf authors;
+	}-- End Class Author
+
+-- Begin Class Contributor
+	class Contributor extends Person {
+	}-- End Class Contributor
+
+--	class Date {
+--		attribute day : Integer;
+--		attribute month : Integer;
+--		attribute year : Integer;
+--		attribute hours : Integer;
+--		attribute minutes : Integer;
+--		attribute seconds : Integer;
+--	}
+}
+
+package PrimitiveTypes {
+	datatype String;
+	datatype Integer;
+}

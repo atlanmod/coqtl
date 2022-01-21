@@ -1,5 +1,3 @@
-.project
-
 .*.aux
 *.a
 *.cma
@@ -30,5 +28,11 @@ lia.cache
 nia.cache
 nlia.cache
 nra.cache
-*.vos
+
+Makefile
+Makefile.conf
+CoqMakefile.conf
+*.d
 *.vok
+*.vos
+.vscode/settings.json
