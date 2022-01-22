@@ -16,6 +16,14 @@ Require Import FunctionalExtensionality.
 (** * Confluence                                             *)
 (*************************************************************)
 
+
+Definition well_form  {tc: TransformationConfiguration} tr :=
+  forall r1 r2 sm sp, 
+    In r1 tr /\ In r2 tr/\
+    matchRuleOnPattern r1 sm sp = true /\
+    matchRuleOnPattern r2 sm sp = true ->
+      r1 = r2.
+
 (* Multiset semantics: we think that the list of rules represents a multiset/bag*)
 (* Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
   forall (r:Rule),
@@ -29,8 +37,15 @@ Require Import FunctionalExtensionality.
 (* Set semantics: we think that the list of rules represents a set (we don't allow two rules to have the same name)*)
 Definition Transformation_equiv {tc: TransformationConfiguration} (t1 t2: Transformation) := 
   (Transformation_getArity t1 = Transformation_getArity t2) /\ 
-  forall (r:Rule),
-  In r (Transformation_getRules t1) <-> In r (Transformation_getRules t2).
+  set_eq (Transformation_getRules t1) (Transformation_getRules t2) /\
+  well_form (Transformation_getRules t1) /\ 
+  well_form (Transformation_getRules t2).
+
+Lemma trace_eq {tc: TransformationConfiguration} :
+  forall  t1 t2 sm,
+   Transformation_equiv t1 t2 ->
+   (trace t1 sm) = (trace t2 sm).
+
 
 Definition TargetModel_equiv {tc: TransformationConfiguration} (m1 m2: TargetModel) :=
   forall (e: TargetModelElement) (l: TargetModelLink),
