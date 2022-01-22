@@ -1,6 +1,6 @@
 # CoqTL
 
-CoqTL allows users to write model transformations, specify and prove theorems on their behavior in Coq. 
+CoqTL allows users to develop model transformation engines, write model transformations, and prove engine/transformation correctness in Coq. 
 
 ## Organization of the repository 
 
