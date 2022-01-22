@@ -12,7 +12,7 @@ CoqTL allows users to write model transformations, specify and prove theorems on
 ## Installation
 
 CoqTL installation is tested under:
-* Ubuntu x.x and Windows 10 (ensure `make` is installed)
+* Ubuntu 18.04 and Windows 10 (ensure `make` is installed)
 * coq 8.14.0
 
 To install CoqTL:
