@@ -12,8 +12,9 @@ CoqTL allows users to develop model transformation engines, write model transfor
 ## Installation
 
 CoqTL installation is tested under:
-* Ubuntu 18.04 and Windows 10 (ensure `make` is installed)
-* coq 8.14.0
+* Ubuntu 18.04 (require `make`, `curl`, `git` packages)
+* [opam 2.1.2](https://opam.ocaml.org/doc/Install.html)
+* [coq 8.15.0](https://coq.inria.fr/opam-using.html)
 
 To install CoqTL:
 ```
