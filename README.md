@@ -6,15 +6,12 @@ CoqTL allows users to develop model transformation engines, write model transfor
 
 * Folder [core](https://github.com/atlanmod/coqtl/tree/master/core) - contains the source files for CoqTL engine.
 * Folder [transformations](https://github.com/atlanmod/coqtl/tree/master/transformations) - contains sample CoqTL transformations and their proofs.
-* Folder [libs](https://github.com/atlanmod/coqtl/tree/master/libs) - contains a code generator to translate `xmi` and `ecore` files into Coq.
+* Folder [libs](https://github.com/atlanmod/coqtl/tree/master/libs) - contains a code generator to translate `xmi` and `ecore` files into Coq. While not necessary to run CoqTL, the sources of the generator are in the [coqtl-model-import](https://github.com/atlanmod/coqtl-model-import) repository.
 * Folder [.vscode](https://github.com/atlanmod/coqtl/tree/master/.vscode) - contains a task file for vscode user to `recompile`, `clean`, `execute code generator`.
 
 ## Installation
 
-CoqTL installation is tested under:
-* Ubuntu 18.04 (require `make`, `curl`, `git` packages)
-* [opam 2.1.2](https://opam.ocaml.org/doc/Install.html)
-* [coq 8.15.0](https://coq.inria.fr/opam-using.html)
+CoqTL requires a working installation of [Coq](https://coq.inria.fr/) (`coqc` and `coq_makefile` in the path). It is tested under Coq 8.15.0.
 
 To install CoqTL:
 ```
@@ -23,9 +20,10 @@ cd coqtl
 . compile.sh
 ```
 
-## CoqTL History
+## Publications
 
-The `master` branch host the latest stable version of CoqTL. For earlier versions, please consult the following papers and commits for more information:
+Here are the publications describing CoqTL and the pointer to the version of CoqTL they refer to. 
+
 * Massimo Tisi, Zheng Cheng. CoqTL: an Internal DSL for Model Transformation in Coq. ICMT'2018. [[pdf]](https://hal.inria.fr/hal-01828344/document) [[git]](https://github.com/atlanmod/CoqTL/tree/eee344e)
 * Zheng Cheng, Massimo Tisi, Rémi Douence. CoqTL: A Coq DSL for Rule-Based Model Transformation. SOSYM'2019. [[pdf]](https://hal.archives-ouvertes.fr/hal-02333564/document) [[git]](https://github.com/atlanmod/CoqTL/tree/eee344e)
 * Zheng Cheng, Massimo Tisi, Joachim Hotonnier. Certifying a Rule-Based Model Transformation Engine for Proof Preservation. MODELS'2020. [[pdf]](https://hal.inria.fr/hal-02907622/document) [[git]](https://github.com/atlanmod/CoqTL/tree/2a8cea5)
@@ -35,9 +33,8 @@ The `master` branch host the latest stable version of CoqTL. For earlier version
 
 If you experience issues installing or using CoqTL, you can submit an issue on [github](https://github.com/atlanmod/coqtl/issues) or contact us at:
 
-> Massimo Tisi: massimo.tisi@imt-atlantique.fr
-
-> Zheng Cheng: zheng.cheng@inria.fr
+* Massimo Tisi: massimo.tisi@imt-atlantique.fr
+* Zheng Cheng: zheng.cheng@inria.fr
 
 ## License
 
