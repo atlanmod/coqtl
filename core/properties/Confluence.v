@@ -45,6 +45,14 @@ Lemma trace_eq {tc: TransformationConfiguration} :
   forall  t1 t2 sm,
    Transformation_equiv t1 t2 ->
    (trace t1 sm) = (trace t2 sm).
+Proof.
+  intros.
+  destruct t1.
+  destruct t2.
+  induction l.
+  - unfold Transformation_equiv in H.
+    admit.
+Admitted. 
 
 
 Definition TargetModel_equiv {tc: TransformationConfiguration} (m1 m2: TargetModel) :=
