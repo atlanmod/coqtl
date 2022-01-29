@@ -111,4 +111,4 @@ transformations/Families2Persons/Families2Persons.v
 transformations/Moore2Mealy/Moore.v
 transformations/Moore2Mealy/Mealy.v
 transformations/Moore2Mealy/Moore2Mealy.v
-#transformations/Moore2Mealy/tests/sampleMoore.v
+transformations/Moore2Mealy/tests/sampleMoore.v
