@@ -11,8 +11,8 @@ Require Import core.modeling.ModelingMetamodel.
 Require Import core.modeling.ConcreteExpressions.
 Require Import core.modeling.Parser.
 
-Require Import Moore2Mealy.Moore.
-Require Import Moore2Mealy.Mealy.
+Require Import transformations.Moore2Mealy.Moore.
+Require Import transformations.Moore2Mealy.Mealy.
 
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
