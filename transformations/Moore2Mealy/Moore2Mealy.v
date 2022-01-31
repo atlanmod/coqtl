@@ -31,13 +31,13 @@ Definition Moore2Mealy' :=
       rule "state"
       from [Moore.StateClass]
       to [
-        elem [Moore.StateClass] Mealy.StateClass "s'"
+        elem [Moore.StateClass] Mealy.StateClass "s"
           (fun _ _ s => BuildState (Moore.State_getName s)) nil
       ];
       rule "transition"
       from [Moore.TransitionClass]
       to [
-        elem [Moore.TransitionClass] Mealy.TransitionClass "t'"
+        elem [Moore.TransitionClass] Mealy.TransitionClass "t"
           (fun _ m t => BuildTransition 
                           (Moore.Transition_getInput t)
                           (value (option_map Moore.State_getOutput (Moore.Transition_getTarget t m))))
@@ -46,13 +46,13 @@ Definition Moore2Mealy' :=
               Mealy.TransitionSourceReference
               (fun tls _ m moore_tr mealy_tr =>
                 maybeBuildTransitionSource mealy_tr
-                  (maybeResolve tls m "s'" Mealy.StateClass 
+                  (maybeResolve tls m "s" Mealy.StateClass 
                     (maybeSingleton (Moore.Transition_getSourceObject moore_tr m))));
             link [Moore.TransitionClass] Mealy.TransitionClass 
               Mealy.TransitionTargetReference
               (fun tls _ m moore_tr mealy_tr =>
                 maybeBuildTransitionTarget mealy_tr
-                  (maybeResolve tls m "t'" Mealy.StateClass 
+                  (maybeResolve tls m "s" Mealy.StateClass 
                     (maybeSingleton (Moore.Transition_getTargetObject moore_tr m))))
           ]
       ]
