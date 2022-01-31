@@ -32,7 +32,7 @@ Definition Moore2Mealy :=
                   (maybeResolve tls m "s" Mealy.StateClass 
                     (maybeSingleton (Moore.Transition_getTargetObject moore_tr m))))
           ]
-      ]
+    ]
 ].
 ```
 
