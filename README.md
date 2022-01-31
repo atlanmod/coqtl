@@ -2,7 +2,7 @@
 
 CoqTL allows users to develop model transformation engines, write model transformations, and prove engine/transformation correctness in Coq. 
 
-```
+```coq
 Definition Moore2Mealy :=
     transformation
     [
@@ -16,9 +16,10 @@ Definition Moore2Mealy :=
       from [Moore.TransitionClass]
       to [
         elem "t"
-          (fun _ m t => BuildTransition 
-                          (Moore.Transition_getInput t)
-                          (value (option_map Moore.State_getOutput (Moore.Transition_getTarget t m))))
+          (fun _ m t => 
+            BuildTransition 
+              (Moore.Transition_getInput t)
+              (value (option_map Moore.State_getOutput (Moore.Transition_getTarget t m))))
           [
             link
               (fun tls _ m moore_tr mealy_tr =>
