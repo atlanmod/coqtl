@@ -14,6 +14,7 @@ Definition Moore2Mealy :=
       elem "s"
         (fun _ _ s => BuildState (Moore.State_getName s)) nil
     ];
+    
     rule "transition"
     from [Moore.TransitionClass]
     to [
