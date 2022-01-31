@@ -40,10 +40,10 @@ Definition Moore2Mealy :=
 
 ## Organization of the repository 
 
-* Folder [core](https://github.com/atlanmod/coqtl/tree/master/core) - contains the source files for CoqTL engine.
-* Folder [transformations](https://github.com/atlanmod/coqtl/tree/master/transformations) - contains sample CoqTL transformations and their proofs.
-* Folder [libs](https://github.com/atlanmod/coqtl/tree/master/libs) - contains a code generator to translate `xmi` and `ecore` files into Coq. While not necessary to run CoqTL, the sources of the generator are in the [coqtl-model-import](https://github.com/atlanmod/coqtl-model-import) repository.
-* Folder [.vscode](https://github.com/atlanmod/coqtl/tree/master/.vscode) - contains a task file for vscode user to `recompile`, `clean`, `execute code generator`.
+* [core/](https://github.com/atlanmod/coqtl/tree/master/core) - contains the source files of the CoqTL engine.
+* [transformations/](https://github.com/atlanmod/coqtl/tree/master/transformations) - contains sample CoqTL transformations and associated proofs.
+* [libs/](https://github.com/atlanmod/coqtl/tree/master/libs) - contains an importer that translates `ecore` metamodels and `xmi` models into Coq. While not necessary to run CoqTL, the sources of the importer are in the [coqtl-model-import](https://github.com/atlanmod/coqtl-model-import) repository.
+* [.vscode/](https://github.com/atlanmod/coqtl/tree/master/.vscode) - define convenience tasks for vscode to `recompile`, `clean`, `execute code generator`.
 
 ## Installation
 
@@ -53,7 +53,7 @@ To install CoqTL:
 ```
 git clone https://github.com/atlanmod/coqtl.git
 cd coqtl
-. compile.sh
+./compile.sh
 ```
 
 ## Publications
