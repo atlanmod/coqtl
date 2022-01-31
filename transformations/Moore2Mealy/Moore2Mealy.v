@@ -25,12 +25,6 @@ Instance Moore2MealyModelingTransformationConfiguration : ModelingTransformation
 
 Open Scope coqtl.
 
-Definition MooreTransition_getTargetOutput transition m :=  
-  match (Moore.Transition_getTarget transition m) with
-  | Some target => (Moore.State_getOutput target)                 
-  | None => ""%string
-  end.
-
 Definition Moore2Mealy' :=
     transformation
     [
@@ -45,8 +39,8 @@ Definition Moore2Mealy' :=
       to [
         elem [Moore.TransitionClass] Mealy.TransitionClass "t'"
           (fun _ m t => BuildTransition 
-                          (Moore.Transition_getInput t) 
-                          (MooreTransition_getTargetOutput t m))
+                          (Moore.Transition_getInput t)
+                          (value (option_map Moore.State_getOutput (Moore.Transition_getTarget t m))))
           [
             link [Moore.TransitionClass] Mealy.TransitionClass 
               Mealy.TransitionSourceReference
@@ -58,7 +52,7 @@ Definition Moore2Mealy' :=
               Mealy.TransitionTargetReference
               (fun tls _ m moore_tr mealy_tr =>
                 maybeBuildTransitionTarget mealy_tr
-                  (maybeResolve tls m "s'" Mealy.StateClass 
+                  (maybeResolve tls m "t'" Mealy.StateClass 
                     (maybeSingleton (Moore.Transition_getTargetObject moore_tr m))))
           ]
       ]
