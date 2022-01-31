@@ -2,7 +2,7 @@
 
 CoqTL is an internal language in Coq, for writing rule-based model- and graph- transformations. The language is associated with a library to simplify proving transformation correctness in Coq. 
 
-For instance, here is the CoqTL code that transforms [Moore machines](https://en.wikipedia.org/wiki/Moore_machine) into [Mealy machines](https://en.wikipedia.org/wiki/Mealy_machine) (if we disregard the first output symbol of the Moore machine).
+For instance, the following CoqTL code transforms [Moore machines](https://en.wikipedia.org/wiki/Moore_machine) into [Mealy machines](https://en.wikipedia.org/wiki/Mealy_machine) (if we disregard the first output symbol of the Moore machine). The full code, including type annotations, is available [here](./transformations/Moore2Mealy/Moore2Mealy.v).
 
 ```coq
 Definition Moore2Mealy :=
