@@ -2,6 +2,39 @@
 
 CoqTL allows users to develop model transformation engines, write model transformations, and prove engine/transformation correctness in Coq. 
 
+```
+Definition Moore2Mealy :=
+    transformation
+    [
+      rule "state"
+      from [Moore.StateClass]
+      to [
+        elem "s"
+          (fun _ _ s => BuildState (Moore.State_getName s)) nil
+      ];
+      rule "transition"
+      from [Moore.TransitionClass]
+      to [
+        elem "t"
+          (fun _ m t => BuildTransition 
+                          (Moore.Transition_getInput t)
+                          (value (option_map Moore.State_getOutput (Moore.Transition_getTarget t m))))
+          [
+            link
+              (fun tls _ m moore_tr mealy_tr =>
+                maybeBuildTransitionSource mealy_tr
+                  (maybeResolve tls m "s" Mealy.StateClass 
+                    (maybeSingleton (Moore.Transition_getSourceObject moore_tr m))));
+            link 
+              (fun tls _ m moore_tr mealy_tr =>
+                maybeBuildTransitionTarget mealy_tr
+                  (maybeResolve tls m "s" Mealy.StateClass 
+                    (maybeSingleton (Moore.Transition_getTargetObject moore_tr m))))
+          ]
+      ]
+].
+```
+
 ## Organization of the repository 
 
 * Folder [core](https://github.com/atlanmod/coqtl/tree/master/core) - contains the source files for CoqTL engine.
