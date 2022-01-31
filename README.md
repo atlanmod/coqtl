@@ -41,10 +41,10 @@ Definition Moore2Mealy :=
 
 ## Organization of the repository 
 
-* [core/](https://github.com/atlanmod/coqtl/tree/master/core) - contains the source files of the CoqTL engine.
-* [transformations/](https://github.com/atlanmod/coqtl/tree/master/transformations) - contains sample CoqTL transformations and associated proofs.
-* [libs/](https://github.com/atlanmod/coqtl/tree/master/libs) - contains an importer that translates `ecore` metamodels and `xmi` models into Coq. While not necessary to run CoqTL, the sources of the importer are in the [coqtl-model-import](https://github.com/atlanmod/coqtl-model-import) repository.
-* [.vscode/](https://github.com/atlanmod/coqtl/tree/master/.vscode) - define convenience tasks for vscode to `recompile`, `clean`, `execute code generator`.
+* [core/](https://github.com/atlanmod/coqtl/tree/master/core) - source files of the CoqTL engine.
+* [transformations/](https://github.com/atlanmod/coqtl/tree/master/transformations) - sample CoqTL transformations and associated proofs.
+* [libs/](https://github.com/atlanmod/coqtl/tree/master/libs) - an importer that translates `ecore` metamodels and `xmi` models into Coq. While not necessary to run CoqTL, the sources of the importer are in the [coqtl-model-import](https://github.com/atlanmod/coqtl-model-import) repository.
+* [.vscode/](https://github.com/atlanmod/coqtl/tree/master/.vscode) - convenience tasks for vscode: `make`, `clean`, `ecore2v`,  `xmi2v`.
 
 ## Installation
 
