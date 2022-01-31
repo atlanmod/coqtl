@@ -52,13 +52,13 @@ Definition Moore2Mealy' :=
               Mealy.TransitionSourceReference
               (fun tls _ m moore_tr mealy_tr =>
                 maybeBuildTransitionSource mealy_tr
-                  (maybeResolve tls m "s" Mealy.StateClass 
+                  (maybeResolve tls m "s'" Mealy.StateClass 
                     (maybeSingleton (Moore.Transition_getSourceObject moore_tr m))));
             link [Moore.TransitionClass] Mealy.TransitionClass 
               Mealy.TransitionTargetReference
               (fun tls _ m moore_tr mealy_tr =>
                 maybeBuildTransitionTarget mealy_tr
-                  (maybeResolve tls m "s" Mealy.StateClass 
+                  (maybeResolve tls m "s'" Mealy.StateClass 
                     (maybeSingleton (Moore.Transition_getTargetObject moore_tr m))))
           ]
       ]
