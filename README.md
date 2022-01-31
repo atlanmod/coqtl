@@ -6,35 +6,35 @@ For instance, here is the CoqTL code that transforms [Moore machines](https://en
 
 ```coq
 Definition Moore2Mealy :=
-    transformation
-    [
-      rule "state"
-      from [Moore.StateClass]
-      to [
-        elem "s"
-          (fun _ _ s => BuildState (Moore.State_getName s)) nil
-      ];
-      rule "transition"
-      from [Moore.TransitionClass]
-      to [
-        elem "t"
-          (fun _ m t => 
-            BuildTransition 
-              (Moore.Transition_getInput t)
-              (value (option_map Moore.State_getOutput (Moore.Transition_getTarget t m))))
-          [
-            link
-              (fun tls _ m moore_tr mealy_tr =>
-                maybeBuildTransitionSource mealy_tr
-                  (maybeResolve tls m "s" Mealy.StateClass 
-                    (maybeSingleton (Moore.Transition_getSourceObject moore_tr m))));
-            link 
-              (fun tls _ m moore_tr mealy_tr =>
-                maybeBuildTransitionTarget mealy_tr
-                  (maybeResolve tls m "s" Mealy.StateClass 
-                    (maybeSingleton (Moore.Transition_getTargetObject moore_tr m))))
-          ]
-    ]
+  transformation
+  [
+    rule "state"
+    from [Moore.StateClass]
+    to [
+      elem "s"
+        (fun _ _ s => BuildState (Moore.State_getName s)) nil
+    ];
+    rule "transition"
+    from [Moore.TransitionClass]
+    to [
+      elem "t"
+        (fun _ m t => 
+          BuildTransition 
+            (Moore.Transition_getInput t)
+            (value (option_map Moore.State_getOutput (Moore.Transition_getTarget t m))))
+        [
+          link
+            (fun tls _ m moore_tr mealy_tr =>
+              maybeBuildTransitionSource mealy_tr
+                (maybeResolve tls m "s" Mealy.StateClass 
+                  (maybeSingleton (Moore.Transition_getSourceObject moore_tr m))));
+          link 
+            (fun tls _ m moore_tr mealy_tr =>
+              maybeBuildTransitionTarget mealy_tr
+                (maybeResolve tls m "s" Mealy.StateClass 
+                  (maybeSingleton (Moore.Transition_getTargetObject moore_tr m))))
+        ]
+  ]
 ].
 ```
 
