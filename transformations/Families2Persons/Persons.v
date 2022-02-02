@@ -201,6 +201,8 @@ Definition Person_downcastFemale (pe_arg : Person) (m : PersonsModel) : option F
 
 
 (* Typeclass Instances *)	
+
+#[export]
 Instance PersonsMetamodel_ElementSum : Sum PersonsMetamodel_Object PersonsMetamodel_Class :=
 {
 	denoteSubType := PersonsMetamodel_getTypeByClass;
@@ -208,6 +210,7 @@ Instance PersonsMetamodel_ElementSum : Sum PersonsMetamodel_Object PersonsMetamo
 	toSumType := PersonsMetamodel_toObject;
 }.
 
+#[export]
 Instance PersonsMetamodel_LinkSum : Sum PersonsMetamodel_Link PersonsMetamodel_Reference :=
 {
 	denoteSubType := PersonsMetamodel_getTypeByReference;
@@ -215,10 +218,12 @@ Instance PersonsMetamodel_LinkSum : Sum PersonsMetamodel_Link PersonsMetamodel_R
 	toSumType := PersonsMetamodel_toLink;
 }.
 
+#[export]
 Instance PersonsMetamodel_EqDec : EqDec PersonsMetamodel_Object := {
     eq_b := beq_PersonsMetamodel_Object;
 }.
 
+#[export]
 Instance PersonsMetamodel_Metamodel_Instance : 
 	Metamodel :=
 {
@@ -226,6 +231,7 @@ Instance PersonsMetamodel_Metamodel_Instance :
 	ModelLink := PersonsMetamodel_Link;
 }.
 
+#[export]
 Instance PersonsMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel PersonsMetamodel_Metamodel_Instance :=
 { 

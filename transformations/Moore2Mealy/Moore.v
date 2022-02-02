@@ -225,6 +225,7 @@ Definition Transition_getTargetObject (tr_arg : Transition) (m : MooreModel) : o
 
 
 (* Typeclass Instances *)	
+#[export]
 Instance MooreMetamodel_ElementSum : Sum MooreMetamodel_Object MooreMetamodel_Class :=
 {
 	denoteSubType := MooreMetamodel_getTypeByClass;
@@ -232,6 +233,7 @@ Instance MooreMetamodel_ElementSum : Sum MooreMetamodel_Object MooreMetamodel_Cl
 	toSumType := MooreMetamodel_toObject;
 }.
 
+#[export]
 Instance MooreMetamodel_LinkSum : Sum MooreMetamodel_Link MooreMetamodel_Reference :=
 {
 	denoteSubType := MooreMetamodel_getTypeByReference;
@@ -239,10 +241,12 @@ Instance MooreMetamodel_LinkSum : Sum MooreMetamodel_Link MooreMetamodel_Referen
 	toSumType := MooreMetamodel_toLink;
 }.
 
+#[export]
 Instance MooreMetamodel_EqDec : EqDec MooreMetamodel_Object := {
     eq_b := beq_MooreMetamodel_Object;
 }.
 
+#[export]
 Instance MooreMetamodel_Metamodel_Instance : 
 	Metamodel :=
 {
@@ -250,6 +254,7 @@ Instance MooreMetamodel_Metamodel_Instance :
 	ModelLink := MooreMetamodel_Link;
 }.
 
+#[export]
 Instance MooreMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel MooreMetamodel_Metamodel_Instance :=
 { 

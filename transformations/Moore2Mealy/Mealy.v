@@ -225,6 +225,7 @@ Definition Transition_getTargetObject (tr_arg : Transition) (m : MealyModel) : o
 
 
 (* Typeclass Instances *)	
+
 #[export]
 Instance MealyMetamodel_ElementSum : Sum MealyMetamodel_Object MealyMetamodel_Class :=
 {

@@ -30,6 +30,7 @@ Definition TTEq (a b : TTElem) :=
     | _,_ => false
     end.
 
+#[export]
 Instance TTEqDec : EqDec TTElem := {
     eq_b := TTEq
 }.
@@ -75,5 +76,6 @@ Inductive TTRef :=
 
 Definition evalTT (tt: Model TTElem TTRef) (ins: list bool) : bool := true.
 
+#[export]
 Instance TTM : Metamodel :=
   Build_Metamodel TTElem TTRef _.
