@@ -25,7 +25,7 @@
             "command": "java",
             "args": [
                 "-cp",
-                "./libs/fr.inria.atlanmod.coqtl.generators-all.jar",
+                "./libs/coqtl-model-import-all.jar",
                 "fr.inria.atlanmod.coqtl.ecore.core.EcoreGeneratorDriver",
                 "${relativeFile}"
             ],
@@ -37,7 +37,7 @@
             "command": "java",
             "args": [
                 "-jar",
-                "./libs/fr.inria.atlanmod.coqtl.generators-all.jar",
+                "./libs/coqtl-model-import-all.jar",
                 "${relativeFile}",
                 "${input:metamodelPath}"
             ],
