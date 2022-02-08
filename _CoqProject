@@ -66,9 +66,9 @@ core/basic/basicSyntax.v
 core/basic/basicSemantics.v
 core/basic/properties/Confluence.v
 
-#core/test/iExpressions.v
-#core/test/iSyntax.v
-#core/test/iSemantics.v
+core/test/iExpressions.v
+core/test/iSyntax.v
+core/test/iSemantics.v
 
 transformations/Class2Relational/ClassMetamodel.v
 transformations/Class2Relational/RelationalMetamodel.v

@@ -2,12 +2,12 @@ Require Import String.
 
 Require Import core.utils.Utils.
 Require Import core.Model.
-Require Import core.test.iSyntax.
 Require Import core.EqDec. 
 Require Import Bool.
 Require Import Arith.
 Require Import TransformationConfiguration.
 Require Import core.test.iExpressions.
+Require Import core.test.iSyntax.
 Scheme Equality for list.
 
 
@@ -44,17 +44,72 @@ Definition instantiateRuleOnPatternIterName (r: Rule) (sm: SourceModel) (sp: lis
   | None => None
   end.
 
+(** * Trace **)
+
+Definition traceElementOnPattern (o: OutputPatternElement) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat)
+  : option TraceLink :=
+  match (instantiateElementOnPattern o sm sp iter) with
+  | Some e => Some (buildTraceLink (sp, iter, OutputPatternElement_getName o) e)
+  | None => None
+  end.
+
+Definition traceIterationOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) (iter: nat) :  list TraceLink :=
+  flat_map (fun o => optionToList (traceElementOnPattern o sm sp iter))
+    (Rule_getOutputPatternElements r).
+
+Definition traceRuleOnPattern (r: Rule) (sm: SourceModel) (sp: list SourceModelElement) :  list TraceLink :=
+  flat_map (traceIterationOnPattern r sm sp)
+    (seq 0 (evalIteratorExpr r sm sp)).
+
+Definition tracePattern (tr: Transformation) (sm : SourceModel) (sp: list SourceModelElement) : list TraceLink :=
+  flat_map (fun r => traceRuleOnPattern r sm sp) (matchPattern tr sm sp).
+
 Definition maxArity (tr: Transformation) : nat := Transformation_getArity tr.
 
 Definition allTuples (tr: Transformation) (sm : SourceModel) :list (list SourceModelElement) :=
   tuples_up_to_n (allModelElements sm) (maxArity tr).
 
-Definition resolveIter (tr: Transformation) (sm: SourceModel) (name: string) (sp: list SourceModelElement) (iter : nat) : option TargetModelElement :=
-let matchedRule := find (fun r:Rule => matchRuleOnPattern r sm sp) (Transformation_getRules tr) in
-match matchedRule with
-  | Some r =>  (instantiateRuleOnPatternIterName r sm sp iter name)
+Definition trace (tr: Transformation) (sm : SourceModel) : list TraceLink :=
+  flat_map (tracePattern tr sm) (allTuples tr sm).  
+
+Definition resolveIter (tls: list TraceLink) (sm: SourceModel) (name: string)
+            (sp: list SourceModelElement)
+            (iter : nat) : option TargetModelElement :=
+let tl := find (fun tl: TraceLink => 
+  (list_beq SourceModelElement SourceElement_eqb (TraceLink_getSourcePattern tl) sp) &&
+  ((TraceLink_getIterator tl) =? iter) &&
+  ((TraceLink_getName tl) =? name)%string) tls in
+match tl with
+  | Some tl' => Some (TraceLink_getTargetElement tl')
   | None => None
 end.
+
+Definition resolve (tr: list TraceLink) (sm: SourceModel) (name: string)
+  (sp: list SourceModelElement) : option TargetModelElement :=
+  resolveIter tr sm name sp 0.
+
+Definition resolveAllIter (tr: list TraceLink) (sm: SourceModel) (name: string)
+  (sps: list(list SourceModelElement)) (iter: nat)
+  : option (list TargetModelElement) :=
+  Some (flat_map (fun l:(list SourceModelElement) => optionToList (resolveIter tr sm name l iter)) sps).
+
+Definition resolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
+  (sps: list(list SourceModelElement)) : option (list TargetModelElement) :=
+  resolveAllIter tr sm name sps 0.
+
+Definition maybeResolve (tr: list TraceLink) (sm: SourceModel) (name: string)
+  (sp: option (list SourceModelElement)) : option TargetModelElement :=
+  match sp with 
+  | Some sp' => resolve tr sm name sp'
+  | None => None
+  end.
+
+Definition maybeResolveAll (tr: list TraceLink) (sm: SourceModel) (name: string)
+  (sp: option (list (list SourceModelElement))) : option (list TargetModelElement) :=
+  match sp with 
+  | Some sp' => resolveAll tr sm name sp'
+  | None => None
+  end.
 
 (** * Apply **)
 
@@ -62,9 +117,10 @@ Definition applyElementOnPattern
             (ope: OutputPatternElement)
             (tr: Transformation)
             (sm: SourceModel)
-            (sp: list SourceModelElement) (iter: nat) : list TargetModelLink :=
+            (sp: list SourceModelElement) (iter: nat) : list TargetModelLink := 
   match (evalOutputPatternElementExpr sm sp iter ope) with 
-  | Some l => optionListToList (evalOutputPatternLinkExpr sm sp l (resolveIter tr) iter ope)
+  | Some te => optionListToList
+    (evalOutputPatternLinkExpr sm sp te (resolveIter (trace tr sm)) iter ope)
   | None => nil
   end.
 
