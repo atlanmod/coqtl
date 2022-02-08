@@ -64,9 +64,7 @@ core/modeling/properties/ModelingAdditivityRuleExt.v
 core/basic/basicExpressions.v
 core/basic/basicSyntax.v
 core/basic/basicSemantics.v
-#core/basic/basicSyntaxCertification.v
-#core/basic/basicCertification.v
-#core/basic/properties/Confluence.v
+core/basic/properties/Confluence.v
 
 #core/test/iExpressions.v
 #core/test/iSyntax.v
