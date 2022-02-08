@@ -401,6 +401,8 @@ Definition Member_getFamilyDaughterObject (me_arg : Member) (m : FamiliesModel) 
 
 
 (* Typeclass Instances *)	
+
+#[export]
 Instance FamiliesMetamodel_ElementSum : Sum FamiliesMetamodel_Object FamiliesMetamodel_Class :=
 {
 	denoteSubType := FamiliesMetamodel_getTypeByClass;
@@ -408,6 +410,7 @@ Instance FamiliesMetamodel_ElementSum : Sum FamiliesMetamodel_Object FamiliesMet
 	toSumType := FamiliesMetamodel_toObject;
 }.
 
+#[export]
 Instance FamiliesMetamodel_LinkSum : Sum FamiliesMetamodel_Link FamiliesMetamodel_Reference :=
 {
 	denoteSubType := FamiliesMetamodel_getTypeByReference;
@@ -415,10 +418,12 @@ Instance FamiliesMetamodel_LinkSum : Sum FamiliesMetamodel_Link FamiliesMetamode
 	toSumType := FamiliesMetamodel_toLink;
 }.
 
+#[export]
 Instance FamiliesMetamodel_EqDec : EqDec FamiliesMetamodel_Object := {
     eq_b := beq_FamiliesMetamodel_Object;
 }.
 
+#[export]
 Instance FamiliesMetamodel_Metamodel_Instance : 
 	Metamodel :=
 {
@@ -426,6 +431,7 @@ Instance FamiliesMetamodel_Metamodel_Instance :
 	ModelLink := FamiliesMetamodel_Link;
 }.
 
+#[export]
 Instance FamiliesMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel FamiliesMetamodel_Metamodel_Instance :=
 { 

@@ -1156,6 +1156,8 @@ Definition Www_getEditorsObjects (ww_arg : Www) (m : DBLPModel) : option (list D
 
 
 (* Typeclass Instances *)	
+
+#[export]
 Instance DBLPMetamodel_ElementSum : Sum DBLPMetamodel_Object DBLPMetamodel_Class :=
 {
 	denoteSubType := DBLPMetamodel_getTypeByClass;
@@ -1163,6 +1165,7 @@ Instance DBLPMetamodel_ElementSum : Sum DBLPMetamodel_Object DBLPMetamodel_Class
 	toSumType := DBLPMetamodel_toObject;
 }.
 
+#[export]
 Instance DBLPMetamodel_LinkSum : Sum DBLPMetamodel_Link DBLPMetamodel_Reference :=
 {
 	denoteSubType := DBLPMetamodel_getTypeByReference;
@@ -1170,10 +1173,12 @@ Instance DBLPMetamodel_LinkSum : Sum DBLPMetamodel_Link DBLPMetamodel_Reference 
 	toSumType := DBLPMetamodel_toLink;
 }.
 
+#[export]
 Instance DBLPMetamodel_EqDec : EqDec DBLPMetamodel_Object := {
     eq_b := beq_DBLPMetamodel_Object;
 }.
 
+#[export]
 Instance DBLPMetamodel_Metamodel_Instance : 
 	Metamodel :=
 {
@@ -1181,6 +1186,7 @@ Instance DBLPMetamodel_Metamodel_Instance :
 	ModelLink := DBLPMetamodel_Link;
 }.
 
+#[export]
 Instance DBLPMetamodel_ModelingMetamodel_Instance : 
 	ModelingMetamodel DBLPMetamodel_Metamodel_Instance :=
 { 

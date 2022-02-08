@@ -41,9 +41,11 @@ Require Import core.modeling.ModelingTransformationConfiguration.
     }
    } *)
 
+#[export]   
 Instance C2RConfiguration : TransformationConfiguration := 
   Build_TransformationConfiguration ClassM RelationalM.
 
+#[export] 
 Instance Class2RelationalConfiguration : ModelingTransformationConfiguration C2RConfiguration :=
   Build_ModelingTransformationConfiguration C2RConfiguration ClassMetamodel RelationalMetamodel.
 

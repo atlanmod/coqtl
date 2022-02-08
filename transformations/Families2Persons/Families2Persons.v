@@ -17,9 +17,11 @@ Require Import Families2Persons.Persons.
 Require Import core.TransformationConfiguration.
 Require Import core.modeling.ModelingTransformationConfiguration.
 
+#[export]
 Instance F2PConfiguration : TransformationConfiguration := 
   Build_TransformationConfiguration FamiliesMetamodel_Metamodel_Instance PersonsMetamodel_Metamodel_Instance.
 
+#[export]
 Instance Families2PersonsConfiguration : ModelingTransformationConfiguration F2PConfiguration :=
  Build_ModelingTransformationConfiguration F2PConfiguration FamiliesMetamodel_ModelingMetamodel_Instance PersonsMetamodel_ModelingMetamodel_Instance.
 

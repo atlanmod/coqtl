@@ -27,10 +27,12 @@ Definition BDDEq (a b : BDDNode) :=
   | BuildBDDNode n1, BuildBDDNode n2 => String.eqb n1 n2 
   end.
 
+#[export]
 Instance BDDEqDec : EqDec BDDNode := {
     eq_b := BDDEq
 }.
 
+#[export]
 Instance BDDM : Metamodel :=
 {
   ModelElement := BDDNode;

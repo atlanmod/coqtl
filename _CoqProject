@@ -59,7 +59,7 @@ core/modeling/properties/ModelingAdditivityRuleExt.v
 #core/modeling/iteratetraces/IterateTracesCertification.v
 
 #core/modeling/byrule/ByRuleSemantics.v
-#core/modeling/byrule/Certification_ByRuleSemantics.v
+#core/modeling/byrule/Certification_ByRuleSemantics.v\
 
 transformations/Class2Relational/ClassMetamodel.v
 transformations/Class2Relational/RelationalMetamodel.v
@@ -74,8 +74,6 @@ transformations/Class2Relational/theorems/Table_name_uniqueness.v
 transformations/Class2Relational/theorems/Attribute_name_preservation.v
 transformations/Class2Relational/theorems/Column_name_uniqueness.v
 transformations/Class2Relational/theorems/Relational_resolve_spec.v
-
-
 
 transformations/TT2BDD/TT.v
 transformations/TT2BDD/BDD.v
@@ -95,14 +93,12 @@ transformations/RSS2ATOM/tests/Exemple1ATOM.v
 transformations/DBLP/DBLP.v
 transformations/IMDB/MOVIES.v
 
-core/test/iExpressions.v
-core/test/iSyntax.v
-core/test/iSemantics.v
-core/test/iSyntaxCertification.v
-#core/test/iCertification.v
-core/test/properties/iConfluence.v
-
 transformations/Families2Persons/tests/sampleFamilies.v
 transformations/Families2Persons/Families.v
 transformations/Families2Persons/Persons.v
 transformations/Families2Persons/Families2Persons.v
+
+transformations/Moore2Mealy/Moore.v
+transformations/Moore2Mealy/Mealy.v
+transformations/Moore2Mealy/Moore2Mealy.v
+transformations/Moore2Mealy/tests/sampleMoore.v
