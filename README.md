@@ -57,6 +57,17 @@ cd coqtl
 ./compile.sh
 ```
 
+### Alternative installation using Visual Studio Code remote container
+
+Instead of installing coq directly on your machine you can use Visual Studio Code with the development container configuration we provide.
+
+When opening the project with Visual Studio Code the editor will ask you to install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension to use the feature. Be sure to read the "Install" section of the [remote containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) to correctly install and setup docker on your machine.
+
+Then, once the remote container extension is installed and docker setup, Visual Studio Code will inform you that the current workspace can be opened in a container. Click "Reopen in Container" to start building the container. Be patient, first launch will take several minutes to build the image. The image only to need to be built once, next launches are faster.
+
+
+Coq theories can be found in `/home/vscode/.opam/default/lib/coq/theories`. One can add this folder to its workspace by right clicking in the exporer panel and selecting "Add folder to workspace".
+
 ## Publications
 
 Here are the publications describing CoqTL and the pointer to the version of CoqTL they refer to. 
