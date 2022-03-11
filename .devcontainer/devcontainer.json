@@ -2,17 +2,7 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.224.2/containers/debian
 {
 	"name": "Debian",
-	"build": {
-		"dockerfile": "Dockerfile",
-		// Update 'VARIANT' to pick an Debian version: bullseye, buster
-		// Use bullseye on local arm64/Apple Silicon.
-		"args": { 
-			"VARIANT": "bullseye",
-			"OPAM_VERSION": "2.1.2",
-			"OPAM_ARCH": "x86_64",
-			"COQ_VERSION": "8.15.0"
-		}
-	},
+	"image": "ghcr.io/atlanmod/vsc-coqtl:latest",
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
